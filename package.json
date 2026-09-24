@@ -1,0 +1,41 @@
+{
+  "name": "vivarise-bms",
+  "private": true,
+  "packageManager": "pnpm@10.34.5",
+  "engines": {
+    "node": ">=24.0.0 <25"
+  },
+  "scripts": {
+    "prepare": "lefthook install || exit 0",
+    "build": "pnpm -r --if-present run build",
+    "lint": "pnpm -r --if-present run lint && eslint --max-warnings=0 eslint.config.mjs commitlint.config.mjs scripts",
+    "typecheck": "pnpm -r --if-present run typecheck",
+    "test": "pnpm -r --if-present run test",
+    "test:e2e": "pnpm --filter @vivarise/web run build && pnpm --filter @vivarise/web run test:e2e",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check:bundle": "node scripts/scan-client-bundle.mjs",
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset",
+    "db:lint": "supabase db lint --level warning --fail-on warning",
+    "db:test": "supabase test db"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "21.2.3",
+    "@commitlint/config-conventional": "21.2.3",
+    "@eslint/js": "10.0.1",
+    "@types/node": "24.13.6",
+    "@vitest/coverage-v8": "4.1.11",
+    "eslint": "10.11.0",
+    "eslint-config-next": "16.3.6",
+    "eslint-plugin-jsx-a11y": "6.10.2",
+    "globals": "17.12.0",
+    "lefthook": "2.1.14",
+    "prettier": "3.9.9",
+    "supabase": "2.117.0",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.70.1",
+    "vitest": "4.1.11"
+  }
+}

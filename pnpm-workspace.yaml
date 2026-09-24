@@ -1,0 +1,9 @@
+packages:
+  - apps/*
+  - packages/*
+
+# No dependency needs its install script. Hooks are installed by the root `prepare` script, and
+# unrs-resolver's script only builds a fallback binary for platforms without a prebuilt one.
+ignoredBuiltDependencies:
+  - lefthook
+  - unrs-resolver

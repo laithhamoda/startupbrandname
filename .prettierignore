@@ -1,0 +1,5 @@
+pnpm-lock.yaml
+
+# Owner-authored source documents: never reformat.
+CLAUDE.md
+docs/SPEC.md

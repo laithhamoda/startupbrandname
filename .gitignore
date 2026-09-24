@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build and tool output
+.next/
+next-env.d.ts
+out/
+coverage/
+*.tsbuildinfo
+playwright-report/
+test-results/
+blob-report/
+
+# Environment files: only .env.example is committed (CLAUDE.md §8.8)
+.env
+.env.*
+!.env.example
+
+# Platform state
+.vercel/
+supabase/.temp/
+supabase/.branches/
+
+# OS and logs
+.DS_Store
+Thumbs.db
+*.log
