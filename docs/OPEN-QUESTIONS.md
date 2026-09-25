@@ -54,7 +54,7 @@ cannot reach the summary threshold), #61 (owner answer on accounts).
 30. `M2` Use `public.profiles` keyed to `auth.users` instead of SPEC's `users`, without storing email twice. Missing tables and fields: tasks (created by R4/B5), sessions/devices, failed voucher attempts, guardian status, consent-text version, `source_url` / `retrieved_at` on stored values.
 31. `M9` One-click deletion vs financial records that may have to be kept (payments, commissions, audit log). What survives, anonymized?
 32. `M2` Email provider for auth, guardian consent and digests (must be named in the privacy policy; Supabase's built-in email is not for production).
-33. `M0` **Answered (D-022):** standalone app on `startupbrandname.com`. Still open: is that domain final or a placeholder, and does the product brand change from "Vivarise" (affects UI copy and CLAUDE.md §2)?
+33. `M0` **Answered (D-022):** standalone app on `startupbrandname.com`, confirmed by the owner on 2026-09-25 as their domain, to be connected to Vercel production. Public records (2026-09-25): registrar Unstoppable Domains, nameservers at atom.com and sedoparking.com (parked). Still open: does the owner control its DNS, and does the product brand change from "Vivarise" (affects UI copy and CLAUDE.md §2)?
 34. `M2` Is fra1 pinning for latency or for EU data residency? If residency, Anthropic (US), PayPal, Vercel logs and builds are already outside the EU and consent must say so.
 
 ## F. Question bank and completeness
