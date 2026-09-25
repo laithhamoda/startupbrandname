@@ -94,7 +94,7 @@ cannot reach the summary threshold), #61 (owner answer on accounts).
 
 ## Added 2026-09-24
 
-61. `M0` Owner's answer to "Supabase: new Vivarise organisation, staging on Free, production on Pro before M2?" was: "I will provide you with all emails [that] have free access for the first year." Meaning unclear: which Supabase (and Vercel) account should host the projects, and on which plan?
+61. `M0` **Resolved (D-036).** Owner's answer to "Supabase: new Vivarise organisation, staging on Free, production on Pro before M2?" was: "I will provide you with all emails [that] have free access for the first year." Meaning unclear: which Supabase (and Vercel) account should host the projects, and on which plan?
 
 ## Added 2026-09-25
 
