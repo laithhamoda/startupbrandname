@@ -1,5 +1,5 @@
 {
-  "name": "vivarise-bms",
+  "name": "startupbrandname",
   "private": true,
   "packageManager": "pnpm@10.34.5",
   "engines": {
@@ -11,7 +11,7 @@
     "lint": "pnpm -r --if-present run lint && eslint --max-warnings=0 eslint.config.mjs commitlint.config.mjs scripts",
     "typecheck": "pnpm -r --if-present run typecheck",
     "test": "pnpm -r --if-present run test",
-    "test:e2e": "pnpm --filter @vivarise/web run build && pnpm --filter @vivarise/web run test:e2e",
+    "test:e2e": "pnpm --filter @sbn/web run build && pnpm --filter @sbn/web run test:e2e",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "check:bundle": "node scripts/scan-client-bundle.mjs",
