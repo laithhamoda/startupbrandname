@@ -95,3 +95,7 @@ cannot reach the summary threshold), #61 (owner answer on accounts).
 ## Added 2026-09-24
 
 61. `M0` Owner's answer to "Supabase: new Vivarise organisation, staging on Free, production on Pro before M2?" was: "I will provide you with all emails [that] have free access for the first year." Meaning unclear: which Supabase (and Vercel) account should host the projects, and on which plan?
+
+## Added 2026-09-25
+
+62. `M3+` Business-name finder: the owner described the product as "creating a business model and finding a business name". SPEC has no naming tool; only G5 asks whether the founder already has a trade name or protected mark. New feature? If yes: which milestone, and which official sources check availability (trade-name registers, trademark offices, domains)? Rule 9 forbids claiming a name is available without a verified source.
