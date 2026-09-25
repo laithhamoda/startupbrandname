@@ -60,7 +60,9 @@ ship them (see D-031 in `docs/DECISIONS.md`); check that list before adding a CL
 | Preview     | Vercel Preview, functions in `fra1`    | Supabase staging, `eu-central-1` (Frankfurt) |
 | Production  | Vercel Production, functions in `fra1` | Supabase prod, `eu-central-1` (Frankfurt)    |
 
-`GET /api/health` returns `{ status, region, supabase: { reachable, latency_ms } }`.
+`GET /api/health` returns `{ status, region, supabase: { reachable, latency_ms, reason } }`.
+When Supabase is unreachable, `reason` is `http_<status>` (for example `http_401`: the key does not
+belong to the project at `NEXT_PUBLIC_SUPABASE_URL`), `timeout` or `network`.
 In production `region` must be `fra1`.
 
 ## Database migrations
