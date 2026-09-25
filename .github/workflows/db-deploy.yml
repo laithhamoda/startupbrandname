@@ -1,7 +1,8 @@
 name: DB deploy
 
 # Staging: automatic when migrations change on main.
-# Production: manual run only; the `production` GitHub Environment requires approval.
+# Production: manual run only; the `db-production` GitHub Environment requires approval.
+# The `db-` prefix keeps these apart from the `Production`/`Preview` environments Vercel creates.
 on:
   push:
     branches: [main]
@@ -27,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     # SUPABASE_PROJECT_REF and SUPABASE_DB_PASSWORD are environment-scoped secrets.
-    environment: ${{ github.event_name == 'push' && 'staging' || inputs.target }}
+    environment: db-${{ github.event_name == 'push' && 'staging' || inputs.target }}
     env:
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
       SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}

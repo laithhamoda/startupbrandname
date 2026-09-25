@@ -72,7 +72,7 @@ In production `region` must be `fra1`.
    `public` without row level security fails the build.
 3. Merging to `main` pushes new migrations to staging (`DB deploy` workflow).
 4. Production: run the `DB deploy` workflow manually with target `production`; it waits for
-   approval in the `production` GitHub Environment.
+   approval in the `db-production` GitHub Environment.
 
 The app and the database deploy independently, so every migration must be backward-compatible:
 add first, migrate data, remove in a later release.
