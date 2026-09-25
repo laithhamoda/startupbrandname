@@ -46,16 +46,34 @@ describe('GET /api/health', () => {
     expect(response.status).toBe(503);
     expect(body).toMatchObject({
       status: 'degraded',
-      supabase: { reachable: false, latency_ms: null },
+      supabase: { reachable: false, latency_ms: null, reason: 'network' },
     });
   });
 
-  it('returns 503 when Supabase answers with an error status', async () => {
-    mockFetch(() => Promise.resolve(new Response(null, { status: 502 })));
+  it('reports the HTTP status when Supabase rejects the request', async () => {
+    mockFetch(() => Promise.resolve(new Response(null, { status: 401 })));
 
     const response = await GET();
+    const body: unknown = await response.json();
 
     expect(response.status).toBe(503);
+    expect(body).toMatchObject({ supabase: { reachable: false, reason: 'http_401' } });
+  });
+
+  it('reports a timeout separately from other network failures', async () => {
+    mockFetch(() => Promise.reject(new DOMException('The operation timed out.', 'TimeoutError')));
+
+    const body: unknown = await (await GET()).json();
+
+    expect(body).toMatchObject({ supabase: { reachable: false, reason: 'timeout' } });
+  });
+
+  it('has no failure reason when Supabase is reachable', async () => {
+    mockFetch(() => Promise.resolve(new Response(null, { status: 200 })));
+
+    const body: unknown = await (await GET()).json();
+
+    expect(body).toMatchObject({ supabase: { reachable: true, reason: null } });
   });
 
   it('reports "local" outside Vercel', async () => {
