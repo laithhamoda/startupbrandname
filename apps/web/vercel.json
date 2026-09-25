@@ -3,9 +3,9 @@
   "regions": ["fra1"],
   "redirects": [
     {
-      "source": "/:path*",
+      "source": "/(.*)",
       "has": [{ "type": "host", "value": "www.startupbrandname.com" }],
-      "destination": "https://startupbrandname.com/:path*",
+      "destination": "https://startupbrandname.com/$1",
       "permanent": true
     }
   ]
