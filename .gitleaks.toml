@@ -1,0 +1,8 @@
+# gitleaks: the default rule set plus one narrow exception (docs/DECISIONS.md D-041).
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Supabase publishable keys are public by design (they ship to every browser), and tests use fake ones. Secret keys (sb_secret_...) are still reported."
+targetRules = ["generic-api-key"]
+regexes = ['''^sb_publishable_[A-Za-z0-9_-]+$''']
