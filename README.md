@@ -1,6 +1,6 @@
-# Business Model Studio
+# Startup Brand Name
 
-Arabic-first business model diagnostic that produces a numbers-backed analysis and report.
+Arabic-first platform at startupbrandname.com: a business model diagnostic that produces a numbers-backed analysis and report.
 
 - Project rules: [CLAUDE.md](CLAUDE.md)
 - Functional spec: [docs/SPEC.md](docs/SPEC.md)
@@ -24,13 +24,13 @@ pnpm db:start
 `apps/web/.env.local`, fill in those two values, then start the app:
 
 ```bash
-pnpm --filter @vivarise/web dev
+pnpm --filter @sbn/web dev
 ```
 
 Before the first `pnpm test:e2e`, download Playwright's Chromium:
 
 ```bash
-pnpm --filter @vivarise/web exec playwright install chromium
+pnpm --filter @sbn/web exec playwright install chromium
 ```
 
 **Windows:** Smart App Control blocks unsigned native binaries. This repo avoids tools that

@@ -1,4 +1,4 @@
-# CLAUDE.md — Vivarise Business Model Studio
+# CLAUDE.md — Startup Brand Name (Business Model Studio)
 
 > Persistent project instructions for Claude Code. Read this file fully at the start of every session.
 > Detailed functional specification lives in `docs/SPEC.md`. When this file and SPEC.md conflict, this file wins; flag the conflict.
@@ -20,9 +20,10 @@ You write code a senior reviewer would approve without rework. You do not guess;
 
 ## 2. CONTEXT
 
-**Product:** "Business Model Studio" — a module inside Vivarise (vivarise.net), an Arabic e-learning platform.
+**Product:** "Startup Brand Name" (startupbrandname.com) — the owner's own standalone platform. It is **not** part of, or technically connected to, vivarise.net. Its core is the "Business Model Studio" described in this file. (Updated 2026-09-25, D-037.)
 **Owner:** Laith, Amman, Jordan. Solo builder. Codes in Next.js, Node.js, pptxgenjs.
-**What it does:** Guides an Arabic-speaking founder through a structured diagnostic (64 questions, 8 axes), then produces a professional, numbers-backed business model analysis and proposal as an exportable Arabic report, with an AI mentor.
+**What it does:** Guides an Arabic-speaking founder through a structured diagnostic (64 questions, 8 axes), then produces a professional, numbers-backed business model analysis and proposal as an exportable Arabic report, with an AI mentor. It also helps founders find a business name, with every availability claim checked live (D-035).
+**Course trainees:** trainees of the owner's "AI in Entrepreneurship" course get the platform free for 12 months (the Course buyer tier), activated with Viva Rise marketing codes in the `VIVA` voucher format below (D-038).
 **Why users pay instead of using a free chatbot:** structured mandatory path, calculated (not written) numbers, dated and sourced country data, provenance tags on every fact, persistent projects, professional exportable deliverables.
 
 ---
@@ -115,7 +116,7 @@ You write code a senior reviewer would approve without rework. You do not guess;
 | Validation | zod |
 | AI | Anthropic API via official TypeScript SDK. `claude-sonnet-5` for analysis synthesis and mentor; `claude-haiku-4-5-20251001` for dialect normalization, classification, answer validation. Use the API web search tool for T5/T6/T11. Use prompt caching for static system prompts. **Verify model IDs against current Anthropic docs before first use.** |
 | PDF | HTML → PDF with headless Chromium. **Validate Arabic shaping and bidi in M5 week 1.** If Vercel function limits block it, propose a separate render worker before building around it. |
-| Deck export | pptxgenjs, RTL, Vivarise brand |
+| Deck export | pptxgenjs, RTL, Startup Brand Name brand |
 | Jobs | Vercel Cron or Supabase pg_cron (subscription expiry, voucher expiry, country-pack agent, digests) |
 | Tests | Vitest (unit, engine ≥ 95% line coverage), Playwright (e2e, RTL visual checks) |
 | Observability | Structured logs; per-call AI cost records in `tool_runs` / `mentor_messages` |
