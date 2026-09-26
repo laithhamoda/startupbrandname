@@ -8,13 +8,12 @@ import { type EligibilityField, parseEligibility } from '@/lib/auth/eligibility'
 import type { CountryOption } from '@/lib/countries';
 import { EligibilityFields } from './eligibility-fields';
 import { FormError, useFocusFirstInvalid } from './form-helpers';
-import { RefusalNotice } from './refusal-notice';
 
 const IDLE: AuthFormState = { status: 'idle' };
 
 /**
  * The onboarding gate for an account that exists without declarations, typically created by
- * Google (D-065). A "no" deletes the account at once, on the server.
+ * Google (D-065). A "no" deletes the account at once, on the server, then shows /not-eligible.
  */
 export function OnboardingForm({ countries }: { countries: readonly CountryOption[] }) {
   const locale = useLocale();
@@ -35,9 +34,7 @@ export function OnboardingForm({ countries }: { countries: readonly CountryOptio
     });
   }
 
-  if (state.status === 'refused') return <RefusalNotice kind={state.refusal} deleted />;
-  if (state.status === 'closed') return <RefusalNotice kind="closed" deleted />;
-
+  // A refusal or a closed country redirects to /not-eligible; only errors come back here.
   const failed = state.status === 'error' && state.error !== 'eligibility';
 
   return (

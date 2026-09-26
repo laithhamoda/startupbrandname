@@ -49,6 +49,7 @@ test('a "no" at the gate deletes the account at once', async ({ page }) => {
 
   await answerGate(page, 'لا');
 
+  await expect(page).toHaveURL(/\/ar\/not-eligible\?reason=adult$/);
   await expect(page.getByText(/حذفنا الحساب الذي أُنشئ عند الدخول/)).toBeVisible();
   await page.goto('/ar/projects');
   await expect(page).toHaveURL(/\/ar\/login$/);

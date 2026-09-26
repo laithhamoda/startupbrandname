@@ -233,12 +233,14 @@ export async function submitOnboarding(
   const supabase = await createSupabaseServerClient();
   if (!(await getSessionUser(supabase))) redirect(`/${locale}/login`);
 
+  // After a deletion the user is signed out, so the answer is shown on its own page: the gate
+  // re-renders after the cookies change and would send a signed-out visitor to sign-in.
   const { answers } = parsed;
   if (!refusalOf(answers) && closedCountries(getServerEnv()).includes(answers.country)) {
     const { error } = await supabase.rpc('delete_my_account');
     if (error) throw error;
     await endDeletedSession(supabase);
-    return { status: 'closed', deleted: true };
+    redirect(`/${locale}/not-eligible?reason=closed`);
   }
 
   const result = await completeOnboarding(supabase, {
@@ -251,8 +253,7 @@ export async function submitOnboarding(
   if (result === 'refused') {
     // The database has already deleted the account; clear the session cookies.
     await endDeletedSession(supabase);
-    const refusal = refusalOf(answers) ?? 'adult';
-    return { status: 'refused', refusal, deleted: true };
+    redirect(`/${locale}/not-eligible?reason=${refusalOf(answers) ?? 'adult'}`);
   }
   redirect(projectsPath(locale));
 }
