@@ -52,6 +52,19 @@ ship them (see D-031 in `docs/DECISIONS.md`); check that list before adding a CL
 | `pnpm db:test`              | pgTAP tests in `supabase/tests` (includes the RLS guard)              |
 | `pnpm db:lint`              | Lint database functions                                               |
 
+## Design system (M1)
+
+- Tokens: `apps/web/src/styles/tokens.css`. Colour contrast is tested in
+  `apps/web/src/styles/contrast.test.ts`; a colour change that breaks WCAG 2.2 AA fails the build.
+- Components: `apps/web/src/components/ui/`. Browse them at `/design` (local and preview only).
+- Styling uses logical properties only (`ms-`, `me-`, `ps-`, `pe-`, `start-`, `end-`);
+  `pnpm lint` rejects `left`/`right` utilities.
+- RTL visual snapshots run in CI only. After an intended visual change, run the
+  "Update RTL snapshots" workflow, download its artifact and commit it under
+  `apps/web/e2e/__screenshots__`.
+- Search indexing stays off until public launch: set `SITE_INDEXABLE=true` on the Vercel
+  Production environment to turn it on.
+
 ## Environments
 
 | Environment | App                                    | Database                                     |
