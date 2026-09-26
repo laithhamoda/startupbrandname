@@ -1,4 +1,5 @@
 import { site } from '@/config/site';
+import { routing } from '@/i18n/routing';
 
 type JsonLdObject = Record<string, unknown>;
 
@@ -16,27 +17,30 @@ export function JsonLd({ data }: { data: JsonLdObject }) {
   );
 }
 
-/** Only facts that are true today; logo, founder and social profiles are added when they exist. */
-export function organizationJsonLd(): JsonLdObject {
+/**
+ * Only facts that are true today; logo, founder and social profiles are added when they exist.
+ * `descriptor` is the translated "Business Model Studio" for the page's language.
+ */
+export function organizationJsonLd(descriptor: string): JsonLdObject {
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     '@id': `${site.origin}/#organization`,
     name: site.name,
-    alternateName: site.descriptor,
+    alternateName: descriptor,
     url: site.origin,
   };
 }
 
-export function websiteJsonLd(): JsonLdObject {
+export function websiteJsonLd(descriptor: string): JsonLdObject {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     '@id': `${site.origin}/#website`,
     name: site.name,
-    alternateName: site.descriptor,
+    alternateName: descriptor,
     url: site.origin,
-    inLanguage: 'ar',
+    inLanguage: [...routing.locales],
     publisher: { '@id': `${site.origin}/#organization` },
   };
 }

@@ -1,0 +1,99 @@
+import { expect, type Page } from '@playwright/test';
+
+// Local Supabase catches every email in Mailpit instead of sending it.
+export const MAILPIT_URL = process.env.MAILPIT_URL ?? 'http://127.0.0.1:54324';
+
+/** A fresh address per test, so tests never share an account or an inbox. */
+export function uniqueEmail(label: string): string {
+  return `${label}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}@example.test`;
+}
+
+interface MailpitSearch {
+  messages: { ID: string; Created: string }[];
+}
+
+interface MailpitMessage {
+  Text: string;
+  HTML: string;
+}
+
+/** Waits for the newest email to `email` and returns the sign-in code in it (8 digits, D-087). */
+export async function readCode(page: Page, email: string, after = 0): Promise<string> {
+  let code = '';
+  await expect
+    .poll(
+      async () => {
+        const search = await page.request.get(`${MAILPIT_URL}/api/v1/search`, {
+          params: { query: `to:"${email}"` },
+        });
+        const { messages } = (await search.json()) as MailpitSearch;
+        if (messages.length <= after) return false;
+        const newest = [...messages].sort((a, b) => b.Created.localeCompare(a.Created))[0];
+        if (!newest) return false;
+        const message = (await (
+          await page.request.get(`${MAILPIT_URL}/api/v1/message/${newest.ID}`)
+        ).json()) as MailpitMessage;
+        // Strip tags first so colours such as #111111 in inline styles are not taken for the code.
+        const text = message.Text || message.HTML.replace(/<[^>]*>/g, ' ');
+        code = /\b(\d{6,10})\b/.exec(text)?.[1] ?? '';
+        return code !== '';
+      },
+      { timeout: 20_000, message: `a sign-in code for ${email}` },
+    )
+    .toBe(true);
+  return code;
+}
+
+export async function countEmails(page: Page, email: string): Promise<number> {
+  const search = await page.request.get(`${MAILPIT_URL}/api/v1/search`, {
+    params: { query: `to:"${email}"` },
+  });
+  return ((await search.json()) as MailpitSearch).messages.length;
+}
+
+interface AboutYou {
+  country?: string;
+  project?: 'نعم' | 'لا';
+  crossborder?: boolean;
+}
+
+/** Fills the Arabic "about you" fields: the first signup step, or the onboarding gate. */
+export async function fillAboutYou(
+  page: Page,
+  { country = 'JO', project = 'نعم', crossborder = false }: AboutYou = {},
+) {
+  await page.getByLabel('بلد إقامتك').selectOption(country);
+  await page
+    .getByRole('radiogroup', { name: /مشروع أو فكرة مشروع/ })
+    .getByRole('radio', { name: project })
+    .check();
+  await page.getByRole('checkbox', { name: /شروط الاستخدام/ }).check();
+  if (crossborder) await page.getByRole('checkbox', { name: /Anthropic/ }).check();
+}
+
+/** Completes the Arabic signup step 1 and moves on to the email step. */
+export async function answerAboutYou(page: Page, answers: AboutYou = {}) {
+  await fillAboutYou(page, answers);
+  await page.getByRole('button', { name: 'متابعة' }).click();
+}
+
+/** Signup by email code in Arabic, from the first step to the projects page. */
+export async function signUpByEmail(page: Page, email: string, crossborder = false) {
+  await page.goto('/ar/signup');
+  await answerAboutYou(page, { crossborder });
+  await page.getByLabel('البريد الإلكتروني').fill(email);
+  await page.getByRole('button', { name: 'أرسل الرمز' }).click();
+  await page.getByLabel('رمز الدخول').fill(await readCode(page, email));
+  await page.getByRole('button', { name: 'تحقّق وادخل' }).click();
+  await expect(page).toHaveURL(/\/ar\/projects$/);
+}
+
+/** Sign-in by email code for an existing account. */
+export async function signInByEmail(page: Page, email: string) {
+  const before = await countEmails(page, email);
+  await page.goto('/ar/login');
+  await page.getByLabel('البريد الإلكتروني').fill(email);
+  await page.getByRole('button', { name: 'أرسل الرمز' }).click();
+  await page.getByLabel('رمز الدخول').fill(await readCode(page, email, before));
+  await page.getByRole('button', { name: 'تحقّق وادخل' }).click();
+}

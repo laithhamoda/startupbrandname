@@ -1,6 +1,7 @@
 'use client';
 
 import { X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Dialog as RadixDialog } from 'radix-ui';
 import type { ReactNode } from 'react';
 
@@ -14,6 +15,8 @@ interface OverlayPanelProps {
 const closeButtonClass = 'absolute top-3 end-3 rounded-control p-1 text-ink-2 hover:bg-sunken';
 
 function PanelBody({ title, description, children }: Omit<OverlayPanelProps, 'trigger'>) {
+  const t = useTranslations('common');
+
   return (
     <>
       <RadixDialog.Title className="pe-8 font-display text-h3 font-bold">{title}</RadixDialog.Title>
@@ -23,7 +26,7 @@ function PanelBody({ title, description, children }: Omit<OverlayPanelProps, 'tr
         </RadixDialog.Description>
       ) : null}
       <div className="mt-4">{children}</div>
-      <RadixDialog.Close className={closeButtonClass} aria-label="إغلاق">
+      <RadixDialog.Close className={closeButtonClass} aria-label={t('close')}>
         <X aria-hidden className="size-5" />
       </RadixDialog.Close>
     </>

@@ -1,7 +1,8 @@
-import Link from 'next/link';
 import type { ComponentProps } from 'react';
+import { Link } from '@/i18n/navigation';
 import { cn } from '@/lib/cn';
 
+/** An inline link to a page of this site; the /ar or /en prefix is added automatically. */
 export function TextLink({ className, ...props }: ComponentProps<typeof Link>) {
   return (
     <Link

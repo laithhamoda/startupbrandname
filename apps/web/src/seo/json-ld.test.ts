@@ -11,8 +11,8 @@ describe('serializeJsonLd', () => {
 });
 
 describe('structured data', () => {
-  it('describes the organisation with the Arabic descriptor', () => {
-    expect(organizationJsonLd()).toMatchObject({
+  it('describes the organisation with the descriptor in the page language', () => {
+    expect(organizationJsonLd('استوديو نموذج العمل')).toMatchObject({
       '@type': 'Organization',
       name: 'Startup Brand Name',
       alternateName: 'استوديو نموذج العمل',
@@ -20,10 +20,11 @@ describe('structured data', () => {
     });
   });
 
-  it('declares the website as Arabic and published by the organisation', () => {
-    expect(websiteJsonLd()).toMatchObject({
+  it('declares the website as Arabic and English, published by the organisation', () => {
+    expect(websiteJsonLd('Business Model Studio')).toMatchObject({
       '@type': 'WebSite',
-      inLanguage: 'ar',
+      alternateName: 'Business Model Studio',
+      inLanguage: ['ar', 'en'],
       publisher: { '@id': 'https://startupbrandname.com/#organization' },
     });
   });

@@ -7,8 +7,12 @@ export const booleanFlag = z.enum(['true', 'false']).transform((value) => value 
 /** Server-only variables. Importing this module from a Client Component fails the build. */
 export const serverEnvSchema = z.object({
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
-  // Algeria stays closed until legal review (CLAUDE.md §3).
-  MARKET_DZ_ENABLED: booleanFlag.default(false),
+  // Kill switch for Algeria, open since 2026-09-26 by the owner's decision (D-068). "false"
+  // closes signup for Algerian users without touching existing accounts.
+  MARKET_DZ_ENABLED: booleanFlag.default(true),
+  // Shows "Continue with Google". Turn on only after Google is enabled in that environment's
+  // Supabase project; otherwise the button leads to Supabase's raw "provider is not enabled" error.
+  AUTH_GOOGLE_ENABLED: booleanFlag.default(false),
   // Search indexing stays off until public launch, and always off outside production (D-027, D-054).
   SITE_INDEXABLE: booleanFlag.default(false),
   // Set by Vercel at runtime.

@@ -18,7 +18,12 @@ export default defineConfig({
     locale: 'ar-JO',
     trace: 'retain-on-failure',
   },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  projects: [
+    // Pages, accessibility and snapshots: no database needed.
+    { name: 'site', testIgnore: /auth\//, use: { ...devices['Desktop Chrome'] } },
+    // Sign-in flows: need the local Supabase stack (`pnpm db:start`) and its Mailpit inbox.
+    { name: 'auth', testMatch: /auth\/.*\.spec\.ts/, use: { ...devices['Desktop Chrome'] } },
+  ],
   webServer: {
     command: `pnpm start --port ${PORT}`,
     url: `http://127.0.0.1:${PORT}`,

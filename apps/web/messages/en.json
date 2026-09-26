@@ -1,0 +1,170 @@
+{
+  "meta": {
+    "descriptor": "Business Model Studio",
+    "description": "Turn your idea into a business model with calculated numbers: a structured diagnostic, a report with a clear verdict, and an AI mentor."
+  },
+  "common": {
+    "skipToContent": "Skip to content",
+    "close": "Close",
+    "draft": "Draft"
+  },
+  "language": {
+    "switch": "العربية"
+  },
+  "theme": {
+    "system": "Auto",
+    "light": "Light",
+    "dark": "Dark",
+    "label": "Theme: {current}. Switch to: {next}"
+  },
+  "nav": {
+    "label": "Main navigation",
+    "login": "Sign in",
+    "signup": "Create account",
+    "projects": "My projects",
+    "account": "My account"
+  },
+  "footer": {
+    "legal": "Legal links",
+    "privacy": "Privacy policy",
+    "terms": "Terms of use"
+  },
+  "home": {
+    "heading": "Turn your idea into a business model with calculated numbers",
+    "lead": "The platform is under construction. It will give you a structured diagnostic of your business idea, a report with calculated numbers and a clear verdict, and an AI mentor that asks you the hard questions before the market does.",
+    "start": "Start for free"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "body": "The link may have changed, or the page may have been removed.",
+    "home": "Back to the home page"
+  },
+  "aboutYou": {
+    "country": "Country of residence",
+    "countryHint": "We use it to pick the country data for your analysis. You can change it later.",
+    "countryPlaceholder": "Choose a country",
+    "project": "Do you have a project or a project idea?",
+    "yes": "Yes",
+    "no": "No",
+    "terms": "I accept the <terms>terms of use</terms> and have read the <privacy>privacy policy</privacy>.",
+    "crossborder": "I agree that the content of my projects, without my name or email, is sent to Anthropic in the United States to run the AI mentor. (Optional)",
+    "crossborderHint": "Without this consent the whole platform works except the AI mentor and other AI features. You can change your mind at any time on your account page.",
+    "required": "This answer is required.",
+    "termsRequired": "An account cannot be created without accepting the terms of use.",
+    "closedTitle": "The platform is not available in your country yet",
+    "closedBody": "We will open sign-ups in your country soon.",
+    "nothingStored": "We have not kept any information about you.",
+    "accountDeleted": "We deleted the account created when you signed in and kept no information about you.",
+    "home": "Back to the home page"
+  },
+  "auth": {
+    "signupTitle": "Create an account",
+    "signupLead": "Three short steps: two questions about you, your email, then the code we send you. No passwords.",
+    "loginTitle": "Sign in",
+    "loginLead": "We email you an 8-digit code. No passwords.",
+    "step": "Step {current} of {total}",
+    "stepAboutYou": "About you",
+    "stepEmail": "Your email",
+    "stepCode": "Sign-in code",
+    "continue": "Continue",
+    "back": "Back",
+    "email": "Email",
+    "emailHint": "We use it only to send your sign-in code.",
+    "sendCode": "Send the code",
+    "or": "or",
+    "google": "Continue with Google",
+    "code": "Sign-in code",
+    "codeSent": "We sent an 8-digit code to <email>{address}</email>. It is valid for 10 minutes.",
+    "codeSentLogin": "If <email>{address}</email> has an account with us, an 8-digit code will arrive within a minute. It is valid for 10 minutes.",
+    "verify": "Verify and sign in",
+    "changeEmail": "Use another email or request a new code",
+    "haveAccount": "Already have an account?",
+    "noAccount": "No account yet?",
+    "errors": {
+      "invalidEmail": "Enter a valid email address, such as name@example.com.",
+      "invalidCode": "That code is wrong or has expired. Check the eight digits or request a new code.",
+      "rateLimited": "Too many requests in a short time. Wait a minute and try again.",
+      "failed": "We could not complete that. Please try again shortly.",
+      "signupExpired": "Your sign-up timed out. Please answer the two declarations again.",
+      "google": "Signing in with Google did not complete. Try again or use your email.",
+      "answers": "Some answers are missing. Complete them to continue."
+    }
+  },
+  "onboarding": {
+    "title": "Complete your account",
+    "lead": "Before you start, complete your details. If this step is not completed within 24 hours, the account is deleted automatically.",
+    "submit": "Complete my account",
+    "signOut": "Sign out without completing"
+  },
+  "projects": {
+    "title": "My projects",
+    "empty": "No projects yet.",
+    "soon": "The diagnostic is being built and will appear here in the next milestone."
+  },
+  "account": {
+    "title": "My account",
+    "signedInAs": "Signed in as <email>{address}</email>",
+    "preferences": "Country and language",
+    "language": "Language",
+    "languageHint": "The language of the interface and of our emails.",
+    "save": "Save",
+    "saved": "Changes saved.",
+    "crossborderTitle": "AI mentor and processing outside your country",
+    "crossborderOn": "Your consent is on: the content of your projects, without your name or email, is sent to Anthropic in the United States to run the AI mentor.",
+    "crossborderOff": "Your consent is off: the AI mentor and other AI features are switched off, and the rest of the platform works fully.",
+    "crossborderGive": "Turn consent on",
+    "crossborderWithdraw": "Withdraw consent",
+    "session": "Session",
+    "signOut": "Sign out",
+    "deleteTitle": "Delete account",
+    "deleteBody": "Deletes your account and everything linked to it, at once and for good.",
+    "deleteButton": "Delete my account",
+    "deleteConfirmTitle": "Delete your account for good?",
+    "deleteConfirmBody": "Your account and all your data will be deleted at once and cannot be recovered.",
+    "deleteConfirm": "Yes, delete my account"
+  },
+  "goodbye": {
+    "title": "Your account has been deleted",
+    "body": "We deleted your account and everything linked to it. You are welcome back at any time.",
+    "home": "Back to the home page"
+  },
+  "legal": {
+    "draftNotice": "This text is a draft awaiting legal review and will change before public launch.",
+    "updated": "Last updated"
+  },
+  "provenance": {
+    "user": "Your answer",
+    "assumption": "Assumption",
+    "external": "External source"
+  },
+  "verify": {
+    "label": "Check the official source",
+    "lastVerified": "Last checked",
+    "source": "Official source"
+  },
+  "verdict": {
+    "label": "Verdict",
+    "go": "Go",
+    "revise": "Revise",
+    "stop": "Stop",
+    "stopPhrase": "Not viable in its current form",
+    "stopChanges": "These three changes would change the verdict:"
+  },
+  "assumption": {
+    "note": "This number is an assumption. Test it before you base a decision on it."
+  },
+  "money": {
+    "chooseCurrency": "Choose a currency",
+    "currencyOf": "{label} currency",
+    "symbol": {
+      "JOD": "JOD",
+      "DZD": "DZD",
+      "USD": "USD"
+    },
+    "name": {
+      "JOD": "Jordanian dinar",
+      "DZD": "Algerian dinar",
+      "USD": "US dollar"
+    }
+  }
+}

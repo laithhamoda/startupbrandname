@@ -56,14 +56,39 @@ ship them (see D-031 in `docs/DECISIONS.md`); check that list before adding a CL
 
 - Tokens: `apps/web/src/styles/tokens.css`. Colour contrast is tested in
   `apps/web/src/styles/contrast.test.ts`; a colour change that breaks WCAG 2.2 AA fails the build.
-- Components: `apps/web/src/components/ui/`. Browse them at `/design` (local and preview only).
+- Components: `apps/web/src/components/ui/`. Browse them at `/ar/design` and `/en/design`
+  (local and preview only).
 - Styling uses logical properties only (`ms-`, `me-`, `ps-`, `pe-`, `start-`, `end-`);
-  `pnpm lint` rejects `left`/`right` utilities.
-- RTL visual snapshots run in CI only. After an intended visual change, run the
+  `pnpm lint` rejects `left`/`right` utilities. The same layout then serves Arabic (RTL) and
+  English (LTR).
+- Visual snapshots (both languages) run in CI only. After an intended visual change, run the
   "Update RTL snapshots" workflow, download its artifact and commit it under
   `apps/web/e2e/__screenshots__`.
+
+## Languages
+
+- Arabic at `/ar/…` (default) and English at `/en/…`; `/` redirects to the saved or browser
+  language (D-067, D-070). Routing lives in `apps/web/src/i18n/`, the proxy in `apps/web/src/proxy.ts`.
+- Interface text: `apps/web/messages/ar.json` and `en.json`. Arabic is the reference: a key missing
+  from English fails the typecheck, and `messages.test.ts` rejects extra keys, empty strings and
+  mismatched `{placeholders}`.
+- Server Components read the language with `currentLocale()` or `getTranslations()`. Server
+  Actions and Route Handlers cannot, so they receive the locale explicitly.
 - Search indexing stays off until public launch: set `SITE_INDEXABLE=true` on the Vercel
   Production environment to turn it on.
+
+## Sign-in (M2)
+
+- Email code or Google, through Supabase Auth, called from the server only (D-077). Signup asks
+  the two declarations first; accounts without them wait at `/onboarding` and are purged after
+  24 hours (D-065, D-079).
+- Locally, codes land in Mailpit at http://127.0.0.1:54324 (started by `pnpm db:start`).
+- After a migration, run `pnpm db:types` and commit `apps/web/src/lib/supabase/database.types.ts`;
+  CI fails when it is out of date.
+- Sign-in tests need the local stack:
+  `pnpm --filter @sbn/web exec playwright test --project=auth`. The other tests run with
+  `--project=site`.
+- Hosted setup (email, templates, Google, redirect URLs): [docs/runbooks/auth-setup.md](docs/runbooks/auth-setup.md).
 
 ## Environments
 
