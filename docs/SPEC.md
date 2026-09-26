@@ -92,7 +92,7 @@
 | G3 | هل تعمل حالياً دون ترخيص؟ | boolean | yes → "مسار التنظيم" section, no blame |
 | G4 | كيف تتوزع الملكية بين الشركاء؟ | percent_split | must sum to 100; no written agreement → warning |
 | G5 | هل لديك اسم تجاري أو علامة محمية؟ | single | |
-| G6★ | هل بلغت سن الأهلية القانونية لتسجيل منشأة في بلدك؟ | boolean | no → guardian / later path; never ask exact age |
+| G6★ | هل بلغت سن الأهلية القانونية لتسجيل منشأة في بلدك؟ | boolean | no → later path: register the business once of age (platform is 18+ only, D-059); never ask exact age |
 | G7 | هل تفضّل تمويلاً متوافقاً مع الشريعة؟ | single (yes / no preference / no) | yes → Islamic instruments; word "فائدة" banned in report |
 | G8 | هل تعرف التزاماتك الضريبية؟ | single (yes / partly / no) | checklist, verify-tagged |
 
@@ -289,7 +289,7 @@ T17 JO logic:
 E6 = home AND A1 = Amman → home-business path + GAM home permit
 B7 ∈ {food, cosmetics} → add health approvals
 A4 has partners → compare sole vs LLC
-G6 = no → guardian / later path
+G6 = no → later path (D-059)
 ```
 
 ### Algeria (DZ) — behind `MARKET_DZ_ENABLED`
@@ -312,7 +312,7 @@ Murabaha (deferred-price purchase; profit margin, not interest), Ijara (lease pa
 ## 8. Data Model (Postgres)
 
 ```sql
-users(id, email, locale, country_code, eligibility_secondary bool, is_adult bool, guardian_consent_at, crossborder_consent_at, created_at)
+users(id, email, locale, country_code, eligibility_secondary bool, adult_declared_at, crossborder_consent_at, created_at)
 plans(id, code, price_usd, billing, duration_days)
 entitlements(plan_id, key, value)
 subscriptions(id, user_id, plan_id, source, status, starts_at, ends_at, external_ref)

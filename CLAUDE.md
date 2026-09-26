@@ -73,7 +73,7 @@ You write code a senior reviewer would approve without rework. You do not guess;
 
 ### Eligibility (signup gate)
 1. Mandatory declaration: completed secondary school (Tawjihi / BTEC / Algerian Baccalauréat / equivalent).
-2. Declaration: aged 18+ (yes/no). If **no** → guardian e-consent by email before activation.
+2. Declaration: aged 18 or older. **The platform is for adults only (18+):** a **no** ends signup with a clear message and nothing is stored; there is no guardian-consent path. (Updated 2026-09-26, D-059.)
 - Do **not** collect exact date of birth or certificate images.
 
 ### Markets
@@ -186,7 +186,7 @@ docs/DECISIONS.md          Log every decision you make that is not in this file 
 |---|---|---|
 | M0 | Repo, tooling, CI, Supabase (Frankfurt), environments, `.env.example` | CI green: lint, typecheck, tests |
 | M1 | Design plan → approved → design tokens, RTL shell, core components | Design plan approved; Playwright RTL snapshots; AA contrast checks pass |
-| M2 | Auth, eligibility gate, guardian consent, separate cross-border consent, privacy/terms pages (placeholder text marked for legal review), Algeria waitlist flag | E2E: adult signup, minor + guardian flow, DZ waitlist |
+| M2 | Auth, eligibility gate (secondary school, 18+ only), separate cross-border consent, privacy/terms pages (placeholder text marked for legal review), Algeria waitlist flag | E2E: adult signup, under-18 refusal that stores nothing, DZ waitlist |
 | M2b | Public site and content for SEO/GEO: landing, how it works, methodology, pricing display, sample report, glossary, FAQ, about; structured data, sitemap, OG images, llms.txt, Search Console (D-054) | Lighthouse SEO and accessibility 100 on public pages; valid structured data; indexing enabled only at public launch |
 | M3 | Question bank engine: quick/full modes, save & resume, rules R1–R8, follow-ups, provenance, completeness gating, dialect normalization | All 64 questions render; rule tests pass; completeness matches SPEC weights |
 | M4 | Engine: T8, T7, T9, T10, tax engine | ≥ 95% coverage; golden-file tests for 3 sample projects (JO service, JO home e-commerce, DZ auto-entrepreneur) |

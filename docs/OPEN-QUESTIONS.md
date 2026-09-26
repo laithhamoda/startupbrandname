@@ -45,15 +45,15 @@ cannot reach the summary threshold), #61 (owner answer on accounts).
 
 ## E. Eligibility, consent, privacy and markets
 
-24. `M2` Algeria's age of majority is 19 (Civil Code; legal to confirm). The adult check and G6 should depend on country.
-25. `M2` G6★ repeats the signup 18+ declaration and uses a quick-mode slot. Pre-fill or ask again?
-26. `M2` Guardian consent: how long an account may stay pending, data held meanwhile, resends, refusal.
+24. `M2` The platform is 18+ (D-059); before enabling Algeria, decide whether Algerian users must be 19+. Algeria's age of majority is 19 (Civil Code; legal to confirm). The adult check and G6 should depend on country.
+25. `M2` **Partly resolved (D-059):** signup already requires 18+, so G6 only matters where the legal age to register a business is higher (Algeria: 19, see #24). Original note: G6★ repeats the signup 18+ declaration and uses a quick-mode slot. Pre-fill or ask again?
+26. `M2` **Obsolete (D-059): no guardian flow; the platform is 18+ only.** Original note: Guardian consent: how long an account may stay pending, data held meanwhile, resends, refusal.
 27. `M2` When cross-border consent is asked, and what a user who refuses can still do.
 28. `M2` How an "Algerian visitor" is identified (IP, declared country, phone). Can a Jordanian account create a project with A1 = Algeria while the flag is off?
 29. `M2` Legal risk: the DZ waitlist already stores Algerian residents' data in the EU; Law 18-07 may restrict that transfer.
-30. `M2` Use `public.profiles` keyed to `auth.users` instead of SPEC's `users`, without storing email twice. Missing tables and fields: tasks (created by R4/B5), sessions/devices, failed voucher attempts, guardian status, consent-text version, `source_url` / `retrieved_at` on stored values.
+30. `M2` Use `public.profiles` keyed to `auth.users` instead of SPEC's `users`, without storing email twice. Missing tables and fields: tasks (created by R4/B5), sessions/devices, failed voucher attempts, consent-text version, `source_url` / `retrieved_at` on stored values.
 31. `M9` One-click deletion vs financial records that may have to be kept (payments, commissions, audit log). What survives, anonymized?
-32. `M2` Email provider for auth, guardian consent and digests (must be named in the privacy policy; Supabase's built-in email is not for production).
+32. `M2` Email provider for auth and digests (must be named in the privacy policy; Supabase's built-in email is not for production).
 33. `M0` **Resolved (D-037): the platform is "Startup Brand Name" on startupbrandname.com.** Earlier note (D-022): standalone app on `startupbrandname.com`, confirmed by the owner on 2026-09-25 as their domain, to be connected to Vercel production. Public records (2026-09-25): registrar Unstoppable Domains, nameservers at atom.com and sedoparking.com (parked). Still open: does the owner control its DNS, and does the product brand change from "Vivarise" (affects UI copy and CLAUDE.md §2)?
 34. `M2` Is fra1 pinning for latency or for EU data residency? If residency, Anthropic (US), PayPal, Vercel logs and builds are already outside the EU and consent must say so.
 
@@ -107,3 +107,4 @@ cannot reach the summary threshold), #61 (owner answer on accounts).
 68. `M2b` Analytics: cookieless Vercel Web Analytics plus Search Console and Bing Webmaster Tools (recommended), or Google Analytics 4 (needs a consent banner and adds a processor)?
 69. `M2b` Content ownership: who writes and approves public guides, the glossary and the founder biography (E-E-A-T)? Claude can draft in MSA; facts, country rules and credentials need the owner's review.
 70. `M0` The Supabase GitHub integration deploys migrations to production automatically on every push to `main`, bypassing the approval gate in D-047. The owner should switch off its production deploy, or D-047 must change.
+71. `M7` Course trainees under 18 (D-059): CLAUDE.md §3 extends the voucher activation window to 30 September after exams for students who have not finished secondary school. Some of them may still be under 18 on that date and cannot sign up. Extend the window until they can, limit the course codes to adults, or accept that those codes expire?
