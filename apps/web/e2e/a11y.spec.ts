@@ -1,7 +1,19 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
-const PAGES = ['/ar', '/en', '/ar/design', '/en/design'] as const;
+// Signed-in pages are checked in e2e/auth/a11y.spec.ts, which needs the local database.
+const PAGES = [
+  '/ar',
+  '/en',
+  '/ar/design',
+  '/en/design',
+  '/ar/signup',
+  '/en/signup',
+  '/ar/login',
+  '/en/login',
+  '/ar/privacy',
+  '/en/terms',
+] as const;
 const SCHEMES = ['light', 'dark'] as const;
 const WCAG_TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
 

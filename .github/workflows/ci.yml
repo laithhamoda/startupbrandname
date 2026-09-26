@@ -56,11 +56,62 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm test:e2e
+      - run: pnpm --filter @sbn/web run build
+      - run: pnpm --filter @sbn/web exec playwright test --project=site
       - if: failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: playwright-report
+          path: apps/web/playwright-report
+          retention-days: 7
+
+  e2e-auth:
+    name: E2E sign-in flows (local Supabase)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    # No screenshots here, so the host runner's Chromium is fine; the local Supabase stack needs
+    # the host's Docker, which the pinned Playwright container does not have.
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      # CLI version is read from the root lockfile.
+      - uses: supabase/setup-cli@45a513f8c64c0bc8e0e3dfe572b5c95be85f6359 # v3.0.1
+      - run: pnpm install --frozen-lockfile
+      - name: Start Supabase (database, auth, API and Mailpit only)
+        run: supabase start -x studio,imgproxy,edge-runtime,logflare,vector,realtime,storage-api,postgres-meta,supavisor
+      - name: Database types are up to date
+        run: |
+          pnpm db:types
+          git diff --exit-code apps/web/src/lib/supabase/database.types.ts
+      # The local stack's well-known development keys, not secrets.
+      - name: Read the local Supabase URL and keys
+        id: local
+        run: |
+          supabase status -o env > /tmp/supabase.env
+          value() { grep "^$1=" /tmp/supabase.env | cut -d= -f2- | tr -d '"'; }
+          {
+            echo "api-url=$(value API_URL)"
+            echo "publishable-key=$(value PUBLISHABLE_KEY)"
+            echo "mailpit-url=$(value MAILPIT_URL)"
+          } >> "$GITHUB_OUTPUT"
+      - run: pnpm --filter @sbn/web run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ steps.local.outputs.api-url }}
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ steps.local.outputs.publishable-key }}
+      - run: pnpm --filter @sbn/web exec playwright install --with-deps chromium
+      - run: pnpm --filter @sbn/web exec playwright test --project=auth
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ steps.local.outputs.api-url }}
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ steps.local.outputs.publishable-key }}
+          MAILPIT_URL: ${{ steps.local.outputs.mailpit-url }}
+      - if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: playwright-report-auth
           path: apps/web/playwright-report
           retention-days: 7
 
