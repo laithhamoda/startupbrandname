@@ -39,7 +39,8 @@ export function MoneyField({
             defaultValue={defaultAmount}
             aria-describedby={describedBy}
             aria-invalid={invalid || undefined}
-            className={cn(controlClass, 'num text-start')}
+            // The input is LTR for digits; "end" puts the amount on the right, beside the Arabic label.
+            className={cn(controlClass, 'num text-end')}
           />
           <select
             name={`${name}.currency`}

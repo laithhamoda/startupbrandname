@@ -41,7 +41,8 @@ export function NumericTable({ caption, columns, rows }: NumericTableProps) {
               {columns.map((column, index) => {
                 const className = cn(
                   'border-b border-hairline px-3 py-2 text-start',
-                  column.numeric && 'num whitespace-nowrap',
+                  // Equal-width digits only; the cell stays RTL so the currency follows the number.
+                  column.numeric && 'tabular-nums whitespace-nowrap',
                 );
                 return index === 0 ? (
                   <th key={column.key} scope="row" className={cn(className, 'font-normal')}>
