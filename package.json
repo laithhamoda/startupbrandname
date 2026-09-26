@@ -8,7 +8,7 @@
   "scripts": {
     "prepare": "lefthook install || exit 0",
     "build": "pnpm -r --if-present run build",
-    "lint": "pnpm -r --if-present run lint && eslint --max-warnings=0 eslint.config.mjs commitlint.config.mjs scripts",
+    "lint": "pnpm -r --if-present run lint && eslint --max-warnings=0 eslint.config.mjs commitlint.config.mjs scripts && node scripts/check-logical-css.mjs",
     "typecheck": "pnpm -r --if-present run typecheck",
     "test": "pnpm -r --if-present run test",
     "test:e2e": "pnpm --filter @sbn/web run build && pnpm --filter @sbn/web run test:e2e",
