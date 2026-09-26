@@ -16,7 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t('title'), robots: { index: false, follow: false } };
 }
 
-/** The gate for accounts without declarations (D-065). Deleted automatically after 24 hours. */
+/** The gate for accounts that have not completed onboarding (D-065). Deleted after 24 hours. */
 export default async function OnboardingPage() {
   const locale = await currentLocale();
   const supabase = await createSupabaseServerClient();

@@ -19,8 +19,7 @@ export function PrivacyAr() {
           <li>بريدك الإلكتروني، لإرسال رمز الدخول.</li>
           <li>بلد إقامتك ولغتك، لاختيار بيانات البلد في تحليلك.</li>
           <li>
-            وقت إقرارك بأنك أنهيت المرحلة الثانوية وبأن عمرك 18 سنة أو أكثر. لا نطلب تاريخ الميلاد
-            ولا صور الشهادات.
+            إجابتك عن سؤال: هل لديك مشروع أو فكرة مشروع؟ لا نطلب تاريخ الميلاد ولا صور الشهادات.
           </li>
           <li>سجل موافقاتك وسحبها، مع نسخة النص الذي وافقت عليه.</li>
           <li>
@@ -90,8 +89,8 @@ export function PrivacyEn() {
             Your country of residence and language, to pick the country data for your analysis.
           </li>
           <li>
-            When you declared that you finished secondary school and are 18 or older. We do not ask
-            for your date of birth or for certificates.
+            Your answer to “Do you have a project or a project idea?”. We do not ask for your date
+            of birth or for certificates.
           </li>
           <li>Your consents and withdrawals, with the version of the text you agreed to.</li>
           <li>

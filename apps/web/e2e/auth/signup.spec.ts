@@ -1,8 +1,8 @@
 import { expect, test } from '@playwright/test';
-import { answerDeclarations, MAILPIT_URL, readCode, signUpByEmail, uniqueEmail } from './helpers';
+import { answerAboutYou, MAILPIT_URL, readCode, signUpByEmail, uniqueEmail } from './helpers';
 
-test('an adult signs up with an email code and lands on their projects', async ({ page }) => {
-  const email = uniqueEmail('adult');
+test('someone signs up with an email code and lands on their projects', async ({ page }) => {
+  const email = uniqueEmail('founder');
   await signUpByEmail(page, email);
 
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('مشاريعي');
@@ -12,32 +12,23 @@ test('an adult signs up with an email code and lands on their projects', async (
   await expect(page.getByText(/موافقتك غير مفعّلة/)).toBeVisible();
 });
 
-test('someone under 18 is refused and nothing reaches the server', async ({ page }) => {
+test('"no" to the project question does not block signup (D-086)', async ({ page }) => {
+  const email = uniqueEmail('no-project');
   await page.goto('/ar/signup');
-  const posts: string[] = [];
-  page.on('request', (request) => {
-    if (request.method() !== 'GET') posts.push(request.url());
-  });
+  await answerAboutYou(page, { project: 'لا' });
+  await page.getByLabel('البريد الإلكتروني').fill(email);
+  await page.getByRole('button', { name: 'أرسل الرمز' }).click();
+  await page.getByLabel('رمز الدخول').fill(await readCode(page, email));
+  await page.getByRole('button', { name: 'تحقّق وادخل' }).click();
 
-  await answerDeclarations(page, { adult: 'لا' });
-
-  await expect(page.getByRole('heading', { name: 'المنصة غير متاحة لك الآن' })).toBeFocused();
-  await expect(page.getByText('لم نحفظ أي معلومة عنك.')).toBeVisible();
-  expect(posts).toEqual([]);
-});
-
-test('someone without secondary school is refused the same way', async ({ page }) => {
-  await page.goto('/ar/signup');
-  await answerDeclarations(page, { secondary: 'لا' });
-
-  await expect(page.getByText(/لمن أنهوا المرحلة الثانوية/)).toBeVisible();
+  await expect(page).toHaveURL(/\/ar\/projects$/);
 });
 
 test('missing answers are marked next to each field', async ({ page }) => {
   await page.goto('/ar/signup');
   await page.getByRole('button', { name: 'متابعة' }).click();
 
-  await expect(page.getByText('هذه الإجابة مطلوبة.')).toHaveCount(3);
+  await expect(page.getByText('هذه الإجابة مطلوبة.')).toHaveCount(2);
   await expect(
     page.getByText('لا يمكن إنشاء الحساب دون الموافقة على شروط الاستخدام.'),
   ).toBeVisible();
@@ -47,7 +38,7 @@ test('missing answers are marked next to each field', async ({ page }) => {
 test('a wrong code is rejected with an explanation', async ({ page }) => {
   const email = uniqueEmail('wrong-code');
   await page.goto('/ar/signup');
-  await answerDeclarations(page);
+  await answerAboutYou(page);
   await page.getByLabel('البريد الإلكتروني').fill(email);
   await page.getByRole('button', { name: 'أرسل الرمز' }).click();
   const code = await readCode(page, email);
@@ -64,11 +55,7 @@ test('signup in English sends the code email in English', async ({ page }) => {
   await page.goto('/en/signup');
   await page.getByLabel('Country of residence').selectOption('GB');
   await page
-    .getByRole('radiogroup', { name: /secondary school/ })
-    .getByRole('radio', { name: 'Yes' })
-    .check();
-  await page
-    .getByRole('radiogroup', { name: /18 or older/ })
+    .getByRole('radiogroup', { name: /project or a project idea/ })
     .getByRole('radio', { name: 'Yes' })
     .check();
   await page.getByRole('checkbox', { name: /terms of use/ }).check();

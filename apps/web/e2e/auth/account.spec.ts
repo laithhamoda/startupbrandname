@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { signInByEmail, signUpByEmail, uniqueEmail } from './helpers';
+import { countEmails, signInByEmail, signUpByEmail, uniqueEmail } from './helpers';
 
 test('a returning user signs in with a new code', async ({ page }) => {
   // Supabase sends one code per address per minute, so this test waits out that minute.
@@ -36,7 +36,8 @@ test('signing out ends the session', async ({ page }) => {
 });
 
 test('a user withdraws consent, switches language and deletes the account', async ({ page }) => {
-  await signUpByEmail(page, uniqueEmail('account'), true);
+  const email = uniqueEmail('account');
+  await signUpByEmail(page, email, true);
   await page.goto('/ar/account');
 
   await expect(page.getByText(/موافقتك مفعّلة/)).toBeVisible();
@@ -54,4 +55,12 @@ test('a user withdraws consent, switches language and deletes the account', asyn
 
   await page.goto('/en/projects');
   await expect(page).toHaveURL(/\/en\/login$/);
+
+  // The account is gone: asking for a code sends nothing, and the page does not say so.
+  const before = await countEmails(page, email);
+  await page.getByLabel('Email').fill(email);
+  await page.getByRole('button', { name: 'Send the code' }).click();
+  await expect(page.getByText(/has an account with us/)).toBeVisible();
+  await page.waitForTimeout(3_000);
+  expect(await countEmails(page, email)).toBe(before);
 });

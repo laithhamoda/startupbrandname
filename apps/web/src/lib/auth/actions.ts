@@ -11,8 +11,8 @@ import { type Locale, routing } from '@/i18n/routing';
 import { COUNTRY_CODES } from '@/lib/countries';
 import { closedCountries } from '@/lib/markets';
 import { createSupabaseServerClient, type SupabaseServerClient } from '@/lib/supabase/server';
-import { type EligibilityField, parseEligibility, type Refusal, refusalOf } from './eligibility';
 import { projectsPath } from './next-path';
+import { type OnboardingField, parseOnboarding } from './onboarding';
 import { completeOnboarding, finishSignIn, getSessionUser, saveSignupIntent } from './session';
 import { SIGNUP_INTENT_COOKIE } from './signup-intent';
 
@@ -20,14 +20,13 @@ import { SIGNUP_INTENT_COOKIE } from './signup-intent';
 // segment. Results carry codes, never text; the forms translate them.
 
 export type AuthErrorCode =
-  'invalidEmail' | 'invalidCode' | 'rateLimited' | 'failed' | 'signupExpired' | 'eligibility';
+  'invalidEmail' | 'invalidCode' | 'rateLimited' | 'failed' | 'signupExpired' | 'answers';
 
 export type AuthFormState =
   | { status: 'idle' }
   | { status: 'sent'; email: string }
-  | { status: 'error'; error: AuthErrorCode; invalid?: EligibilityField[] }
-  | { status: 'refused'; refusal: Refusal; deleted: boolean }
-  | { status: 'closed'; deleted: boolean };
+  | { status: 'error'; error: AuthErrorCode; invalid?: OnboardingField[] }
+  | { status: 'closed' };
 
 const localeSchema = z.enum(routing.locales);
 const emailSchema = z.string().trim().toLowerCase().max(254).pipe(z.email());
@@ -62,23 +61,22 @@ async function siteOrigin(): Promise<string> {
 }
 
 /**
- * Checks the declarations sent with a signup request. Nothing is stored for a refusal or a closed
+ * Checks the first-step answers sent with a signup request. Nothing is stored for a closed
  * country; otherwise the answers are kept in a short-lived cookie until the account exists.
  */
 async function acceptSignupAnswers(
   locale: Locale,
   formData: FormData,
 ): Promise<AuthFormState | null> {
-  const parsed = parseEligibility(formData);
-  if (!parsed.ok) return { status: 'error', error: 'eligibility', invalid: parsed.invalid };
-  const refusal = refusalOf(parsed.answers);
-  if (refusal) return { status: 'refused', refusal, deleted: false };
+  const parsed = parseOnboarding(formData);
+  if (!parsed.ok) return { status: 'error', error: 'answers', invalid: parsed.invalid };
   if (closedCountries(getServerEnv()).includes(parsed.answers.country)) {
-    return { status: 'closed', deleted: false };
+    return { status: 'closed' };
   }
   await saveSignupIntent({
     country: parsed.answers.country,
     locale,
+    hasProject: parsed.answers.project === 'yes',
     crossborder: parsed.answers.crossborder === 'on',
   });
   return null;
@@ -105,7 +103,7 @@ async function endDeletedSession(supabase: SupabaseServerClient): Promise<void> 
 // Email code
 // -----------------------------------------------------------------------------------------------
 
-/** Signup, step 2: validates the declarations again, then emails a 6-digit code. */
+/** Signup, step 2: validates the first-step answers again, then emails a 6-digit code. */
 export async function requestSignupCode(
   localeInput: Locale,
   _previous: AuthFormState,
@@ -198,7 +196,7 @@ async function redirectToGoogle(locale: Locale): Promise<AuthFormState> {
   redirect(data.url);
 }
 
-/** Signup with Google, after the declarations: they are recorded when Google sends the user back. */
+/** Signup with Google, after the first step: the answers are recorded when Google sends the user back. */
 export async function startGoogleSignup(
   localeInput: Locale,
   _previous: AuthFormState,
@@ -222,8 +220,8 @@ export async function startGoogleLogin(localeInput: Locale): Promise<AuthFormSta
 // -----------------------------------------------------------------------------------------------
 
 /**
- * For a signed-in account without declarations (typically created through Google). A "no", or a
- * country where signup is closed, deletes the account at once.
+ * For a signed-in account that has not completed onboarding (typically created through Google,
+ * D-065). A country where signup is closed deletes the account at once.
  */
 export async function submitOnboarding(
   localeInput: Locale,
@@ -231,34 +229,28 @@ export async function submitOnboarding(
   formData: FormData,
 ): Promise<AuthFormState> {
   const locale = parseLocale(localeInput);
-  const parsed = parseEligibility(formData);
-  if (!parsed.ok) return { status: 'error', error: 'eligibility', invalid: parsed.invalid };
+  const parsed = parseOnboarding(formData);
+  if (!parsed.ok) return { status: 'error', error: 'answers', invalid: parsed.invalid };
 
   const supabase = await createSupabaseServerClient();
   if (!(await getSessionUser(supabase))) redirect(`/${locale}/login`);
 
-  // After a deletion the user is signed out, so the answer is shown on its own page: the gate
-  // re-renders after the cookies change and would send a signed-out visitor to sign-in.
   const { answers } = parsed;
-  if (!refusalOf(answers) && closedCountries(getServerEnv()).includes(answers.country)) {
+  if (closedCountries(getServerEnv()).includes(answers.country)) {
     const { error } = await supabase.rpc('delete_my_account');
     if (error) throw error;
     await endDeletedSession(supabase);
-    redirect(`/${locale}/not-eligible?reason=closed`);
+    // Shown on its own page: after the cookies change the gate re-renders, and it would send the
+    // now signed-out visitor to sign-in.
+    redirect(`/${locale}/not-available`);
   }
 
-  const result = await completeOnboarding(supabase, {
+  await completeOnboarding(supabase, {
     country: answers.country,
     locale,
-    secondary: answers.secondary === 'yes',
-    adult: answers.adult === 'yes',
+    hasProject: answers.project === 'yes',
     crossborder: answers.crossborder === 'on',
   });
-  if (result === 'refused') {
-    // The database has already deleted the account; clear the session cookies.
-    await endDeletedSession(supabase);
-    redirect(`/${locale}/not-eligible?reason=${refusalOf(answers) ?? 'adult'}`);
-  }
   redirect(projectsPath(locale));
 }
 

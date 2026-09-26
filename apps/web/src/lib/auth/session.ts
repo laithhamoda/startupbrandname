@@ -67,28 +67,23 @@ export async function redirectIfSignedIn(locale: Locale): Promise<void> {
 // Onboarding
 // -----------------------------------------------------------------------------------------------
 
-const onboardingResult = z.enum(['completed', 'already_complete', 'refused']);
+const onboardingResult = z.enum(['completed', 'already_complete']);
 export type OnboardingResult = z.infer<typeof onboardingResult>;
 
-/**
- * Records both declarations and the consents for the signed-in user (complete_onboarding()).
- * A "no" makes the database delete the account (D-059, D-065).
- */
+/** Records the onboarding answers and consents for the signed-in user (complete_onboarding()). */
 export async function completeOnboarding(
   supabase: SupabaseServerClient,
   answers: {
     country: string;
     locale: Locale;
-    secondary: boolean;
-    adult: boolean;
+    hasProject: boolean;
     crossborder: boolean;
   },
 ): Promise<OnboardingResult> {
   const { data, error } = await supabase.rpc('complete_onboarding', {
     p_country_code: answers.country,
     p_locale: answers.locale,
-    p_secondary_completed: answers.secondary,
-    p_adult: answers.adult,
+    p_has_project: answers.hasProject,
     p_terms_version: TERMS_VERSION,
     p_crossborder_consent: answers.crossborder,
     p_crossborder_version: CROSSBORDER_VERSION,
@@ -108,8 +103,8 @@ export async function saveSignupIntent(intent: SignupIntent): Promise<void> {
 }
 
 /**
- * Right after sign-in: if this browser answered the declarations before the account existed,
- * record them now and forget them. Returns where the user should go next.
+ * Right after sign-in: if this browser answered the first signup step before the account existed,
+ * record the answers now and forget them. Returns where the user should go next.
  */
 export async function finishSignIn(
   supabase: SupabaseServerClient,
@@ -122,8 +117,7 @@ export async function finishSignIn(
     await completeOnboarding(supabase, {
       country: intent.country,
       locale: intent.locale,
-      secondary: true,
-      adult: true,
+      hasProject: intent.hasProject,
       crossborder: intent.crossborder,
     });
     cookieStore.delete(SIGNUP_INTENT_COOKIE);

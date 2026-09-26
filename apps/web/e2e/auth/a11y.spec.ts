@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, type Page, test } from '@playwright/test';
-import { answerDeclarations, readCode, signUpByEmail, uniqueEmail } from './helpers';
+import { answerAboutYou, readCode, signUpByEmail, uniqueEmail } from './helpers';
 
 const WCAG_TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
 
@@ -31,7 +31,7 @@ test('the signup steps and the onboarding gate have no WCAG 2.2 AA violations', 
   await page.getByRole('button', { name: 'متابعة' }).click();
   await expectNoViolations(page); // step 1 with every error shown
 
-  await answerDeclarations(page);
+  await answerAboutYou(page);
   await expectNoViolations(page); // step 2
 
   await page.getByLabel('البريد الإلكتروني').fill(email);

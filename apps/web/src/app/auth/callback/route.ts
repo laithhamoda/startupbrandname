@@ -6,8 +6,8 @@ import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 /**
  * Google sends the user back here with a one-time code (PKCE). The code becomes a session, the
- * declarations answered before signup (if any) are recorded, and the user moves on. An account
- * without declarations is sent to the onboarding gate by the signed-in pages (D-065).
+ * answers given before signup (if any) are recorded, and the user moves on. An account that has
+ * not answered them is sent to the onboarding gate by the signed-in pages (D-065).
  * Redirects are relative, so the browser stays on the host it used and keeps the new cookies.
  */
 export async function GET(request: NextRequest) {

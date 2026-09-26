@@ -8,13 +8,13 @@ export const SIGNUP_INTENT_COOKIE = 'sbn-signup';
 export const SIGNUP_INTENT_MAX_AGE_SECONDS = 30 * 60;
 
 /**
- * What a person answered before their account existed. It only ever holds answers that pass the
- * gate (both declarations "yes"), because a "no" ends signup in the browser. No personal data:
- * the email is not in it. Read once, right after the account is created, then deleted.
+ * What a person answered in the first signup step, before their account existed. No personal
+ * data: the email is not in it. Read once, right after the account is created, then deleted.
  */
 export const signupIntentSchema = z.object({
   country: z.enum(COUNTRY_CODES),
   locale: z.enum(routing.locales),
+  hasProject: z.boolean(),
   crossborder: z.boolean(),
 });
 

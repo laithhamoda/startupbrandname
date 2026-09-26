@@ -9,8 +9,9 @@ export function TermsAr() {
       <section>
         <h2>من يحق له الاستخدام</h2>
         <p>
-          المنصة لمن أنهى المرحلة الثانوية وعمره 18 سنة أو أكثر، ويقرّ بذلك عند التسجيل. حساب واحد
-          لكل شخص، ولا يجوز مشاركته.
+          يمكن لأي شخص إنشاء حساب واستخدام النسخة المجانية. الاشتراكات المدفوعة لمن أتمّ 18 سنة،
+          ويقرّ بذلك عند الدفع. حساب واحد لكل شخص، ولا يجوز مشاركته. [شروط استخدام من هم دون 18
+          تُحدَّد بعد المراجعة القانونية.]
         </p>
       </section>
       <section>
@@ -50,8 +51,9 @@ export function TermsEn() {
       <section>
         <h2>Who may use the platform</h2>
         <p>
-          The platform is for people who have finished secondary school and are 18 or older, and who
-          declare this when they sign up. One account per person; accounts may not be shared.
+          Anyone can create an account and use the free version. Paid subscriptions are for people
+          aged 18 or older, who confirm this when they pay. One account per person; accounts may not
+          be shared. [Terms for users under 18 will be set after legal review.]
         </p>
       </section>
       <section>

@@ -39,12 +39,11 @@
     "body": "The link may have changed, or the page may have been removed.",
     "home": "Back to the home page"
   },
-  "eligibility": {
+  "aboutYou": {
     "country": "Country of residence",
     "countryHint": "We use it to pick the country data for your analysis. You can change it later.",
     "countryPlaceholder": "Choose a country",
-    "secondary": "Have you finished secondary school (Tawjihi, Baccalauréat or equivalent)?",
-    "adult": "Are you 18 or older?",
+    "project": "Do you have a project or a project idea?",
     "yes": "Yes",
     "no": "No",
     "terms": "I accept the <terms>terms of use</terms> and have read the <privacy>privacy policy</privacy>.",
@@ -52,9 +51,6 @@
     "crossborderHint": "Without this consent the whole platform works except the AI mentor and other AI features. You can change your mind at any time on your account page.",
     "required": "This answer is required.",
     "termsRequired": "An account cannot be created without accepting the terms of use.",
-    "refusedTitle": "The platform is not available to you yet",
-    "refusedSecondary": "The platform is for people who have finished secondary school. You are welcome once you have.",
-    "refusedAdult": "The platform is for people aged 18 or older. You are welcome once you are.",
     "closedTitle": "The platform is not available in your country yet",
     "closedBody": "We will open sign-ups in your country soon.",
     "nothingStored": "We have not kept any information about you.",
@@ -63,11 +59,11 @@
   },
   "auth": {
     "signupTitle": "Create an account",
-    "signupLead": "Three short steps: two declarations, your email, then the code we send you. No passwords.",
+    "signupLead": "Three short steps: two questions about you, your email, then the code we send you. No passwords.",
     "loginTitle": "Sign in",
     "loginLead": "We email you a 6-digit code. No passwords.",
     "step": "Step {current} of {total}",
-    "stepEligibility": "Two declarations",
+    "stepAboutYou": "About you",
     "stepEmail": "Your email",
     "stepCode": "Sign-in code",
     "continue": "Continue",
@@ -90,13 +86,13 @@
       "rateLimited": "Too many requests in a short time. Wait a minute and try again.",
       "failed": "We could not complete that. Please try again shortly.",
       "signupExpired": "Your sign-up timed out. Please answer the two declarations again.",
-      "eligibility": "Some answers are missing. Complete them to continue.",
-      "google": "Signing in with Google did not complete. Try again or use your email."
+      "google": "Signing in with Google did not complete. Try again or use your email.",
+      "answers": "Some answers are missing. Complete them to continue."
     }
   },
   "onboarding": {
     "title": "Complete your account",
-    "lead": "Before you start we need two declarations. If this step is not completed within 24 hours, the account is deleted automatically.",
+    "lead": "Before you start, complete your details. If this step is not completed within 24 hours, the account is deleted automatically.",
     "submit": "Complete my account",
     "signOut": "Sign out without completing"
   },

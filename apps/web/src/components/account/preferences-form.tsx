@@ -27,7 +27,7 @@ export function PreferencesForm({
 }) {
   const locale = useLocale();
   const t = useTranslations('account');
-  const eligibility = useTranslations('eligibility');
+  const aboutYou = useTranslations('aboutYou');
   const errors = useTranslations('auth.errors');
   const [state, dispatch, pending] = useActionState(updatePreferences.bind(null, locale), IDLE);
 
@@ -36,7 +36,7 @@ export function PreferencesForm({
       <SelectField
         id="country"
         name="country"
-        label={eligibility('country')}
+        label={aboutYou('country')}
         options={countries}
         defaultValue={country}
         required

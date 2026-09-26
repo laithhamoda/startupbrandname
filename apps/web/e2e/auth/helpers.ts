@@ -51,37 +51,36 @@ export async function countEmails(page: Page, email: string): Promise<number> {
   return ((await search.json()) as MailpitSearch).messages.length;
 }
 
-type Answer = 'نعم' | 'لا';
-
-interface Declarations {
-  secondary?: Answer;
-  adult?: Answer;
+interface AboutYou {
+  country?: string;
+  project?: 'نعم' | 'لا';
   crossborder?: boolean;
 }
 
-/** Fills the Arabic signup step 1. */
-export async function answerDeclarations(
+/** Fills the Arabic "about you" fields: the first signup step, or the onboarding gate. */
+export async function fillAboutYou(
   page: Page,
-  { secondary = 'نعم', adult = 'نعم', crossborder = false }: Declarations = {},
+  { country = 'JO', project = 'نعم', crossborder = false }: AboutYou = {},
 ) {
-  await page.getByLabel('بلد إقامتك').selectOption('JO');
+  await page.getByLabel('بلد إقامتك').selectOption(country);
   await page
-    .getByRole('radiogroup', { name: /المرحلة الثانوية/ })
-    .getByRole('radio', { name: secondary })
-    .check();
-  await page
-    .getByRole('radiogroup', { name: /18 سنة/ })
-    .getByRole('radio', { name: adult })
+    .getByRole('radiogroup', { name: /مشروع أو فكرة مشروع/ })
+    .getByRole('radio', { name: project })
     .check();
   await page.getByRole('checkbox', { name: /شروط الاستخدام/ }).check();
   if (crossborder) await page.getByRole('checkbox', { name: /Anthropic/ }).check();
+}
+
+/** Completes the Arabic signup step 1 and moves on to the email step. */
+export async function answerAboutYou(page: Page, answers: AboutYou = {}) {
+  await fillAboutYou(page, answers);
   await page.getByRole('button', { name: 'متابعة' }).click();
 }
 
 /** Signup by email code in Arabic, from the first step to the projects page. */
 export async function signUpByEmail(page: Page, email: string, crossborder = false) {
   await page.goto('/ar/signup');
-  await answerDeclarations(page, { crossborder });
+  await answerAboutYou(page, { crossborder });
   await page.getByLabel('البريد الإلكتروني').fill(email);
   await page.getByRole('button', { name: 'أرسل الرمز' }).click();
   await page.getByLabel('رمز الدخول').fill(await readCode(page, email));
