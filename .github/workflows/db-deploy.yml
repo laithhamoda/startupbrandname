@@ -1,7 +1,7 @@
 name: DB deploy
 
 # Staging: automatic when migrations change on main.
-# Production: manual run only; the `db-production` GitHub Environment requires approval.
+# Production: manual run only, with the typed confirmation "migrate production" (D-047).
 # The `db-` prefix keeps these apart from the `Production`/`Preview` environments Vercel creates.
 on:
   push:
@@ -14,6 +14,10 @@ on:
         type: choice
         options: [staging, production]
         default: staging
+      confirm:
+        description: 'Production only: type "migrate production" to confirm'
+        required: false
+        default: ''
 
 permissions:
   contents: read
@@ -34,6 +38,13 @@ jobs:
       SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
       SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
     steps:
+      # Required reviewers are unavailable for private repos below GitHub Enterprise (D-047),
+      # so production needs a typed confirmation instead.
+      - name: Require typed confirmation for production
+        if: inputs.target == 'production' && inputs.confirm != 'migrate production'
+        run: |
+          echo '::error::To migrate the production database, run again and type "migrate production" in the confirm field.'
+          exit 1
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: supabase/setup-cli@45a513f8c64c0bc8e0e3dfe572b5c95be85f6359 # v3.0.1
       - run: supabase link --project-ref "$SUPABASE_PROJECT_REF"
