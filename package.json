@@ -19,7 +19,8 @@
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
     "db:lint": "supabase db lint --level warning --fail-on warning",
-    "db:test": "supabase test db"
+    "db:test": "supabase test db",
+    "db:types": "node scripts/db-types.mjs"
   },
   "devDependencies": {
     "@commitlint/cli": "21.2.3",
