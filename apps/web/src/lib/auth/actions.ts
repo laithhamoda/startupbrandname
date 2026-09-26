@@ -31,10 +31,12 @@ export type AuthFormState =
 
 const localeSchema = z.enum(routing.locales);
 const emailSchema = z.string().trim().toLowerCase().max(254).pipe(z.email());
+// The product uses 6-digit codes (Supabase "Email OTP length" = 6). Any length Supabase allows
+// (6 to 10) is accepted, so a changed dashboard setting never locks people out.
 const codeSchema = z
   .string()
   .transform((value) => value.replace(/\s/g, ''))
-  .pipe(z.string().regex(/^\d{6}$/));
+  .pipe(z.string().regex(/^\d{6,10}$/));
 
 function parseLocale(value: unknown): Locale {
   return localeSchema.parse(value);

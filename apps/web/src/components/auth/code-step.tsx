@@ -46,12 +46,13 @@ export function CodeStep({
             name="code"
             inputMode="numeric"
             autoComplete="one-time-code"
-            maxLength={6}
+            // 6 digits by design; up to 10 in case the Supabase setting ever differs.
+            maxLength={10}
             dir="ltr"
             required
             aria-describedby={describedBy}
             aria-invalid={invalid || undefined}
-            className="num max-w-48 text-center text-h3 tracking-[0.3em]"
+            className="num max-w-60 text-center text-h3 tracking-[0.3em]"
           />
         )}
       </Field>
