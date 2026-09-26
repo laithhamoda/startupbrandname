@@ -67,7 +67,8 @@ Google Cloud console, in a project for Startup Brand Name:
    `https://mllysinjzlkhpcgbckil.supabase.co/auth/v1/callback` (staging) and
    `https://blexotsepkuslrnawbbq.supabase.co/auth/v1/callback` (production).
 3. Supabase → Authentication → Sign In / Providers → Google: on, paste the client ID and secret.
-4. Vercel: set `AUTH_GOOGLE_ENABLED` = `true` (type Config) for the same environment (Preview for
+4. Vercel: set `AUTH_GOOGLE_ENABLED` = `true` (type Config or Secret; the app reads it on the
+   server only) for the same environment (Preview for
    staging, Production for production), then redeploy. Until then the Google button stays hidden,
    so nobody lands on Supabase's "provider is not enabled" error.
 
