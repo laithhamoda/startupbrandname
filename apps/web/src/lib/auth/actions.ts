@@ -180,6 +180,8 @@ export async function verifyEmailCode(
 // -----------------------------------------------------------------------------------------------
 
 async function redirectToGoogle(locale: Locale): Promise<AuthFormState> {
+  // The button is hidden when Google is off; a crafted request gets an error, not Supabase's page.
+  if (!getServerEnv().AUTH_GOOGLE_ENABLED) return { status: 'error', error: 'failed' };
   const supabase = await createSupabaseServerClient();
   const next = encodeURIComponent(projectsPath(locale));
   const { data, error } = await supabase.auth.signInWithOAuth({

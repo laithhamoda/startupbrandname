@@ -3,6 +3,7 @@ import { getTranslations } from 'next-intl/server';
 import { AuthShell } from '@/components/auth/auth-shell';
 import { LoginFlow } from '@/components/auth/login-flow';
 import { TextLink } from '@/components/ui/text-link';
+import { getServerEnv } from '@/env/server';
 import { currentLocale } from '@/i18n/locale';
 import { redirectIfSignedIn } from '@/lib/auth/session';
 import { localizedAlternates } from '@/seo/alternates';
@@ -24,7 +25,10 @@ export default async function LoginPage({ searchParams }: PageProps<'/[locale]/l
 
   return (
     <AuthShell title={t('loginTitle')} lead={t('loginLead')}>
-      <LoginFlow googleFailed={error === 'google'} />
+      <LoginFlow
+        googleEnabled={getServerEnv().AUTH_GOOGLE_ENABLED}
+        googleFailed={error === 'google'}
+      />
       <p className="text-small">
         {t('noAccount')} <TextLink href="/signup">{t('signupTitle')}</TextLink>
       </p>

@@ -108,6 +108,9 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ steps.local.outputs.api-url }}
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ steps.local.outputs.publishable-key }}
           MAILPIT_URL: ${{ steps.local.outputs.mailpit-url }}
+          # Shows the Google button so the hand-over test can press it; the local stack has
+          # Google off, and the test only checks the request sent to Supabase.
+          AUTH_GOOGLE_ENABLED: 'true'
       - if: failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:

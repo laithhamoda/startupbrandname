@@ -23,10 +23,15 @@ export default async function SignupPage() {
   const locale = await currentLocale();
   await redirectIfSignedIn(locale);
   const t = await getTranslations('auth');
+  const env = getServerEnv();
 
   return (
     <AuthShell title={t('signupTitle')} lead={t('signupLead')}>
-      <SignupFlow countries={countryOptions(locale)} closed={closedCountries(getServerEnv())} />
+      <SignupFlow
+        countries={countryOptions(locale)}
+        closed={closedCountries(env)}
+        googleEnabled={env.AUTH_GOOGLE_ENABLED}
+      />
       <p className="text-small">
         {t('haveAccount')} <TextLink href="/login">{t('loginTitle')}</TextLink>
       </p>

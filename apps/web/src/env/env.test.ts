@@ -60,6 +60,11 @@ describe('serverEnvSchema', () => {
     expect(serverEnvSchema.parse({ MARKET_DZ_ENABLED: 'true' }).MARKET_DZ_ENABLED).toBe(true);
   });
 
+  it('hides Google sign-in until it is switched on', () => {
+    expect(serverEnvSchema.parse({}).AUTH_GOOGLE_ENABLED).toBe(false);
+    expect(serverEnvSchema.parse({ AUTH_GOOGLE_ENABLED: 'true' }).AUTH_GOOGLE_ENABLED).toBe(true);
+  });
+
   it('defaults LOG_LEVEL to info', () => {
     expect(serverEnvSchema.parse({}).LOG_LEVEL).toBe('info');
   });

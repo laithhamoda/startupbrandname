@@ -11,8 +11,17 @@ import { GoogleButton } from './google-button';
 
 const IDLE: AuthFormState = { status: 'idle' };
 
-/** Sign-in: email, then the code; or Google. `googleFailed` comes back from the callback. */
-export function LoginFlow({ googleFailed }: { googleFailed: boolean }) {
+/**
+ * Sign-in: email, then the code; or Google when it is configured (`googleEnabled`).
+ * `googleFailed` comes back from the callback.
+ */
+export function LoginFlow({
+  googleEnabled,
+  googleFailed,
+}: {
+  googleEnabled: boolean;
+  googleFailed: boolean;
+}) {
   const locale = useLocale();
   const t = useTranslations('auth');
   const [email, setEmail] = useState('');
@@ -69,10 +78,14 @@ export function LoginFlow({ googleFailed }: { googleFailed: boolean }) {
           </Button>
         </div>
       </form>
-      <OrDivider />
-      <form noValidate onSubmit={submitTo(continueWithGoogle)}>
-        <GoogleButton pending={googlePending} />
-      </form>
+      {googleEnabled ? (
+        <>
+          <OrDivider />
+          <form noValidate onSubmit={submitTo(continueWithGoogle)}>
+            <GoogleButton pending={googlePending} />
+          </form>
+        </>
+      ) : null}
     </div>
   );
 }

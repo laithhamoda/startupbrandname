@@ -44,9 +44,12 @@ const STEP_NUMBER: Record<Step, number> = { eligibility: 1, email: 2, code: 3 };
 export function SignupFlow({
   countries,
   closed,
+  googleEnabled,
 }: {
   countries: readonly CountryOption[];
   closed: readonly CountryCode[];
+  /** False until Google sign-in is configured for this environment (AUTH_GOOGLE_ENABLED). */
+  googleEnabled: boolean;
 }) {
   const locale = useLocale();
   const t = useTranslations('auth');
@@ -172,11 +175,15 @@ export function SignupFlow({
               </Button>
             </div>
           </form>
-          <OrDivider />
-          <form noValidate onSubmit={submitTo(continueWithGoogle)}>
-            <EligibilityHiddenInputs answers={answers} />
-            <GoogleButton pending={googlePending} />
-          </form>
+          {googleEnabled ? (
+            <>
+              <OrDivider />
+              <form noValidate onSubmit={submitTo(continueWithGoogle)}>
+                <EligibilityHiddenInputs answers={answers} />
+                <GoogleButton pending={googlePending} />
+              </form>
+            </>
+          ) : null}
         </div>
       ) : null}
 
