@@ -9,6 +9,8 @@ export const serverEnvSchema = z.object({
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
   // Algeria stays closed until legal review (CLAUDE.md §3).
   MARKET_DZ_ENABLED: booleanFlag.default(false),
+  // Search indexing stays off until public launch, and always off outside production (D-027, D-054).
+  SITE_INDEXABLE: booleanFlag.default(false),
   // Set by Vercel at runtime.
   VERCEL_ENV: z.enum(['production', 'preview', 'development']).optional(),
   VERCEL_REGION: z.string().min(1).optional(),
