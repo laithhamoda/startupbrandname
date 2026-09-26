@@ -20,13 +20,7 @@ import { SIGNUP_INTENT_COOKIE } from './signup-intent';
 // segment. Results carry codes, never text; the forms translate them.
 
 export type AuthErrorCode =
-  | 'invalidEmail'
-  | 'invalidCode'
-  | 'expiredCode'
-  | 'rateLimited'
-  | 'failed'
-  | 'signupExpired'
-  | 'eligibility';
+  'invalidEmail' | 'invalidCode' | 'rateLimited' | 'failed' | 'signupExpired' | 'eligibility';
 
 export type AuthFormState =
   | { status: 'idle' }
@@ -48,7 +42,8 @@ function parseLocale(value: unknown): Locale {
 
 function errorCodeOf(error: AuthError): AuthErrorCode {
   if (error.status === 429 || error.code === 'over_email_send_rate_limit') return 'rateLimited';
-  if (error.code === 'otp_expired') return 'expiredCode';
+  // Supabase uses otp_expired for a wrong code too ("Token has expired or is invalid").
+  if (error.code === 'otp_expired') return 'invalidCode';
   if (error.code === 'validation_failed' || error.code === 'email_address_invalid') {
     return 'invalidEmail';
   }

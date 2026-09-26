@@ -55,7 +55,7 @@ test('a wrong code is rejected with an explanation', async ({ page }) => {
   await page.getByLabel('رمز الدخول').fill(code === '000000' ? '111111' : '000000');
   await page.getByRole('button', { name: 'تحقّق وادخل' }).click();
 
-  await expect(page.getByText(/الرمز غير صحيح/)).toBeVisible();
+  await expect(page.getByText(/الرمز غير صحيح أو انتهت صلاحيته/)).toBeVisible();
   await expect(page).toHaveURL(/\/ar\/signup$/);
 });
 

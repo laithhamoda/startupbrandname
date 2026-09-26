@@ -20,7 +20,7 @@ test('a failed Google sign-in comes back to the sign-in page with an explanation
   await page.goto('/auth/callback?next=/en/projects');
 
   await expect(page).toHaveURL(/\/en\/login\?error=google$/);
-  await expect(page.getByRole('alert')).toHaveText(/Signing in with Google did not complete/);
+  await expect(page.getByText(/Signing in with Google did not complete/)).toBeVisible();
 });
 
 test('the callback never sends the user to another site', async ({ page }) => {

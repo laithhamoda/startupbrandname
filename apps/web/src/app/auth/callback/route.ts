@@ -1,4 +1,5 @@
-import { type NextRequest, NextResponse } from 'next/server';
+import { redirect } from 'next/navigation';
+import type { NextRequest } from 'next/server';
 import { localeOfPath, projectsPath, safeNextPath } from '@/lib/auth/next-path';
 import { finishSignIn } from '@/lib/auth/session';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
@@ -7,19 +8,20 @@ import { createSupabaseServerClient } from '@/lib/supabase/server';
  * Google sends the user back here with a one-time code (PKCE). The code becomes a session, the
  * declarations answered before signup (if any) are recorded, and the user moves on. An account
  * without declarations is sent to the onboarding gate by the signed-in pages (D-065).
+ * Redirects are relative, so the browser stays on the host it used and keeps the new cookies.
  */
 export async function GET(request: NextRequest) {
-  const { searchParams, origin } = request.nextUrl;
+  const { searchParams } = request.nextUrl;
   const next = safeNextPath(searchParams.get('next'), projectsPath('ar'));
   const locale = localeOfPath(next);
-  const failed = NextResponse.redirect(new URL(`/${locale}/login?error=google`, origin));
+  const failed = `/${locale}/login?error=google`;
 
   const code = searchParams.get('code');
-  if (!code) return failed;
+  if (!code) redirect(failed);
 
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.auth.exchangeCodeForSession(code);
-  if (error) return failed;
+  if (error) redirect(failed);
 
-  return NextResponse.redirect(new URL(await finishSignIn(supabase, locale, next), origin));
+  redirect(await finishSignIn(supabase, locale, next));
 }

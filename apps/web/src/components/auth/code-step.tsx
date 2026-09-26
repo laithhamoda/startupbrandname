@@ -38,9 +38,7 @@ export function CodeStep({
       <Field
         id="code"
         label={t('code')}
-        error={
-          error === 'invalidCode' || error === 'expiredCode' ? t(`errors.${error}`) : undefined
-        }
+        error={error === 'invalidCode' ? t('errors.invalidCode') : undefined}
       >
         {({ id, describedBy, invalid }) => (
           <TextInput

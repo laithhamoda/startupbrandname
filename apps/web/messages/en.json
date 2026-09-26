@@ -86,8 +86,7 @@
     "noAccount": "No account yet?",
     "errors": {
       "invalidEmail": "Enter a valid email address, such as name@example.com.",
-      "invalidCode": "That code is not right. Check the six digits and try again.",
-      "expiredCode": "That code has expired. Request a new one.",
+      "invalidCode": "That code is wrong or has expired. Check the six digits or request a new code.",
       "rateLimited": "Too many requests in a short time. Wait a minute and try again.",
       "failed": "We could not complete that. Please try again shortly.",
       "signupExpired": "Your sign-up timed out. Please answer the two declarations again.",
