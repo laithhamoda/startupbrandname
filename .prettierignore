@@ -3,3 +3,6 @@ pnpm-lock.yaml
 # Owner-authored source documents: never reformat.
 CLAUDE.md
 docs/SPEC.md
+
+# Go templates for Supabase Auth emails: Prettier would break the {{ }} blocks.
+supabase/templates/

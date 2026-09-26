@@ -48,15 +48,15 @@ describe('booleanFlag', () => {
 });
 
 describe('serverEnvSchema', () => {
-  it('keeps the Algeria market closed when the flag is unset', () => {
-    expect(serverEnvSchema.parse({}).MARKET_DZ_ENABLED).toBe(false);
+  it('keeps the Algeria market open when the flag is unset (D-068)', () => {
+    expect(serverEnvSchema.parse({}).MARKET_DZ_ENABLED).toBe(true);
   });
 
-  it('keeps the Algeria market closed when the flag is "false"', () => {
+  it('closes the Algeria market on "false"', () => {
     expect(serverEnvSchema.parse({ MARKET_DZ_ENABLED: 'false' }).MARKET_DZ_ENABLED).toBe(false);
   });
 
-  it('opens the Algeria market only on "true"', () => {
+  it('keeps it open on "true"', () => {
     expect(serverEnvSchema.parse({ MARKET_DZ_ENABLED: 'true' }).MARKET_DZ_ENABLED).toBe(true);
   });
 

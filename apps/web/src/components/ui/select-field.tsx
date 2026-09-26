@@ -6,9 +6,11 @@ interface SelectFieldProps {
   name: string;
   label: string;
   options: readonly { value: string; label: string }[];
-  placeholder: string;
+  /** An empty first choice that cannot be picked again. Omit when there is always a value. */
+  placeholder?: string;
   hint?: string;
   error?: string;
+  required?: boolean;
   defaultValue?: string;
 }
 
@@ -21,6 +23,7 @@ export function SelectField({
   placeholder,
   hint,
   error,
+  required,
   defaultValue,
 }: SelectFieldProps) {
   return (
@@ -29,14 +32,17 @@ export function SelectField({
         <select
           id={id}
           name={name}
+          required={required}
           defaultValue={defaultValue ?? ''}
           aria-describedby={describedBy}
           aria-invalid={invalid || undefined}
           className={controlClass}
         >
-          <option value="" disabled>
-            {placeholder}
-          </option>
+          {placeholder ? (
+            <option value="" disabled>
+              {placeholder}
+            </option>
+          ) : null}
           {options.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
