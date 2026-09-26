@@ -9,7 +9,7 @@ Arabic-first platform at startupbrandname.com: a business model diagnostic that 
 
 ## Requirements
 
-- Node.js 24 LTS and pnpm (the version is pinned in `package.json`)
+- Node.js 24 LTS and pnpm (the version is pinned in `package.json`). On Windows, work inside WSL2 (Ubuntu); see D-048
 - Git
 - Docker Desktop, only for the local Supabase stack
 
