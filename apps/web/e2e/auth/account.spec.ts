@@ -1,5 +1,20 @@
 import { expect, test } from '@playwright/test';
-import { signUpByEmail, uniqueEmail } from './helpers';
+import { signInByEmail, signUpByEmail, uniqueEmail } from './helpers';
+
+test('a returning user signs in with a new code', async ({ page }) => {
+  // Supabase sends one code per address per minute, so this test waits out that minute.
+  test.setTimeout(150_000);
+  const email = uniqueEmail('returning');
+  await signUpByEmail(page, email);
+  await page.goto('/ar/account');
+  await page.getByRole('button', { name: 'تسجيل الخروج' }).click();
+  await expect(page).toHaveURL(/\/ar$/);
+
+  await page.waitForTimeout(61_000);
+  await signInByEmail(page, email);
+
+  await expect(page).toHaveURL(/\/ar\/projects$/);
+});
 
 test('a signed-in user skips the sign-in and sign-up pages', async ({ page }) => {
   await signUpByEmail(page, uniqueEmail('signed-in'));

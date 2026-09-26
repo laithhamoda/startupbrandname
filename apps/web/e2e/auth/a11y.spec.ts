@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, type Page, test } from '@playwright/test';
-import { answerDeclarations, signInByEmail, signUpByEmail, uniqueEmail } from './helpers';
+import { answerDeclarations, readCode, signUpByEmail, uniqueEmail } from './helpers';
 
 const WCAG_TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
 
@@ -39,8 +39,11 @@ test('the signup steps and the onboarding gate have no WCAG 2.2 AA violations', 
   await expect(page.getByLabel('رمز الدخول')).toBeVisible();
   await expectNoViolations(page); // step 3
 
+  // Forgetting the answers before verifying leaves an account without declarations.
+  const code = await readCode(page, email);
   await page.context().clearCookies();
-  await signInByEmail(page, email);
+  await page.getByLabel('رمز الدخول').fill(code);
+  await page.getByRole('button', { name: 'تحقّق وادخل' }).click();
   await expect(page).toHaveURL(/\/ar\/onboarding$/);
   await expectNoViolations(page);
 });

@@ -1,17 +1,20 @@
 import { expect, type Page, test } from '@playwright/test';
-import { answerDeclarations, countEmails, signInByEmail, uniqueEmail } from './helpers';
+import { answerDeclarations, countEmails, readCode, uniqueEmail } from './helpers';
 
 /**
- * Creates an account that has no declarations, the state Google sign-in leaves a new user in
- * (D-065): the signup code request creates the account, then the browser forgets the answers.
+ * Signs in with an account that has no declarations, the state Google sign-in leaves a new user
+ * in (D-065): the browser forgets the signup answers before the code is verified.
+ * (Asking for a second code instead would hit Supabase's once-a-minute resend limit.)
  */
-async function createIncompleteAccount(page: Page, email: string) {
+async function signInWithoutDeclarations(page: Page, email: string) {
   await page.goto('/ar/signup');
   await answerDeclarations(page);
   await page.getByLabel('البريد الإلكتروني').fill(email);
   await page.getByRole('button', { name: 'أرسل الرمز' }).click();
-  await expect(page.getByText(/أرسلنا رمزًا من 6 أرقام/)).toBeVisible();
+  const code = await readCode(page, email);
   await page.context().clearCookies();
+  await page.getByLabel('رمز الدخول').fill(code);
+  await page.getByRole('button', { name: 'تحقّق وادخل' }).click();
 }
 
 async function answerGate(page: Page, adult: 'نعم' | 'لا') {
@@ -29,9 +32,7 @@ async function answerGate(page: Page, adult: 'نعم' | 'لا') {
 }
 
 test('an account without declarations is held at the gate until it completes', async ({ page }) => {
-  const email = uniqueEmail('gate');
-  await createIncompleteAccount(page, email);
-  await signInByEmail(page, email);
+  await signInWithoutDeclarations(page, uniqueEmail('gate'));
 
   await expect(page).toHaveURL(/\/ar\/onboarding$/);
   await page.goto('/ar/account');
@@ -43,8 +44,7 @@ test('an account without declarations is held at the gate until it completes', a
 
 test('a "no" at the gate deletes the account at once', async ({ page }) => {
   const email = uniqueEmail('gate-refused');
-  await createIncompleteAccount(page, email);
-  await signInByEmail(page, email);
+  await signInWithoutDeclarations(page, email);
   await expect(page).toHaveURL(/\/ar\/onboarding$/);
 
   await answerGate(page, 'لا');
