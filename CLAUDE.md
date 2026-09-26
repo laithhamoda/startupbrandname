@@ -56,7 +56,7 @@ You write code a senior reviewer would approve without rework. You do not guess;
 - Format: `VIVA` + 8 uppercase hexadecimal chars. Example: `VIVAD908AEEB`.
 - The code carries **no embedded meaning**. Type (`course_12m`, `weekly`, `monthly`, `annual`), affiliate, batch and expiry live in the database only.
 - Input is case-insensitive; strip spaces and dashes. 5 failed attempts → temporary lock (per account and per IP).
-- Default activation window: 60 days from issue. Course codes issued to students who have not finished secondary school: activation window extends to 30 September following their exams.
+- Default activation window: 60 days from issue. Course codes (`course_12m`): activation window 12 months from issue, so trainees who are not yet 18 can activate once they are (D-060).
 - Affiliate commission is recorded on **activation**, not issue.
 
 ### Payments
