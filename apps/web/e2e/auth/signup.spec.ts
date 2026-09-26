@@ -43,7 +43,9 @@ test('a wrong code is rejected with an explanation', async ({ page }) => {
   await page.getByRole('button', { name: 'أرسل الرمز' }).click();
   const code = await readCode(page, email);
 
-  await page.getByLabel('رمز الدخول').fill(code === '000000' ? '111111' : '000000');
+  await page
+    .getByLabel('رمز الدخول')
+    .fill(code.startsWith('0') ? '1'.repeat(code.length) : '0'.repeat(code.length));
   await page.getByRole('button', { name: 'تحقّق وادخل' }).click();
 
   await expect(page.getByText(/الرمز غير صحيح أو انتهت صلاحيته/)).toBeVisible();
@@ -63,7 +65,7 @@ test('signup in English sends the code email in English', async ({ page }) => {
   await page.getByLabel('Email').fill(email);
   await page.getByRole('button', { name: 'Send the code' }).click();
 
-  await expect(page.getByText(/We sent a 6-digit code to/)).toBeVisible();
+  await expect(page.getByText(/We sent an 8-digit code to/)).toBeVisible();
   const code = await readCode(page, email);
   const search = await page.request.get(`${MAILPIT_URL}/api/v1/search`, {
     params: { query: `to:"${email}"` },

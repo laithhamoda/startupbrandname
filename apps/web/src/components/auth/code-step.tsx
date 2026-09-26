@@ -10,7 +10,7 @@ import { FormError, submitTo, useFocusFirstInvalid } from './form-helpers';
 
 const IDLE: AuthFormState = { status: 'idle' };
 
-/** Last step of sign-in and sign-up: the 6-digit code from the email. */
+/** Last step of sign-in and sign-up: the 8-digit code from the email (D-087). */
 export function CodeStep({
   email,
   mode,
@@ -46,7 +46,7 @@ export function CodeStep({
             name="code"
             inputMode="numeric"
             autoComplete="one-time-code"
-            // 6 digits by design; up to 10 in case the Supabase setting ever differs.
+            // 8 digits by design (D-087); up to 10 in case the Supabase setting ever differs.
             maxLength={10}
             dir="ltr"
             required

@@ -17,7 +17,7 @@ interface MailpitMessage {
   HTML: string;
 }
 
-/** Waits for the newest email to `email` and returns the 6-digit code in it. */
+/** Waits for the newest email to `email` and returns the sign-in code in it (8 digits, D-087). */
 export async function readCode(page: Page, email: string, after = 0): Promise<string> {
   let code = '';
   await expect
@@ -35,7 +35,7 @@ export async function readCode(page: Page, email: string, after = 0): Promise<st
         ).json()) as MailpitMessage;
         // Strip tags first so colours such as #111111 in inline styles are not taken for the code.
         const text = message.Text || message.HTML.replace(/<[^>]*>/g, ' ');
-        code = /\b(\d{6})\b/.exec(text)?.[1] ?? '';
+        code = /\b(\d{6,10})\b/.exec(text)?.[1] ?? '';
         return code !== '';
       },
       { timeout: 20_000, message: `a sign-in code for ${email}` },

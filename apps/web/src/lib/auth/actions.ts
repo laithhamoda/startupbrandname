@@ -30,8 +30,8 @@ export type AuthFormState =
 
 const localeSchema = z.enum(routing.locales);
 const emailSchema = z.string().trim().toLowerCase().max(254).pipe(z.email());
-// The product uses 6-digit codes (Supabase "Email OTP length" = 6). Any length Supabase allows
-// (6 to 10) is accepted, so a changed dashboard setting never locks people out.
+// The product uses 8-digit codes (Supabase "Email OTP length" = 8, D-087). Any length Supabase
+// allows (6 to 10) is accepted, so a changed dashboard setting never locks people out.
 const codeSchema = z
   .string()
   .transform((value) => value.replace(/\s/g, ''))
@@ -103,7 +103,7 @@ async function endDeletedSession(supabase: SupabaseServerClient): Promise<void> 
 // Email code
 // -----------------------------------------------------------------------------------------------
 
-/** Signup, step 2: validates the first-step answers again, then emails a 6-digit code. */
+/** Signup, step 2: validates the first-step answers again, then emails an 8-digit code. */
 export async function requestSignupCode(
   localeInput: Locale,
   _previous: AuthFormState,

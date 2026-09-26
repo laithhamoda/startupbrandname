@@ -37,7 +37,7 @@ Supabase → Authentication → Sign In / Providers:
 
 - User Signups: Allow new users to sign up **on** (D-065 replaces D-018; the onboarding gate
   enforces eligibility); Confirm email **on**.
-- Email provider: on; Secure email change on; Email OTP expiration **600** seconds; length **6**.
+- Email provider: on; Secure email change on; Email OTP expiration **600** seconds; length **8** (D-087).
 
 Supabase → Authentication → URL Configuration:
 
