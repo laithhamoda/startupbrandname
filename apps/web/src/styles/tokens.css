@@ -1,0 +1,61 @@
+/*
+ * Design tokens (docs/DECISIONS.md D-049 to D-052). Light theme is the base; the dark theme
+ * applies from the operating-system preference or an explicit data-theme choice.
+ * Gold and teal appear as text only on black; light backgrounds use the "ink" variants.
+ * The two dark blocks must stay identical (checked by contrast.test.ts).
+ */
+:root {
+  --sbn-paper: #faf9f6;
+  --sbn-surface: #ffffff;
+  --sbn-sunken: #f2f0ea;
+  --sbn-hairline: #e3ded3;
+  --sbn-control: #8e877a;
+  --sbn-ink: #000000;
+  --sbn-ink-2: #3a362f;
+  --sbn-muted: #6f695e;
+  --sbn-gold: #d4a537;
+  --sbn-gold-ink: #8c6a12;
+  --sbn-teal: #1fa3c7;
+  --sbn-teal-ink: #0b6e8a;
+  --sbn-danger: #b3261e;
+  --sbn-on-gold: #000000;
+  --sbn-slab: #000000;
+  --sbn-slab-text: #f2efe8;
+  --sbn-slab-muted: #a8a297;
+  --sbn-scrim: rgb(0 0 0 / 0.5);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --sbn-paper: #000000;
+    --sbn-surface: #0e0e0d;
+    --sbn-sunken: #151513;
+    --sbn-hairline: #2a2825;
+    --sbn-control: #6b665d;
+    --sbn-ink: #f2efe8;
+    --sbn-ink-2: #d9d4c9;
+    --sbn-muted: #a8a297;
+    --sbn-gold-ink: #d4a537;
+    --sbn-teal-ink: #1fa3c7;
+    --sbn-danger: #f2b8b5;
+    --sbn-scrim: rgb(0 0 0 / 0.7);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --sbn-paper: #000000;
+  --sbn-surface: #0e0e0d;
+  --sbn-sunken: #151513;
+  --sbn-hairline: #2a2825;
+  --sbn-control: #6b665d;
+  --sbn-ink: #f2efe8;
+  --sbn-ink-2: #d9d4c9;
+  --sbn-muted: #a8a297;
+  --sbn-gold-ink: #d4a537;
+  --sbn-teal-ink: #1fa3c7;
+  --sbn-danger: #f2b8b5;
+  --sbn-scrim: rgb(0 0 0 / 0.7);
+  color-scheme: dark;
+}

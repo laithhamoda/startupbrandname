@@ -1,0 +1,159 @@
+@import 'tailwindcss';
+@import '../styles/tokens.css';
+
+/* Only the design tokens exist as colours, sizes, radii and shadows (Tailwind's defaults removed). */
+@theme {
+  --color-*: initial;
+  --text-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial;
+
+  --radius-control: 4px;
+  --radius-pill: 999px;
+  --shadow-overlay: 0 18px 48px -12px rgb(0 0 0 / 0.35);
+
+  --text-display: clamp(2.25rem, 1.6rem + 2.6vw, 3rem);
+  --text-display--line-height: 1.2;
+  --text-h1: 2.25rem;
+  --text-h1--line-height: 1.3;
+  --text-h2: 1.75rem;
+  --text-h2--line-height: 1.35;
+  --text-h3: 1.375rem;
+  --text-h3--line-height: 1.4;
+  --text-body-lg: 1.1875rem;
+  --text-body-lg--line-height: 1.9;
+  --text-body: 1.0625rem;
+  --text-body--line-height: 1.8;
+  --text-small: 0.9375rem;
+  --text-small--line-height: 1.7;
+  --text-caption: 0.8125rem;
+  --text-caption--line-height: 1.6;
+}
+
+@theme inline {
+  --color-paper: var(--sbn-paper);
+  --color-surface: var(--sbn-surface);
+  --color-sunken: var(--sbn-sunken);
+  --color-hairline: var(--sbn-hairline);
+  --color-control: var(--sbn-control);
+  --color-ink: var(--sbn-ink);
+  --color-ink-2: var(--sbn-ink-2);
+  --color-muted: var(--sbn-muted);
+  --color-gold: var(--sbn-gold);
+  --color-gold-ink: var(--sbn-gold-ink);
+  --color-teal: var(--sbn-teal);
+  --color-teal-ink: var(--sbn-teal-ink);
+  --color-danger: var(--sbn-danger);
+  --color-on-gold: var(--sbn-on-gold);
+  --color-slab: var(--sbn-slab);
+  --color-slab-text: var(--sbn-slab-text);
+  --color-slab-muted: var(--sbn-slab-muted);
+  --color-scrim: var(--sbn-scrim);
+
+  --font-sans: var(--font-tajawal), 'Noto Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
+  --font-display: var(--font-cairo), 'Noto Kufi Arabic', 'Segoe UI', Tahoma, sans-serif;
+  --font-body: var(--font-tajawal), 'Noto Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
+  --font-mono: ui-monospace, 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+}
+
+@layer base {
+  html {
+    background-color: var(--sbn-paper);
+    color: var(--sbn-ink);
+  }
+
+  body {
+    min-height: 100dvh;
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+    background-color: var(--sbn-paper);
+    color: var(--sbn-ink);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    text-wrap: balance;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--sbn-teal-ink);
+    outline-offset: 3px;
+  }
+
+  ::selection {
+    background-color: var(--sbn-gold);
+    color: #000000;
+  }
+}
+
+/* Numbers: Western digits, equal widths, isolated from the Arabic text direction. */
+@utility num {
+  font-variant-numeric: tabular-nums;
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+/* Reading width for Arabic text (about 70 characters). */
+@utility reading {
+  max-inline-size: 68ch;
+}
+
+@utility skip-link {
+  position: absolute;
+  inset-inline-start: 1rem;
+  inset-block-start: -100px;
+  z-index: 50;
+  background-color: var(--sbn-ink);
+  color: var(--sbn-paper);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+
+  &:focus {
+    inset-block-start: 1rem;
+  }
+}
+
+/* The one orchestrated motion: revealing the report verdict (CLAUDE.md §6). */
+@keyframes sbn-rule {
+  from {
+    inline-size: 0;
+  }
+  to {
+    inline-size: 100%;
+  }
+}
+
+@keyframes sbn-rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+[data-reveal] .verdict-rule {
+  animation: sbn-rule 400ms ease-out both;
+}
+
+[data-reveal] .verdict-word {
+  animation: sbn-rise 300ms ease-out 400ms both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
