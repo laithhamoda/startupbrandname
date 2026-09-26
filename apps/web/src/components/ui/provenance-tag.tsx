@@ -1,10 +1,6 @@
-export type ProvenanceSource = 'user' | 'assumption' | 'external';
+import { useTranslations } from 'next-intl';
 
-const LABEL: Record<ProvenanceSource, string> = {
-  user: 'إجابتك',
-  assumption: 'افتراض',
-  external: 'مصدر خارجي',
-};
+export type ProvenanceSource = 'user' | 'assumption' | 'external';
 
 // Shape plus text, never colour alone: solid dot, dashed ring, teal diamond (CLAUDE.md §4 rule 2).
 const MARKER: Record<ProvenanceSource, string> = {
@@ -14,10 +10,12 @@ const MARKER: Record<ProvenanceSource, string> = {
 };
 
 export function ProvenanceTag({ source }: { source: ProvenanceSource }) {
+  const t = useTranslations('provenance');
+
   return (
     <span className="inline-flex items-center gap-1.5 rounded-pill border border-control px-2.5 py-0.5 text-caption text-ink-2">
       <span aria-hidden className={`inline-block ${MARKER[source]}`} />
-      {LABEL[source]}
+      {t(source)}
     </span>
   );
 }

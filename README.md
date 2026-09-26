@@ -56,12 +56,24 @@ ship them (see D-031 in `docs/DECISIONS.md`); check that list before adding a CL
 
 - Tokens: `apps/web/src/styles/tokens.css`. Colour contrast is tested in
   `apps/web/src/styles/contrast.test.ts`; a colour change that breaks WCAG 2.2 AA fails the build.
-- Components: `apps/web/src/components/ui/`. Browse them at `/design` (local and preview only).
+- Components: `apps/web/src/components/ui/`. Browse them at `/ar/design` and `/en/design`
+  (local and preview only).
 - Styling uses logical properties only (`ms-`, `me-`, `ps-`, `pe-`, `start-`, `end-`);
-  `pnpm lint` rejects `left`/`right` utilities.
-- RTL visual snapshots run in CI only. After an intended visual change, run the
+  `pnpm lint` rejects `left`/`right` utilities. The same layout then serves Arabic (RTL) and
+  English (LTR).
+- Visual snapshots (both languages) run in CI only. After an intended visual change, run the
   "Update RTL snapshots" workflow, download its artifact and commit it under
   `apps/web/e2e/__screenshots__`.
+
+## Languages
+
+- Arabic at `/ar/…` (default) and English at `/en/…`; `/` redirects to the saved or browser
+  language (D-067, D-070). Routing lives in `apps/web/src/i18n/`, the proxy in `apps/web/src/proxy.ts`.
+- Interface text: `apps/web/messages/ar.json` and `en.json`. Arabic is the reference: a key missing
+  from English fails the typecheck, and `messages.test.ts` rejects extra keys, empty strings and
+  mismatched `{placeholders}`.
+- Server Components read the language with `currentLocale()` or `getTranslations()`. Server
+  Actions and Route Handlers cannot, so they receive the locale explicitly.
 - Search indexing stays off until public launch: set `SITE_INDEXABLE=true` on the Vercel
   Production environment to turn it on.
 

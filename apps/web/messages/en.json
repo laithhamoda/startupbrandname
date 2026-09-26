@@ -1,0 +1,63 @@
+{
+  "meta": {
+    "descriptor": "Business Model Studio",
+    "description": "Turn your idea into a business model with calculated numbers: a structured diagnostic, a report with a clear verdict, and an AI mentor."
+  },
+  "common": {
+    "skipToContent": "Skip to content",
+    "close": "Close"
+  },
+  "language": {
+    "switch": "العربية"
+  },
+  "theme": {
+    "system": "Auto",
+    "light": "Light",
+    "dark": "Dark",
+    "label": "Theme: {current}. Switch to: {next}"
+  },
+  "home": {
+    "heading": "Turn your idea into a business model with calculated numbers",
+    "lead": "The platform is under construction. It will give you a structured diagnostic of your business idea, a report with calculated numbers and a clear verdict, and an AI mentor that asks you the hard questions before the market does."
+  },
+  "notFound": {
+    "title": "Page not found",
+    "body": "The link may have changed, or the page may have been removed.",
+    "home": "Back to the home page"
+  },
+  "provenance": {
+    "user": "Your answer",
+    "assumption": "Assumption",
+    "external": "External source"
+  },
+  "verify": {
+    "label": "Check the official source",
+    "lastVerified": "Last checked",
+    "source": "Official source"
+  },
+  "verdict": {
+    "label": "Verdict",
+    "go": "Go",
+    "revise": "Revise",
+    "stop": "Stop",
+    "stopPhrase": "Not viable in its current form",
+    "stopChanges": "These three changes would change the verdict:"
+  },
+  "assumption": {
+    "note": "This number is an assumption. Test it before you base a decision on it."
+  },
+  "money": {
+    "chooseCurrency": "Choose a currency",
+    "currencyOf": "{label} currency",
+    "symbol": {
+      "JOD": "JOD",
+      "DZD": "DZD",
+      "USD": "USD"
+    },
+    "name": {
+      "JOD": "Jordanian dinar",
+      "DZD": "Algerian dinar",
+      "USD": "US dollar"
+    }
+  }
+}

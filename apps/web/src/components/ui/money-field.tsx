@@ -1,9 +1,8 @@
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/cn';
 import { Field } from './field';
-import { CURRENCY_LABEL, CURRENCY_NAME, type CurrencyCode } from './money';
+import { CURRENCIES, type CurrencyCode } from './money';
 import { controlClass } from './text-input';
-
-const CURRENCIES: readonly CurrencyCode[] = ['JOD', 'DZD', 'USD'];
 
 interface MoneyFieldProps {
   id: string;
@@ -26,6 +25,8 @@ export function MoneyField({
   defaultAmount,
   defaultCurrency,
 }: MoneyFieldProps) {
+  const t = useTranslations('money');
+
   return (
     <Field id={id} label={label} hint={hint} error={error}>
       {({ describedBy, invalid }) => (
@@ -39,24 +40,24 @@ export function MoneyField({
             defaultValue={defaultAmount}
             aria-describedby={describedBy}
             aria-invalid={invalid || undefined}
-            // The input is LTR for digits; "end" puts the amount on the right, beside the Arabic label.
+            // Digits are always left-to-right; "end" keeps the amount beside the label's side.
             className={cn(controlClass, 'num text-end')}
           />
           <select
             name={`${name}.currency`}
             required
             defaultValue={defaultCurrency ?? ''}
-            aria-label={`عملة ${label}`}
+            aria-label={t('currencyOf', { label })}
             aria-describedby={describedBy}
             aria-invalid={invalid || undefined}
             className={controlClass}
           >
             <option value="" disabled>
-              اختر العملة
+              {t('chooseCurrency')}
             </option>
             {CURRENCIES.map((code) => (
               <option key={code} value={code}>
-                {CURRENCY_LABEL[code]} · {CURRENCY_NAME[code]}
+                {t(`symbol.${code}`)} · {t(`name.${code}`)}
               </option>
             ))}
           </select>
