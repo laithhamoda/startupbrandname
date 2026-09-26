@@ -8,6 +8,11 @@ export default defineConfig({
   forbidOnly: isCI,
   retries: isCI ? 1 : 0,
   reporter: isCI ? [['github'], ['html', { open: 'never' }]] : 'list',
+  // Baselines come from the pinned Playwright container in CI, so no per-platform suffix (D-055).
+  snapshotPathTemplate: '{testDir}/__screenshots__/{testFilePath}/{arg}{ext}',
+  expect: {
+    toHaveScreenshot: { maxDiffPixelRatio: 0.002, animations: 'disabled' },
+  },
   use: {
     baseURL: `http://127.0.0.1:${PORT}`,
     locale: 'ar-JO',
