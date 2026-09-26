@@ -111,5 +111,5 @@ cannot reach the summary threshold), #61 (owner answer on accounts).
 72. `M7` Age of majority differs by country (for example 21 in Egypt, 19 in Algeria). Can an 18-year-old there buy a subscription? Legal review (D-066).
 73. `M2` Legal review is now global: GDPR for EU users, and cross-border transfer rules in Saudi Arabia, Egypt, Morocco and elsewhere, with privacy policy and terms in Arabic and English.
 74. `M5` English wording of the verdict needs the owner's approval. Proposal: Go / Revise / Stop, and "Not viable in its current form" plus exactly three changes.
-75. `M2` Language URLs: Arabic at `/` and English at `/en/` (recommended), or `/ar/` and `/en/`?
+75. `M2` **Resolved (D-070): `/ar/` and `/en/`.** Language URLs: Arabic at `/` and English at `/en/` (recommended), or `/ar/` and `/en/`?
 76. `M3` The 64 questions, rules R1–R8, follow-ups and glossary need approved English versions.

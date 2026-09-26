@@ -47,7 +47,7 @@ You write code a senior reviewer would approve without rework. You do not guess;
 | Projects | 1 | 1 | 3 | unlimited |
 | One-page summary | yes | yes | yes | yes |
 | Full report | locked | 1 | unlimited | unlimited |
-| AI mentor messages | 0 | 10 per week | unlimited (fair use) | unlimited (fair use) |
+| AI mentor messages | 3 per day | 10 per day | unlimited (fair use) | unlimited (fair use) |
 | Competitor enrichment via web search (T6) | no | no | yes | yes |
 | Pitch deck export (T15) | no | yes | yes | yes |
 | Quarterly market refresh | no | no | no | yes |
