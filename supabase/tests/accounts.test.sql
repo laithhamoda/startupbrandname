@@ -3,19 +3,19 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(31);
+select plan(29);
 
 -- Test users. The email lives in auth.users only.
 insert into auth.users (id, email, created_at) values
-  ('a0000000-0000-4000-8000-000000000001', 'adult@example.test', now()),
+  ('a0000000-0000-4000-8000-000000000001', 'founder@example.test', now()),
   ('b0000000-0000-4000-8000-000000000002', 'other@example.test', now()),
-  ('c0000000-0000-4000-8000-000000000003', 'minor@example.test', now()),
+  ('c0000000-0000-4000-8000-000000000003', 'incomplete@example.test', now()),
   ('d0000000-0000-4000-8000-000000000004', 'stale@example.test', now() - interval '25 hours'),
   ('e0000000-0000-4000-8000-000000000005', 'recent@example.test', now() - interval '23 hours'),
   ('f0000000-0000-4000-8000-000000000006', 'veteran@example.test', now() - interval '48 hours');
 
-insert into public.profiles (user_id, country_code, locale, secondary_declared_at, adult_declared_at)
-values ('f0000000-0000-4000-8000-000000000006', 'JO', 'ar', now(), now());
+insert into public.profiles (user_id, country_code, locale, has_project)
+values ('f0000000-0000-4000-8000-000000000006', 'JO', 'ar', true);
 
 create function pg_temp.act_as(p_user uuid) returns void
 language sql
@@ -41,7 +41,7 @@ select throws_ok(
 );
 
 select throws_ok(
-  $$select public.complete_onboarding('JO', 'ar', true, true, '2026-09-draft-1', false, null)$$,
+  $$select public.complete_onboarding('JO', 'ar', true, '2026-09-draft-1', false, '2026-09-draft-1')$$,
   '42501',
   null,
   'anon cannot complete onboarding'
@@ -50,25 +50,25 @@ select throws_ok(
 reset role;
 
 -- ---------------------------------------------------------------------------------------------
--- Onboarding
+-- Onboarding (D-086: country, "do you have a project or an idea?", consents)
 -- ---------------------------------------------------------------------------------------------
 
 select pg_temp.act_as('b0000000-0000-4000-8000-000000000002');
 set local role authenticated;
 
 select is(
-  public.complete_onboarding('DZ', 'en', true, true, '2026-09-draft-1', false, null),
+  public.complete_onboarding('DZ', 'en', false, '2026-09-draft-1', false, '2026-09-draft-1'),
   'completed',
-  'a second user completes onboarding without cross-border consent'
+  'someone without a project yet completes onboarding without cross-border consent'
 );
 
 select pg_temp.act_as('a0000000-0000-4000-8000-000000000001');
 
 select throws_ok(
-  $$select public.complete_onboarding('JO', 'ar', true, null, '2026-09-draft-1', false, null)$$,
+  $$select public.complete_onboarding('JO', 'ar', null, '2026-09-draft-1', false, '2026-09-draft-1')$$,
   '22023',
   null,
-  'a missing answer is an error, not a refusal'
+  'a missing answer is an error'
 );
 
 select is(
@@ -78,15 +78,15 @@ select is(
 );
 
 select is(
-  public.complete_onboarding('JO', 'ar', true, true, '2026-09-draft-1', true, '2026-09-draft-1'),
+  public.complete_onboarding('JO', 'ar', true, '2026-09-draft-1', true, '2026-09-draft-1'),
   'completed',
-  'an adult who finished secondary school completes onboarding'
+  'someone with a project completes onboarding'
 );
 
 select results_eq(
-  $$select country_code, locale from public.profiles$$,
-  $$values ('JO'::text, 'ar'::text)$$,
-  'the user sees exactly their own profile'
+  $$select country_code, locale, has_project from public.profiles$$,
+  $$values ('JO'::text, 'ar'::text, true)$$,
+  'the user sees exactly their own profile, with their answer'
 );
 
 select results_eq(
@@ -98,7 +98,7 @@ select results_eq(
 select ok(public.has_crossborder_consent(), 'cross-border consent is on');
 
 select is(
-  public.complete_onboarding('JO', 'ar', true, true, '2026-09-draft-1', false, null),
+  public.complete_onboarding('JO', 'ar', false, '2026-09-draft-1', false, '2026-09-draft-1'),
   'already_complete',
   'completing twice changes nothing'
 );
@@ -114,18 +114,18 @@ select is(
 -- ---------------------------------------------------------------------------------------------
 
 select throws_ok(
-  $$insert into public.profiles (user_id, country_code, secondary_declared_at, adult_declared_at)
-    values ('a0000000-0000-4000-8000-000000000001', 'JO', now(), now())$$,
+  $$insert into public.profiles (user_id, country_code, has_project)
+    values ('a0000000-0000-4000-8000-000000000001', 'JO', true)$$,
   '42501',
   null,
   'profiles cannot be inserted directly'
 );
 
 select throws_ok(
-  $$update public.profiles set adult_declared_at = now()$$,
+  $$update public.profiles set created_at = now()$$,
   '42501',
   null,
-  'declarations cannot be edited directly'
+  'columns other than country and language cannot be edited directly'
 );
 
 select lives_ok(
@@ -175,10 +175,6 @@ select is(
   'withdrawing again records nothing new'
 );
 
--- ---------------------------------------------------------------------------------------------
--- Refusal: under 18 or no secondary school (D-059)
--- ---------------------------------------------------------------------------------------------
-
 select pg_temp.act_as('c0000000-0000-4000-8000-000000000003');
 
 select throws_ok(
@@ -188,26 +184,11 @@ select throws_ok(
   'consent settings need a completed onboarding'
 );
 
-select is(
-  public.complete_onboarding('JO', 'ar', true, false, '2026-09-draft-1', false, null),
-  'refused',
-  'a user who is not 18 is refused'
-);
-
-reset role;
-
-select is(
-  (select count(*)::int from auth.users where id = 'c0000000-0000-4000-8000-000000000003'),
-  0,
-  'the refused account is deleted at once'
-);
-
 -- ---------------------------------------------------------------------------------------------
 -- Self-service deletion
 -- ---------------------------------------------------------------------------------------------
 
 select pg_temp.act_as('a0000000-0000-4000-8000-000000000001');
-set local role authenticated;
 
 select lives_ok($$select public.delete_my_account()$$, 'a user can delete their account');
 
@@ -246,12 +227,13 @@ select is(
 select results_eq(
   $$select email::text from auth.users
     where id in (
+      'c0000000-0000-4000-8000-000000000003',
       'd0000000-0000-4000-8000-000000000004',
       'e0000000-0000-4000-8000-000000000005',
       'f0000000-0000-4000-8000-000000000006'
     )
     order by email$$,
-  $$values ('recent@example.test'::text), ('veteran@example.test'::text)$$,
+  $$values ('incomplete@example.test'::text), ('recent@example.test'::text), ('veteran@example.test'::text)$$,
   'it removes the incomplete account older than 24 hours and keeps the newer and completed ones'
 );
 

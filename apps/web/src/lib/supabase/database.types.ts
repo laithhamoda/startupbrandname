@@ -38,29 +38,26 @@ export type Database = {
       };
       profiles: {
         Row: {
-          adult_declared_at: string;
           country_code: string;
           created_at: string;
+          has_project: boolean | null;
           locale: string;
-          secondary_declared_at: string;
           updated_at: string;
           user_id: string;
         };
         Insert: {
-          adult_declared_at: string;
           country_code: string;
           created_at?: string;
+          has_project?: boolean | null;
           locale?: string;
-          secondary_declared_at: string;
           updated_at?: string;
           user_id: string;
         };
         Update: {
-          adult_declared_at?: string;
           country_code?: string;
           created_at?: string;
+          has_project?: boolean | null;
           locale?: string;
-          secondary_declared_at?: string;
           updated_at?: string;
           user_id?: string;
         };
@@ -73,12 +70,11 @@ export type Database = {
     Functions: {
       complete_onboarding: {
         Args: {
-          p_adult: boolean;
           p_country_code: string;
           p_crossborder_consent: boolean;
           p_crossborder_version: string;
+          p_has_project: boolean;
           p_locale: string;
-          p_secondary_completed: boolean;
           p_terms_version: string;
         };
         Returns: string;
