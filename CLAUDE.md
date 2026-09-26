@@ -72,10 +72,11 @@ You write code a senior reviewer would approve without rework. You do not guess;
 - Single exception: interview script tool (T4) outputs in user-selected dialect (MSA / Jordanian / Algerian).
 - Currency is **always explicit**. Any word that names several currencies ("دينار", "ريال", "جنيه", "درهم", "dinar", "riyal", "pound", "dollar") must trigger a clarification. Never infer currency.
 
-### Eligibility (signup gate)
-1. Mandatory declaration: completed secondary school (Tawjihi / BTEC / Algerian Baccalauréat / equivalent).
-2. Declaration: aged 18 or older. **The platform is for adults only (18+):** a **no** ends signup with a clear message and nothing is stored; there is no guardian-consent path. (Updated 2026-09-26, D-059.)
+### Signup and age (updated 2026-09-26, D-086; replaces D-059)
+1. Signup asks only: country, **"Do you have a project or a project idea?"** (yes / no, information only; neither answer blocks signup), acceptance of the terms, and the optional cross-border consent. There is no secondary-school or age question at signup.
+2. The age check ("aged 18 or older?") happens **at payment** (M7): paid plans are for adults.
 - Do **not** collect exact date of birth or certificate images.
+- Open legal risk, accepted by the owner: under-18s can create free accounts without a guardian's consent (docs/OPEN-QUESTIONS.md #79).
 
 ### Markets
 - **Global:** signup is open in every country (D-066). Verified country packs, tax rules and registration guides start with Jordan and Algeria; other countries get the full analysis with those sections marked as not yet verified (rule 9).
@@ -187,13 +188,13 @@ docs/DECISIONS.md          Log every decision you make that is not in this file 
 |---|---|---|
 | M0 | Repo, tooling, CI, Supabase (Frankfurt), environments, `.env.example` | CI green: lint, typecheck, tests |
 | M1 | Design plan → approved → design tokens, RTL shell, core components | Design plan approved; Playwright RTL snapshots; AA contrast checks pass |
-| M2 | Auth (email code + Google), eligibility gate (secondary school, 18+ only) with an onboarding gate for incomplete accounts, Arabic/English foundations, per-country market switch, separate cross-border consent, privacy/terms pages (placeholder text marked for legal review), Algeria waitlist flag | E2E: adult signup by email code, Google-created account blocked until declarations, under-18 refusal that stores nothing, English LTR pages pass accessibility |
+| M2 | Auth (email code + Google), signup questions (country, project yes/no) with an onboarding gate for incomplete accounts, Arabic/English foundations, per-country market switch, separate cross-border consent, privacy/terms pages (placeholder text marked for legal review), Algeria waitlist flag | E2E: signup by email code, an account without answers held at the onboarding gate, English LTR pages pass accessibility |
 | M2b | Public site and content for SEO/GEO: landing, how it works, methodology, pricing display, sample report, glossary, FAQ, about; structured data, sitemap, OG images, llms.txt, Search Console (D-054) | Lighthouse SEO and accessibility 100 on public pages; valid structured data; indexing enabled only at public launch |
 | M3 | Question bank engine: quick/full modes, save & resume, rules R1–R8, follow-ups, provenance, completeness gating, dialect normalization | All 64 questions render; rule tests pass; completeness matches SPEC weights |
 | M4 | Engine: T8, T7, T9, T10, tax engine | ≥ 95% coverage; golden-file tests for 3 sample projects (JO service, JO home e-commerce, DZ auto-entrepreneur) |
 | M5 | T1, T2 canvases (two-way binding), T17 (JO, DZ), T18, MVP report + PDF, one-page summary | Arabic PDF shaping verified; summary locks full sections for free tier |
 | M6 | AI mentor (Socratic, critical, no invented numbers), quotas, fair-use controls | Quota and fair-use tests; de-identification tests |
-| M7 | Entitlements, PayPal, vouchers, affiliates dashboard, admin (2FA) | E2E purchase (PayPal sandbox), voucher activation, commission on activation |
+| M7 | Entitlements, PayPal, vouchers, affiliates dashboard, admin (2FA), age check (18+) at payment (D-086) | E2E purchase (PayPal sandbox), voucher activation, commission on activation |
 | M8 | Country-pack review agent + weekly admin digest | Agent never updates from non-allowlisted domains (test) |
 | M9 | Hardening: security review, rate limits, account-sharing detection, performance, backup/restore drill | Checklist signed off |
 

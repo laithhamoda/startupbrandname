@@ -115,3 +115,5 @@ cannot reach the summary threshold), #61 (owner answer on accounts).
 76. `M3` The 64 questions, rules R1–R8, follow-ups and glossary need approved English versions.
 77. `M2` Country names (D-080). The list uses the standard Unicode names, including: PS "الأراضي الفلسطينية" / "Palestinian Territories", EH "الصحراء الغربية" / "Western Sahara", IL, TW, XK. Keep them, rename (for example "فلسطين" / "Palestine"), or remove any?
 78. `M2` The privacy draft needs the operator's legal name, address and a contact email before launch.
+79. `M2` **Legal risk accepted by the owner (D-086):** without an age question at signup, under-18s can create free accounts, so their data (email, country, answers) is processed without a guardian's consent. Jordan's data protection law, Algeria's Law 18-07 and the GDPR (under 16 in the EU) may require that consent. Legal review: is an age question needed for the free tier after all?
+80. `M7` Age check at payment (D-086): the exact wording, and whether course vouchers (free, no payment) also need it.
