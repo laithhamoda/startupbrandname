@@ -77,6 +77,19 @@ ship them (see D-031 in `docs/DECISIONS.md`); check that list before adding a CL
 - Search indexing stays off until public launch: set `SITE_INDEXABLE=true` on the Vercel
   Production environment to turn it on.
 
+## Sign-in (M2)
+
+- Email code or Google, through Supabase Auth, called from the server only (D-077). Signup asks
+  the two declarations first; accounts without them wait at `/onboarding` and are purged after
+  24 hours (D-065, D-079).
+- Locally, codes land in Mailpit at http://127.0.0.1:54324 (started by `pnpm db:start`).
+- After a migration, run `pnpm db:types` and commit `apps/web/src/lib/supabase/database.types.ts`;
+  CI fails when it is out of date.
+- Sign-in tests need the local stack:
+  `pnpm --filter @sbn/web exec playwright test --project=auth`. The other tests run with
+  `--project=site`.
+- Hosted setup (email, templates, Google, redirect URLs): [docs/runbooks/auth-setup.md](docs/runbooks/auth-setup.md).
+
 ## Environments
 
 | Environment | App                                    | Database                                     |
