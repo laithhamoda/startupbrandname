@@ -50,7 +50,7 @@ cannot reach the summary threshold), #61 (owner answer on accounts).
 26. `M2` **Obsolete (D-059): no guardian flow; the platform is 18+ only.** Original note: Guardian consent: how long an account may stay pending, data held meanwhile, resends, refusal.
 27. `M2` **Resolved (D-062).** When cross-border consent is asked, and what a user who refuses can still do.
 28. `M2` **Partly resolved (D-063):** country is declared by the user. Still open: projects about Algeria from Jordanian accounts. How an "Algerian visitor" is identified (IP, declared country, phone). Can a Jordanian account create a project with A1 = Algeria while the flag is off?
-29. `M2` Legal risk: the DZ waitlist already stores Algerian residents' data in the EU; Law 18-07 may restrict that transfer.
+29. `M2` **Owner accepted this risk (D-068).** Legal risk: the DZ waitlist already stores Algerian residents' data in the EU; Law 18-07 may restrict that transfer.
 30. `M2` Use `public.profiles` keyed to `auth.users` instead of SPEC's `users`, without storing email twice. Missing tables and fields: tasks (created by R4/B5), sessions/devices, failed voucher attempts, consent-text version, `source_url` / `retrieved_at` on stored values.
 31. `M9` One-click deletion vs financial records that may have to be kept (payments, commissions, audit log). What survives, anonymized?
 32. `M2` **Resolved (D-061).** Email provider for auth and digests (must be named in the privacy policy; Supabase's built-in email is not for production).
@@ -108,3 +108,8 @@ cannot reach the summary threshold), #61 (owner answer on accounts).
 69. `M2b` Content ownership: who writes and approves public guides, the glossary and the founder biography (E-E-A-T)? Claude can draft in MSA; facts, country rules and credentials need the owner's review.
 70. `M0` The Supabase GitHub integration deploys migrations to production automatically on every push to `main`, bypassing the approval gate in D-047. The owner should switch off its production deploy, or D-047 must change.
 71. `M7` **Resolved (D-060).** Course trainees under 18 (D-059): CLAUDE.md §3 extends the voucher activation window to 30 September after exams for students who have not finished secondary school. Some of them may still be under 18 on that date and cannot sign up. Extend the window until they can, limit the course codes to adults, or accept that those codes expire?
+72. `M7` Age of majority differs by country (for example 21 in Egypt, 19 in Algeria). Can an 18-year-old there buy a subscription? Legal review (D-066).
+73. `M2` Legal review is now global: GDPR for EU users, and cross-border transfer rules in Saudi Arabia, Egypt, Morocco and elsewhere, with privacy policy and terms in Arabic and English.
+74. `M5` English wording of the verdict needs the owner's approval. Proposal: Go / Revise / Stop, and "Not viable in its current form" plus exactly three changes.
+75. `M2` Language URLs: Arabic at `/` and English at `/en/` (recommended), or `/ar/` and `/en/`?
+76. `M3` The 64 questions, rules R1–R8, follow-ups and glossary need approved English versions.

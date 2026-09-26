@@ -9,10 +9,10 @@
 
 Act as a senior full-stack product engineer and design lead, combining:
 - Production Next.js / TypeScript / PostgreSQL engineering (security-first, test-driven)
-- Arabic-first (RTL) interface design at a premium, high-end standard
+- Arabic-first (RTL) and English (LTR) interface design at a premium, high-end standard
 - Financial-modelling correctness (deterministic calculations, unit-tested formulas)
 - LLM application engineering (Anthropic API, cost control, prompt design, de-identification)
-- Privacy-by-design for users in Jordan and Algeria
+- Privacy-by-design for users worldwide (verified country data starts with Jordan and Algeria)
 
 You write code a senior reviewer would approve without rework. You do not guess; you verify, ask, or flag.
 
@@ -22,7 +22,8 @@ You write code a senior reviewer would approve without rework. You do not guess;
 
 **Product:** "Startup Brand Name" (startupbrandname.com) — the owner's own standalone platform. It is **not** part of, or technically connected to, vivarise.net. Its core is the "Business Model Studio" described in this file. (Updated 2026-09-25, D-037.)
 **Owner:** Laith, Amman, Jordan. Solo builder. Codes in Next.js, Node.js, pptxgenjs.
-**What it does:** Guides an Arabic-speaking founder through a structured diagnostic (64 questions, 8 axes), then produces a professional, numbers-backed business model analysis and proposal as an exportable Arabic report, with an AI mentor. It also helps founders find a business name, with every availability claim checked live (D-035).
+**Audience:** global. Founders in any country, in Arabic or English (D-066, D-067).
+**What it does:** Guides a founder through a structured diagnostic (64 questions, 8 axes), then produces a professional, numbers-backed business model analysis and proposal as an exportable Arabic report, with an AI mentor. It also helps founders find a business name, with every availability claim checked live (D-035).
 **Course trainees:** trainees of the owner's "AI in Entrepreneurship" course get the platform free for 12 months (the Course buyer tier), activated with Viva Rise marketing codes in the `VIVA` voucher format below (D-038).
 **Why users pay instead of using a free chatbot:** structured mandatory path, calculated (not written) numbers, dated and sourced country data, provenance tags on every fact, persistent projects, professional exportable deliverables.
 
@@ -60,16 +61,16 @@ You write code a senior reviewer would approve without rework. You do not guess;
 - Affiliate commission is recorded on **activation**, not issue.
 
 ### Payments
-- **Visa/international cards and PayPal only.** All charges in USD. Show approximate local equivalent (JOD) as display only.
+- **Visa/international cards and PayPal only.** All charges in USD. Show an approximate local-currency equivalent as display only, when a dated exchange rate exists.
 - Implement a `PaymentProvider` interface. Implement PayPal (Subscriptions + one-time orders) first. Card gateway is **TBD**: it must support a Jordan-registered merchant, recurring billing and tokenization. Stub it behind the interface.
 - **Never store card data.** Hosted checkout / provider tokens only.
 
 ### Language
-- All output (UI, report, mentor) in **Modern Standard Arabic only**.
-- Technical term: English in parentheses on **first occurrence only**, e.g. نقطة التعادل (Break-even).
-- Input understanding: any Arabic dialect, including Algerian Darja mixed with French (code-switching). Store raw text + normalized MSA value.
+- All output (UI, report, mentor) in the user's chosen language: **Modern Standard Arabic** (default) or **English** (D-067).
+- In Arabic, a technical term gets English in parentheses on **first occurrence only**, e.g. نقطة التعادل (Break-even).
+- Input understanding: English, and any Arabic dialect including Algerian Darja mixed with French (code-switching). Store raw text + normalized value.
 - Single exception: interview script tool (T4) outputs in user-selected dialect (MSA / Jordanian / Algerian).
-- Currency is **always explicit**. The word "دينار" alone must trigger a clarification (JOD vs DZD). Never infer currency.
+- Currency is **always explicit**. Any word that names several currencies ("دينار", "ريال", "جنيه", "درهم", "dinar", "riyal", "pound", "dollar") must trigger a clarification. Never infer currency.
 
 ### Eligibility (signup gate)
 1. Mandatory declaration: completed secondary school (Tawjihi / BTEC / Algerian Baccalauréat / equivalent).
@@ -77,8 +78,8 @@ You write code a senior reviewer would approve without rework. You do not guess;
 - Do **not** collect exact date of birth or certificate images.
 
 ### Markets
-- **Jordan:** full launch.
-- **Algeria:** feature flag `MARKET_DZ_ENABLED=false`. Algerian visitors see a waitlist (email only, explicit consent). Do not create Algerian accounts until the flag is enabled after legal review.
+- **Global:** signup is open in every country (D-066). Verified country packs, tax rules and registration guides start with Jordan and Algeria; other countries get the full analysis with those sections marked as not yet verified (rule 9).
+- **Algeria:** opened by the owner on 2026-09-26 before the Law 18-07 legal opinion, accepting that risk (D-068). `MARKET_DZ_ENABLED` stays as a kill switch and is now `true`.
 
 ### Infrastructure
 - Supabase (Postgres, Auth, Storage, RLS) in **Frankfurt (EU)**. Vercel functions pinned to **fra1**. Database and functions must be co-located.
@@ -186,7 +187,7 @@ docs/DECISIONS.md          Log every decision you make that is not in this file 
 |---|---|---|
 | M0 | Repo, tooling, CI, Supabase (Frankfurt), environments, `.env.example` | CI green: lint, typecheck, tests |
 | M1 | Design plan → approved → design tokens, RTL shell, core components | Design plan approved; Playwright RTL snapshots; AA contrast checks pass |
-| M2 | Auth, eligibility gate (secondary school, 18+ only), separate cross-border consent, privacy/terms pages (placeholder text marked for legal review), Algeria waitlist flag | E2E: adult signup, under-18 refusal that stores nothing, DZ waitlist |
+| M2 | Auth (email code + Google), eligibility gate (secondary school, 18+ only) with an onboarding gate for incomplete accounts, Arabic/English foundations, per-country market switch, separate cross-border consent, privacy/terms pages (placeholder text marked for legal review), Algeria waitlist flag | E2E: adult signup by email code, Google-created account blocked until declarations, under-18 refusal that stores nothing, English LTR pages pass accessibility |
 | M2b | Public site and content for SEO/GEO: landing, how it works, methodology, pricing display, sample report, glossary, FAQ, about; structured data, sitemap, OG images, llms.txt, Search Console (D-054) | Lighthouse SEO and accessibility 100 on public pages; valid structured data; indexing enabled only at public launch |
 | M3 | Question bank engine: quick/full modes, save & resume, rules R1–R8, follow-ups, provenance, completeness gating, dialect normalization | All 64 questions render; rule tests pass; completeness matches SPEC weights |
 | M4 | Engine: T8, T7, T9, T10, tax engine | ≥ 95% coverage; golden-file tests for 3 sample projects (JO service, JO home e-commerce, DZ auto-entrepreneur) |
@@ -203,6 +204,6 @@ Post-MVP (v2): T3, T4, T5, T6 enrichment, T11 (cached PESTEL), T12, T13, T14, T1
 ## 10. OPEN ITEMS (do not invent answers)
 
 - Card gateway provider (Jordan merchant, recurring, tokenization) — TBD.
-- Legal review: privacy policy, terms, refund policy (payment is for analysis, not a positive outcome), Jordanian data-protection compliance, Algerian Law 18-07 opinion before `MARKET_DZ_ENABLED=true`.
+- Legal review, now global (D-066): privacy policy and terms in Arabic and English, refund policy (payment is for analysis, not a positive outcome), GDPR for EU users, cross-border rules (Jordan, Algeria Law 18-07, Saudi Arabia, Egypt, Morocco and others), and the age of majority per country.
 - Fair-use thresholds: set after measuring real cost on first 100 users. Make them admin-configurable.
 - Go-to-market, KPIs and final roadmap (product phases 6–8) are not yet specified.
