@@ -30,7 +30,8 @@ export function MoneyField({
   return (
     <Field id={id} label={label} hint={hint} error={error}>
       {({ describedBy, invalid }) => (
-        <div className="grid grid-cols-[1fr_9.5rem] gap-2">
+        // The select takes the width of its longest option, which differs by language.
+        <div className="grid grid-cols-[1fr_auto] gap-2">
           <input
             id={id}
             name={`${name}.amount`}
