@@ -143,7 +143,7 @@ You write code a senior reviewer would approve without rework. You do not guess;
 - Numbers: Western digits (0–9), isolated with `<bdi>` / `unicode-bidi: isolate`. Currency label after the number: `250 د.أ`.
 - Financial tables: numeric columns aligned so decimals line up.
 - Charts: time axis stays left-to-right (financial convention).
-- Business Model Canvas mirrored: flow starts at the right (customer segments).
+- Business Model Canvas: standard geometry, customer segments on the right where RTL reading starts (D-051).
 
 **Quality floor:** WCAG 2.2 AA, visible keyboard focus, responsive to 360px, no layout shift on font load.
 
@@ -187,6 +187,7 @@ docs/DECISIONS.md          Log every decision you make that is not in this file 
 | M0 | Repo, tooling, CI, Supabase (Frankfurt), environments, `.env.example` | CI green: lint, typecheck, tests |
 | M1 | Design plan → approved → design tokens, RTL shell, core components | Design plan approved; Playwright RTL snapshots; AA contrast checks pass |
 | M2 | Auth, eligibility gate, guardian consent, separate cross-border consent, privacy/terms pages (placeholder text marked for legal review), Algeria waitlist flag | E2E: adult signup, minor + guardian flow, DZ waitlist |
+| M2b | Public site and content for SEO/GEO: landing, how it works, methodology, pricing display, sample report, glossary, FAQ, about; structured data, sitemap, OG images, llms.txt, Search Console (D-054) | Lighthouse SEO and accessibility 100 on public pages; valid structured data; indexing enabled only at public launch |
 | M3 | Question bank engine: quick/full modes, save & resume, rules R1–R8, follow-ups, provenance, completeness gating, dialect normalization | All 64 questions render; rule tests pass; completeness matches SPEC weights |
 | M4 | Engine: T8, T7, T9, T10, tax engine | ≥ 95% coverage; golden-file tests for 3 sample projects (JO service, JO home e-commerce, DZ auto-entrepreneur) |
 | M5 | T1, T2 canvases (two-way binding), T17 (JO, DZ), T18, MVP report + PDF, one-page summary | Arabic PDF shaping verified; summary locks full sections for free tier |

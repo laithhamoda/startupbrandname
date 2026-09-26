@@ -87,7 +87,7 @@ cannot reach the summary threshold), #61 (owner answer on accounts).
 ## H. Report, design and AI
 
 56. `M5` Banning "فائدة" (G7 = yes) also blocks its everyday meaning "benefit". Ban only in financing contexts?
-57. `M1/M5` **Contradiction:** "BMC mirrored, starting at the right with customer segments". The standard canvas already has customer segments on the right; mirroring moves them left.
+57. `M1/M5` **Resolved (D-051).** **Contradiction:** "BMC mirrored, starting at the right with customer segments". The standard canvas already has customer segments on the right; mirroring moves them left.
 58. `M3` Free users trigger Haiku calls on 64+ answers with no free-tier AI limit defined.
 59. `M6` Is the mentor's "~1 page project summary" built by code or by the LLM?
 60. `M7` Vercel Cron or pg_cron per job (Vercel Hobby cron runs at most daily).
@@ -101,4 +101,9 @@ cannot reach the summary threshold), #61 (owner answer on accounts).
 62. `M3+` **Partly answered (D-035): in scope, milestone to be set.** Business-name finder: the owner described the product as "creating a business model and finding a business name". SPEC has no naming tool; only G5 asks whether the founder already has a trade name or protected mark. New feature? If yes: which milestone, and which official sources check availability (trade-name registers, trademark offices, domains)? Rule 9 forbids claiming a name is available without a verified source. Owner supplied about 2,000 candidate .com names on 2026-09-25; a registry (RDAP) spot check of 12 that day found 8 unregistered and 4 registered and listed for sale via Atom/Afternic, so "available" changes by name and by day and must be checked live.
 63. `M7` Free year for course trainees (D-038): the owner will supply the full details. Needed: who issues the Viva Rise codes and how batches reach us; is Viva Rise recorded as the affiliate, and does it earn commission on activation (#13); do these students have to pass the secondary-school gate (#12)?
 64. `M0` **Resolved 2026-09-25:** DNS moved to Unstoppable Domains nameservers and points to Vercel; the site is live on HTTPS from `fra1`. Original note: DNS control for `startupbrandname.com`: the domain is still held in the owner's Atom account (parked on Sedo). The owner must get it transferred, or its DNS changed, before it can point to Vercel.
-65. `M1` Brand: the UI is Modern Standard Arabic only, but "Startup Brand Name" is English. Is there an Arabic form of the name for the logo and headings? "Startup Brand Name" is also a descriptive phrase, which trademark offices often refuse; registrability in Jordan (and Algeria) should be checked before investing in the brand.
+65. `M1` **Resolved in part (D-050): lockup A.** Brand: the UI is Modern Standard Arabic only, but "Startup Brand Name" is English. Is there an Arabic form of the name for the logo and headings? "Startup Brand Name" is also a descriptive phrase, which trademark offices often refuse; registrability in Jordan (and Algeria) should be checked before investing in the brand.
+66. `M2b` AI crawler policy for public pages (D-054): allow AI search/answer crawlers only, or also AI training crawlers? Private app routes are blocked either way.
+67. `M2b` URL slugs for public pages: Latin/English (`/guides/break-even`, recommended) or Arabic (percent-encoded when shared)?
+68. `M2b` Analytics: cookieless Vercel Web Analytics plus Search Console and Bing Webmaster Tools (recommended), or Google Analytics 4 (needs a consent banner and adds a processor)?
+69. `M2b` Content ownership: who writes and approves public guides, the glossary and the founder biography (E-E-A-T)? Claude can draft in MSA; facts, country rules and credentials need the owner's review.
+70. `M0` The Supabase GitHub integration deploys migrations to production automatically on every push to `main`, bypassing the approval gate in D-047. The owner should switch off its production deploy, or D-047 must change.
