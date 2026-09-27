@@ -1,7 +1,8 @@
 name: Update RTL snapshots
 
-# Regenerates the visual baselines in the same pinned container CI compares against (D-055).
-# Download the "rtl-snapshots" artifact and commit it under apps/web/e2e/__screenshots__.
+# Regenerates the visual baselines in the same pinned container CI compares against (D-055), and
+# the share images in apps/web/public/og. Download the "rtl-snapshots" artifact and commit its
+# e2e/__screenshots__ and public/og folders.
 on:
   workflow_dispatch:
 
@@ -30,9 +31,12 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @sbn/web run build
-      - run: pnpm --filter @sbn/web exec playwright test design.spec.ts --update-snapshots=all
+      - run: pnpm --filter @sbn/web exec playwright test design.spec.ts pages.spec.ts --update-snapshots=all
+      - run: pnpm --filter @sbn/web run og:images
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: rtl-snapshots
-          path: apps/web/e2e/__screenshots__
+          path: |
+            apps/web/e2e/__screenshots__
+            apps/web/public/og
           retention-days: 7

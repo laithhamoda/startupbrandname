@@ -23,6 +23,8 @@ export default defineConfig({
     { name: 'site', testIgnore: /auth\//, use: { ...devices['Desktop Chrome'] } },
     // Sign-in flows: need the local Supabase stack (`pnpm db:start`) and its Mailpit inbox.
     { name: 'auth', testMatch: /auth\/.*\.spec\.ts/, use: { ...devices['Desktop Chrome'] } },
+    // Share images: writes public/og (`pnpm og:images`), run on demand only.
+    { name: 'og', testMatch: /og-images\.gen\.ts/, use: { ...devices['Desktop Chrome'] } },
   ],
   webServer: {
     command: `pnpm start --port ${PORT}`,

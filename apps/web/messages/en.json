@@ -22,17 +22,28 @@
     "login": "Sign in",
     "signup": "Create account",
     "projects": "My projects",
-    "account": "My account"
+    "account": "My account",
+    "howItWorks": "How it works",
+    "methodology": "Methodology",
+    "pricing": "Pricing",
+    "faq": "FAQ",
+    "glossary": "Glossary",
+    "about": "About",
+    "menu": "Menu"
+  },
+  "breadcrumbs": {
+    "label": "Breadcrumb",
+    "home": "Home"
+  },
+  "related": {
+    "heading": "Read next"
   },
   "footer": {
     "legal": "Legal links",
     "privacy": "Privacy policy",
-    "terms": "Terms of use"
-  },
-  "home": {
-    "heading": "Turn your idea into a business model with calculated numbers",
-    "lead": "The platform is under construction. It will give you a structured diagnostic of your business idea, a report with calculated numbers and a clear verdict, and an AI mentor that asks you the hard questions before the market does.",
-    "start": "Start for free"
+    "terms": "Terms of use",
+    "site": "Platform pages",
+    "disclaimer": "A planning tool, not legal or financial advice."
   },
   "notFound": {
     "title": "Page not found",

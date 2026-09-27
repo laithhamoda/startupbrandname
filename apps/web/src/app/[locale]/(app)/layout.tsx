@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteHeader } from '@/components/site-header';
-import { AppNav } from '@/components/site-nav';
 import { currentLocale } from '@/i18n/locale';
 import { requireAccount } from '@/lib/auth/session';
 
@@ -11,9 +10,7 @@ export default async function AppLayout({ children }: Readonly<{ children: React
 
   return (
     <>
-      <SiteHeader>
-        <AppNav />
-      </SiteHeader>
+      <SiteHeader area="app" />
       <main id="main" tabIndex={-1} className="flex-1 focus:outline-none">
         {children}
       </main>
