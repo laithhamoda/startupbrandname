@@ -155,6 +155,89 @@ export type Database = {
         };
         Relationships: [];
       };
+      tool_runs: {
+        Row: {
+          cache_read_tokens: number;
+          cache_write_tokens: number;
+          cost_usd: number;
+          created_at: string;
+          engine_version: string | null;
+          id: number;
+          input_hash: string;
+          model: string | null;
+          output: Json;
+          project_id: string;
+          prompt_version: string | null;
+          search_calls: number;
+          tokens_in: number;
+          tokens_out: number;
+          tool_id: string;
+        };
+        Insert: {
+          cache_read_tokens?: number;
+          cache_write_tokens?: number;
+          cost_usd?: number;
+          created_at?: string;
+          engine_version?: string | null;
+          id?: never;
+          input_hash: string;
+          model?: string | null;
+          output: Json;
+          project_id: string;
+          prompt_version?: string | null;
+          search_calls?: number;
+          tokens_in?: number;
+          tokens_out?: number;
+          tool_id: string;
+        };
+        Update: {
+          cache_read_tokens?: number;
+          cache_write_tokens?: number;
+          cost_usd?: number;
+          created_at?: string;
+          engine_version?: string | null;
+          id?: never;
+          input_hash?: string;
+          model?: string | null;
+          output?: Json;
+          project_id?: string;
+          prompt_version?: string | null;
+          search_calls?: number;
+          tokens_in?: number;
+          tokens_out?: number;
+          tool_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'tool_runs_project_id_fkey';
+            columns: ['project_id'];
+            isOneToOne: false;
+            referencedRelation: 'projects';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      usage_counters: {
+        Row: {
+          count: number;
+          key: string;
+          period_start: string;
+          user_id: string;
+        };
+        Insert: {
+          count?: number;
+          key: string;
+          period_start: string;
+          user_id: string;
+        };
+        Update: {
+          count?: number;
+          key?: string;
+          period_start?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -182,6 +265,23 @@ export type Database = {
       };
       delete_my_account: { Args: never; Returns: undefined };
       has_crossborder_consent: { Args: never; Returns: boolean };
+      record_tool_run: {
+        Args: {
+          p_cache_read_tokens: number;
+          p_cache_write_tokens: number;
+          p_cost_usd: number;
+          p_input_hash: string;
+          p_model: string;
+          p_output: Json;
+          p_project_id: string;
+          p_prompt_version: string;
+          p_tokens_in: number;
+          p_tokens_out: number;
+          p_tool_id: string;
+        };
+        Returns: number;
+      };
+      reserve_ai_call: { Args: never; Returns: boolean };
       set_crossborder_consent: {
         Args: { p_given: boolean; p_text_version: string };
         Returns: undefined;
