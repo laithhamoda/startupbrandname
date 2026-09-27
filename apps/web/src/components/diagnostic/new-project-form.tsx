@@ -43,6 +43,7 @@ export function NewProjectForm({
           <TextInput
             id={id}
             name="title"
+            dir="auto"
             maxLength={120}
             required
             aria-describedby={describedBy}

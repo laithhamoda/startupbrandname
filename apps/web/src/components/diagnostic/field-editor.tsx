@@ -74,6 +74,8 @@ function TextBox({
   return multiline > 0 ? (
     <textarea
       id={id}
+      // Founders write in Arabic or English whatever the interface language.
+      dir="auto"
       rows={multiline}
       value={value}
       onChange={(event) => {
@@ -85,6 +87,7 @@ function TextBox({
   ) : (
     <input
       id={id}
+      dir="auto"
       value={value}
       onChange={(event) => {
         onChange(event.target.value);
