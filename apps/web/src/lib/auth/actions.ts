@@ -11,6 +11,7 @@ import { type Locale, routing } from '@/i18n/routing';
 import { COUNTRY_CODES } from '@/lib/countries';
 import { closedCountries } from '@/lib/markets';
 import { createSupabaseServerClient, type SupabaseServerClient } from '@/lib/supabase/server';
+import { googleSignInAvailable } from './google';
 import { projectsPath } from './next-path';
 import { type OnboardingField, parseOnboarding } from './onboarding';
 import { completeOnboarding, finishSignIn, getSessionUser, saveSignupIntent } from './session';
@@ -181,7 +182,7 @@ export async function verifyEmailCode(
 
 async function redirectToGoogle(locale: Locale): Promise<AuthFormState> {
   // The button is hidden when Google is off; a crafted request gets an error, not Supabase's page.
-  if (!getServerEnv().AUTH_GOOGLE_ENABLED) return { status: 'error', error: 'failed' };
+  if (!(await googleSignInAvailable())) return { status: 'error', error: 'failed' };
   const supabase = await createSupabaseServerClient();
   const next = encodeURIComponent(projectsPath(locale));
   const { data, error } = await supabase.auth.signInWithOAuth({

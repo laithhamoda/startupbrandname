@@ -5,6 +5,7 @@ import { SignupFlow } from '@/components/auth/signup-flow';
 import { TextLink } from '@/components/ui/text-link';
 import { getServerEnv } from '@/env/server';
 import { currentLocale } from '@/i18n/locale';
+import { googleSignInAvailable } from '@/lib/auth/google';
 import { redirectIfSignedIn } from '@/lib/auth/session';
 import { countryOptions } from '@/lib/countries';
 import { closedCountries } from '@/lib/markets';
@@ -23,14 +24,13 @@ export default async function SignupPage() {
   const locale = await currentLocale();
   await redirectIfSignedIn(locale);
   const t = await getTranslations('auth');
-  const env = getServerEnv();
 
   return (
     <AuthShell title={t('signupTitle')} lead={t('signupLead')}>
       <SignupFlow
         countries={countryOptions(locale)}
-        closed={closedCountries(env)}
-        googleEnabled={env.AUTH_GOOGLE_ENABLED}
+        closed={closedCountries(getServerEnv())}
+        googleEnabled={await googleSignInAvailable()}
       />
       <p className="text-small">
         {t('haveAccount')} <TextLink href="/login">{t('loginTitle')}</TextLink>

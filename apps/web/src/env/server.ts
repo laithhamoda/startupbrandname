@@ -10,9 +10,12 @@ export const serverEnvSchema = z.object({
   // Kill switch for Algeria, open since 2026-09-26 by the owner's decision (D-068). "false"
   // closes signup for Algerian users without touching existing accounts.
   MARKET_DZ_ENABLED: booleanFlag.default(true),
-  // Shows "Continue with Google". Turn on only after Google is enabled in that environment's
-  // Supabase project; otherwise the button leads to Supabase's raw "provider is not enabled" error.
+  // Shows "Continue with Google" when the environment's Supabase project also has Google enabled
+  // (checked at runtime, D-089), so a mismatch never leads to Supabase's raw error page.
   AUTH_GOOGLE_ENABLED: booleanFlag.default(false),
+  // Tests only: "false" skips asking Supabase whether Google is enabled, so the end-to-end tests can
+  // press the button against a local stack that has no Google credentials.
+  AUTH_GOOGLE_VERIFY_PROVIDER: booleanFlag.default(true),
   // Search indexing stays off until public launch, and always off outside production (D-027, D-054).
   SITE_INDEXABLE: booleanFlag.default(false),
   // Set by Vercel at runtime.
