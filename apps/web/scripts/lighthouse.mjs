@@ -39,7 +39,8 @@ async function waitForServer() {
 }
 
 const server = spawn('pnpm', ['start', '--port', String(PORT)], { stdio: 'ignore' });
-const certDir = await mkdtemp(join(tmpdir(), 'sbn-lighthouse-'));
+// One temporary folder for the certificate and Chrome's profile, removed at the end.
+const workDir = await mkdtemp(join(tmpdir(), 'sbn-lighthouse-'));
 let proxy;
 let chrome;
 let failed = false;
@@ -53,8 +54,8 @@ try {
   }
 
   // HTTPS in front of the Next.js server, with a certificate that lives for this run only.
-  const keyPath = join(certDir, 'key.pem');
-  const certPath = join(certDir, 'cert.pem');
+  const keyPath = join(workDir, 'key.pem');
+  const certPath = join(workDir, 'cert.pem');
   execFileSync(
     'openssl',
     [
@@ -98,7 +99,10 @@ try {
   );
   await new Promise((resolve) => proxy.listen(TLS_PORT, '127.0.0.1', resolve));
 
+  const profileDir = join(workDir, 'chrome-profile');
+  await mkdir(profileDir);
   chrome = await chromeLauncher.launch({
+    userDataDir: profileDir,
     chromeFlags: [
       '--headless=new',
       '--no-sandbox',
@@ -108,6 +112,10 @@ try {
       // same switch).
       '--disable-field-trial-config',
       `--host-resolver-rules=MAP startupbrandname.com 127.0.0.1:${String(TLS_PORT)},MAP * ~NOTFOUND`,
+      // Under WSL the launcher rewrites the profile path in Windows form, which Linux Chrome would
+      // create as a folder inside the project. Chrome takes the last copy of a switch, so this
+      // restores the real path (and changes nothing elsewhere).
+      `--user-data-dir=${profileDir}`,
     ],
   });
   await mkdir(REPORT_DIR, { recursive: true });
@@ -153,7 +161,7 @@ try {
   await chrome?.kill();
   proxy?.close();
   server.kill();
-  await rm(certDir, { recursive: true, force: true });
+  await rm(workDir, { recursive: true, force: true });
 }
 
 process.exitCode = failed ? 1 : 0;
