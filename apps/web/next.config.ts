@@ -9,6 +9,8 @@ const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  // Workspace packages ship TypeScript source (packages/*/src).
+  transpilePackages: ['@sbn/question-bank'],
   headers: () =>
     Promise.resolve(
       indexable

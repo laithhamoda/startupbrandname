@@ -1,10 +1,11 @@
 import 'server-only';
+import type { Axis } from '@sbn/question-bank';
 import type { Localized, TitledText } from './types';
 
-/** Completeness weights per axis (docs/SPEC.md §3). They must add up to 100. */
-export const AXIS_WEIGHTS = { A: 5, B: 12, C: 20, D: 15, E: 10, F: 25, G: 5, H: 8 } as const;
+// The completeness weights come from the question bank, the one place the score is computed.
+export { AXIS_WEIGHTS } from '@sbn/question-bank';
 
-export type AxisLetter = keyof typeof AXIS_WEIGHTS;
+export type AxisLetter = Axis;
 
 export interface MethodologyContent {
   heading: string;

@@ -39,7 +39,7 @@ cannot reach the summary threshold), #61 (owner answer on accounts).
 
 19. `M3` Arabic text for follow-ups and the R3, R4, R6, R7 responses is missing. Draft for approval?
 20. `M3` **Resolved (D-108): the platform asks dinars or centimes.** Algerian amounts are often spoken in centimes ("مليون" commonly = 1,000,000 centimes = 10,000 DZD). Needs a clarification rule like "دينار" to avoid 100× errors.
-21. `M3/M4` Conversion rule, rate source and date for mixed currencies inside one project.
+21. `M3/M4` **Until answered, amounts in different currencies are not compared (D-113).** Conversion rule, rate source and date for mixed currencies inside one project.
 22. `M4` Algeria: "all calculations in DZD" vs F8 letting the user choose the report currency.
 23. `M3` Other ambiguous currency words needing a question ("ريال", "ليرة", "دولار")?
 
@@ -61,8 +61,8 @@ cannot reach the summary threshold), #61 (owner answer on accounts).
 
 35. `M3` **Resolved (D-102): ★ questions weigh double inside each axis.** **Contradiction:** with equal weights inside each axis, the 20 ★ questions reach 38.4% completeness (A 2/8×5 + B 3/8×12 + C 3/8×20 + D 3/8×15 + E 1/8×10 + F 5/8×25 + G 1/8×5 + H 2/8×8 = 38.375%), below the 40% summary threshold.
 36. `M3` **Resolved (D-104, D-105).** Do optional questions (B6), follow-ups and "لا أعرف" assumptions count as complete?
-37. `M3` Undefined field types: `text`, `currency`, and the combined types (`multi + text`, `boolean + text`, `boolean + percent`, `single + peak months`, `3 × number`, `3 × short_text`, `long_text / steps`, conditional C2, `range + currency`). Missing option lists: D2 sectors, H5, G5, A3, C7, C2 bands.
-38. `M3` Do R1 and R5 apply to every text field or only the questions named in the Logic column?
+37. `M3` **Resolved (D-112): named field kinds and option lists in the question bank.** Undefined field types: `text`, `currency`, and the combined types (`multi + text`, `boolean + text`, `boolean + percent`, `single + peak months`, `3 × number`, `3 × short_text`, `long_text / steps`, conditional C2, `range + currency`). Missing option lists: D2 sectors, H5, G5, A3, C7, C2 bands.
+38. `M3` **Resolved (D-112).** Do R1 and R5 apply to every text field or only the questions named in the Logic column?
 39. `M5` **Contradiction:** T17 JO checks `B7 ∈ {food, cosmetics}`, but B7 options are product / service / digital / hybrid; food and cosmetics are D2 sectors.
 40. `M5` T17 DZ needs an ANAE activity code (no question collects it) and a "goods import" signal (D6 mixes imports and FX exposure).
 41. `M3` Cross-type comparisons: F5 (amount) vs A5 (range + currency); A7 and H5 buckets vs BE_month. Which bound, which currency?
@@ -124,3 +124,5 @@ cannot reach the summary threshold), #61 (owner answer on accounts).
 82. `M2b` Which plan the pricing table highlights (D-094): Annual for now; Monthly is the other natural choice.
 83. `M2b` The course name as shown on the public pages: «الذكاء الاصطناعي في ريادة الأعمال» / "AI in Entrepreneurship". Confirm the exact wording.
 84. `M2b` Content review before launch (#69): the Arabic and English text of the seven public pages in `apps/web/src/content`, the FAQ answers and the 35 glossary definitions.
+85. `M3` Month names in Arabic: the question bank uses «يناير، فبراير…». Jordan usually says «كانون الثاني، شباط…» and Algeria «جانفي، فيفري…». Keep one list, or show the regional name by country?
+86. `M3` Review of the question bank text (D-106): the English versions, the hints and examples, the option lists (including the ISIC sector names), the follow-ups and the rule messages in `packages/question-bank/src`.
