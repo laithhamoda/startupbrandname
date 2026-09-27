@@ -2,9 +2,14 @@ import { describe, expect, it } from 'vitest';
 import { COUNTRY_CODES, countryOptions, isCountryCode } from './countries';
 
 describe('COUNTRY_CODES', () => {
-  it('lists the 249 ISO 3166-1 codes plus Kosovo, once each', () => {
-    expect(COUNTRY_CODES).toHaveLength(250);
+  it('lists the ISO 3166-1 codes except IL, plus Kosovo, once each', () => {
+    expect(COUNTRY_CODES).toHaveLength(249);
     expect(new Set(COUNTRY_CODES).size).toBe(COUNTRY_CODES.length);
+  });
+
+  it('does not offer IL (D-088)', () => {
+    expect(COUNTRY_CODES).not.toContain('IL');
+    expect(isCountryCode('IL')).toBe(false);
   });
 
   it('contains only two capital letters per code', () => {
@@ -25,6 +30,11 @@ describe('countryOptions', () => {
     const options = countryOptions('en');
     expect(options.find((option) => option.value === 'JO')?.label).toBe('Jordan');
     expect(options.filter((option) => option.label === option.value)).toEqual([]);
+  });
+
+  it('names Palestine as the owner chose, in both languages (D-088)', () => {
+    expect(countryOptions('ar').find((option) => option.value === 'PS')?.label).toBe('فلسطين');
+    expect(countryOptions('en').find((option) => option.value === 'PS')?.label).toBe('Palestine');
   });
 
   it('sorts by the name in the page language', () => {
