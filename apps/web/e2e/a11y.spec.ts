@@ -7,6 +7,8 @@ const PAGES = [
   ...PUBLIC_PAGES.flatMap(({ path }) => [`/ar${path}`, `/en${path}`]),
   '/ar/design',
   '/en/design',
+  '/ar/design/diagnostic',
+  '/en/design/diagnostic',
   '/ar/signup',
   '/en/signup',
   '/ar/login',

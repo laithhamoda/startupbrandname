@@ -113,6 +113,9 @@ ship them (see D-031 in `docs/DECISIONS.md`); check that list before adding a CL
 - Answers are stored in `answers` with their provenance; projects are created only through
   `create_project()`, which enforces the plan's project limit (D-109). Completeness and tasks are
   computed from the answers, never stored (D-113).
+- The diagnostic (M3b): `/[locale]/projects`, `/projects/new`, `/projects/{id}` (overview) and
+  `/projects/{id}/q/{step}` (one question at a time, D-117). Review the components without an
+  account at `/ar/design/diagnostic` (local and preview only, D-118).
 
 ## Environments
 

@@ -35,7 +35,8 @@ describe('message catalogues', () => {
 
   it('use the same ICU placeholders in both languages', () => {
     const placeholders = (text: unknown) =>
-      [...String(text).matchAll(/\{(\w+)/g)].map((match) => match[1]).sort();
+      // An ICU argument is {name} or {name, type, …}; plural branch texts ({Add at least…}) are not.
+      [...String(text).matchAll(/\{\s*(\w+)\s*[,}]/g)].map((match) => match[1]).sort();
     for (const [key, text] of arabic) {
       expect(placeholders(english.get(key)), key).toEqual(placeholders(text));
     }

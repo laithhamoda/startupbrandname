@@ -5,9 +5,26 @@ import type { Field, Option } from './types';
 
 const MAX_AMOUNT = 1_000_000_000_000;
 
+/**
+ * Codes of the checks below, used as zod issue messages so the app can show them in the page
+ * language. zod's own codes (too_small, invalid_type…) cover the rest.
+ */
+export const VALUE_ISSUES = [
+  'currency',
+  'choose_option',
+  'duplicate',
+  'min_above_max',
+  'percent_total',
+  'detail_required',
+  'percent_required',
+  'peak_months',
+  'describe_customer',
+] as const;
+export type ValueIssue = (typeof VALUE_ISSUES)[number];
+
 const text = (max: number) => z.string().trim().min(1).max(max);
 const optionalText = (max: number) => z.string().trim().max(max).optional();
-const currencyCode = z.string().refine(isCurrencyCode, 'Unknown ISO 4217 currency code');
+const currencyCode = z.string().refine(isCurrencyCode, 'currency');
 const amount = z.number().nonnegative().max(MAX_AMOUNT);
 const money = z.object({ amount, currency: currencyCode }).strict();
 const optionValue = (options: readonly Option[]) =>
@@ -41,18 +58,15 @@ export function valueSchema(field: Field): z.ZodType {
           other: field.other ? optionalText(200) : z.undefined().optional(),
         })
         .strict()
-        .refine(
-          (value) => value.values.length > 0 || (value.other ?? '') !== '',
-          'Choose at least one option',
-        )
-        .refine((value) => new Set(value.values).size === value.values.length, 'Duplicate option');
+        .refine((value) => value.values.length > 0 || (value.other ?? '') !== '', 'choose_option')
+        .refine((value) => new Set(value.values).size === value.values.length, 'duplicate');
     case 'money':
       return money;
     case 'money_range':
       return z
         .object({ min: amount, max: amount, currency: currencyCode })
         .strict()
-        .refine((value) => value.min <= value.max, 'The minimum is above the maximum');
+        .refine((value) => value.min <= value.max, 'min_above_max');
     case 'currency':
       return currencyCode;
     case 'country_city':
@@ -115,7 +129,7 @@ export function valueSchema(field: Field): z.ZodType {
           (value) =>
             Math.abs(value.items.reduce((sum, item) => sum + item.percent, 0) - 100) <=
             PERCENT_TOLERANCE,
-          'The shares must add up to 100%',
+          'percent_total',
         );
     case 'yes_no_detail':
       return z
@@ -123,16 +137,13 @@ export function valueSchema(field: Field): z.ZodType {
         .strict()
         .refine(
           (value) => value.answer !== (field.detailWhen === 'yes') || (value.detail ?? '') !== '',
-          'The detail is required for this answer',
+          'detail_required',
         );
     case 'yes_no_percent':
       return z
         .object({ answer: z.boolean(), percent: z.number().min(0).max(100).optional() })
         .strict()
-        .refine(
-          (value) => !value.answer || value.percent !== undefined,
-          'The percentage is required when the answer is yes',
-        );
+        .refine((value) => !value.answer || value.percent !== undefined, 'percent_required');
     case 'seasonality':
       return z
         .object({
@@ -140,11 +151,8 @@ export function valueSchema(field: Field): z.ZodType {
           peakMonths: z.array(z.number().int().min(1).max(12)).max(12),
         })
         .strict()
-        .refine((value) => !value.seasonal || value.peakMonths.length > 0, 'Choose the peak months')
-        .refine(
-          (value) => new Set(value.peakMonths).size === value.peakMonths.length,
-          'Duplicate month',
-        );
+        .refine((value) => !value.seasonal || value.peakMonths.length > 0, 'peak_months')
+        .refine((value) => new Set(value.peakMonths).size === value.peakMonths.length, 'duplicate');
     case 'sales_forecast': {
       const units = z.number().nonnegative().max(MAX_AMOUNT);
       return z.object({ month1: units, month6: units, month12: units }).strict();
@@ -183,7 +191,7 @@ export function valueSchema(field: Field): z.ZodType {
         .refine(
           (value) =>
             Object.values(value).some((part) => typeof part === 'string' && part.trim() !== ''),
-          'Describe the customer',
+          'describe_customer',
         );
   }
 }
