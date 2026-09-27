@@ -9,6 +9,9 @@
   "scripts": {
     "lint": "eslint . --max-warnings=0",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run --coverage"
+  },
+  "dependencies": {
+    "zod": "4.6.5"
   }
 }
