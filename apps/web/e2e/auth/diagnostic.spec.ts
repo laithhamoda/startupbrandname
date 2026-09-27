@@ -192,6 +192,59 @@ test('answers survive signing out, and the diagnostic resumes where it stopped',
   await expect(page.getByLabel('المدينة')).toHaveValue('إربد');
 });
 
+// CI runs these with AI_PROVIDER=fake: a deterministic stand-in that knows a few dialect words
+// (packages/ai/src/fake.ts), so no test calls the real model (D-123).
+test('with consent, a dialect answer is confirmed, then saved in MSA (D-119)', async ({ page }) => {
+  await signUpByEmail(page, uniqueEmail('ai-consent'), true);
+  const id = await createProject(page, 'full');
+
+  // B1: an idea too thin to follow is sent back (D-072).
+  await page.goto(`/ar/projects/${id}/q/B1`);
+  const idea = page.getByRole('textbox', { name: /صف فكرتك في جملة واحدة/ });
+  await idea.fill('صيانة المكيّفات');
+  await page.getByRole('button', { name: NEXT }).click();
+  await expect(page.getByText(/لم تتضح الفكرة بعد/)).toBeVisible();
+
+  // A dialect idea: the platform says what it understood and waits for a yes.
+  await idea.fill('بدي أقدّم صيانة دورية لمكيّفات المطاعم الصغيرة');
+  await page.getByRole('button', { name: NEXT }).click();
+  await expect(page.getByText('هل فهمنا إجابتك كما تقصد؟')).toBeVisible();
+  await expect(
+    page.getByText('فهمت أن أريد أقدّم صيانة دورية لمكيّفات المطاعم الصغيرة'),
+  ).toBeVisible();
+  await expect(page).toHaveURL(/\/q\/B1$/);
+  await page.getByRole('button', { name: 'نعم، هذا صحيح' }).click();
+  await expect(page).toHaveURL(/\/q\/B2$/);
+
+  // "Edit" keeps the founder on the question with what they typed.
+  const problem = page.getByRole('textbox');
+  await problem.fill('المطاعم الصغيرة تعاني بزاف من أعطال المكيّفات في الصيف وتخسر زبائنها');
+  await page.getByRole('button', { name: NEXT }).click();
+  await page.getByRole('button', { name: 'تعديل الإجابة' }).click();
+  await expect(page.getByText('هل فهمنا إجابتك كما تقصد؟')).toHaveCount(0);
+  await expect(problem).toBeFocused();
+  await expect(problem).toHaveValue(/تعاني بزاف/);
+  await expect(page).toHaveURL(/\/q\/B2$/);
+
+  // The saved idea is the confirmed MSA reading.
+  await page.goto(`/ar/projects/${id}/q/B1`);
+  await expect(idea).toHaveValue('أريد أقدّم صيانة دورية لمكيّفات المطاعم الصغيرة');
+});
+
+test('without consent, nothing is sent to the model and the answer is saved as typed (D-103)', async ({
+  page,
+}) => {
+  await signUpByEmail(page, uniqueEmail('ai-no-consent'));
+  const id = await createProject(page, 'full');
+
+  await page.goto(`/ar/projects/${id}/q/B1`);
+  const idea = page.getByRole('textbox', { name: /صف فكرتك في جملة واحدة/ });
+  await idea.fill('بدي أقدّم صيانة دورية لمكيّفات المطاعم الصغيرة');
+  await next(page, 'B2');
+  await page.goto(`/ar/projects/${id}/q/B1`);
+  await expect(idea).toHaveValue('بدي أقدّم صيانة دورية لمكيّفات المطاعم الصغيرة');
+});
+
 test('the diagnostic pages have no WCAG 2.2 AA violations', async ({ page }) => {
   await signUpByEmail(page, uniqueEmail('a11y-diagnostic'));
   const id = await createProject(page, 'full');
