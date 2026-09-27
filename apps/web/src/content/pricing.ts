@@ -30,6 +30,8 @@ export interface PricingContent {
   readOnlyAfter: string;
   startFree: string;
   paidSoon: string;
+  /** Beside the one start button under the desktop table. */
+  paidPlansSoon: string;
   fairUse: string;
   currency: string;
   payment: string;
@@ -86,6 +88,7 @@ export const PRICING: Localized<PricingContent> = {
     readOnlyAfter: 'مدة الخطة، ثم {count} يومًا للقراءة فقط',
     startFree: 'ابدأ مجانًا',
     paidSoon: 'قريبًا',
+    paidPlansSoon: 'الخطط المدفوعة قريبًا.',
     fairUse: '* غير محدود ضمن سياسة استخدام عادل تحمي الخدمة من الإساءة.',
     currency: 'الأسعار بالدولار الأمريكي.',
     payment: 'الدفع ببطاقات Visa والبطاقات الدولية الأخرى، أو عبر PayPal. لا نحفظ بيانات بطاقتك.',
@@ -141,6 +144,7 @@ export const PRICING: Localized<PricingContent> = {
     readOnlyAfter: 'The plan’s term, then {count} days read-only',
     startFree: 'Start for free',
     paidSoon: 'Coming soon',
+    paidPlansSoon: 'Paid plans are coming soon.',
     fairUse: '* Unlimited under a fair-use policy that protects the service from abuse.',
     currency: 'Prices are in US dollars.',
     payment:

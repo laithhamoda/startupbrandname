@@ -138,7 +138,8 @@ export function PricingTable({ text }: { text: PricingContent }) {
   return (
     <>
       <div className="hidden md:block">
-        <table className="w-full border-collapse">
+        {/* Fixed layout: equal plan columns, whatever the length of their text. */}
+        <table className="w-full table-fixed border-collapse">
           <caption className="sr-only">{text.tableCaption}</caption>
           <thead>
             <tr>
@@ -175,16 +176,15 @@ export function PricingTable({ text }: { text: PricingContent }) {
                 ))}
               </tr>
             ))}
-            <tr>
-              <td className="py-4" />
-              {COMPARED_PLANS.map((planId) => (
-                <td key={planId} className="px-3 py-4 align-top">
-                  <PlanAction planId={planId} text={text} />
-                </td>
-              ))}
-            </tr>
           </tbody>
         </table>
+        {/* One action under the table while only the free plan can be started (M7 opens the rest). */}
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-3 pt-6">
+          <ButtonLink href="/signup" variant="primary">
+            {text.startFree}
+          </ButtonLink>
+          <span className="text-small text-muted">{text.paidPlansSoon}</span>
+        </div>
       </div>
 
       <div className="md:hidden">
