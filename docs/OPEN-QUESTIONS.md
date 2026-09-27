@@ -11,8 +11,8 @@ cannot reach the summary threshold), #61 (owner answer on accounts).
 ## A. Files and milestone order
 
 1. `M0` **Resolved (D-001):** docs moved into the repository.
-2. `M3` Rule 5 names `lib/ai/deidentify.ts`; CLAUDE.md §7 has no `lib/` and puts AI code in `packages/ai/`. Which path?
-3. `M3` First LLM calls happen in M3 (dialect normalization, R-rule classification), but de-identification tests are only in M6's definition of done and cost logging and consent come later. Rule 5 means de-identification must ship in M3.
+2. `M3` **Resolved (D-107): `packages/ai/src/deidentify.ts`.** Rule 5 names `lib/ai/deidentify.ts`; CLAUDE.md §7 has no `lib/` and puts AI code in `packages/ai/`. Which path?
+3. `M3` **Resolved (D-107): de-identification ships in M3c.** First LLM calls happen in M3 (dialect normalization, R-rule classification), but de-identification tests are only in M6's definition of done and cost logging and consent come later. Rule 5 means de-identification must ship in M3.
 4. `M5` T6 (basic competitor matrix) is marked MVP but appears in no milestone; its report section is not marked ●.
 5. `M4` The M4 golden file for the Algerian auto-entrepreneur needs tax rules that are only verified from official sources in M5.
 
@@ -38,7 +38,7 @@ cannot reach the summary threshold), #61 (owner answer on accounts).
 ## D. Language and currency
 
 19. `M3` Arabic text for follow-ups and the R3, R4, R6, R7 responses is missing. Draft for approval?
-20. `M3` Algerian amounts are often spoken in centimes ("مليون" commonly = 1,000,000 centimes = 10,000 DZD). Needs a clarification rule like "دينار" to avoid 100× errors.
+20. `M3` **Resolved (D-108): the platform asks dinars or centimes.** Algerian amounts are often spoken in centimes ("مليون" commonly = 1,000,000 centimes = 10,000 DZD). Needs a clarification rule like "دينار" to avoid 100× errors.
 21. `M3/M4` Conversion rule, rate source and date for mixed currencies inside one project.
 22. `M4` Algeria: "all calculations in DZD" vs F8 letting the user choose the report currency.
 23. `M3` Other ambiguous currency words needing a question ("ريال", "ليرة", "دولار")?
@@ -59,8 +59,8 @@ cannot reach the summary threshold), #61 (owner answer on accounts).
 
 ## F. Question bank and completeness
 
-35. `M3` **Contradiction:** with equal weights inside each axis, the 20 ★ questions reach 38.4% completeness (A 2/8×5 + B 3/8×12 + C 3/8×20 + D 3/8×15 + E 1/8×10 + F 5/8×25 + G 1/8×5 + H 2/8×8 = 38.375%), below the 40% summary threshold.
-36. `M3` Do optional questions (B6), follow-ups and "لا أعرف" assumptions count as complete?
+35. `M3` **Resolved (D-102): ★ questions weigh double inside each axis.** **Contradiction:** with equal weights inside each axis, the 20 ★ questions reach 38.4% completeness (A 2/8×5 + B 3/8×12 + C 3/8×20 + D 3/8×15 + E 1/8×10 + F 5/8×25 + G 1/8×5 + H 2/8×8 = 38.375%), below the 40% summary threshold.
+36. `M3` **Resolved (D-104, D-105).** Do optional questions (B6), follow-ups and "لا أعرف" assumptions count as complete?
 37. `M3` Undefined field types: `text`, `currency`, and the combined types (`multi + text`, `boolean + text`, `boolean + percent`, `single + peak months`, `3 × number`, `3 × short_text`, `long_text / steps`, conditional C2, `range + currency`). Missing option lists: D2 sectors, H5, G5, A3, C7, C2 bands.
 38. `M3` Do R1 and R5 apply to every text field or only the questions named in the Logic column?
 39. `M5` **Contradiction:** T17 JO checks `B7 ∈ {food, cosmetics}`, but B7 options are product / service / digital / hybrid; food and cosmetics are D2 sectors.
@@ -88,7 +88,7 @@ cannot reach the summary threshold), #61 (owner answer on accounts).
 
 56. `M5` Banning "فائدة" (G7 = yes) also blocks its everyday meaning "benefit". Ban only in financing contexts?
 57. `M1/M5` **Resolved (D-051).** **Contradiction:** "BMC mirrored, starting at the right with customer segments". The standard canvas already has customer segments on the right; mirroring moves them left.
-58. `M3` Free users trigger Haiku calls on 64+ answers with no free-tier AI limit defined.
+58. `M3` **Resolved in part (D-103): consent only, with per-user and global caps; values set after measurement.** Free users trigger Haiku calls on 64+ answers with no free-tier AI limit defined.
 59. `M6` Is the mentor's "~1 page project summary" built by code or by the LLM?
 60. `M7` Vercel Cron or pg_cron per job (Vercel Hobby cron runs at most daily).
 
