@@ -117,3 +117,10 @@ cannot reach the summary threshold), #61 (owner answer on accounts).
 78. `M2` The privacy draft needs the operator's legal name, address and a contact email before launch.
 79. `M2` **Legal risk accepted by the owner (D-086):** without an age question at signup, under-18s can create free accounts, so their data (email, country, answers) is processed without a guardian's consent. Jordan's data protection law, Algeria's Law 18-07 and the GDPR (under 16 in the EU) may require that consent. Legal review: is an age question needed for the free tier after all?
 80. `M7` Age check at payment (D-086): the exact wording, and whether course vouchers (free, no payment) also need it.
+
+## Added 2026-09-27
+
+81. `M2b` About page (D-100): the founder name to show (full or first name), a one- or two-line bio, whether to mention the "AI in Entrepreneurship" course with a link, profile links (LinkedIn, for example), and a public contact email.
+82. `M2b` Which plan the pricing table highlights (D-094): Annual for now; Monthly is the other natural choice.
+83. `M2b` The course name as shown on the public pages: «الذكاء الاصطناعي في ريادة الأعمال» / "AI in Entrepreneurship". Confirm the exact wording.
+84. `M2b` Content review before launch (#69): the Arabic and English text of the seven public pages in `apps/web/src/content`, the FAQ answers and the 35 glossary definitions.

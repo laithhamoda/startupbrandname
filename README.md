@@ -80,8 +80,8 @@ ship them (see D-031 in `docs/DECISIONS.md`); check that list before adding a CL
 ## Sign-in (M2)
 
 - Email code or Google, through Supabase Auth, called from the server only (D-077). Signup asks
-  the two declarations first; accounts without them wait at `/onboarding` and are purged after
-  24 hours (D-065, D-079).
+  the country and the project question first (D-086); accounts without answers wait at
+  `/onboarding` and are purged after 24 hours (D-065, D-079).
 - Locally, codes land in Mailpit at http://127.0.0.1:54324 (started by `pnpm db:start`).
 - After a migration, run `pnpm db:types` and commit `apps/web/src/lib/supabase/database.types.ts`;
   CI fails when it is out of date.
@@ -89,6 +89,21 @@ ship them (see D-031 in `docs/DECISIONS.md`); check that list before adding a CL
   `pnpm --filter @sbn/web exec playwright test --project=auth`. The other tests run with
   `--project=site`.
 - Hosted setup (email, templates, Google, redirect URLs): [docs/runbooks/auth-setup.md](docs/runbooks/auth-setup.md).
+
+## Public site (M2b)
+
+- Seven public pages in both languages: home, `/how-it-works`, `/methodology`, `/pricing`,
+  `/glossary`, `/faq`, `/about` (D-091). The list lives in `apps/web/src/config/public-pages.ts` and
+  feeds the sitemap, `llms.txt`, the share images and the Lighthouse check.
+- Page text: `apps/web/src/content/` (D-095). Plans and prices: `apps/web/src/config/plans.ts`,
+  pinned to CLAUDE.md §3 by tests.
+- Share images: `apps/web/public/og/{ar,en}/*.png`. After changing a page title, build and run
+  `pnpm --filter @sbn/web og:images` (D-096).
+- Lighthouse (SEO and accessibility must be 100, D-097):
+  `VERCEL_ENV=production SITE_INDEXABLE=true pnpm --filter @sbn/web build`, then
+  `pnpm --filter @sbn/web lighthouse`. Needs Chrome (or `CHROME_PATH`) and openssl.
+- Launch steps (indexing, Search Console, Bing, analytics):
+  [docs/runbooks/launch-seo.md](docs/runbooks/launch-seo.md).
 
 ## Environments
 
