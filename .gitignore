@@ -10,6 +10,7 @@ coverage/
 *.tsbuildinfo
 playwright-report/
 test-results/
+lighthouse-report/
 blob-report/
 
 # Environment files: only .env.example is committed (CLAUDE.md §8.8)

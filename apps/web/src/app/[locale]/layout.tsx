@@ -3,12 +3,16 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 import type { ReactNode } from 'react';
 import { Providers } from '@/components/providers';
+import { SiteAnalytics } from '@/components/site-analytics';
 import { themeScript } from '@/components/theme-script';
 import { site } from '@/config/site';
+import { getServerEnv } from '@/env/server';
 import { currentLocale } from '@/i18n/locale';
-import { DIRECTION, OG_LOCALE, routing } from '@/i18n/routing';
+import { DIRECTION, routing } from '@/i18n/routing';
 import { isIndexable } from '@/seo/indexing';
 import { JsonLd, organizationJsonLd, websiteJsonLd } from '@/seo/json-ld';
+import { openGraphBase } from '@/seo/page-metadata';
+import { countVisits } from '@/lib/analytics';
 import { cairo, tajawal } from '../fonts';
 import '../globals.css';
 
@@ -24,16 +28,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: { default: title, template: `%s | ${site.name}` },
     description: t('description'),
     applicationName: site.name,
-    openGraph: {
-      type: 'website',
-      siteName: site.name,
-      locale: OG_LOCALE[locale],
-      alternateLocale: routing.locales
-        .filter((other) => other !== locale)
-        .map((other) => OG_LOCALE[other]),
-      title,
-      description: t('description'),
-    },
+    openGraph: { ...openGraphBase(locale), title, description: t('description') },
     robots: isIndexable() ? { index: true, follow: true } : { index: false, follow: false },
   };
 }
@@ -74,6 +69,7 @@ export default async function LocaleLayout({ children }: Readonly<{ children: Re
         </NextIntlClientProvider>
         <JsonLd data={organizationJsonLd(meta('descriptor'))} />
         <JsonLd data={websiteJsonLd(meta('descriptor'))} />
+        {countVisits(getServerEnv()) ? <SiteAnalytics /> : null}
       </body>
     </html>
   );

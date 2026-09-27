@@ -18,7 +18,9 @@ export const serverEnvSchema = z.object({
   AUTH_GOOGLE_VERIFY_PROVIDER: booleanFlag.default(true),
   // Search indexing stays off until public launch, and always off outside production (D-027, D-054).
   SITE_INDEXABLE: booleanFlag.default(false),
-  // Set by Vercel at runtime.
+  // Set by Vercel at build and run time. VERCEL is "1" on Vercel only; tests that imitate
+  // production set VERCEL_ENV alone, so they never load Vercel-only scripts.
+  VERCEL: z.literal('1').optional(),
   VERCEL_ENV: z.enum(['production', 'preview', 'development']).optional(),
   VERCEL_REGION: z.string().min(1).optional(),
 });

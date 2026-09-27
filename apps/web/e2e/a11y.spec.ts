@@ -1,10 +1,10 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
+import { PUBLIC_PAGES } from '../src/config/public-pages';
 
 // Signed-in pages are checked in e2e/auth/a11y.spec.ts, which needs the local database.
 const PAGES = [
-  '/ar',
-  '/en',
+  ...PUBLIC_PAGES.flatMap(({ path }) => [`/ar${path}`, `/en${path}`]),
   '/ar/design',
   '/en/design',
   '/ar/signup',
@@ -33,3 +33,21 @@ for (const path of PAGES) {
     });
   }
 }
+
+test.describe('on a phone', () => {
+  test.use({ viewport: { width: 360, height: 800 } });
+
+  for (const path of ['/ar', '/en/pricing']) {
+    test(`${path} with the menu open has no WCAG 2.2 AA violations`, async ({ page }) => {
+      await page.goto(path);
+      await page.evaluate(() => document.fonts.ready);
+      await page.getByRole('button', { name: /القائمة|Menu/ }).click();
+
+      const results = await new AxeBuilder({ page }).withTags(WCAG_TAGS).analyze();
+
+      expect(results.violations.map((violation) => `${violation.id}: ${violation.help}`)).toEqual(
+        [],
+      );
+    });
+  }
+});

@@ -1,7 +1,7 @@
 // Placeholder privacy policy (M2). Draft wording only: it must be replaced after legal review
 // (CLAUDE.md §10). Keep the processor list in step with docs/DECISIONS.md.
 
-export const PRIVACY_UPDATED = '2026-09-26';
+export const PRIVACY_UPDATED = '2026-09-27';
 
 export function PrivacyAr() {
   return (
@@ -38,6 +38,7 @@ export function PrivacyAr() {
             عالمية.
           </li>
           <li>Resend: إرسال رسائل البريد، في أيرلندا.</li>
+          <li>Vercel Web Analytics: إحصاءات الزيارات، دون ملفات تعريف ارتباط.</li>
           <li>Google: فقط إذا اخترت الدخول بحساب Google، في الولايات المتحدة.</li>
           <li>
             Anthropic: فقط بموافقتك الاختيارية، لتشغيل المرشد الذكي، في الولايات المتحدة. يُرسَل
@@ -58,6 +59,14 @@ export function PrivacyAr() {
         <p>
           يمكنك الاطلاع على بياناتك وتصحيح بلدك ولغتك وسحب موافقتك وحذف حسابك في أي وقت من صفحة
           حسابك.
+        </p>
+      </section>
+      <section>
+        <h2>إحصاءات الزيارات</h2>
+        <p>
+          نحصي زيارات الصفحات بأداة Vercel Web Analytics دون ملفات تعريف ارتباط. تُسجَّل الصفحة دون
+          أي معاملات في رابطها، والموقع الذي جئت منه، وبلدك، ونوع متصفحك ونظام التشغيل والجهاز،
+          بصورة مجمّعة لا نستخدمها لتحديد هويتك.
         </p>
       </section>
       <section>
@@ -109,6 +118,7 @@ export function PrivacyEn() {
             global delivery network.
           </li>
           <li>Resend: sends our emails, in Ireland.</li>
+          <li>Vercel Web Analytics: visit statistics, without cookies.</li>
           <li>Google: only if you choose to sign in with Google, in the United States.</li>
           <li>
             Anthropic: only with your optional consent, to run the AI mentor, in the United States.
@@ -131,6 +141,15 @@ export function PrivacyEn() {
         <p>
           On your account page you can see your data, correct your country and language, withdraw
           your consent and delete your account at any time.
+        </p>
+      </section>
+      <section>
+        <h2>Visit statistics</h2>
+        <p>
+          We count page visits with Vercel Web Analytics, without cookies. It records the page
+          without any parameters in its address, the site you came from, your country, and your
+          browser, operating system and device type, in aggregate form that we do not use to
+          identify you.
         </p>
       </section>
       <section>
