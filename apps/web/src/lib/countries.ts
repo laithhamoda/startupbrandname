@@ -1,10 +1,10 @@
 import type { Locale } from '@/i18n/routing';
 
 /**
- * ISO 3166-1 alpha-2 codes of every country and territory (249), plus XK (Kosovo, user-assigned
- * but widely used). Names come from the runtime's Unicode CLDR data in the page language, so
- * there is no name list to maintain. Politically sensitive names are listed for the owner's
- * review before launch (docs/OPEN-QUESTIONS.md #77).
+ * ISO 3166-1 alpha-2 codes of the countries and territories offered at signup, plus XK (Kosovo,
+ * user-assigned but widely used). IL is not offered, by the owner's decision (D-088). Names come
+ * from the runtime's Unicode CLDR data in the page language, except the overrides below.
+ * Other sensitive names await the owner's review (docs/OPEN-QUESTIONS.md #77).
  */
 export const COUNTRY_CODES = [
   'AD', 'AE', 'AF', 'AG', 'AI', 'AL', 'AM', 'AO', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AW', 'AX', 'AZ',
@@ -13,7 +13,7 @@ export const COUNTRY_CODES = [
   'CO', 'CR', 'CU', 'CV', 'CW', 'CX', 'CY', 'CZ', 'DE', 'DJ', 'DK', 'DM', 'DO', 'DZ', 'EC', 'EE',
   'EG', 'EH', 'ER', 'ES', 'ET', 'FI', 'FJ', 'FK', 'FM', 'FO', 'FR', 'GA', 'GB', 'GD', 'GE', 'GF',
   'GG', 'GH', 'GI', 'GL', 'GM', 'GN', 'GP', 'GQ', 'GR', 'GS', 'GT', 'GU', 'GW', 'GY', 'HK', 'HM',
-  'HN', 'HR', 'HT', 'HU', 'ID', 'IE', 'IL', 'IM', 'IN', 'IO', 'IQ', 'IR', 'IS', 'IT', 'JE', 'JM',
+  'HN', 'HR', 'HT', 'HU', 'ID', 'IE', 'IM', 'IN', 'IO', 'IQ', 'IR', 'IS', 'IT', 'JE', 'JM',
   'JO', 'JP', 'KE', 'KG', 'KH', 'KI', 'KM', 'KN', 'KP', 'KR', 'KW', 'KY', 'KZ', 'LA', 'LB', 'LC',
   'LI', 'LK', 'LR', 'LS', 'LT', 'LU', 'LV', 'LY', 'MA', 'MC', 'MD', 'ME', 'MF', 'MG', 'MH', 'MK',
   'ML', 'MM', 'MN', 'MO', 'MP', 'MQ', 'MR', 'MS', 'MT', 'MU', 'MV', 'MW', 'MX', 'MY', 'MZ', 'NA',
@@ -32,6 +32,11 @@ export interface CountryOption {
   label: string;
 }
 
+/** Names chosen by the owner instead of the CLDR ones (D-088). */
+const NAME_OVERRIDES: Partial<Record<CountryCode, Record<Locale, string>>> = {
+  PS: { ar: 'فلسطين', en: 'Palestine' },
+};
+
 const cache = new Map<Locale, readonly CountryOption[]>();
 
 /** Every country with its name in `locale`, sorted the way a reader of that language expects. */
@@ -43,7 +48,7 @@ export function countryOptions(locale: Locale): readonly CountryOption[] {
   const collator = new Intl.Collator(locale);
   const options = COUNTRY_CODES.map((code) => ({
     value: code,
-    label: names.of(code) ?? code,
+    label: NAME_OVERRIDES[code]?.[locale] ?? names.of(code) ?? code,
   })).sort((a, b) => collator.compare(a.label, b.label));
   cache.set(locale, options);
   return options;
