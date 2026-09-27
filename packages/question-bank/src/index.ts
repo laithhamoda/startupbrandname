@@ -10,6 +10,7 @@ export * from './numbers';
 export * from './options';
 export * from './questions';
 export * from './review';
+export * from './sequence';
 export * from './tasks';
 export * from './text';
 export * from './types';
