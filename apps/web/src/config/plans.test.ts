@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { COMPARED_PLANS, COURSE_PLANS, HIGHLIGHTED_PLAN, lowestPaidPrice, PLANS } from './plans';
 
@@ -63,5 +65,21 @@ describe('plans', () => {
 
   it('quotes the weekly plan as the lowest paid price', () => {
     expect(lowestPaidPrice()).toBe(5);
+  });
+});
+
+describe('the database seed', () => {
+  it('gives the free plan the same project limit as this table (D-109)', () => {
+    const migration = readFileSync(
+      fileURLToPath(
+        new URL(
+          '../../../../supabase/migrations/20260927200000_projects_and_answers.sql',
+          import.meta.url,
+        ),
+      ),
+      'utf8',
+    );
+    const seeded = /\('entitlement\.free\.projects', '(\d+)'\)/.exec(migration)?.[1];
+    expect(PLANS.free.entitlements.projects).toEqual({ kind: 'count', value: Number(seeded) });
   });
 });

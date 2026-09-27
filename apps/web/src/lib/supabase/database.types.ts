@@ -6,6 +6,47 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 export type Database = {
   public: {
     Tables: {
+      answers: {
+        Row: {
+          confidence: string;
+          normalized_value: Json;
+          project_id: string;
+          question_id: string;
+          raw_text: string | null;
+          source: string;
+          updated_at: string;
+          validated: boolean;
+        };
+        Insert: {
+          confidence: string;
+          normalized_value: Json;
+          project_id: string;
+          question_id: string;
+          raw_text?: string | null;
+          source: string;
+          updated_at?: string;
+          validated?: boolean;
+        };
+        Update: {
+          confidence?: string;
+          normalized_value?: Json;
+          project_id?: string;
+          question_id?: string;
+          raw_text?: string | null;
+          source?: string;
+          updated_at?: string;
+          validated?: boolean;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'answers_project_id_fkey';
+            columns: ['project_id'];
+            isOneToOne: false;
+            referencedRelation: 'projects';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       consent_events: {
         Row: {
           action: string;
@@ -63,6 +104,57 @@ export type Database = {
         };
         Relationships: [];
       };
+      projects: {
+        Row: {
+          country_code: string;
+          created_at: string;
+          currency: string;
+          id: string;
+          mode: string;
+          title: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          country_code: string;
+          created_at?: string;
+          currency: string;
+          id?: string;
+          mode?: string;
+          title: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          country_code?: string;
+          created_at?: string;
+          currency?: string;
+          id?: string;
+          mode?: string;
+          title?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      settings: {
+        Row: {
+          key: string;
+          updated_at: string;
+          value: Json;
+        };
+        Insert: {
+          key: string;
+          updated_at?: string;
+          value: Json;
+        };
+        Update: {
+          key?: string;
+          updated_at?: string;
+          value?: Json;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -76,6 +168,15 @@ export type Database = {
           p_has_project: boolean;
           p_locale: string;
           p_terms_version: string;
+        };
+        Returns: string;
+      };
+      create_project: {
+        Args: {
+          p_country_code: string;
+          p_currency: string;
+          p_mode: string;
+          p_title: string;
         };
         Returns: string;
       };

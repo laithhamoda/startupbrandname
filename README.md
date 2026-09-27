@@ -105,6 +105,15 @@ ship them (see D-031 in `docs/DECISIONS.md`); check that list before adding a CL
 - Launch steps (indexing, Search Console, Bing, analytics):
   [docs/runbooks/launch-seo.md](docs/runbooks/launch-seo.md).
 
+## Question bank (M3)
+
+- `packages/question-bank`: the 64 questions and their follow-ups in Arabic and English, the
+  answer shapes (zod), rules R1–R8, completeness and gating, and validation tasks. Pure code with
+  no I/O; `pnpm --filter @sbn/question-bank test` keeps its line coverage at or above 95%.
+- Answers are stored in `answers` with their provenance; projects are created only through
+  `create_project()`, which enforces the plan's project limit (D-109). Completeness and tasks are
+  computed from the answers, never stored (D-113).
+
 ## Environments
 
 | Environment | App                                    | Database                                     |
