@@ -2,7 +2,7 @@
 
 Do this once for **staging** (`mllysinjzlkhpcgbckil`) and once for **production**
 (`blexotsepkuslrnawbbq`). The local stack is configured by `supabase/config.toml` and needs none of it.
-Staging was set up on 2026-09-26 with the values below.
+Staging was set up on 2026-09-26 and production on 2026-09-27, with the values below.
 
 ## 1. Email (Resend, D-061)
 
@@ -59,7 +59,9 @@ A variable change applies to the next deployment only.
 
 ## 5. Google sign-in
 
-Google Cloud console, in a project for Startup Brand Name:
+Google Cloud console. The client lives in the Google Cloud project named "My First Project"
+(Google's default project; rename it in Project settings if wanted). One OAuth client serves both
+environments, with one client secret each (Google allows two), so either can be rotated alone:
 
 1. OAuth consent screen: External; app name `Startup Brand Name`; support email; authorised domain
    `startupbrandname.com`; scopes `openid`, `email`, `profile` only.
