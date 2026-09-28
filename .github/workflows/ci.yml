@@ -9,9 +9,10 @@ permissions:
   contents: read
 
 # A new push to a pull request cancels its older run. Runs on main always finish, so every merged
-# commit keeps a complete result.
+# commit keeps a complete result: each gets its own group, because GitHub also cancels a run that
+# is still pending in a group when a newer one is queued, whatever cancel-in-progress says.
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ci-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
