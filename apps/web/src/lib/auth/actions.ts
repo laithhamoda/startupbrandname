@@ -3,7 +3,7 @@
 import type { AuthError } from '@supabase/supabase-js';
 import { revalidatePath } from 'next/cache';
 import { cookies, headers } from 'next/headers';
-import { redirect } from 'next/navigation';
+import { redirect, unstable_rethrow } from 'next/navigation';
 import { z } from 'zod';
 import { CROSSBORDER_VERSION } from '@/config/legal';
 import { getServerEnv } from '@/env/server';
@@ -11,11 +11,18 @@ import { type Locale, routing } from '@/i18n/routing';
 import { COUNTRY_CODES } from '@/lib/countries';
 import { errorFields, log } from '@/lib/log';
 import { closedCountries } from '@/lib/markets';
-import { createSupabaseServerClient, type SupabaseServerClient } from '@/lib/supabase/server';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { googleSignInAvailable } from './google';
 import { projectsPath } from './next-path';
 import { type OnboardingField, parseOnboarding } from './onboarding';
-import { completeOnboarding, finishSignIn, getSessionUser, saveSignupIntent } from './session';
+import {
+  completeOnboarding,
+  deleteSignedInAccount,
+  finishSignIn,
+  getSessionUser,
+  notAvailablePath,
+  saveSignupIntent,
+} from './session';
 import { SIGNUP_INTENT_COOKIE } from './signup-intent';
 
 // Every action receives the page locale explicitly: Server Actions cannot read the [locale]
@@ -86,19 +93,6 @@ async function acceptSignupAnswers(
 
 async function forgetSignupAnswers(): Promise<void> {
   (await cookies()).delete(SIGNUP_INTENT_COOKIE);
-}
-
-/**
- * Ends the session of an account that was just deleted. signOut() can fail for a user who no
- * longer exists, and a leftover token would still verify until it expires, so the session
- * cookies are removed here whatever signOut() answers.
- */
-async function endDeletedSession(supabase: SupabaseServerClient): Promise<void> {
-  await supabase.auth.signOut({ scope: 'local' });
-  const cookieStore = await cookies();
-  for (const { name } of cookieStore.getAll()) {
-    if (name.startsWith('sb-')) cookieStore.delete(name);
-  }
 }
 
 // -----------------------------------------------------------------------------------------------
@@ -242,26 +236,31 @@ export async function submitOnboarding(
   const parsed = parseOnboarding(formData);
   if (!parsed.ok) return { status: 'error', error: 'answers', invalid: parsed.invalid };
 
-  const supabase = await createSupabaseServerClient();
-  if (!(await getSessionUser(supabase))) redirect(`/${locale}/login`);
-
   const { answers } = parsed;
-  if (closedCountries(getServerEnv()).includes(answers.country)) {
-    const { error } = await supabase.rpc('delete_my_account');
-    if (error) throw error;
-    await endDeletedSession(supabase);
-    // Shown on its own page: after the cookies change the gate re-renders, and it would send the
-    // now signed-out visitor to sign-in.
-    redirect(`/${locale}/not-available`);
+  let closed = false;
+  try {
+    const supabase = await createSupabaseServerClient();
+    if (!(await getSessionUser(supabase))) redirect(`/${locale}/login`);
+    const result = await completeOnboarding(supabase, {
+      country: answers.country,
+      locale,
+      hasProject: answers.project === 'yes',
+      crossborder: answers.crossborder === 'on',
+    });
+    if (result === 'closed') {
+      if (!(await deleteSignedInAccount(supabase, 'closed_market'))) {
+        return { status: 'error', error: 'failed' };
+      }
+      closed = true;
+    }
+  } catch (error) {
+    unstable_rethrow(error);
+    await log.error('auth.onboarding_failed', { ...errorFields(error), stage: 'gate' });
+    return { status: 'error', error: 'failed' };
   }
-
-  await completeOnboarding(supabase, {
-    country: answers.country,
-    locale,
-    hasProject: answers.project === 'yes',
-    crossborder: answers.crossborder === 'on',
-  });
-  redirect(projectsPath(locale));
+  // A closed country is explained on its own page: after the cookies change the gate re-renders,
+  // and it would send the now signed-out visitor to sign-in.
+  redirect(closed ? notAvailablePath(locale) : projectsPath(locale));
 }
 
 // -----------------------------------------------------------------------------------------------
@@ -340,8 +339,8 @@ export async function signOut(localeInput: Locale): Promise<void> {
 export async function deleteAccount(localeInput: Locale): Promise<void> {
   const locale = parseLocale(localeInput);
   const supabase = await createSupabaseServerClient();
-  const { error } = await supabase.rpc('delete_my_account');
-  if (error) throw error;
-  await endDeletedSession(supabase);
+  if (!(await deleteSignedInAccount(supabase, 'requested'))) {
+    throw new Error('The account could not be deleted.');
+  }
   redirect(`/${locale}/goodbye`);
 }
