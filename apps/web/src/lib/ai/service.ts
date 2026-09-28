@@ -18,6 +18,7 @@ import {
 import { type Answers, getQuestion, type QuestionId } from '@sbn/question-bank';
 import { z } from 'zod';
 import { getServerEnv } from '@/env/server';
+import { errorFields, log } from '@/lib/log';
 import type { Json } from '@/lib/supabase/database.types';
 import type { SupabaseServerClient } from '@/lib/supabase/server';
 
@@ -122,13 +123,11 @@ async function review(
       p_cache_read_tokens: result.usage.cacheReadTokens,
       p_cost_usd: costUsd(result.usage, settings.price),
     });
-    if (error) console.error('ai.record_tool_run failed', { code: error.code });
+    if (error) await log.error('ai.record_tool_run_failed', { code: error.code });
     return output;
   } catch (error) {
     // Any failure falls back to the fixed checks; the founder is never blocked by the model.
-    console.error('ai.review_text failed', {
-      name: error instanceof Error ? error.name : 'unknown',
-    });
+    await log.error('ai.review_text_failed', errorFields(error));
     return null;
   }
 }
