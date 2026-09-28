@@ -12,6 +12,7 @@
     "typecheck": "pnpm -r --if-present run typecheck",
     "test": "pnpm -r --if-present run test",
     "test:e2e": "pnpm --filter @sbn/web run build && pnpm --filter @sbn/web run test:e2e",
+    "test:e2e:auth": "pnpm --filter @sbn/web run build && pnpm --filter @sbn/web run test:e2e:auth",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "check:bundle": "node scripts/scan-client-bundle.mjs",
