@@ -1,0 +1,59 @@
+# Weekly version updates (D-142). Every version is pinned exactly (.npmrc save-exact, actions by
+# SHA, D-028), so nothing moves unless a pull request moves it. Security updates are separate and
+# are not delayed by the cooldown.
+version: 2
+
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: '06:00'
+      timezone: Asia/Amman
+    # Matches minimumReleaseAge in pnpm-workspace.yaml: a release must be 3 days old.
+    cooldown:
+      default-days: 3
+    commit-message:
+      prefix: chore
+      include: scope
+    # Packages that must move together get one pull request.
+    groups:
+      next:
+        patterns: ['next', 'eslint-config-next', '@next/*']
+      react:
+        patterns: ['react', 'react-dom', '@types/react', '@types/react-dom']
+      supabase:
+        patterns: ['@supabase/*', 'supabase']
+      # The Playwright image in ci.yml and update-snapshots.yml must be bumped by hand in the same
+      # pull request; scripts/check-playwright-version.mjs fails CI until it is.
+      playwright:
+        patterns: ['@playwright/test', '@axe-core/playwright']
+      vitest:
+        patterns: ['vitest', '@vitest/*']
+      eslint:
+        patterns: ['eslint', '@eslint/*', 'typescript-eslint', 'eslint-plugin-*', 'globals']
+      tailwind:
+        patterns: ['tailwindcss', '@tailwindcss/*']
+      commitlint:
+        patterns: ['@commitlint/*']
+    ignore:
+      # @types/node follows the Node.js 24 runtime (D-023).
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: '06:00'
+      timezone: Asia/Amman
+    cooldown:
+      default-days: 3
+    commit-message:
+      prefix: ci
+      include: scope
+    groups:
+      actions:
+        patterns: ['*']
