@@ -161,6 +161,20 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # The migration check compares a pull request with its base branch.
+          fetch-depth: 0
+      - if: github.event_name == 'pull_request'
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+      # Merged migrations never change, new ones sort last, and drops, renames and type changes
+      # wait for a contract migration (D-141).
+      - name: Check migration changes against the base branch
+        if: github.event_name == 'pull_request'
+        run: node scripts/check-migrations.mjs "origin/$BASE_REF"
+        env:
+          BASE_REF: ${{ github.base_ref }}
       # CLI version is read from the root lockfile.
       - uses: supabase/setup-cli@45a513f8c64c0bc8e0e3dfe572b5c95be85f6359 # v3.0.1
       - run: supabase db start
