@@ -106,6 +106,8 @@ The full order, rollback and kill switches: [docs/runbooks/operations.md](docs/r
       grants and policies it needs, with `(select auth.uid())`.
 - [ ] Every `security definer` function: `set search_path = ''`, checks `auth.uid()`, execute
       revoked from `public` and `anon`, granted to `authenticated` only.
+- [ ] A table or column that holds a user's data: add it to the export in
+      `docs/runbooks/data-requests.md` and to `docs/privacy/processing-register.md`.
 - [ ] pgTAP tests; `pnpm db:reset`, `pnpm db:test`, `pnpm db:lint`.
 - [ ] `pnpm db:types` and commit `apps/web/src/lib/supabase/database.types.ts`.
 - [ ] After merge: staging migrates by itself; production follows the release order in

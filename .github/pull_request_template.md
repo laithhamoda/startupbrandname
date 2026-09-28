@@ -21,6 +21,8 @@ Decisions: <!-- D-IDs added or applied; open questions resolved (#NN) -->
       `docs/runbooks/operations.md`.
 - [ ] Migration: expand only; the app works on the previous schema; RLS and pgTAP; `db:types`
       committed; no merged migration edited. Production follows `docs/runbooks/operations.md`.
+      New user data is added to the export (`docs/runbooks/data-requests.md`) and the processing
+      register.
 - [ ] UI string: `ar.json` and `en.json`, same keys and placeholders.
 - [ ] Visual change: snapshots from the "Update RTL snapshots" workflow, reviewed.
 - [ ] `CLAUDE.md` or `docs/SPEC.md` changed: the owner approved it (link), and
