@@ -9,6 +9,8 @@ ignoredBuiltDependencies:
   - unrs-resolver
 
 # Versions published less than 3 days ago (in minutes) are not picked when resolving, so a
-# compromised release is usually pulled before it can land here (D-142). Installs from the lockfile
-# are unaffected. An urgent fix goes in `minimumReleaseAgeExclude` until it is 3 days old.
+# compromised release is usually pulled before it can land here (D-142). pnpm 10 does not check
+# versions already in the lockfile; pnpm 12 does, even with --frozen-lockfile. An urgent fix (a
+# Dependabot security update, for example) goes in `minimumReleaseAgeExclude` as `name@version`
+# until it is 3 days old.
 minimumReleaseAge: 4320
