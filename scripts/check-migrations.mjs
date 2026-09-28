@@ -175,8 +175,8 @@ export function findDestructive(sql) {
 /**
  * Checks the migration changes of a branch.
  * - baseFiles: the file names in supabase/migrations on the base branch
- * - changes: [{ status, path }] from `git diff --name-status --no-renames base...HEAD`, where a
- *   rename appears as a deletion plus an addition
+ * - changes: [{ status, path }] from `git diff -z --name-status --no-renames base...HEAD`, where
+ *   a rename appears as a deletion plus an addition
  * - read(path): the committed contents of an added file
  * Returns the problems found; an empty list means the migrations are safe to merge.
  */
@@ -229,14 +229,42 @@ export function checkMigrations({ baseFiles, changes, read }) {
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 
-function git(...args) {
-  return execFileSync('git', args, { cwd: ROOT, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+function git(cwd, ...args) {
+  return execFileSync('git', args, { cwd, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+}
+
+/**
+ * The input of checkMigrations for HEAD against base, read from the repository at cwd. Git lists
+ * paths with -z, so they come out as they are: without it, a name with unusual characters is
+ * quoted (core.quotePath) and would slip past every rule.
+ */
+export function readChanges(base, cwd = ROOT) {
+  const baseFiles = git(cwd, 'ls-tree', '-z', '--name-only', base, '--', MIGRATIONS_DIR)
+    .split('\0')
+    .filter(Boolean)
+    .map((path) => path.slice(MIGRATIONS_DIR.length));
+  // With -z and --no-renames, each change is a status field and a path field, both NUL-ended.
+  const fields = git(
+    cwd,
+    'diff',
+    '-z',
+    '--name-status',
+    '--no-renames',
+    `${base}...HEAD`,
+    '--',
+    MIGRATIONS_DIR,
+  ).split('\0');
+  const changes = [];
+  for (let i = 0; i + 1 < fields.length; i += 2) {
+    changes.push({ status: fields[i].charAt(0), path: fields[i + 1] });
+  }
+  return { baseFiles, changes, read: (path) => git(cwd, 'show', `HEAD:${path}`) };
 }
 
 function main() {
   const base = process.argv[2] ?? 'origin/main';
   try {
-    git('rev-parse', '--verify', '--quiet', `${base}^{commit}`);
+    git(ROOT, 'rev-parse', '--verify', '--quiet', `${base}^{commit}`);
   } catch {
     console.error(
       `Base "${base}" not found. Fetch it first (in CI: actions/checkout with fetch-depth: 0).`,
@@ -244,30 +272,8 @@ function main() {
     process.exit(2);
   }
 
-  const baseFiles = git('ls-tree', '--name-only', base, '--', MIGRATIONS_DIR)
-    .split('\n')
-    .filter(Boolean)
-    .map((path) => path.slice(MIGRATIONS_DIR.length));
-  const changes = git(
-    'diff',
-    '--name-status',
-    '--no-renames',
-    `${base}...HEAD`,
-    '--',
-    MIGRATIONS_DIR,
-  )
-    .split('\n')
-    .filter(Boolean)
-    .map((line) => {
-      const [status = '', path = ''] = line.split('\t');
-      return { status: status.charAt(0), path };
-    });
-
-  const problems = checkMigrations({
-    baseFiles,
-    changes,
-    read: (path) => git('show', `HEAD:${path}`),
-  });
+  const { baseFiles, changes, read } = readChanges(base);
+  const problems = checkMigrations({ baseFiles, changes, read });
   if (problems.length > 0) {
     console.error(`Migration check failed against ${base}:`);
     for (const problem of problems) console.error(`  ${problem}`);

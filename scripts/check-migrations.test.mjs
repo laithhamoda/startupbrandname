@@ -1,8 +1,16 @@
-import { readFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
-import { checkMigrations, findDestructive, sqlStatements } from './check-migrations.mjs';
+import {
+  checkMigrations,
+  findDestructive,
+  readChanges,
+  sqlStatements,
+} from './check-migrations.mjs';
 
 const kinds = (sql) => findDestructive(sql).map(({ name }) => name);
 const migration = (name) =>
@@ -256,5 +264,50 @@ describe('checkMigrations', () => {
         read: () => 'create schema private;',
       }),
     ).toEqual([]);
+  });
+});
+
+describe('readChanges', () => {
+  it('reads paths from git as they are, so an unusual file name is still checked', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'check-migrations-'));
+    // A throwaway repository that ignores the machine's git settings.
+    const env = {
+      ...process.env,
+      GIT_CONFIG_GLOBAL: '/dev/null',
+      GIT_CONFIG_NOSYSTEM: '1',
+      GIT_AUTHOR_NAME: 'Test',
+      GIT_AUTHOR_EMAIL: 'test@example.test',
+      GIT_COMMITTER_NAME: 'Test',
+      GIT_COMMITTER_EMAIL: 'test@example.test',
+    };
+    const git = (...args) => execFileSync('git', args, { cwd: dir, env, encoding: 'utf8' });
+    const write = (name, sql) => writeFileSync(join(dir, 'supabase/migrations', name), sql);
+    try {
+      mkdirSync(join(dir, 'supabase/migrations'), { recursive: true });
+      git('init', '-q', '-b', 'main');
+      // Git's default, which quotes a path with non-ASCII characters unless -z is used.
+      git('config', 'core.quotePath', 'true');
+      write('20260928090000_ai_usage.sql', 'create table a (id int);');
+      git('add', '.');
+      git('commit', '-q', '-m', 'base');
+      write('20260928090000_ai_usage.sql', 'create table a (id bigint);');
+      write('20260929090000_café.sql', 'drop table a;');
+      git('add', '.');
+      git('commit', '-q', '-m', 'change');
+
+      const changes = readChanges('main~1', dir);
+      expect(changes.baseFiles).toEqual(['20260928090000_ai_usage.sql']);
+      expect(changes.changes).toEqual([
+        { status: 'M', path: 'supabase/migrations/20260928090000_ai_usage.sql' },
+        { status: 'A', path: 'supabase/migrations/20260929090000_café.sql' },
+      ]);
+      expect(changes.read('supabase/migrations/20260929090000_café.sql')).toBe('drop table a;');
+      expect(checkMigrations(changes)).toEqual([
+        expect.stringContaining('20260928090000_ai_usage.sql: edited after it was merged'),
+        expect.stringContaining('20260929090000_café.sql: the name must be'),
+      ]);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
   });
 });
