@@ -2,9 +2,11 @@
 
 import { type Field, message, type NumberRange } from '@sbn/question-bank';
 import { useTranslations } from 'next-intl';
+import { unstable_rethrow } from 'next/navigation';
 import { useEffect, useRef, useState, useTransition } from 'react';
 import { Button, ButtonLink } from '@/components/ui/button';
 import { RuleAlert } from '@/components/ui/rule-alert';
+import { TextLink } from '@/components/ui/text-link';
 import { useRouter } from '@/i18n/navigation';
 import type { Locale } from '@/i18n/routing';
 import { type SaveResult, saveAnswer } from '@/lib/diagnostic/actions';
@@ -66,16 +68,26 @@ export function AnswerEditor(props: AnswerEditorProps) {
   function send(submission: Parameters<typeof saveAnswer>[0]['submission']) {
     if (submission.kind === 'value') lastValue.current = submission.value;
     startTransition(async () => {
-      const outcome = await saveAnswer({
-        locale: props.locale,
-        projectId: props.projectId,
-        step: props.step,
-        submission,
-      });
+      let outcome: SaveResult;
+      try {
+        outcome = await saveAnswer({
+          locale: props.locale,
+          projectId: props.projectId,
+          step: props.step,
+          submission,
+        });
+      } catch (error) {
+        // A redirect (the session ended) still navigates; anything else, such as a dropped
+        // connection, keeps the draft on screen so the founder can try again.
+        unstable_rethrow(error);
+        outcome = { status: 'error', reason: 'failed' };
+      }
       if (outcome.status === 'saved' && outcome.notes.length === 0) {
         router.push(outcome.next ?? props.overviewHref);
         return;
       }
+      // The project or this follow-up changed elsewhere: show the page as it is now.
+      if (outcome.status === 'error' && outcome.reason === 'stale') router.refresh();
       setResult(outcome);
     });
   }
@@ -231,7 +243,14 @@ export function AnswerEditor(props: AnswerEditorProps) {
             </ul>
           </RuleAlert>
         ) : null}
-        {result?.status === 'error' ? <RuleAlert message={t('error')} /> : null}
+        {result?.status === 'error' && result.reason === 'failed' ? (
+          <RuleAlert message={t('error')} />
+        ) : null}
+        {result?.status === 'error' && result.reason === 'stale' ? (
+          <RuleAlert message={t('stale')}>
+            <TextLink href={props.overviewHref}>{t('staleOverview')}</TextLink>
+          </RuleAlert>
+        ) : null}
         {notes.length > 0 ? <FindingList findings={notes} /> : null}
       </div>
 

@@ -53,30 +53,40 @@ interface AnswerRow {
 function readAnswers(rows: readonly AnswerRow[]): { answers: Answers; unreadable: string[] } {
   const answers: Answers = {};
   const unreadable: string[] = [];
+  const followUpRows: AnswerRow[] = [];
   for (const row of rows) {
     const id = row.question_id;
-    if (isQuestionId(id)) {
-      const question = getQuestion(id);
-      const parsed = answerSchema(question.field, question.allowUnknown).safeParse(
-        row.normalized_value,
-      );
-      if (parsed.success) answers[id] = parsed.data;
-      else unreadable.push(id);
+    if (!isQuestionId(id)) {
+      followUpRows.push(row);
       continue;
     }
-    const followUp = FOLLOW_UPS.find((candidate) => candidate.id === id);
-    const parsed = followUp
-      ? answerSchema(followUp.field, false).safeParse(row.normalized_value)
-      : null;
-    if (followUp && parsed?.success) answers[followUp.id] = parsed.data;
+    const question = getQuestion(id);
+    const parsed = answerSchema(question.field, question.allowUnknown).safeParse(
+      row.normalized_value,
+    );
+    if (parsed.success) answers[id] = parsed.data;
     else unreadable.push(id);
+  }
+  // Follow-ups last: whether one applies depends on the core answers only.
+  for (const row of followUpRows) {
+    const followUp = FOLLOW_UPS.find((candidate) => candidate.id === row.question_id);
+    if (!followUp) {
+      unreadable.push(row.question_id);
+      continue;
+    }
+    // Its trigger no longer holds, and the delete after the last save did not go through (D-116).
+    if (!followUp.when(answers)) continue;
+    const parsed = answerSchema(followUp.field, false).safeParse(row.normalized_value);
+    if (parsed.success) answers[followUp.id] = parsed.data;
+    else unreadable.push(followUp.id);
   }
   return { answers, unreadable };
 }
 
 /**
  * Answers as the question bank understands them. A stored value that no longer fits its
- * question (edited outside the app, or from an older version) counts as missing, never as data.
+ * question (edited outside the app, or from an older version) counts as missing, never as data,
+ * and so does a follow-up whose trigger no longer holds (one source of truth, rule 3).
  */
 export function parseAnswers(rows: readonly AnswerRow[]): Answers {
   return readAnswers(rows).answers;

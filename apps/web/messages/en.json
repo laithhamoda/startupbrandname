@@ -153,7 +153,9 @@
     "confirmYes": "Yes, that is right",
     "confirmEdit": "Edit my answer",
     "invalid": "Check your answer:",
-    "error": "Could not save. Please try again.",
+    "error": "Could not save. Your answer is still here: please try again.",
+    "stale": "This question no longer applies to your project, so this answer was not saved. Your other answers are safe.",
+    "staleOverview": "Back to the project overview",
     "errors": {
       "required": "Complete the required fields.",
       "minItems": "{count, plural, one {Add at least one item.} other {Add at least # items.}}",

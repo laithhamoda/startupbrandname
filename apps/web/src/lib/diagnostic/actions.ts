@@ -17,12 +17,13 @@ import {
   rangeValue,
   reviewAnswer,
   reviewProject,
+  type StepId,
   VALUE_ISSUES,
 } from '@sbn/question-bank';
 import { needsConfirmation } from '@sbn/ai';
 import { getTranslations } from 'next-intl/server';
 import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
+import { redirect, unstable_rethrow } from 'next/navigation';
 import { z } from 'zod';
 import { type Locale, routing } from '@/i18n/routing';
 import type { Json } from '@/lib/supabase/database.types';
@@ -37,6 +38,15 @@ import { projectPath, stepFromSlug, stepPath } from './steps';
 
 // Every action receives the page locale explicitly (Server Actions cannot read [locale]) and
 // validates all input: the question bank decides what an answer may be (CLAUDE.md rule 7).
+//
+// Server Action convention, for every action the UI calls:
+// - It returns a typed result for each outcome a person can meet, failures included (the
+//   database refused or could not be reached, the project is gone). The failure is logged with
+//   lib/log.ts and the form shows it next to the button, keeping what the person entered.
+// - It throws only for invariant violations: input no page of ours can send, such as an unknown
+//   locale. Those reach the error pages (error.tsx), with a digest that matches the log.
+// - redirect() and notFound() are signals, not errors: a catch that covers them calls
+//   unstable_rethrow(error) first, on the server and in the component that awaits the action.
 
 const localeSchema = z.enum(routing.locales);
 const modeSchema = z.enum(['quick', 'full']);
@@ -131,7 +141,20 @@ export type SaveResult =
   | { status: 'invalid'; messages: string[] }
   /** Not saved yet: confirm the AI's reading of a dialect answer first (D-119). */
   | { status: 'confirm'; text: string }
-  | { status: 'error' };
+  /**
+   * Not saved. `stale`: the project is gone or this follow-up no longer applies, so trying again
+   * cannot help. `failed`: anything else, such as the database being unreachable; the editor
+   * keeps the draft so the founder can try again.
+   */
+  | { status: 'error'; reason: 'failed' | 'stale' };
+
+const FAILED = { status: 'error', reason: 'failed' } as const satisfies SaveResult;
+const STALE = { status: 'error', reason: 'stale' } as const satisfies SaveResult;
+
+/** How far a save got, for the log line when it fails. */
+interface SaveTrace {
+  stage: 'account' | 'load' | 'review' | 'upsert';
+}
 
 async function issueMessages(
   issues: readonly z.core.$ZodIssue[],
@@ -162,58 +185,100 @@ function blockingFindings(questionId: QuestionId, answer: Answer, answers: Answe
   );
 }
 
-/** Removes stored follow-ups that the answers no longer call for (one source of truth). */
+/**
+ * Deletes every stored follow-up the answers no longer call for (D-116), read or not: loading
+ * already ignores them (parseAnswers). Best effort: the answer itself is saved by then, and the
+ * next save retries, so a failure is logged instead of failing the save.
+ */
 async function dropInactiveFollowUps(
   supabase: Awaited<ReturnType<typeof requireAccount>>['supabase'],
   projectId: string,
   answers: Answers,
 ): Promise<Answers> {
   const active = new Set(activeFollowUps(answers).map((followUp) => followUp.id));
-  const stale = FOLLOW_UPS.filter((followUp) => answers[followUp.id] && !active.has(followUp.id));
-  if (stale.length === 0) return answers;
-  const { error } = await supabase
-    .from('answers')
-    .delete()
-    .eq('project_id', projectId)
-    .in(
-      'question_id',
-      stale.map((followUp) => followUp.id),
-    );
-  if (error) throw error;
-  const staleIds = new Set<string>(stale.map((followUp) => followUp.id));
-  return Object.fromEntries(Object.entries(answers).filter(([id]) => !staleIds.has(id)));
+  const inactive = FOLLOW_UPS.map((followUp) => followUp.id).filter((id) => !active.has(id));
+  const inactiveIds = new Set<string>(inactive);
+  const current = Object.fromEntries(
+    Object.entries(answers).filter(([id]) => !inactiveIds.has(id)),
+  );
+  if (inactive.length === 0) return current;
+  try {
+    const { error } = await supabase
+      .from('answers')
+      .delete()
+      .eq('project_id', projectId)
+      .in('question_id', inactive);
+    if (error) {
+      await log.warn('diagnostic.follow_up_cleanup_failed', { ...errorFields(error), projectId });
+    }
+  } catch (error) {
+    unstable_rethrow(error);
+    await log.warn('diagnostic.follow_up_cleanup_failed', { ...errorFields(error), projectId });
+  }
+  return current;
 }
 
+/**
+ * Saves one step's answer, or says why not. Failures are returned, never thrown (see the
+ * convention at the top of this file), so the editor keeps what the founder typed.
+ */
 export async function saveAnswer(input: SaveInput): Promise<SaveResult> {
   const parsedInput = saveSchema.safeParse(input);
-  if (!parsedInput.success) return { status: 'error' };
-  const { locale, projectId, submission } = parsedInput.data;
+  if (!parsedInput.success) return FAILED;
   const step = stepFromSlug(parsedInput.data.step.replace('.', '-'));
-  if (!step) return { status: 'error' };
+  if (!step) return FAILED;
 
+  const trace: SaveTrace = { stage: 'account' };
+  try {
+    return await save({ ...parsedInput.data, step }, trace);
+  } catch (error) {
+    // Redirects (a session that ended) and Next.js's own signals must pass through.
+    unstable_rethrow(error);
+    await log.error('diagnostic.save_failed', {
+      ...errorFields(error),
+      stage: trace.stage,
+      questionId: step,
+    });
+    return FAILED;
+  }
+}
+
+async function save(
+  {
+    locale,
+    projectId,
+    step,
+    submission,
+  }: Omit<z.output<typeof saveSchema>, 'step'> & { step: StepId },
+  trace: SaveTrace,
+): Promise<SaveResult> {
   const { supabase, user } = await requireAccount(locale);
+  trace.stage = 'load';
   const loaded = await loadProject(supabase, projectId);
-  if (!loaded) return { status: 'error' };
+  // Deleted, perhaps in another tab.
+  if (!loaded) return STALE;
   const { project, answers } = loaded;
 
   const coreId = isQuestionId(step) ? step : null;
   const followUp = coreId ? null : FOLLOW_UPS.find((candidate) => candidate.id === step);
-  if (followUp && !followUp.when(answers)) return { status: 'error' };
+  // An earlier answer changed (perhaps in another tab) and this follow-up no longer applies.
+  if (followUp && !followUp.when(answers)) return STALE;
   const field = coreId ? getQuestion(coreId).field : followUp?.field;
-  if (!field) return { status: 'error' };
+  if (!field) return STALE;
   const allowUnknown = coreId ? getQuestion(coreId).allowUnknown : false;
 
   let candidate: unknown;
   if (submission.kind === 'unknown') {
-    if (!allowUnknown) return { status: 'error' };
+    if (!allowUnknown) return FAILED;
     candidate = { status: 'unknown' };
   } else if (submission.kind === 'range') {
-    if (field.kind !== 'number') return { status: 'error' };
+    if (field.kind !== 'number') return FAILED;
     candidate = { status: 'answered', value: rangeValue(submission) };
   } else {
     candidate = { status: 'answered', value: submission.value };
   }
 
+  trace.stage = 'review';
   const parsed = answerSchema(field, allowUnknown).safeParse(candidate);
   if (!parsed.success) {
     return { status: 'invalid', messages: await issueMessages(parsed.error.issues, locale) };
@@ -268,11 +333,16 @@ export async function saveAnswer(input: SaveInput): Promise<SaveResult> {
               findings: blocking.map((finding) => viewFinding(finding, locale)),
             };
           }
+        } else {
+          // The model's reading does not fit the question (too long, for instance). The founder
+          // confirmed their own answer, which already passed every check above: save it as typed.
+          await log.warn('diagnostic.msa_unusable', { questionId: coreId, reason: 'schema' });
         }
       }
     }
   }
 
+  trace.stage = 'upsert';
   const provenance = provenanceOf(answer, submission.kind === 'range');
   const { error } = await supabase.from('answers').upsert({
     project_id: project.id,
@@ -289,7 +359,7 @@ export async function saveAnswer(input: SaveInput): Promise<SaveResult> {
       stage: 'upsert',
       questionId: step,
     });
-    return { status: 'error' };
+    return FAILED;
   }
 
   const current = await dropInactiveFollowUps(supabase, project.id, updated);
