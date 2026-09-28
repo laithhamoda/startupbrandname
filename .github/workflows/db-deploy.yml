@@ -50,3 +50,7 @@ jobs:
       - uses: supabase/setup-cli@45a513f8c64c0bc8e0e3dfe572b5c95be85f6359 # v3.0.1
       - run: supabase link --project-ref "$SUPABASE_PROJECT_REF"
       - run: supabase db push --yes
+      # Read-only: shows which versions the database has recorded next to the files, so a gap
+      # or a mismatch is visible in the run log.
+      - name: List applied migrations
+        run: supabase migration list --linked
