@@ -1,7 +1,8 @@
 name: DB deploy
 
 # Staging: automatic when migrations change on main.
-# Production: manual run only, with the typed confirmation "migrate production" (D-047).
+# Production: manual run only. The db-production environment deploys only from main and waits for
+# the owner's approval; the typed confirmation "migrate production" is a second factor (D-140).
 # The `db-` prefix keeps these apart from the `Production`/`Preview` environments Vercel creates.
 on:
   push:
@@ -38,8 +39,8 @@ jobs:
       SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
       SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
     steps:
-      # Required reviewers are unavailable for private repos below GitHub Enterprise (D-047),
-      # so production needs a typed confirmation instead.
+      # A second factor on top of the environment's required reviewer: a production run started
+      # by mistake stops here even after it is approved (D-140).
       - name: Require typed confirmation for production
         if: inputs.target == 'production' && inputs.confirm != 'migrate production'
         run: |
