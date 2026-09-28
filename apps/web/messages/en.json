@@ -48,7 +48,16 @@
   "notFound": {
     "title": "Page not found",
     "body": "The link may have changed, or the page may have been removed.",
-    "home": "Back to the home page"
+    "home": "Back to the home page",
+    "projects": "Back to my projects"
+  },
+  "errors": {
+    "title": "Something went wrong",
+    "body": "This page could not be shown. Everything you saved is safe. Try again, or come back in a few minutes.",
+    "retry": "Try again",
+    "projects": "Back to my projects",
+    "home": "Back to the home page",
+    "reference": "Reference:"
   },
   "aboutYou": {
     "country": "Country of residence",
