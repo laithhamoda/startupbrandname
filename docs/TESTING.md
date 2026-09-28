@@ -102,5 +102,6 @@ VERCEL_ENV=production SITE_INDEXABLE=true pnpm --filter @sbn/web build
 pnpm --filter @sbn/web lighthouse
 ```
 
-Needs Chrome (or `CHROME_PATH`) and openssl. That build is indexable and hides `/design`, so the
-end-to-end tests would fail against it; `pnpm test:e2e` and `pnpm test:e2e:auth` rebuild first.
+Needs Chrome (or `CHROME_PATH`) and openssl. That build is indexable, and `VERCEL_ENV=production`
+makes `/design` return 404 (D-058), so the end-to-end tests would fail against it; `pnpm test:e2e`
+and `pnpm test:e2e:auth` rebuild first.
