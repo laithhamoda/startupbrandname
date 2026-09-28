@@ -32,9 +32,12 @@ describe('sqlStatements', () => {
     expect(
       sqlStatements(
         'create function f() returns void language sql as $$ drop table x; $$;' +
-          'do $body$ begin execute $q$drop table y$q$; end $body$;',
+          'create function g() returns void language plpgsql as $body$ begin execute $q$drop table y$q$; end $body$;',
       ),
-    ).toEqual(["create function f() returns void language sql as ''", "do ''"]);
+    ).toEqual([
+      "create function f() returns void language sql as ''",
+      "create function g() returns void language plpgsql as ''",
+    ]);
   });
 
   it('keeps quoted identifiers and positional parameters', () => {
@@ -107,6 +110,41 @@ describe('findDestructive', () => {
       kinds(
         'create function f() returns void language plpgsql as $$ begin drop table t; end; $$;\n' +
           "-- drop table a;\ninsert into public.settings (key, value) values ('k', '\"drop table a\"');",
+      ),
+    ).toEqual([]);
+  });
+
+  it('checks the body of a DO block, which runs with the migration', () => {
+    expect(
+      kinds(
+        'do $$ begin if exists (select 1) then alter table public.x drop column y; end if; end $$;',
+      ),
+    ).toEqual(['drops a column']);
+    expect(kinds("do $$ begin execute 'drop table public.x'; end $$;")).toEqual([
+      'drops an object',
+    ]);
+    expect(
+      kinds(
+        "DO LANGUAGE plpgsql $body$ BEGIN EXECUTE format('alter table %I rename to %I', 'a', 'b'); END $body$;",
+      ),
+    ).toEqual(['renames something']);
+    expect(kinds("do 'begin truncate public.x; end';")).toEqual(['empties a table']);
+  });
+
+  it('names the destructive statement found in a DO block', () => {
+    expect(
+      findDestructive(
+        'do $$ begin if exists (select 1) then alter table public.x drop column y; end if; end $$;',
+      ),
+    ).toEqual([{ name: 'drops a column', statement: 'do … alter table public.x drop column y' }]);
+  });
+
+  it('leaves a DO block without destructive statements alone', () => {
+    expect(
+      kinds(
+        "do $$ begin if not exists (select 1 from pg_type where typname = 'status') then " +
+          "create type public.status as enum ('a', 'b'); end if; end $$;" +
+          'do $$ begin alter table public.x drop constraint if exists x_check; end $$;',
       ),
     ).toEqual([]);
   });

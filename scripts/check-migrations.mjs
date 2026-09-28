@@ -19,7 +19,7 @@ const CONTRACT = /^[ \t]*--[ \t]*contract:[ \t]*\S/im;
 
 // Each statement is matched lowercased, with comments removed, string and dollar-quoted bodies
 // emptied (a function body runs when it is called, not when the migration runs) and whitespace
-// collapsed.
+// collapsed. The body of a DO block runs with the migration, so it is checked as well (ANYWHERE).
 const DESTRUCTIVE = [
   {
     name: 'drops an object',
@@ -45,19 +45,33 @@ const DESTRUCTIVE = [
   { name: 'empties a table', regex: /^truncate\b/ },
 ];
 
+// The same patterns anywhere in a statement, for the body of a DO block: PL/pgSQL puts a
+// statement after IF … THEN or BEGIN, or passes it to EXECUTE as a string.
+const ANYWHERE = DESTRUCTIVE.map(({ name, regex }) => ({
+  name,
+  regex: new RegExp(regex.source.replace(/^\^/, '\\b')),
+}));
+
 const IDENTIFIER_CHAR = /[\w$]/;
 
 /**
- * The SQL statements of a migration, lowercased, with comments removed, the contents of string
- * literals and dollar-quoted bodies replaced by '', and whitespace collapsed.
+ * Splits SQL into statements. Each has its text, lowercased, with comments removed and whitespace
+ * collapsed, and the raw contents of its string literals and dollar-quoted bodies (literals). The
+ * text replaces those contents by '', or keeps them with keepLiterals (dynamic SQL in a DO block).
  */
-export function sqlStatements(sql) {
+function parseSql(sql, keepLiterals = false) {
   const statements = [];
   let code = '';
+  let literals = [];
   const endStatement = () => {
-    const statement = code.replace(/\s+/g, ' ').trim().toLowerCase();
-    if (statement) statements.push(statement);
+    const text = code.replace(/\s+/g, ' ').trim().toLowerCase();
+    if (text) statements.push({ text, literals });
     code = '';
+    literals = [];
+  };
+  const literal = (contents) => {
+    literals.push(contents);
+    code += keepLiterals ? ` ${contents} ` : "''";
   };
   let i = 0;
   while (i < sql.length) {
@@ -87,6 +101,7 @@ export function sqlStatements(sql) {
     } else if (char === "'") {
       // E'…' strings take backslash escapes; '' is a quote in every string.
       const backslashes = /[eE]/.test(sql[i - 1] ?? '') && !IDENTIFIER_CHAR.test(sql[i - 2] ?? '');
+      const start = i + 1;
       i += 1;
       while (i < sql.length) {
         if (backslashes && sql[i] === '\\') i += 2;
@@ -94,8 +109,8 @@ export function sqlStatements(sql) {
         else if (sql[i] === "'") break;
         else i += 1;
       }
+      literal(sql.slice(start, i).replaceAll("''", "'"));
       i += 1;
-      code += "''";
     } else if (char === '"') {
       // A quoted identifier is kept: it names what a statement changes.
       let end = i + 1;
@@ -107,9 +122,10 @@ export function sqlStatements(sql) {
     } else if (char === '$' && !IDENTIFIER_CHAR.test(sql[i - 1] ?? '')) {
       const tag = /^\$(?:[A-Za-z_][A-Za-z0-9_]*)?\$/.exec(sql.slice(i, i + 65))?.[0];
       if (tag) {
-        const end = sql.indexOf(tag, i + tag.length);
-        i = end === -1 ? sql.length : end + tag.length;
-        code += "''";
+        const found = sql.indexOf(tag, i + tag.length);
+        const end = found === -1 ? sql.length : found;
+        literal(sql.slice(i + tag.length, end));
+        i = end + tag.length;
       } else {
         code += char;
         i += 1;
@@ -123,14 +139,37 @@ export function sqlStatements(sql) {
   return statements;
 }
 
+/**
+ * The SQL statements of a migration, lowercased, with comments removed, the contents of string
+ * literals and dollar-quoted bodies replaced by '', and whitespace collapsed.
+ */
+export function sqlStatements(sql) {
+  return parseSql(sql).map(({ text }) => text);
+}
+
+const shorten = (statement) => (statement.length > 80 ? `${statement.slice(0, 77)}...` : statement);
+
 /** What makes each destructive statement in a migration destructive, in file order. */
 export function findDestructive(sql) {
-  return sqlStatements(sql).flatMap((statement) =>
-    DESTRUCTIVE.filter(({ regex }) => regex.test(statement)).map(({ name }) => ({
+  return parseSql(sql).flatMap(({ text, literals }) => {
+    const found = DESTRUCTIVE.filter(({ regex }) => regex.test(text)).map(({ name }) => ({
       name,
-      statement: statement.length > 80 ? `${statement.slice(0, 77)}...` : statement,
-    })),
-  );
+      statement: shorten(text),
+    }));
+    // A DO block runs while the migration runs, unlike a function body. Its code is checked with
+    // the text of its strings, which EXECUTE runs as SQL.
+    if (/^do\b/.test(text)) {
+      for (const body of literals) {
+        for (const { text: inner } of parseSql(body, true)) {
+          for (const { name, regex } of ANYWHERE) {
+            const match = regex.exec(inner);
+            if (match) found.push({ name, statement: shorten(`do … ${inner.slice(match.index)}`) });
+          }
+        }
+      }
+    }
+    return found;
+  });
 }
 
 /**
