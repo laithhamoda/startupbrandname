@@ -1,0 +1,2 @@
+# False positives, one fingerprint each (docs/DECISIONS.md D-125). Never ignore a whole rule or file.
+ed21cd1d7e7fcffccfc324f2685dd87482d4caad:supabase/tests/ai_usage.test.sql:generic-api-key:39

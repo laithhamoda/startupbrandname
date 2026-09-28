@@ -36,9 +36,13 @@ select is(
   'the fast model is Haiku 4.5'
 );
 select is(
-  (select value ->> 'source_url' from public.settings where key = 'ai.price.claude-haiku-4-5-20251001'),
+  (
+    select s.value -> (m.value #>> '{}') ->> 'source_url'
+    from public.settings s, public.settings m
+    where s.key = 'ai.prices' and m.key = 'ai.model.fast'
+  ),
   'https://platform.claude.com/docs/en/about-claude/pricing',
-  'the price records where it was read'
+  'the fast model has a price that records where it was read'
 );
 select is(
   (select value #>> '{}' from public.settings where key = 'ai.limit.user_daily_calls'),

@@ -11,11 +11,13 @@
 
 -- Checked against https://platform.claude.com/docs/en/models/overview on 2026-09-28: active,
 -- retirement not sooner than 2026-10-15 and announced at least 60 days ahead (D-122).
+-- Prices are in USD per million tokens, keyed by model ID: a model without a price here turns
+-- AI off rather than being counted as free.
 insert into public.settings (key, value) values
   ('ai.model.fast', '"claude-haiku-4-5-20251001"'),
   (
-    'ai.price.claude-haiku-4-5-20251001',
-    '{"input": 1, "output": 5, "cache_write": 1.25, "cache_read": 0.1, "source_url": "https://platform.claude.com/docs/en/about-claude/pricing", "checked_at": "2026-09-28"}'
+    'ai.prices',
+    '{"claude-haiku-4-5-20251001": {"input": 1, "output": 5, "cache_write": 1.25, "cache_read": 0.1, "source_url": "https://platform.claude.com/docs/en/about-claude/pricing", "checked_at": "2026-09-28"}}'
   ),
   ('ai.limit.user_daily_calls', '40'),
   ('ai.limit.global_daily_usd', '5');

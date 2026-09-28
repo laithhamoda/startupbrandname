@@ -37,21 +37,20 @@ function configuredClient(): AiClient | null {
   return env.ANTHROPIC_API_KEY ? anthropicClient(env.ANTHROPIC_API_KEY) : null;
 }
 
-/** The model and its price from `settings` (CLAUDE.md rule 10); null if either is missing. */
+/**
+ * The model and its price from `settings` (CLAUDE.md rule 10). Prices are keyed by model ID, so a
+ * model switched without its price turns AI off instead of being counted as free (D-122).
+ */
 async function readSettings(supabase: SupabaseServerClient): Promise<AiSettings | null> {
-  const { data: modelRow } = await supabase
+  const { data } = await supabase
     .from('settings')
-    .select('value')
-    .eq('key', 'ai.model.fast')
-    .maybeSingle();
-  const model = z.string().min(1).safeParse(modelRow?.value);
+    .select('key, value')
+    .in('key', ['ai.model.fast', 'ai.prices']);
+  const values = new Map((data ?? []).map((row) => [row.key, row.value]));
+  const model = z.string().min(1).safeParse(values.get('ai.model.fast'));
   if (!model.success) return null;
-  const { data: priceRow } = await supabase
-    .from('settings')
-    .select('value')
-    .eq('key', `ai.price.${model.data}`)
-    .maybeSingle();
-  const price = priceSchema.safeParse(priceRow?.value);
+  const prices = z.record(z.string(), z.unknown()).safeParse(values.get('ai.prices'));
+  const price = priceSchema.safeParse(prices.success ? prices.data[model.data] : undefined);
   return price.success ? { model: model.data, price: price.data } : null;
 }
 
