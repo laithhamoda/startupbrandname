@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   // Workspace packages ship TypeScript source (packages/*/src).
-  transpilePackages: ['@sbn/question-bank'],
+  transpilePackages: ['@sbn/ai', '@sbn/question-bank'],
   headers: () =>
     Promise.resolve(
       indexable

@@ -4,6 +4,8 @@ import {
   type Answer,
   type Answers,
   activeFollowUps,
+  type Finding,
+  type QuestionId,
   answerSchema,
   diagnosticSequence,
   FOLLOW_UPS,
@@ -17,12 +19,15 @@ import {
   reviewProject,
   VALUE_ISSUES,
 } from '@sbn/question-bank';
+import { needsConfirmation } from '@sbn/ai';
 import { getTranslations } from 'next-intl/server';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { type Locale, routing } from '@/i18n/routing';
 import type { Json } from '@/lib/supabase/database.types';
+import { aiFindings } from '@/lib/ai/findings';
+import { reviewWithAi } from '@/lib/ai/service';
 import { requireAccount } from '@/lib/auth/session';
 import { isCountryCode } from '@/lib/countries';
 import { type FindingView, viewFinding } from './findings';
@@ -99,6 +104,8 @@ const submissionSchema = z.discriminatedUnion('kind', [
   }),
   z.object({ kind: z.literal('unknown') }),
   z.object({ kind: z.literal('range'), min: z.number(), max: z.number().optional() }),
+  /** The founder confirmed the AI's reading of a dialect answer (D-119); resent as typed. */
+  z.object({ kind: z.literal('confirmed'), value: z.unknown() }),
 ]);
 
 const saveSchema = z.object({
@@ -117,6 +124,8 @@ export type SaveResult =
   | { status: 'rejected'; findings: FindingView[] }
   /** Not saved: the answer does not fit the question. Messages in the page language. */
   | { status: 'invalid'; messages: string[] }
+  /** Not saved yet: confirm the AI's reading of a dialect answer first (D-119). */
+  | { status: 'confirm'; text: string }
   | { status: 'error' };
 
 async function issueMessages(
@@ -139,6 +148,13 @@ async function issueMessages(
     return t('required');
   });
   return [...new Set(messages)];
+}
+
+/** Findings that stop the save: a rule asks for another answer or a clarification (SPEC §2). */
+function blockingFindings(questionId: QuestionId, answer: Answer, answers: Answers): Finding[] {
+  return reviewAnswer(questionId, answer, answers).filter(
+    (finding) => finding.severity === 'reject' || finding.severity === 'ask',
+  );
 }
 
 /** Removes stored follow-ups that the answers no longer call for (one source of truth). */
@@ -170,7 +186,7 @@ export async function saveAnswer(input: SaveInput): Promise<SaveResult> {
   const step = stepFromSlug(parsedInput.data.step.replace('.', '-'));
   if (!step) return { status: 'error' };
 
-  const { supabase } = await requireAccount(locale);
+  const { supabase, user } = await requireAccount(locale);
   const loaded = await loadProject(supabase, projectId);
   if (!loaded) return { status: 'error' };
   const { project, answers } = loaded;
@@ -197,14 +213,16 @@ export async function saveAnswer(input: SaveInput): Promise<SaveResult> {
   if (!parsed.success) {
     return { status: 'invalid', messages: await issueMessages(parsed.error.issues, locale) };
   }
-  const answer: Answer = parsed.data;
-  const updated: Answers = { ...answers, [step]: answer };
+  let answer: Answer = parsed.data;
+  let updated: Answers = { ...answers, [step]: answer };
+  const typed =
+    (submission.kind === 'value' || submission.kind === 'confirmed') &&
+    (field.kind === 'short_text' || field.kind === 'long_text')
+      ? (submission.value as string)
+      : null;
 
   if (coreId) {
-    const findings = reviewAnswer(coreId, answer, updated);
-    const blocking = findings.filter(
-      (finding) => finding.severity === 'reject' || finding.severity === 'ask',
-    );
+    const blocking = blockingFindings(coreId, answer, updated);
     if (blocking.length > 0) {
       return {
         status: 'rejected',
@@ -213,15 +231,49 @@ export async function saveAnswer(input: SaveInput): Promise<SaveResult> {
     }
   }
 
+  // AI review of typed answers, only with consent and within the limits (D-103, D-120).
+  if (coreId && typed !== null && answer.status === 'answered') {
+    const ai = await reviewWithAi(
+      { supabase, userEmail: user.email, projectId: project.id, answers: updated },
+      coreId,
+      answer.value as string,
+    );
+    if (ai) {
+      const findings = aiFindings(coreId, ai);
+      if (findings.length > 0) {
+        return {
+          status: 'rejected',
+          findings: findings.map((finding) => viewFinding(finding, locale)),
+        };
+      }
+      if (needsConfirmation(ai, answer.value as string)) {
+        if (submission.kind !== 'confirmed') return { status: 'confirm', text: ai.confirmation };
+        // The confirmed reading comes from the stored review, never from the browser.
+        const confirmed = answerSchema(field, allowUnknown).safeParse({
+          status: 'answered',
+          value: ai.msa,
+        });
+        if (confirmed.success) {
+          answer = confirmed.data;
+          updated = { ...answers, [step]: answer };
+          const blocking = blockingFindings(coreId, answer, updated);
+          if (blocking.length > 0) {
+            return {
+              status: 'rejected',
+              findings: blocking.map((finding) => viewFinding(finding, locale)),
+            };
+          }
+        }
+      }
+    }
+  }
+
   const provenance = provenanceOf(answer, submission.kind === 'range');
-  const rawText =
-    submission.kind === 'value' && (field.kind === 'short_text' || field.kind === 'long_text')
-      ? (submission.value as string)
-      : null;
   const { error } = await supabase.from('answers').upsert({
     project_id: project.id,
     question_id: step,
-    raw_text: rawText,
+    // What the founder typed, kept as written (CLAUDE.md §3).
+    raw_text: typed,
     // Validated JSON by construction: the question bank schema accepted it just above.
     normalized_value: answer as Json,
     ...provenance,

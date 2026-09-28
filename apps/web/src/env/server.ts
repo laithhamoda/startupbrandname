@@ -16,6 +16,10 @@ export const serverEnvSchema = z.object({
   // Tests only: "false" skips asking Supabase whether Google is enabled, so the end-to-end tests can
   // press the button against a local stack that has no Google credentials.
   AUTH_GOOGLE_VERIFY_PROVIDER: booleanFlag.default(true),
+  // AI features (M3c). Without a key, or with "off", the diagnostic uses its fixed checks only.
+  // "fake" is a deterministic stand-in for tests and CI that makes no network call (D-123).
+  ANTHROPIC_API_KEY: z.string().min(1).optional(),
+  AI_PROVIDER: z.enum(['anthropic', 'fake', 'off']).default('anthropic'),
   // Search indexing stays off until public launch, and always off outside production (D-027, D-054).
   SITE_INDEXABLE: booleanFlag.default(false),
   // Set by Vercel at build and run time. VERCEL is "1" on Vercel only; tests that imitate

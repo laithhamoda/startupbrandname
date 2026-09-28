@@ -139,6 +139,8 @@ jobs:
           # checks the request sent to Supabase.
           AUTH_GOOGLE_ENABLED: 'true'
           AUTH_GOOGLE_VERIFY_PROVIDER: 'false'
+          # A deterministic stand-in for the model: no key, no network call, no cost (D-123).
+          AI_PROVIDER: 'fake'
       - if: failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:

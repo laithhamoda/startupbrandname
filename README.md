@@ -117,6 +117,18 @@ ship them (see D-031 in `docs/DECISIONS.md`); check that list before adding a CL
   `/projects/{id}/q/{step}` (one question at a time, D-117). Review the components without an
   account at `/ar/design/diagnostic` (local and preview only, D-118).
 
+## AI in the diagnostic (M3c)
+
+- `packages/ai`: the Anthropic client, the review prompt, de-identification (`deidentify.ts`),
+  cost and input hashing. Server-only; the client bundle scan fails the build if it leaks.
+- Typed answers are reviewed by Claude Haiku only for users who gave cross-border consent (D-103),
+  within 40 calls per user per day and 5 USD per day overall (D-120, in `settings`). Dialect or
+  mixed answers ask the founder to confirm «فهمت أن…» before the MSA version is saved; the typed
+  text stays in `raw_text` (D-119). Every call is logged in `tool_runs` with its tokens and cost.
+- `ANTHROPIC_API_KEY` goes in Vercel as a Sensitive variable (Production and Preview). Without it,
+  or with `AI_PROVIDER=off`, the diagnostic uses the fixed checks only. Local and CI tests use
+  `AI_PROVIDER=fake` (D-123). The model and its price live in `settings` (D-122).
+
 ## Environments
 
 | Environment | App                                    | Database                                     |

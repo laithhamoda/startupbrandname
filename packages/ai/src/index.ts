@@ -1,3 +1,8 @@
-// Anthropic client, prompts, de-identification, cost logging and model routing.
-// Built from M3, when the first LLM call ships (docs/OPEN-QUESTIONS.md #2, #3).
-export {};
+// Anthropic client, prompts, de-identification and cost (M3c). Server-only: it holds the API
+// client, so client components never import it.
+export * from './client';
+export * from './cost';
+export * from './deidentify';
+export * from './fake';
+export * from './hash';
+export * from './review-text';

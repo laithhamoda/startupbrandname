@@ -55,6 +55,8 @@ export function AnswerEditor(props: AnswerEditorProps) {
   const [result, setResult] = useState<SaveResult | null>(null);
   const [pending, startTransition] = useTransition();
   const feedback = useRef<HTMLDivElement>(null);
+  // The value behind a pending AI confirmation, resent unchanged when the founder agrees (D-119).
+  const lastValue = useRef<unknown>(null);
 
   // Move keyboard and screen-reader focus to whatever the server or the checks said.
   useEffect(() => {
@@ -62,6 +64,7 @@ export function AnswerEditor(props: AnswerEditorProps) {
   }, [result, local]);
 
   function send(submission: Parameters<typeof saveAnswer>[0]['submission']) {
+    if (submission.kind === 'value') lastValue.current = submission.value;
     startTransition(async () => {
       const outcome = await saveAnswer({
         locale: props.locale,
@@ -99,6 +102,7 @@ export function AnswerEditor(props: AnswerEditorProps) {
   }
 
   const saved = result?.status === 'saved' ? result : null;
+  const confirm = result?.status === 'confirm' ? result : null;
   const notes = saved ? saved.notes : props.initialNotes;
   const askUnknown =
     result?.status === 'rejected' &&
@@ -121,7 +125,7 @@ export function AnswerEditor(props: AnswerEditorProps) {
         draft={draft}
         onChange={(next) => {
           setDraft(next);
-          if (saved) setResult(null);
+          if (saved || confirm) setResult(null);
         }}
         unreadable={unreadable}
         options={props.options}
@@ -188,6 +192,35 @@ export function AnswerEditor(props: AnswerEditorProps) {
           </RuleAlert>
         ) : null}
 
+        {confirm ? (
+          <div className="grid gap-3 border-s-[3px] border-teal bg-sunken px-4 py-3 text-small">
+            <p className="font-bold">{t('confirmTitle')}</p>
+            <p lang="ar" dir="rtl" className="text-body">
+              {confirm.text}
+            </p>
+            <p className="text-muted">{t('confirmNote')}</p>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant="primary"
+                disabled={pending}
+                onClick={() => {
+                  send({ kind: 'confirmed', value: lastValue.current });
+                }}
+              >
+                {t('confirmYes')}
+              </Button>
+              <Button
+                disabled={pending}
+                onClick={() => {
+                  setResult(null);
+                  document.getElementById(`answer-${props.step}`)?.focus();
+                }}
+              >
+                {t('confirmEdit')}
+              </Button>
+            </div>
+          </div>
+        ) : null}
         {result?.status === 'rejected' ? <FindingList findings={result.findings} /> : null}
         {result?.status === 'invalid' ? (
           <RuleAlert message={t('invalid')}>

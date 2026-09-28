@@ -9,6 +9,10 @@
   "scripts": {
     "lint": "eslint . --max-warnings=0",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "0.128.0",
+    "zod": "4.6.5"
   }
 }

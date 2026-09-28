@@ -148,6 +148,10 @@
     "unreadable": "Write amounts and percentages as numbers only, such as 250.",
     "inDinars": "In dinars",
     "inCentimes": "In centimes",
+    "confirmTitle": "Did we understand your answer as you meant it?",
+    "confirmNote": "We will save your answer in Modern Standard Arabic and keep what you typed as written.",
+    "confirmYes": "Yes, that is right",
+    "confirmEdit": "Edit my answer",
     "invalid": "Check your answer:",
     "error": "Could not save. Please try again.",
     "errors": {

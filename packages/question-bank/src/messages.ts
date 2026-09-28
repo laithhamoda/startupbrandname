@@ -69,6 +69,10 @@ export const MESSAGES = {
     ar: 'اختصرها إلى 40 كلمة على الأكثر: ماذا، ولمن، ولماذا.',
     en: 'Cut it to 40 words at most: what, for whom, and why.',
   },
+  B1_unclear: {
+    ar: 'لم تتضح الفكرة بعد. صفها في جملة واحدة: ماذا تقدّم، ولمن، ولماذا؟',
+    en: 'The idea is not clear yet. Describe it in one sentence: what you offer, to whom, and why.',
+  },
   B1_one_sentence: {
     ar: 'في جملة واحدة فقط، من فضلك.',
     en: 'In one sentence only, please.',

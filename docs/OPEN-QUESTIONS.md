@@ -88,7 +88,7 @@ cannot reach the summary threshold), #61 (owner answer on accounts).
 
 56. `M5` Banning "فائدة" (G7 = yes) also blocks its everyday meaning "benefit". Ban only in financing contexts?
 57. `M1/M5` **Resolved (D-051).** **Contradiction:** "BMC mirrored, starting at the right with customer segments". The standard canvas already has customer segments on the right; mirroring moves them left.
-58. `M3` **Resolved in part (D-103): consent only, with per-user and global caps; values set after measurement.** Free users trigger Haiku calls on 64+ answers with no free-tier AI limit defined.
+58. `M3` **Resolved (D-103, D-120): consent only; 40 calls per user a day and 5 USD a day overall, to revise after measurement.** Free users trigger Haiku calls on 64+ answers with no free-tier AI limit defined.
 59. `M6` Is the mentor's "~1 page project summary" built by code or by the LLM?
 60. `M7` Vercel Cron or pg_cron per job (Vercel Hobby cron runs at most daily).
 
