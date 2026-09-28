@@ -30,6 +30,7 @@ import { aiFindings } from '@/lib/ai/findings';
 import { reviewWithAi } from '@/lib/ai/service';
 import { requireAccount } from '@/lib/auth/session';
 import { isCountryCode } from '@/lib/countries';
+import { errorFields, log } from '@/lib/log';
 import { type FindingView, viewFinding } from './findings';
 import { loadProject, provenanceOf } from './project';
 import { projectPath, stepFromSlug, stepPath } from './steps';
@@ -85,7 +86,11 @@ export async function createProject(
     p_currency: parsed.data.currency,
     p_mode: parsed.data.mode,
   });
-  if (error) return { status: 'error', error: error.code === 'SB001' ? 'limit' : 'failed' };
+  if (error) {
+    if (error.code === 'SB001') return { status: 'error', error: 'limit' };
+    await log.error('diagnostic.create_failed', errorFields(error));
+    return { status: 'error', error: 'failed' };
+  }
 
   revalidatePath(`/${locale}/projects`);
   const first = diagnosticSequence(parsed.data.mode, {})[0] ?? 'A1';
@@ -278,7 +283,14 @@ export async function saveAnswer(input: SaveInput): Promise<SaveResult> {
     normalized_value: answer as Json,
     ...provenance,
   });
-  if (error) return { status: 'error' };
+  if (error) {
+    await log.error('diagnostic.save_failed', {
+      ...errorFields(error),
+      stage: 'upsert',
+      questionId: step,
+    });
+    return { status: 'error' };
+  }
 
   const current = await dropInactiveFollowUps(supabase, project.id, updated);
 

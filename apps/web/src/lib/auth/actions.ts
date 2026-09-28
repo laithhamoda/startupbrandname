@@ -9,6 +9,7 @@ import { CROSSBORDER_VERSION } from '@/config/legal';
 import { getServerEnv } from '@/env/server';
 import { type Locale, routing } from '@/i18n/routing';
 import { COUNTRY_CODES } from '@/lib/countries';
+import { errorFields, log } from '@/lib/log';
 import { closedCountries } from '@/lib/markets';
 import { createSupabaseServerClient, type SupabaseServerClient } from '@/lib/supabase/server';
 import { googleSignInAvailable } from './google';
@@ -123,7 +124,10 @@ export async function requestSignupCode(
     // The locale picks the language of the email (supabase/templates/code.html).
     options: { shouldCreateUser: true, data: { locale } },
   });
-  if (error) return { status: 'error', error: errorCodeOf(error) };
+  if (error) {
+    await log.warn('auth.code_request_failed', { ...errorFields(error), stage: 'signup' });
+    return { status: 'error', error: errorCodeOf(error) };
+  }
   return { status: 'sent', email: email.data };
 }
 
@@ -145,6 +149,7 @@ export async function requestLoginCode(
   });
   // An unknown email fails with "signups not allowed"; answering "sent" either way stops anyone
   // from checking which addresses have an account.
+  if (error) await log.info('auth.code_request_failed', { ...errorFields(error), stage: 'login' });
   if (error && errorCodeOf(error) === 'rateLimited') {
     return { status: 'error', error: 'rateLimited' };
   }
@@ -170,6 +175,7 @@ export async function verifyEmailCode(
     type: 'email',
   });
   if (error) {
+    await log.info('auth.code_rejected', errorFields(error));
     const reason = errorCodeOf(error);
     return { status: 'error', error: reason === 'failed' ? 'invalidCode' : reason };
   }
@@ -193,7 +199,10 @@ async function redirectToGoogle(locale: Locale): Promise<AuthFormState> {
       queryParams: { prompt: 'select_account' },
     },
   });
-  if (error) return { status: 'error', error: 'failed' };
+  if (error) {
+    await log.warn('auth.google_start_failed', errorFields(error));
+    return { status: 'error', error: 'failed' };
+  }
   redirect(data.url);
 }
 
@@ -286,9 +295,22 @@ export async function updatePreferences(
     .from('profiles')
     .update({ country_code: parsed.data.country, locale: parsed.data.language })
     .eq('user_id', user.id);
-  if (error) return { status: 'error' };
-  // Sign-in emails read the language from the auth user's metadata.
-  await supabase.auth.updateUser({ data: { locale: parsed.data.language } });
+  if (error) {
+    await log.error('account.preferences_failed', { ...errorFields(error), stage: 'profile' });
+    return { status: 'error' };
+  }
+  // Sign-in emails read the language from the auth user's metadata. Saving again repeats both
+  // writes, so reporting the failure lets the founder finish the change.
+  const { error: metadataError } = await supabase.auth.updateUser({
+    data: { locale: parsed.data.language },
+  });
+  if (metadataError) {
+    await log.error('account.preferences_failed', {
+      ...errorFields(metadataError),
+      stage: 'auth_metadata',
+    });
+    return { status: 'error' };
+  }
 
   if (parsed.data.language !== locale) redirect(`/${parsed.data.language}/account`);
   revalidatePath(`/${locale}/account`);
@@ -309,7 +331,9 @@ export async function setCrossborderConsent(localeInput: Locale, given: boolean)
 export async function signOut(localeInput: Locale): Promise<void> {
   const locale = parseLocale(localeInput);
   const supabase = await createSupabaseServerClient();
-  await supabase.auth.signOut();
+  // The session cookies are cleared either way; a failure only leaves the refresh token to expire.
+  const { error } = await supabase.auth.signOut();
+  if (error) await log.warn('auth.sign_out_failed', errorFields(error));
   redirect(`/${locale}`);
 }
 
