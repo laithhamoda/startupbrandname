@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { log } from '@/lib/log';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
-import { submitOnboarding } from './actions';
+import { submitOnboarding, verifyEmailCode } from './actions';
 
 const jar = vi.hoisted(() => new Map<string, string>());
 
@@ -13,7 +13,7 @@ vi.mock('next/headers', () => ({
       set: (name: string, value: string) => jar.set(name, value),
       delete: (name: string) => jar.delete(name),
     }),
-  headers: () => Promise.resolve(new Headers()),
+  headers: () => Promise.resolve(new Headers({ host: 'localhost:3000' })),
 }));
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }));
 vi.mock('@/lib/supabase/server', () => ({ createSupabaseServerClient: vi.fn() }));
@@ -27,12 +27,18 @@ function signedIn(results: Record<string, { data?: unknown; error?: unknown }> =
   const rpc = vi.fn((name: string) =>
     Promise.resolve({ data: null, error: null, ...results[name] }),
   );
+  const verifyOtp = vi.fn(() => Promise.resolve({ data: {}, error: null }));
+  const signInWithOAuth = vi.fn(() =>
+    Promise.resolve({ data: { url: 'http://127.0.0.1:54321/auth/v1/authorize' }, error: null }),
+  );
   const client = {
     rpc,
     auth: {
       getClaims: () => Promise.resolve({ data: { claims: { sub: 'user-1' } } }),
       signOut: () => Promise.resolve({ error: null }),
       updateUser: () => Promise.resolve({ error: null }),
+      verifyOtp,
+      signInWithOAuth,
     },
     from: () => ({
       select: () => ({ maybeSingle: () => Promise.resolve({ data: null, error: null }) }),
@@ -41,7 +47,15 @@ function signedIn(results: Record<string, { data?: unknown; error?: unknown }> =
   vi.mocked(createSupabaseServerClient).mockResolvedValue(
     client as unknown as Awaited<ReturnType<typeof createSupabaseServerClient>>,
   );
-  return { rpc };
+  return { rpc, verifyOtp, signInWithOAuth };
+}
+
+function codeForm(code: string, next?: string): FormData {
+  const form = new FormData();
+  form.set('email', 'founder@example.test');
+  form.set('code', code);
+  if (next !== undefined) form.set('next', next);
+  return form;
 }
 
 function gateForm(country: string): FormData {
@@ -69,6 +83,37 @@ beforeEach(() => {
 afterEach(() => {
   vi.clearAllMocks();
   vi.unstubAllEnvs();
+});
+
+describe('verifyEmailCode', () => {
+  it.each(['12345678', '١٢٣٤٥٦٧٨', '۱۲۳۴۵۶۷۸', '1234-5678', ' 1234 5678 ', '١٢٣٤ ٥٦٧٨'])(
+    'reads %j as the code 12345678',
+    async (typed) => {
+      const { verifyOtp } = signedIn();
+
+      expect(await redirectTarget(verifyEmailCode('ar', { status: 'idle' }, codeForm(typed)))).toBe(
+        '/ar/projects',
+      );
+      expect(verifyOtp).toHaveBeenCalledWith({
+        email: 'founder@example.test',
+        token: '12345678',
+        type: 'email',
+      });
+    },
+  );
+
+  it.each(['12345', '', 'abcdefgh', '12345678901'])(
+    'refuses %j without asking Supabase',
+    async (typed) => {
+      const { verifyOtp } = signedIn();
+
+      expect(await verifyEmailCode('ar', { status: 'idle' }, codeForm(typed))).toEqual({
+        status: 'error',
+        error: 'invalidCode',
+      });
+      expect(verifyOtp).not.toHaveBeenCalled();
+    },
+  );
 });
 
 describe('submitOnboarding', () => {

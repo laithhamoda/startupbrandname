@@ -1,5 +1,6 @@
 'use server';
 
+import { westernDigits } from '@sbn/question-bank';
 import type { AuthError } from '@supabase/supabase-js';
 import { revalidatePath } from 'next/cache';
 import { cookies, headers } from 'next/headers';
@@ -40,10 +41,12 @@ export type AuthFormState =
 const localeSchema = z.enum(routing.locales);
 const emailSchema = z.string().trim().toLowerCase().max(254).pipe(z.email());
 // The product uses 8-digit codes (Supabase "Email OTP length" = 8, D-087). Any length Supabase
-// allows (6 to 10) is accepted, so a changed dashboard setting never locks people out.
+// allows (6 to 10) is accepted, so a changed dashboard setting never locks people out. Arabic
+// keypads type Arabic-Indic or Persian digits, and people copy codes with spaces or dashes: the
+// digits are read as Western ones and everything else is dropped before the check.
 const codeSchema = z
   .string()
-  .transform((value) => value.replace(/\s/g, ''))
+  .transform((value) => westernDigits(value).replace(/\D/g, ''))
   .pipe(z.string().regex(/^\d{6,10}$/));
 
 function parseLocale(value: unknown): Locale {
