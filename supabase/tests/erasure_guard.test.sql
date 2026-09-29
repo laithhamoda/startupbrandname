@@ -1,19 +1,51 @@
 -- SPEC §11, GDPR Art. 17: deleting an account or a project deletes everything that hangs off it.
--- Fails CI as soon as a foreign key to auth.users or public.projects neither cascades nor sets a
--- nullable column to null, so a deletion would be refused or leave rows behind. A foreign key that
--- must behave otherwise (for example on a payment record kept for tax law, OPEN-QUESTIONS #31) goes
--- in erasure_allowlist below with its reason.
+-- Fails CI as soon as a foreign key into a table that such a deletion empties (auth.users,
+-- public.projects and every table that cascades from them, at any depth) neither cascades nor sets
+-- a nullable column to null, so a deletion would be refused or leave rows behind; or as soon as a
+-- user_id or project_id column has no foreign key, so a deletion never reaches it. An exception
+-- (for example a payment record kept for tax law, OPEN-QUESTIONS #31) goes in erasure_allowlist
+-- below with its reason.
 begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(8);
+select plan(10);
 
 create temporary table erasure_allowlist (
-  -- schema.table.constraint
-  foreign_key text primary key,
+  -- schema.table.constraint for a foreign key, schema.table.column for a column without one
+  name text primary key,
   reason text not null check (btrim(reason) <> '')
 );
+
+-- Every foreign key from a table in public or private into a table that a deletion empties, and
+-- whether it lets the deletion through (erases).
+create temporary view erasure_foreign_keys as
+with recursive emptied (relid) as (
+  values ('auth.users'::regclass::oid), ('public.projects'::regclass::oid)
+  union
+  select k.conrelid
+  from pg_constraint k
+  join emptied e on e.relid = k.confrelid
+  where k.contype = 'f'
+    and k.confdeltype = 'c'
+)
+select
+  format('%I.%I', n.nspname, c.relname) as table_name,
+  format('%I.%I.%I', n.nspname, c.relname, k.conname) as foreign_key,
+  k.confdeltype = 'c'
+    or (
+      k.confdeltype = 'n'
+      and not exists (
+        select 1 from pg_attribute a
+        where a.attrelid = k.conrelid and a.attnum = any (k.conkey) and a.attnotnull
+      )
+    ) as erases
+from pg_constraint k
+join emptied e on e.relid = k.confrelid
+join pg_class c on c.oid = k.conrelid
+join pg_namespace n on n.oid = c.relnamespace
+where k.contype = 'f'
+  and n.nspname in ('public', 'private');
 
 insert into auth.users (id, email, created_at) values
   ('a3000000-0000-4000-8000-000000000001', 'erasure@example.test', now());
@@ -44,19 +76,11 @@ as $$
 $$;
 
 -- ---------------------------------------------------------------------------------------------
--- Foreign keys (every table this repository creates, in public and private)
+-- Foreign keys and owner columns (every table in public and private)
 -- ---------------------------------------------------------------------------------------------
 
 select bag_has(
-  $$
-    select format('%I.%I', n.nspname, c.relname)
-    from pg_constraint k
-    join pg_class c on c.oid = k.conrelid
-    join pg_namespace n on n.oid = c.relnamespace
-    where k.contype = 'f'
-      and k.confrelid in ('auth.users'::regclass, 'public.projects'::regclass)
-      and n.nspname in ('public', 'private')
-  $$,
+  $$ select table_name from erasure_foreign_keys $$,
   $$
     values ('public.profiles'), ('public.consent_events'), ('public.projects'),
       ('public.answers'), ('public.tool_runs'), ('public.usage_counters')
@@ -66,28 +90,52 @@ select bag_has(
 
 select is_empty(
   $$
-    select format('%I.%I.%I', n.nspname, c.relname, k.conname)
-    from pg_constraint k
-    join pg_class c on c.oid = k.conrelid
-    join pg_namespace n on n.oid = c.relnamespace
-    where k.contype = 'f'
-      and k.confrelid in ('auth.users'::regclass, 'public.projects'::regclass)
-      and n.nspname in ('public', 'private')
-      and (
-        k.confdeltype not in ('c', 'n')
-        or (
-          k.confdeltype = 'n'
-          and exists (
-            select 1 from pg_attribute a
-            where a.attrelid = k.conrelid and a.attnum = any (k.conkey) and a.attnotnull
-          )
-        )
-      )
-      and format('%I.%I.%I', n.nspname, c.relname, k.conname)
-        not in (select foreign_key from erasure_allowlist)
+    select foreign_key
+    from erasure_foreign_keys
+    where not erases
+      and foreign_key not in (select name from erasure_allowlist)
   $$,
-  'every foreign key to an account or a project cascades, or sets a nullable column to null'
+  'every foreign key into a table a deletion empties cascades, or sets a nullable column to null'
 );
+
+select is_empty(
+  $$
+    select format('%I.%I.%I', n.nspname, c.relname, a.attname)
+    from pg_attribute a
+    join pg_class c on c.oid = a.attrelid
+    join pg_namespace n on n.oid = c.relnamespace
+    where n.nspname in ('public', 'private')
+      and c.relkind in ('r', 'p')
+      and a.attnum > 0
+      and not a.attisdropped
+      and a.attname ~ '(^|_)(user|project)_id$'
+      and not exists (
+        select 1 from pg_constraint k
+        where k.contype = 'f' and k.conrelid = c.oid and a.attnum = any (k.conkey)
+      )
+      and format('%I.%I.%I', n.nspname, c.relname, a.attname)
+        not in (select name from erasure_allowlist)
+  $$,
+  'every user_id or project_id column has a foreign key, so a deletion reaches it'
+);
+
+-- The guard follows cascades: a table that points at tool_runs, which go with their project, is
+-- checked like one that points at the project. This one would block the deletion.
+create table public.erasure_probe (
+  tool_run_id bigint not null
+    constraint erasure_probe_tool_run_fkey references public.tool_runs (id)
+);
+
+select is(
+  (
+    select erases from erasure_foreign_keys
+    where foreign_key = 'public.erasure_probe.erasure_probe_tool_run_fkey'
+  ),
+  false,
+  'the guard also checks a foreign key into a table that cascades from a project'
+);
+
+drop table public.erasure_probe;
 
 -- ---------------------------------------------------------------------------------------------
 -- Deleting a project (as its owner, through RLS)
