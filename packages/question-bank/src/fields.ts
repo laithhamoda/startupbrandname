@@ -97,7 +97,9 @@ export function valueSchema(field: Field): z.ZodType {
               z
                 .object({
                   name: text(80),
-                  url: z.url().max(300).optional(),
+                  // http or https to a domain name only: never javascript:, data:, file: or an
+                  // IP address, since reports will render these answers (M5).
+                  url: z.httpUrl().max(300).optional(),
                   strength: text(200),
                   weakness: text(200),
                 })

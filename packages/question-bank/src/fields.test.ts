@@ -40,6 +40,24 @@ describe('answer values', () => {
     expect(accepts(fieldOf('A5'), { min: 5000, max: 3000, currency: 'JOD' })).toBe(false);
   });
 
+  it('accept competitor websites on http or https with a domain name only', () => {
+    const competitors = (url: string) => ({
+      items: ['a', 'b', 'c'].map((name) => ({ name, url, strength: 's', weakness: 'w' })),
+    });
+    expect(accepts(fieldOf('D3'), competitors('https://example.com/prices'))).toBe(true);
+    expect(accepts(fieldOf('D3'), competitors('http://shop.example.jo'))).toBe(true);
+    for (const url of [
+      'javascript:alert(1)',
+      'data:text/html,<script>alert(1)</script>',
+      'file:///etc/passwd',
+      'ftp://example.com',
+      'http://169.254.169.254/',
+      'http://localhost:3000',
+    ]) {
+      expect(accepts(fieldOf('D3'), competitors(url)), url).toBe(false);
+    }
+  });
+
   it('check lists: minimum items, required parts and totals', () => {
     const competitor = { name: 'n', strength: 's', weakness: 'w' };
     expect(accepts(fieldOf('D3'), { items: [competitor, competitor] })).toBe(false);
