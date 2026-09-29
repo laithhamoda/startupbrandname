@@ -261,10 +261,12 @@
       "toFullLead": "64 questions plus follow-ups. Your current answers stay as they are.",
       "toQuick": "Back to the quick version",
       "toQuickLead": "20 core questions. None of your answers is deleted.",
+      "switching": "Switching…",
       "delete": "Delete the project",
       "deleteLead": "Deletes the project and all its answers for good.",
       "deleteTitle": "Delete the project for good?",
       "deleteBody": "The project and all its answers will be deleted at once and cannot be recovered.",
+      "deleting": "Deleting…",
       "deleteConfirm": "Yes, delete the project"
     }
   },
@@ -276,6 +278,7 @@
     "languageHint": "The language of the interface and of our emails.",
     "save": "Save",
     "saved": "Changes saved.",
+    "saving": "Saving…",
     "crossborderTitle": "AI mentor and processing outside your country",
     "crossborderOn": "Your consent is on: the content of your projects, without your name or email, is sent to Anthropic in the United States to run the AI mentor.",
     "crossborderOff": "Your consent is off: the AI mentor and other AI features are switched off, and the rest of the platform works fully.",
@@ -288,6 +291,7 @@
     "deleteButton": "Delete my account",
     "deleteConfirmTitle": "Delete your account for good?",
     "deleteConfirmBody": "Your account and all your data will be deleted at once and cannot be recovered.",
+    "deleting": "Deleting…",
     "deleteConfirm": "Yes, delete my account"
   },
   "goodbye": {

@@ -47,6 +47,9 @@ import { projectPath, stepFromSlug, stepPath } from './steps';
 //   locale. Those reach the error pages (error.tsx), with a digest that matches the log.
 // - redirect() and notFound() are signals, not errors: a catch that covers them calls
 //   unstable_rethrow(error) first, on the server and in the component that awaits the action.
+// - The form calls it through useActionState and callAction (lib/call-action.ts, which turns a
+//   dropped connection into the failure result): while it runs, the button is disabled and says
+//   what is happening, and a failure is announced (FormError, role="alert").
 
 const localeSchema = z.enum(routing.locales);
 const modeSchema = z.enum(['quick', 'full']);
@@ -388,27 +391,56 @@ async function save(
 // Project settings
 // -----------------------------------------------------------------------------------------------
 
+/**
+ * A project settings form (convention at the top of this file). Success re-renders the page
+ * (`done`) or leaves it; `error` means nothing changed and the form says so.
+ */
+export type SettingsResult = { status: 'idle' } | { status: 'done' } | { status: 'error' };
+
+async function settingsFailed(
+  event: 'diagnostic.mode_switch_failed' | 'diagnostic.delete_failed',
+  error: unknown,
+  projectId: string,
+): Promise<SettingsResult> {
+  await log.error(event, { ...errorFields(error), projectId });
+  return { status: 'error' };
+}
+
 /** Quick to full (or back). Answers are kept either way. */
 export async function switchMode(
   localeInput: Locale,
   projectId: string,
   mode: 'quick' | 'full',
-): Promise<void> {
+): Promise<SettingsResult> {
   const locale = localeSchema.parse(localeInput);
-  const { supabase } = await requireAccount(locale);
-  const { error } = await supabase
-    .from('projects')
-    .update({ mode: modeSchema.parse(mode) })
-    .eq('id', z.uuid().parse(projectId));
-  if (error) throw error;
-  revalidatePath(`/${locale}${projectPath(projectId)}`, 'layout');
+  const id = z.uuid().parse(projectId);
+  const target = modeSchema.parse(mode);
+  try {
+    const { supabase } = await requireAccount(locale);
+    const { error } = await supabase.from('projects').update({ mode: target }).eq('id', id);
+    if (error) return await settingsFailed('diagnostic.mode_switch_failed', error, id);
+  } catch (error) {
+    unstable_rethrow(error);
+    return settingsFailed('diagnostic.mode_switch_failed', error, id);
+  }
+  revalidatePath(`/${locale}${projectPath(id)}`, 'layout');
+  return { status: 'done' };
 }
 
-export async function deleteProject(localeInput: Locale, projectId: string): Promise<void> {
+export async function deleteProject(
+  localeInput: Locale,
+  projectId: string,
+): Promise<SettingsResult> {
   const locale = localeSchema.parse(localeInput);
-  const { supabase } = await requireAccount(locale);
-  const { error } = await supabase.from('projects').delete().eq('id', z.uuid().parse(projectId));
-  if (error) throw error;
+  const id = z.uuid().parse(projectId);
+  try {
+    const { supabase } = await requireAccount(locale);
+    const { error } = await supabase.from('projects').delete().eq('id', id);
+    if (error) return await settingsFailed('diagnostic.delete_failed', error, id);
+  } catch (error) {
+    unstable_rethrow(error);
+    return settingsFailed('diagnostic.delete_failed', error, id);
+  }
   revalidatePath(`/${locale}/projects`);
   redirect(`/${locale}/projects`);
 }

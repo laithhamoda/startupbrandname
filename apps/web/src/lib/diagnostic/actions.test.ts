@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { reviewWithAi } from '@/lib/ai/service';
 import { requireAccount } from '@/lib/auth/session';
 import { log } from '@/lib/log';
-import { saveAnswer, type SaveInput } from './actions';
+import { deleteProject, saveAnswer, type SaveInput, switchMode } from './actions';
 import { loadProject } from './project';
 
 vi.mock('@/lib/auth/session', () => ({ requireAccount: vi.fn() }));
@@ -224,5 +224,79 @@ describe('saveAnswer', () => {
       questionId: 'B3',
       reason: 'schema',
     });
+  });
+});
+
+describe('project settings', () => {
+  /** A client whose project update and delete answer `result`. */
+  function projectsClient(result: unknown = { error: null }) {
+    const eq = vi.fn(() => Promise.resolve(result));
+    const update = vi.fn(() => ({ eq }));
+    const client = { from: () => ({ update, delete: () => ({ eq }) }) };
+    signedIn(client);
+    return { update, eq };
+  }
+
+  /** The target of a redirect() thrown by `action`, read from its digest. */
+  async function redirectTarget(action: Promise<unknown>): Promise<string> {
+    const error: unknown = await action.then(
+      () => null,
+      (thrown: unknown) => thrown,
+    );
+    return ((error as { digest?: string } | null)?.digest ?? '').split(';')[2] ?? '';
+  }
+
+  it('switches the mode and re-renders the project', async () => {
+    const { update, eq } = projectsClient();
+
+    expect(await switchMode('ar', projectId, 'quick')).toEqual({ status: 'done' });
+    expect(update).toHaveBeenCalledWith({ mode: 'quick' });
+    expect(eq).toHaveBeenCalledWith('id', projectId);
+  });
+
+  it('reports a failed switch to the form instead of throwing', async () => {
+    projectsClient({ error: { code: '42501', message: 'denied' } });
+
+    expect(await switchMode('en', projectId, 'full')).toEqual({ status: 'error' });
+    expect(log.error).toHaveBeenCalledWith('diagnostic.mode_switch_failed', {
+      code: '42501',
+      projectId,
+    });
+  });
+
+  it('reports an unreachable database to the form', async () => {
+    vi.mocked(requireAccount).mockRejectedValue(
+      Object.assign(new Error('fetch failed'), { code: 'ECONNRESET' }),
+    );
+
+    expect(await switchMode('ar', projectId, 'full')).toEqual({ status: 'error' });
+    expect(log.error).toHaveBeenCalledWith('diagnostic.mode_switch_failed', {
+      code: 'ECONNRESET',
+      errorName: 'Error',
+      projectId,
+    });
+  });
+
+  it('deletes the project and opens the list', async () => {
+    projectsClient();
+
+    expect(await redirectTarget(deleteProject('en', projectId))).toBe('/en/projects');
+  });
+
+  it('keeps the dialog when the project cannot be deleted', async () => {
+    projectsClient({ error: { code: '57014' } });
+
+    expect(await deleteProject('ar', projectId)).toEqual({ status: 'error' });
+    expect(log.error).toHaveBeenCalledWith('diagnostic.delete_failed', {
+      code: '57014',
+      projectId,
+    });
+  });
+
+  it('throws for input no page of ours sends', async () => {
+    projectsClient();
+
+    await expect(deleteProject('ar', 'not-a-uuid')).rejects.toThrow();
+    await expect(switchMode('ar', projectId, 'slow' as 'full')).rejects.toThrow();
   });
 });

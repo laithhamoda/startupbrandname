@@ -336,15 +336,23 @@ export async function updatePreferences(
   return { status: 'saved' };
 }
 
-export async function setCrossborderConsent(localeInput: Locale, given: boolean): Promise<void> {
+/** Gives or withdraws the cross-border consent; `error` leaves it as it was. */
+export async function setCrossborderConsent(
+  localeInput: Locale,
+  given: boolean,
+): Promise<AccountFormState> {
   const locale = parseLocale(localeInput);
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.rpc('set_crossborder_consent', {
     p_given: z.boolean().parse(given),
     p_text_version: CROSSBORDER_VERSION,
   });
-  if (error) throw error;
+  if (error) {
+    await log.error('account.consent_failed', errorFields(error));
+    return { status: 'error' };
+  }
   revalidatePath(`/${locale}/account`);
+  return { status: 'saved' };
 }
 
 export async function signOut(localeInput: Locale): Promise<void> {
@@ -356,11 +364,11 @@ export async function signOut(localeInput: Locale): Promise<void> {
   redirect(`/${locale}`);
 }
 
-export async function deleteAccount(localeInput: Locale): Promise<void> {
+/** Deletes the account and signs out. On `error` nothing was deleted, and the dialog stays open. */
+export async function deleteAccount(localeInput: Locale): Promise<AccountFormState> {
   const locale = parseLocale(localeInput);
   const supabase = await createSupabaseServerClient();
-  if (!(await deleteSignedInAccount(supabase, 'requested'))) {
-    throw new Error('The account could not be deleted.');
-  }
+  // deleteSignedInAccount logs the reason.
+  if (!(await deleteSignedInAccount(supabase, 'requested'))) return { status: 'error' };
   redirect(`/${locale}/goodbye`);
 }

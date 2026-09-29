@@ -1,7 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { log } from '@/lib/log';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
-import { startGoogleLogin, submitOnboarding, verifyEmailCode } from './actions';
+import {
+  deleteAccount,
+  setCrossborderConsent,
+  startGoogleLogin,
+  submitOnboarding,
+  verifyEmailCode,
+} from './actions';
 
 const jar = vi.hoisted(() => new Map<string, string>());
 
@@ -206,6 +212,44 @@ describe('submitOnboarding', () => {
     expect(await submitOnboarding('ar', { status: 'idle' }, gateForm('DZ'))).toEqual({
       status: 'error',
       error: 'failed',
+    });
+  });
+});
+
+describe('setCrossborderConsent', () => {
+  it('records the new choice', async () => {
+    const { rpc } = signedIn();
+
+    expect(await setCrossborderConsent('ar', false)).toEqual({ status: 'saved' });
+    expect(rpc).toHaveBeenCalledWith(
+      'set_crossborder_consent',
+      expect.objectContaining({ p_given: false }),
+    );
+  });
+
+  it('reports a failure to the form instead of throwing', async () => {
+    signedIn({ set_crossborder_consent: { error: { code: '42501' } } });
+
+    expect(await setCrossborderConsent('en', true)).toEqual({ status: 'error' });
+    expect(log.error).toHaveBeenCalledWith('account.consent_failed', { code: '42501' });
+  });
+});
+
+describe('deleteAccount', () => {
+  it('deletes the account and says goodbye', async () => {
+    const { rpc } = signedIn();
+
+    expect(await redirectTarget(deleteAccount('en'))).toBe('/en/goodbye');
+    expect(rpc).toHaveBeenCalledWith('delete_my_account');
+  });
+
+  it('keeps the dialog when nothing could be deleted', async () => {
+    signedIn({ delete_my_account: { error: { code: '57014' } } });
+
+    expect(await deleteAccount('ar')).toEqual({ status: 'error' });
+    expect(log.error).toHaveBeenCalledWith('account.delete_failed', {
+      code: '57014',
+      reason: 'requested',
     });
   });
 });

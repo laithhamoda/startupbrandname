@@ -2,13 +2,13 @@
 
 import { type Field, message, type NumberRange } from '@sbn/question-bank';
 import { useTranslations } from 'next-intl';
-import { unstable_rethrow } from 'next/navigation';
 import { useEffect, useRef, useState, useTransition } from 'react';
 import { Button, ButtonLink } from '@/components/ui/button';
 import { RuleAlert } from '@/components/ui/rule-alert';
 import { TextLink } from '@/components/ui/text-link';
 import { useRouter } from '@/i18n/navigation';
 import type { Locale } from '@/i18n/routing';
+import { callAction } from '@/lib/call-action';
 import { type SaveResult, saveAnswer } from '@/lib/diagnostic/actions';
 import { type Draft, fromDraft, mayBeCentimes } from '@/lib/diagnostic/draft';
 import type { FindingView } from '@/lib/diagnostic/findings';
@@ -43,6 +43,8 @@ type Local =
   /** D-108: an Algerian-dinar amount that may be in centimes. */
   | { kind: 'centimes' };
 
+const SAVE_FAILED: SaveResult = { status: 'error', reason: 'failed' };
+
 /**
  * One question's answer: edit, then save and move on. Rules that reject an answer show their
  * message in place and keep what was typed (SPEC §2); warnings are shown once, then the founder
@@ -68,20 +70,17 @@ export function AnswerEditor(props: AnswerEditorProps) {
   function send(submission: Parameters<typeof saveAnswer>[0]['submission']) {
     if (submission.kind === 'value') lastValue.current = submission.value;
     startTransition(async () => {
-      let outcome: SaveResult;
-      try {
-        outcome = await saveAnswer({
-          locale: props.locale,
-          projectId: props.projectId,
-          step: props.step,
-          submission,
-        });
-      } catch (error) {
-        // A redirect (the session ended) still navigates; anything else, such as a dropped
-        // connection, keeps the draft on screen so the founder can try again.
-        unstable_rethrow(error);
-        outcome = { status: 'error', reason: 'failed' };
-      }
+      // A dropped connection keeps the draft on screen so the founder can try again.
+      const outcome = await callAction(
+        () =>
+          saveAnswer({
+            locale: props.locale,
+            projectId: props.projectId,
+            step: props.step,
+            submission,
+          }),
+        SAVE_FAILED,
+      );
       if (outcome.status === 'saved' && outcome.notes.length === 0) {
         router.push(outcome.next ?? props.overviewHref);
         return;

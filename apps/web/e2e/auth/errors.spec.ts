@@ -65,3 +65,48 @@ test('an answer that cannot reach the server stays in the form', async ({ page }
   await page.getByRole('button', { name: 'التالي' }).click();
   await expect(page).toHaveURL(/\/q\/A8$/);
 });
+
+const ACTION_FAILED = 'تعذّر إكمال الطلب. حاول مرة أخرى بعد قليل.';
+
+test('project settings that cannot reach the server say so and stay usable', async ({ page }) => {
+  await signUpByEmail(page, uniqueEmail('settings-offline'));
+  await createProject(page);
+  await page.goto(page.url().replace(/\/q\/A1$/, ''));
+
+  await dropServerActions(page);
+  const toFull = page.getByRole('button', { name: 'انتقل إلى النسخة الكاملة' });
+  await toFull.click();
+  await expect(page.getByText(ACTION_FAILED)).toBeVisible();
+  await expect(toFull).toBeEnabled();
+
+  await page.getByRole('button', { name: 'احذف المشروع', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'حذف المشروع نهائيًا؟' });
+  await dialog.getByRole('button', { name: 'نعم، احذف المشروع' }).click();
+  await expect(dialog.getByText(ACTION_FAILED)).toBeVisible();
+  await expectNoViolations(page);
+
+  await page.unrouteAll();
+  await dialog.getByRole('button', { name: 'نعم، احذف المشروع' }).click();
+  await expect(page).toHaveURL(/\/ar\/projects$/);
+});
+
+test('account forms that cannot reach the server say so, and the delete dialog stays open', async ({
+  page,
+}) => {
+  await signUpByEmail(page, uniqueEmail('account-offline'));
+  await page.goto('/ar/account');
+
+  await dropServerActions(page);
+  await page.getByRole('button', { name: 'فعّل الموافقة' }).click();
+  await expect(page.getByText(ACTION_FAILED)).toBeVisible();
+  await expect(page.getByText(/موافقتك غير مفعّلة/)).toBeVisible();
+
+  await page.getByRole('button', { name: 'احذف حسابي', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'حذف الحساب نهائيًا؟' });
+  await dialog.getByRole('button', { name: 'نعم، احذف حسابي' }).click();
+  await expect(dialog.getByText(ACTION_FAILED)).toBeVisible();
+
+  await page.unrouteAll();
+  await dialog.getByRole('button', { name: 'نعم، احذف حسابي' }).click();
+  await expect(page).toHaveURL(/\/ar\/goodbye$/);
+});
