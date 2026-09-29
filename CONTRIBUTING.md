@@ -73,9 +73,10 @@ The full order, rollback and kill switches: [docs/runbooks/operations.md](docs/r
 
 ### A question, option or follow-up
 
-- [ ] Edit `packages/question-bank/src/questions/<axis>.ts` (or `follow-ups.ts`), in Arabic and
-      English (D-106). Core IDs `A1`–`H8` are fixed; follow-ups are `F6.1` (URL `F6-1`, D-117),
-      matching the check on `answers.question_id`.
+- [ ] Edit the axis file in `packages/question-bank/src/questions/` (for example `a-founder.ts`)
+      or `packages/question-bank/src/follow-ups.ts`, in Arabic and English (D-106). Core IDs
+      `A1`–`H8` are fixed; follow-ups are `F6.1` (URL `F6-1`, D-117), matching the check on
+      `answers.question_id`.
 - [ ] Stored answers keep working. An answer whose stored value no longer fits its field counts
       as missing (`parseAnswers` in `apps/web/src/lib/diagnostic/project.ts`): the founder loses it
       without a message. Renaming an option `value` or changing a field kind needs either a

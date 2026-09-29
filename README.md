@@ -175,8 +175,8 @@ In production `region` must be `fra1`.
 2. CI applies every migration to an empty database and runs the pgTAP tests. Any table in
    `public` without row level security fails the build.
 3. Merging to `main` pushes new migrations to staging (`DB deploy` workflow).
-4. Production: the owner runs `DB deploy` from `main` with target `production` and approves the
-   `db-production` environment.
+4. Production: the owner runs `DB deploy` from `main` with target `production` (and the
+   confirmation the form asks for), then approves the `db-production` environment.
 
 Vercel deploys `main` at once, so the app runs on the old schema until production is migrated. A
 migration therefore only adds, the app keeps working without it (the feature stays off), and drops
