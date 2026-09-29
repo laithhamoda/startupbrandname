@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { log } from '@/lib/log';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
-import { submitOnboarding, verifyEmailCode } from './actions';
+import { startGoogleLogin, submitOnboarding, verifyEmailCode } from './actions';
 
 const jar = vi.hoisted(() => new Map<string, string>());
 
@@ -17,6 +17,7 @@ vi.mock('next/headers', () => ({
 }));
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }));
 vi.mock('@/lib/supabase/server', () => ({ createSupabaseServerClient: vi.fn() }));
+vi.mock('./google', () => ({ googleSignInAvailable: () => Promise.resolve(true) }));
 vi.mock('@/lib/log', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/lib/log')>()),
   log: { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() },
@@ -114,6 +115,54 @@ describe('verifyEmailCode', () => {
       expect(verifyOtp).not.toHaveBeenCalled();
     },
   );
+
+  it('goes back to the page that asked for sign-in', async () => {
+    signedIn();
+    const form = codeForm('12345678', '/en/projects/0b6f4a52-5f2e-4c8e-9a51-2d0c1c0e7d11/q/A7');
+
+    expect(await redirectTarget(verifyEmailCode('en', { status: 'idle' }, form))).toBe(
+      '/en/projects/0b6f4a52-5f2e-4c8e-9a51-2d0c1c0e7d11/q/A7',
+    );
+  });
+
+  it.each(['https://evil.example/ar', '//evil.example/ar', '/ar/projects?x=1'])(
+    'goes to the projects instead of %j',
+    async (next) => {
+      signedIn();
+
+      expect(
+        await redirectTarget(verifyEmailCode('ar', { status: 'idle' }, codeForm('12345678', next))),
+      ).toBe('/ar/projects');
+    },
+  );
+});
+
+describe('startGoogleLogin', () => {
+  it('asks Google to come back to the page that asked for sign-in', async () => {
+    const { signInWithOAuth } = signedIn();
+
+    await redirectTarget(startGoogleLogin('en', '/en/account'));
+    expect(signInWithOAuth).toHaveBeenCalledWith(
+      expect.objectContaining({
+        options: expect.objectContaining({
+          redirectTo: 'http://localhost:3000/auth/callback?next=%2Fen%2Faccount',
+        }) as unknown,
+      }),
+    );
+  });
+
+  it('comes back to the projects for a page that is not one of ours', async () => {
+    const { signInWithOAuth } = signedIn();
+
+    await redirectTarget(startGoogleLogin('ar', 'https://evil.example/ar'));
+    expect(signInWithOAuth).toHaveBeenCalledWith(
+      expect.objectContaining({
+        options: expect.objectContaining({
+          redirectTo: 'http://localhost:3000/auth/callback?next=%2Far%2Fprojects',
+        }) as unknown,
+      }),
+    );
+  });
 });
 
 describe('submitOnboarding', () => {

@@ -1,10 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { log } from '@/lib/log';
-import type { SupabaseServerClient } from '@/lib/supabase/server';
-import { finishSignIn } from './session';
+import { createSupabaseServerClient, type SupabaseServerClient } from '@/lib/supabase/server';
+import { PATH_HEADER } from './next-path';
+import { finishSignIn, requireAccount } from './session';
 import { SIGNUP_INTENT_COOKIE, serializeSignupIntent, type SignupIntent } from './signup-intent';
 
 const jar = vi.hoisted(() => new Map<string, string>());
+const requestHeaders = vi.hoisted(() => new Headers());
 
 vi.mock('next/headers', () => ({
   cookies: () =>
@@ -13,7 +15,9 @@ vi.mock('next/headers', () => ({
       getAll: () => [...jar].map(([name, value]) => ({ name, value })),
       delete: (name: string) => jar.delete(name),
     }),
+  headers: () => Promise.resolve(requestHeaders),
 }));
+vi.mock('@/lib/supabase/server', () => ({ createSupabaseServerClient: vi.fn() }));
 vi.mock('@/lib/log', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/lib/log')>()),
   log: { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() },
@@ -52,13 +56,49 @@ function answeredSignup(intent: Partial<SignupIntent> = {}) {
   jar.set('sb-project-auth-token', 'session');
 }
 
+/** The target of a redirect() thrown by `action`, read from its digest. */
+async function redirectTarget(action: Promise<unknown>): Promise<string> {
+  const error: unknown = await action.then(
+    () => null,
+    (thrown: unknown) => thrown,
+  );
+  const digest = (error as { digest?: string } | null)?.digest ?? '';
+  return digest.split(';')[2] ?? '';
+}
+
 beforeEach(() => {
   jar.clear();
+  requestHeaders.delete(PATH_HEADER);
 });
 
 afterEach(() => {
   vi.clearAllMocks();
   vi.unstubAllEnvs();
+});
+
+describe('requireAccount', () => {
+  function signedOut() {
+    const client = { auth: { getClaims: () => Promise.resolve({ data: null }) } };
+    vi.mocked(createSupabaseServerClient).mockResolvedValue(
+      client as unknown as SupabaseServerClient,
+    );
+  }
+
+  it('sends a signed-out visitor to sign-in with the way back to the page', async () => {
+    signedOut();
+    requestHeaders.set(PATH_HEADER, '/ar/projects/0b6f4a52-5f2e-4c8e-9a51-2d0c1c0e7d11/q/A7');
+
+    expect(await redirectTarget(requireAccount('ar'))).toBe(
+      '/ar/login?next=%2Far%2Fprojects%2F0b6f4a52-5f2e-4c8e-9a51-2d0c1c0e7d11%2Fq%2FA7',
+    );
+  });
+
+  it('never carries a path that is not one of ours', async () => {
+    signedOut();
+    requestHeaders.set(PATH_HEADER, '//evil.example/ar');
+
+    expect(await redirectTarget(requireAccount('en'))).toBe('/en/login');
+  });
 });
 
 describe('finishSignIn', () => {

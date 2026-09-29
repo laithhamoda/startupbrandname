@@ -1,5 +1,5 @@
 import 'server-only';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { redirect, unstable_rethrow } from 'next/navigation';
 import { cache } from 'react';
 import { z } from 'zod';
@@ -10,7 +10,7 @@ import type { CountryCode } from '@/lib/countries';
 import { errorFields, log } from '@/lib/log';
 import { closedCountries } from '@/lib/markets';
 import { createSupabaseServerClient, type SupabaseServerClient } from '@/lib/supabase/server';
-import { projectsPath } from './next-path';
+import { loginPath, PATH_HEADER, projectsPath } from './next-path';
 import {
   parseSignupIntent,
   serializeSignupIntent,
@@ -49,22 +49,29 @@ export async function getProfile(supabase: SupabaseServerClient): Promise<Profil
 
 /**
  * For pages behind sign-in: redirects to sign-in, or to the onboarding gate if incomplete.
+ * Sign-in comes back to the page asked for (a deep link, or a session that expired mid-answer).
  * Layouts and pages both call it (a layout check alone does not protect a page); `cache` makes
  * that one check per request.
  */
 export const requireAccount = cache(async (locale: Locale) => {
   const supabase = await createSupabaseServerClient();
   const user = await getSessionUser(supabase);
-  if (!user) redirect(`/${locale}/login`);
+  if (!user) redirect(loginPath(locale, (await headers()).get(PATH_HEADER)));
   const profile = await getProfile(supabase);
   if (!profile) redirect(`/${locale}/onboarding`);
   return { supabase, user, profile };
 });
 
-/** For the sign-in and sign-up pages: a signed-in visitor goes to their projects instead. */
-export async function redirectIfSignedIn(locale: Locale): Promise<void> {
+/**
+ * For the sign-in and sign-up pages: a signed-in visitor goes to `next` (already checked by
+ * safeNextPath), by default their projects, instead.
+ */
+export async function redirectIfSignedIn(
+  locale: Locale,
+  next: string = projectsPath(locale),
+): Promise<void> {
   const supabase = await createSupabaseServerClient();
-  if (await getSessionUser(supabase)) redirect(projectsPath(locale));
+  if (await getSessionUser(supabase)) redirect(next);
 }
 
 // -----------------------------------------------------------------------------------------------

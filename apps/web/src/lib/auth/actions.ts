@@ -14,7 +14,7 @@ import { errorFields, log } from '@/lib/log';
 import { closedCountries } from '@/lib/markets';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { googleSignInAvailable } from './google';
-import { projectsPath } from './next-path';
+import { projectsPath, safeNextPath } from './next-path';
 import { type OnboardingField, parseOnboarding } from './onboarding';
 import {
   completeOnboarding,
@@ -51,6 +51,11 @@ const codeSchema = z
 
 function parseLocale(value: unknown): Locale {
   return localeSchema.parse(value);
+}
+
+/** Where to go after sign-in: `value` when it is a page of this site, else the projects. */
+function nextPathOf(locale: Locale, value: unknown): string {
+  return safeNextPath(typeof value === 'string' ? value : null, projectsPath(locale));
 }
 
 function errorCodeOf(error: AuthError): AuthErrorCode {
@@ -153,7 +158,10 @@ export async function requestLoginCode(
   return { status: 'sent', email: email.data };
 }
 
-/** Last step for both: checks the code, finishes onboarding if answered, then goes on. */
+/**
+ * Last step for both: checks the code, finishes onboarding if answered, then goes on to `next`
+ * (the page that asked for sign-in) or the projects.
+ */
 export async function verifyEmailCode(
   localeInput: Locale,
   _previous: AuthFormState,
@@ -176,22 +184,25 @@ export async function verifyEmailCode(
     const reason = errorCodeOf(error);
     return { status: 'error', error: reason === 'failed' ? 'invalidCode' : reason };
   }
-  redirect(await finishSignIn(supabase, locale));
+  redirect(await finishSignIn(supabase, locale, nextPathOf(locale, formData.get('next'))));
 }
 
 // -----------------------------------------------------------------------------------------------
 // Google
 // -----------------------------------------------------------------------------------------------
 
-async function redirectToGoogle(locale: Locale): Promise<AuthFormState> {
+/** `next` is already checked by safeNextPath; the callback checks it again. */
+async function redirectToGoogle(
+  locale: Locale,
+  next: string = projectsPath(locale),
+): Promise<AuthFormState> {
   // The button is hidden when Google is off; a crafted request gets an error, not Supabase's page.
   if (!(await googleSignInAvailable())) return { status: 'error', error: 'failed' };
   const supabase = await createSupabaseServerClient();
-  const next = encodeURIComponent(projectsPath(locale));
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: `${await siteOrigin()}/auth/callback?next=${next}`,
+      redirectTo: `${await siteOrigin()}/auth/callback?next=${encodeURIComponent(next)}`,
       // Basic profile only (D-065): openid, email and profile are Supabase's defaults.
       queryParams: { prompt: 'select_account' },
     },
@@ -215,11 +226,17 @@ export async function startGoogleSignup(
   return redirectToGoogle(locale);
 }
 
-/** Sign-in with Google. A new Google account lands on the onboarding gate (D-065). */
-export async function startGoogleLogin(localeInput: Locale): Promise<AuthFormState> {
+/**
+ * Sign-in with Google, then on to `nextInput` (the page that asked for sign-in) or the projects.
+ * A new Google account lands on the onboarding gate (D-065).
+ */
+export async function startGoogleLogin(
+  localeInput: Locale,
+  nextInput?: string,
+): Promise<AuthFormState> {
   const locale = parseLocale(localeInput);
   await forgetSignupAnswers();
-  return redirectToGoogle(locale);
+  return redirectToGoogle(locale, nextPathOf(locale, nextInput));
 }
 
 // -----------------------------------------------------------------------------------------------
