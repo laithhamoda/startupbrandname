@@ -154,7 +154,8 @@ release order:
 
    The zeros stand for the USD prices per million tokens; `cost_usd` is computed from them.
 
-3. Update the assertions in `supabase/tests/ai_usage.test.sql` and add a decision.
+3. Update the assertions in `supabase/tests/ai_usage.test.sql`, including one that each price of
+   the new model is greater than 0, and add a decision.
 4. Release it as above. The input hash includes the model, so no review from the old model is
    reused for the new one. A model without a price turns AI off instead of being counted as free.
 
@@ -196,8 +197,8 @@ Vercel applies a variable change to the next deployment only: redeploy after cha
 | `ANTHROPIC_API_KEY`                     | Unset                                 | Sensitive                                  | Sensitive                                   |
 | `VERCEL`, `VERCEL_ENV`, `VERCEL_REGION` | Unset                                 | Set by Vercel                              | Set by Vercel                               |
 
-`LOG_LEVEL` is validated, but no logger reads it yet (M9 checklist). The schemas are
-`apps/web/src/env/server.ts` and `client.ts`; a new variable follows the checklist in
+As of M3c (2026-09-28), `LOG_LEVEL` is validated but no logger reads it (M9 checklist). The
+schemas are `apps/web/src/env/server.ts` and `client.ts`; a new variable follows the checklist in
 [CONTRIBUTING.md](../../CONTRIBUTING.md).
 
 Outside Vercel:
