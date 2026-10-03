@@ -1,6 +1,7 @@
-// Keeps database migrations safe to deploy (D-012, D-141). CI runs it on pull requests:
+// Keeps database migrations safe to deploy (D-012, D-141). CI runs it on pull requests, and on
+// main against the commit before the merge:
 //   node scripts/check-migrations.mjs origin/main
-// It compares the committed migrations with the base branch and fails when
+// It compares the committed migrations with the base and fails when
 // - a migration that is already merged is edited, renamed or deleted: `supabase db push` applies
 //   only versions the database has not recorded, so the change would never reach staging or
 //   production;
