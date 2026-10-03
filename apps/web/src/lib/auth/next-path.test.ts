@@ -39,8 +39,16 @@ describe('loginPath', () => {
     'never carries %j',
     (from) => {
       expect(loginPath('ar', from)).toBe('/ar/login');
+      expect(loginPath('ar', from, 'google')).toBe('/ar/login?error=google');
     },
   );
+
+  it('keeps the way back after a failed Google sign-in', () => {
+    expect(loginPath('en', '/en/account', 'google')).toBe(
+      '/en/login?error=google&next=%2Fen%2Faccount',
+    );
+    expect(loginPath('ar', '/ar/projects', 'google')).toBe('/ar/login?error=google');
+  });
 });
 
 describe('localeOfPath', () => {

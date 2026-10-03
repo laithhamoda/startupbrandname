@@ -29,11 +29,15 @@ export function projectsPath(locale: Locale): string {
 export const PATH_HEADER = 'x-sbn-path';
 
 /**
- * The sign-in page, with a way back to `from` (checked by safeNextPath). The projects list is
- * where sign-in goes anyway, so it adds nothing to the address.
+ * The sign-in page, with a way back to `from` (checked by safeNextPath) and, after a failed
+ * Google sign-in, the explanation to show. The projects list is where sign-in goes anyway, so it
+ * adds nothing to the address.
  */
-export function loginPath(locale: Locale, from?: string | null): string {
+export function loginPath(locale: Locale, from?: string | null, error?: 'google'): string {
+  const query = new URLSearchParams();
+  if (error) query.set('error', error);
   const next = safeNextPath(from, projectsPath(locale));
-  if (next === projectsPath(locale)) return `/${locale}/login`;
-  return `/${locale}/login?next=${encodeURIComponent(next)}`;
+  if (next !== projectsPath(locale)) query.set('next', next);
+  const search = query.toString();
+  return search ? `/${locale}/login?${search}` : `/${locale}/login`;
 }

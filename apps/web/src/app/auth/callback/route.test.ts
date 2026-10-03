@@ -73,6 +73,17 @@ describe('GET /auth/callback', () => {
     });
   });
 
+  it('keeps the page to come back to when Google sign-in fails', async () => {
+    client(() => Promise.reject(new TypeError('fetch failed')));
+
+    expect(await callback('code=abc&next=/en/account')).toBe(
+      '/en/login?error=google&next=%2Fen%2Faccount',
+    );
+    expect(await callback('next=/ar/projects/abc-123')).toBe(
+      '/ar/login?error=google&next=%2Far%2Fprojects%2Fabc-123',
+    );
+  });
+
   it('goes back to sign-in when the Supabase client cannot be created', async () => {
     vi.mocked(createSupabaseServerClient).mockRejectedValue(new Error('cookies unavailable'));
 
