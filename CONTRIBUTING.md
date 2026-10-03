@@ -82,8 +82,12 @@ The full order, rollback and kill switches: [docs/runbooks/operations.md](docs/r
       as missing (`parseAnswers` in `apps/web/src/lib/diagnostic/project.ts`): the founder loses it
       without a message. Renaming an option `value` or changing a field kind needs either a
       read-time mapping in the question bank or a migration that rewrites
-      `answers.normalized_value`, plus a test with an answer in the old shape. Labels may change
-      freely.
+      `answers.normalized_value`, plus a test with an answer in the old shape.
+- [ ] Labels change without a data migration, but the Arabic label and the question's rules are
+      part of the AI review's input hash (`apps/web/src/lib/ai/service.ts`). Changing them makes
+      the stored reviews of that question stale, so the next saves pay for new model calls within
+      the daily limits; for B1, whose review every other question reuses first, that is every
+      founder's next typed answer. Batch such changes.
 - [ ] `pnpm --filter @sbn/question-bank test` (coverage ≥ 95%); completeness weights stay as in
       D-102 and D-105.
 - [ ] A change to SPEC behaviour: a decision, and a row in `docs/SPEC-CHANGES.md`.

@@ -17,7 +17,8 @@ Decisions: <!-- D-IDs added or applied; open questions resolved (#NN) -->
 - [ ] Environment variable: schema, `env.test.ts`, `.env.example`, bundle scan for secrets, CI,
       Vercel (Production and Preview), the table in `docs/runbooks/operations.md`.
 - [ ] Question, option or follow-up: stored answers still parse (mapping or data migration, with
-      an old-shape test).
+      an old-shape test); Arabic label or rule changes, which make stored AI reviews stale, are
+      batched.
 - [ ] Settings key: migration, pgTAP assertion, fail-closed read, the table in
       `docs/runbooks/operations.md`.
 - [ ] Migration: expand only; the app works on the previous schema; RLS and pgTAP; `db:types`
