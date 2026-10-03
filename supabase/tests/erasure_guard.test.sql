@@ -2,14 +2,17 @@
 -- Fails CI as soon as a foreign key into a table that such a deletion empties (auth.users,
 -- public.projects and every table that cascades from them, at any depth) neither cascades nor sets
 -- a nullable column to null, so a deletion would be refused or leave rows behind; or as soon as a
--- user_id or project_id column has no foreign key, so a deletion never reaches it. An exception
--- (for example a payment record kept for tax law, OPEN-QUESTIONS #31) goes in erasure_allowlist
--- below with its reason.
+-- user_id or project_id column has no foreign key into such a table, so a deletion never reaches
+-- it. ON DELETE SET NULL passes without review: the row stays but no longer points at the account
+-- or the project, so such a table must hold nothing else that identifies the founder. A record that
+-- has to keep its owner's id (for example a payment record kept for tax law, OPEN-QUESTIONS #31)
+-- has no such foreign key, or one that does not erase, and goes in erasure_allowlist below with
+-- its reason.
 begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(10);
+select plan(11);
 
 create temporary table erasure_allowlist (
   -- schema.table.constraint for a foreign key, schema.table.column for a column without one
@@ -30,6 +33,8 @@ with recursive emptied (relid) as (
     and k.confdeltype = 'c'
 )
 select
+  k.conrelid as table_id,
+  k.conkey as key_columns,
   format('%I.%I', n.nspname, c.relname) as table_name,
   format('%I.%I.%I', n.nspname, c.relname, k.conname) as foreign_key,
   k.confdeltype = 'c'
@@ -46,6 +51,23 @@ join pg_class c on c.oid = k.conrelid
 join pg_namespace n on n.oid = c.relnamespace
 where k.contype = 'f'
   and n.nspname in ('public', 'private');
+
+-- Every user_id or project_id column in public or private without a foreign key into a table that
+-- a deletion empties: a key into any other table does not bring the deletion to the row.
+create temporary view erasure_owner_columns as
+select format('%I.%I.%I', n.nspname, c.relname, a.attname) as column_name
+from pg_attribute a
+join pg_class c on c.oid = a.attrelid
+join pg_namespace n on n.oid = c.relnamespace
+where n.nspname in ('public', 'private')
+  and c.relkind in ('r', 'p')
+  and a.attnum > 0
+  and not a.attisdropped
+  and a.attname ~ '(^|_)(user|project)_id$'
+  and not exists (
+    select 1 from erasure_foreign_keys f
+    where f.table_id = c.oid and a.attnum = any (f.key_columns)
+  );
 
 insert into auth.users (id, email, created_at) values
   ('a3000000-0000-4000-8000-000000000001', 'erasure@example.test', now());
@@ -100,23 +122,11 @@ select is_empty(
 
 select is_empty(
   $$
-    select format('%I.%I.%I', n.nspname, c.relname, a.attname)
-    from pg_attribute a
-    join pg_class c on c.oid = a.attrelid
-    join pg_namespace n on n.oid = c.relnamespace
-    where n.nspname in ('public', 'private')
-      and c.relkind in ('r', 'p')
-      and a.attnum > 0
-      and not a.attisdropped
-      and a.attname ~ '(^|_)(user|project)_id$'
-      and not exists (
-        select 1 from pg_constraint k
-        where k.contype = 'f' and k.conrelid = c.oid and a.attnum = any (k.conkey)
-      )
-      and format('%I.%I.%I', n.nspname, c.relname, a.attname)
-        not in (select name from erasure_allowlist)
+    select column_name
+    from erasure_owner_columns
+    where column_name not in (select name from erasure_allowlist)
   $$,
-  'every user_id or project_id column has a foreign key, so a deletion reaches it'
+  'every user_id or project_id column has a foreign key into a table a deletion empties'
 );
 
 -- The guard follows cascades: a table that points at tool_runs, which go with their project, is
@@ -136,6 +146,23 @@ select is(
 );
 
 drop table public.erasure_probe;
+
+-- A foreign key alone is not enough: this user_id points at a table that no deletion empties.
+create table public.erasure_probe_target (id uuid primary key);
+create table public.erasure_probe_owner (
+  user_id uuid references public.erasure_probe_target (id) on delete cascade
+);
+
+select is(
+  (
+    select count(*)::int from erasure_owner_columns
+    where column_name = 'public.erasure_probe_owner.user_id'
+  ),
+  1,
+  'the guard flags an owner column whose foreign key points at a table no deletion empties'
+);
+
+drop table public.erasure_probe_owner, public.erasure_probe_target;
 
 -- ---------------------------------------------------------------------------------------------
 -- Deleting a project (as its owner, through RLS)
