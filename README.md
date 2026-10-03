@@ -46,7 +46,7 @@ Chromium: `pnpm --filter @sbn/web exec playwright install chromium`.
 | Command                             | What it does                                                                                          |
 | ----------------------------------- | ----------------------------------------------------------------------------------------------------- |
 | `pnpm dev`                          | The web app in development mode, port 3000                                                            |
-| `pnpm verify`                       | What the `checks` and `db` CI jobs run, in order; needs the local stack                               |
+| `pnpm verify`                       | What the `checks` and `db` CI jobs run, in order; needs the local stack and wipes its data (reset)    |
 | `pnpm format` / `format:check`      | Prettier: write, or check only                                                                        |
 | `pnpm lint`                         | ESLint with zero warnings, and the check that rejects `left`/`right` styling                          |
 | `pnpm typecheck`                    | TypeScript in every package                                                                           |

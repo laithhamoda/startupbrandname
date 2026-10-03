@@ -23,7 +23,8 @@ How changes reach `main`, and short checklists for the changes that touch many f
 - Small commits in Conventional Commits form (`feat`, `fix`, `refactor`, `test`, `docs`, `chore`,
   `ci`, `perf`, optional scope), checked by commitlint: lower-case subject, body lines of at most
   100 characters, explaining why. Hooks format, lint and test; never skip them with `--no-verify`.
-- Fill in the pull request template. `pnpm verify` runs the `checks` and `db` jobs locally.
+- Fill in the pull request template. `pnpm verify` runs the `checks` and `db` jobs locally; like
+  the `db` job it starts from a fresh database, so it wipes the local data (`pnpm db:reset`).
 
 ## Releases and migrations
 

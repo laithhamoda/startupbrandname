@@ -6,7 +6,8 @@ Decisions: <!-- D-IDs added or applied; open questions resolved (#NN) -->
 
 ## Checks
 
-- [ ] The six CI jobs are green (`pnpm verify` runs the `checks` and `db` jobs locally).
+- [ ] The six CI jobs are green (`pnpm verify` runs the `checks` and `db` jobs locally; it resets
+      the local database).
 - [ ] Tests added or updated for every change in behaviour (docs/TESTING.md).
 - [ ] Accessibility and RTL checked where the interface changed (CLAUDE.md rule 11).
 - [ ] New decisions appended to `docs/DECISIONS.md`; merged rows untouched.

@@ -27,9 +27,10 @@ whose six CI jobs are green (`.github/workflows/ci.yml`); every row below names 
 | A secret is committed                                               | gitleaks over the full history (D-040)           | `secret-scan`                                      | none (CI only)                                                                           |
 | A commit message is not conventional                                | commitlint                                       | none (local `commit-msg` hook)                     | runs on every commit                                                                     |
 
-`pnpm verify` runs what the `checks` and `db` jobs run, in order. It needs the local stack
-(`pnpm db:start`) for the last two steps. The end-to-end, Lighthouse and secret-scan jobs are
-separate.
+`pnpm verify` runs what the `checks` and `db` jobs run, in order. Like the `db` job, it lints and
+tests a database built from every migration: `pnpm db:reset` comes first, which wipes the local
+data. It needs the local stack (`pnpm db:start`) for those last three steps. The end-to-end,
+Lighthouse and secret-scan jobs are separate.
 
 ## Git hooks (lefthook)
 
