@@ -146,13 +146,16 @@ release order:
    ```sql
    -- <date>: <new model ID> replaces <old model ID> (D-<id>). Checked on <pages> on <date>.
    update public.settings
-   set value = value || '{"<model ID>": {"input": 0, "output": 0, "cache_write": 0, "cache_read": 0, "source_url": "<pricing page>", "checked_at": "<YYYY-MM-DD>"}}'::jsonb
+   set value = value || '{"<model ID>": {"input": <input>, "output": <output>, "cache_write": <cache write>, "cache_read": <cache read>, "source_url": "<pricing page>", "checked_at": "<YYYY-MM-DD>"}}'::jsonb
    where key = 'ai.prices';
 
    update public.settings set value = '"<model ID>"' where key = 'ai.model.fast';
    ```
 
-   The zeros stand for the USD prices per million tokens; `cost_usd` is computed from them.
+   The four prices are USD per million tokens; `cost_usd` is computed from them. A placeholder
+   left in is not valid JSON, so the migration fails to apply. Each price must be greater than 0:
+   the app accepts 0, which would count every call as free, and the daily USD limit would never
+   stop AI.
 
 3. Update the assertions in `supabase/tests/ai_usage.test.sql`, including one that each price of
    the new model is greater than 0, and add a decision.
