@@ -11,7 +11,8 @@ this page links them together. It describes `main` as of M3c.
 - Arabic first (RTL) and English (LTR), one layout for both (D-067, D-056).
 - Data stays in Frankfurt: Supabase `eu-central-1` and Vercel functions pinned to `fra1`
   (CLAUDE.md §3, D-019). Anything outside the EU is a named processor (D-082).
-- No secret key in the app (D-077). Row level security on every table (rule 6).
+- No Supabase secret key in the app (D-077); its only server secret is `ANTHROPIC_API_KEY`. Row
+  level security on every table (rule 6).
 
 ## 2. Context
 
@@ -44,7 +45,7 @@ flowchart LR
   subgraph browser["Browser (untrusted)"]
     ui["HTML, React client components<br/>httpOnly session cookies"]
   end
-  subgraph vercel["Vercel fra1 (trusted, no secret key)"]
+  subgraph vercel["Vercel fra1 (trusted; no Supabase secret key)"]
     proxy["proxy.ts<br/>session refresh, /ar and /en"]
     pages["Server Components"]
     actions["Server Actions<br/>lib/auth, lib/diagnostic"]
@@ -77,7 +78,7 @@ flowchart LR
 | -------------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Browser → Vercel           | Page requests, Server Action calls, the callback | Every action and route parses its input with zod (rule 7). Sessions live in httpOnly cookies set by the server (D-077). The proxy refreshes an expiring session before routing. A Content-Security-Policy is still open ([M9 checklist](security/m9-checklist.md)). |
 | Browser → Supabase, Google | Top-level redirects during Google sign-in only   | PKCE; the callback accepts only local `next` paths (`lib/auth/next-path.ts`). Otherwise the browser never calls Supabase (D-077).                                                                                                                                   |
-| Vercel → Supabase          | Queries and RPC calls as the signed-in user      | Publishable key plus the user's session, so RLS applies to every query. Writes that need more than a policy go through `security definer` functions that act on `auth.uid()` only (D-085). The app holds no secret key.                                             |
+| Vercel → Supabase          | Queries and RPC calls as the signed-in user      | Publishable key plus the user's session, so RLS applies to every query. Writes that need more than a policy go through `security definer` functions that act on `auth.uid()` only (D-085). The app holds no Supabase secret key.                                    |
 | Vercel → Anthropic         | De-identified answer text                        | Only with cross-border consent (D-103), after `reserve_ai_call()` (D-120), text passed through `deidentify()` (rule 5, D-107). The key is a server-only Sensitive variable, and the client bundle scan fails the build if it leaks.                                 |
 | Supabase → Resend, Google  | Code emails, OAuth                               | Configured in the dashboards ([auth-setup.md](runbooks/auth-setup.md)); the app holds none of these credentials.                                                                                                                                                    |
 | GitHub Actions → Supabase  | Migrations                                       | Environment-scoped secrets; production runs only from `main` after the owner's approval ([operations.md](runbooks/operations.md)).                                                                                                                                  |
