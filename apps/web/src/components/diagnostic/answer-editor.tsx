@@ -12,8 +12,10 @@ import { callAction } from '@/lib/call-action';
 import { type SaveResult, saveAnswer } from '@/lib/diagnostic/actions';
 import { type Draft, fromDraft, mayBeCentimes } from '@/lib/diagnostic/draft';
 import type { FindingView } from '@/lib/diagnostic/findings';
+import { sameDraft } from '@/lib/diagnostic/leave';
 import { type EditorOptions, FieldEditor } from './field-editor';
 import { FindingList } from './finding-list';
+import { LeaveGuard } from './leave-guard';
 
 interface AnswerEditorProps {
   locale: Locale;
@@ -54,6 +56,8 @@ export function AnswerEditor(props: AnswerEditorProps) {
   const t = useTranslations('diagnostic');
   const router = useRouter();
   const [draft, setDraft] = useState<Draft>(props.initialDraft);
+  // What the server holds, to tell whether leaving the page would lose a typed answer (UX-6).
+  const [savedDraft, setSavedDraft] = useState<Draft>(props.initialDraft);
   const [unreadable, setUnreadable] = useState<string[]>([]);
   const [local, setLocal] = useState<Local>({ kind: 'none' });
   const [result, setResult] = useState<SaveResult | null>(null);
@@ -69,6 +73,7 @@ export function AnswerEditor(props: AnswerEditorProps) {
 
   function send(submission: Parameters<typeof saveAnswer>[0]['submission']) {
     if (submission.kind === 'value') lastValue.current = submission.value;
+    const sent = draft;
     startTransition(async () => {
       // A dropped connection keeps the draft on screen so the founder can try again.
       const outcome = await callAction(
@@ -81,6 +86,7 @@ export function AnswerEditor(props: AnswerEditorProps) {
           }),
         SAVE_FAILED,
       );
+      if (outcome.status === 'saved') setSavedDraft(sent);
       if (outcome.status === 'saved' && outcome.notes.length === 0) {
         router.push(outcome.next ?? props.overviewHref);
         return;
@@ -118,6 +124,9 @@ export function AnswerEditor(props: AnswerEditorProps) {
   const askUnknown =
     result?.status === 'rejected' &&
     result.findings.some((finding) => finding.code === 'R4_unknown_text');
+  const stale = result?.status === 'error' && result.reason === 'stale';
+  // A stale answer can no longer be saved, so leaving loses nothing that could be kept.
+  const unsaved = !stale && !sameDraft(draft, savedDraft);
 
   return (
     <form
@@ -245,7 +254,7 @@ export function AnswerEditor(props: AnswerEditorProps) {
         {result?.status === 'error' && result.reason === 'failed' ? (
           <RuleAlert message={t('error')} />
         ) : null}
-        {result?.status === 'error' && result.reason === 'stale' ? (
+        {stale ? (
           <RuleAlert message={t('stale')}>
             <TextLink href={props.overviewHref}>{t('staleOverview')}</TextLink>
           </RuleAlert>
@@ -278,6 +287,7 @@ export function AnswerEditor(props: AnswerEditorProps) {
           </Button>
         ) : null}
       </div>
+      <LeaveGuard active={unsaved} />
     </form>
   );
 }

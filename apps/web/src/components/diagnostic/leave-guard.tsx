@@ -1,0 +1,94 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
+import { useEffect, useRef, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Dialog } from '@/components/ui/dialog';
+import { leavesPage } from '@/lib/diagnostic/leave';
+
+/**
+ * While `active` (an answer is typed but not saved), leaving the page asks first (UX-6). A link
+ * to another page of the site, such as Previous, the overview, the header or the language
+ * switch, opens a dialog; closing or reloading the tab gets the browser's own prompt. Leaving
+ * anyway follows the same link, so it behaves exactly as without the guard.
+ */
+export function LeaveGuard({ active }: { active: boolean }) {
+  const t = useTranslations('diagnostic.leave');
+  const [open, setOpen] = useState(false);
+  // The link the founder clicked, followed if they choose to leave.
+  const link = useRef<HTMLAnchorElement | null>(null);
+  // Set while that link is clicked again, so the guard lets the click through.
+  const leaving = useRef(false);
+
+  useEffect(() => {
+    if (!active) return;
+
+    function onBeforeUnload(event: BeforeUnloadEvent) {
+      event.preventDefault();
+    }
+
+    function onClick(event: MouseEvent) {
+      if (leaving.current) return;
+      const anchor = event.target instanceof Element ? event.target.closest('a[href]') : null;
+      if (!(anchor instanceof HTMLAnchorElement)) return;
+      const target = {
+        href: anchor.href,
+        target: anchor.target,
+        download: anchor.hasAttribute('download'),
+      };
+      if (!leavesPage(event, target, window.location.href)) return;
+      // Captured on window, before the link's own handler, so nothing navigates yet.
+      event.preventDefault();
+      event.stopPropagation();
+      link.current = anchor;
+      setOpen(true);
+    }
+
+    window.addEventListener('beforeunload', onBeforeUnload);
+    window.addEventListener('click', onClick, { capture: true });
+    return () => {
+      window.removeEventListener('beforeunload', onBeforeUnload);
+      window.removeEventListener('click', onClick, { capture: true });
+    };
+  }, [active]);
+
+  function leave() {
+    setOpen(false);
+    const anchor = link.current;
+    if (!anchor) return;
+    if (!anchor.isConnected) {
+      window.location.assign(anchor.href);
+      return;
+    }
+    leaving.current = true;
+    try {
+      anchor.click();
+    } finally {
+      leaving.current = false;
+    }
+  }
+
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={setOpen}
+      returnFocus={() => link.current}
+      title={t('title')}
+      description={t('body')}
+    >
+      <div className="flex flex-wrap gap-3">
+        <Button
+          variant="primary"
+          onClick={() => {
+            setOpen(false);
+          }}
+        >
+          {t('stay')}
+        </Button>
+        <Button className="border-danger text-danger" onClick={leave}>
+          {t('go')}
+        </Button>
+      </div>
+    </Dialog>
+  );
+}

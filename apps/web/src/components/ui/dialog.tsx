@@ -33,15 +33,38 @@ function PanelBody({ title, description, children }: Omit<OverlayPanelProps, 'tr
   );
 }
 
+/**
+ * A dialog opened by the page rather than by a button of its own, such as "Leave without
+ * saving?". When it closes, focus goes back to `returnFocus()`, as it would to a trigger.
+ */
+interface OpenedDialogProps extends Omit<OverlayPanelProps, 'trigger'> {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  returnFocus: () => HTMLElement | null;
+}
+
 /** Centred modal. Overlays are the only elements with a shadow (CLAUDE.md §6). */
-export function Dialog({ trigger, title, description, children }: OverlayPanelProps) {
+export function Dialog(props: OverlayPanelProps | OpenedDialogProps) {
+  const { title, description, children } = props;
+  const opened = 'trigger' in props ? null : props;
+
   return (
-    <RadixDialog.Root>
-      <RadixDialog.Trigger asChild>{trigger}</RadixDialog.Trigger>
+    <RadixDialog.Root {...(opened ? { open: opened.open, onOpenChange: opened.onOpenChange } : {})}>
+      {'trigger' in props ? (
+        <RadixDialog.Trigger asChild>{props.trigger}</RadixDialog.Trigger>
+      ) : null}
       <RadixDialog.Portal>
         <RadixDialog.Overlay className="fixed inset-0 bg-scrim" />
         <RadixDialog.Content
           {...(description ? {} : { 'aria-describedby': undefined })}
+          {...(opened
+            ? {
+                onCloseAutoFocus: (event: Event) => {
+                  event.preventDefault();
+                  opened.returnFocus()?.focus();
+                },
+              }
+            : {})}
           className="fixed inset-x-4 top-1/2 mx-auto max-w-lg -translate-y-1/2 bg-surface p-6 text-ink shadow-overlay"
         >
           <PanelBody title={title} description={description}>

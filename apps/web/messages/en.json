@@ -165,6 +165,12 @@
     "error": "Could not save. Your answer is still here: please try again.",
     "stale": "This question no longer applies to your project, so this answer was not saved. Your other answers are safe.",
     "staleOverview": "Back to the project overview",
+    "leave": {
+      "title": "Leave without saving your answer?",
+      "body": "Your answer to this question is not saved yet. If you leave this page now, what you typed will be lost.",
+      "stay": "Stay on this question",
+      "go": "Leave without saving"
+    },
     "errors": {
       "required": "Complete the required fields.",
       "minItems": "{count, plural, one {Add at least one item.} other {Add at least # items.}}",
