@@ -74,8 +74,8 @@ Chromium: `pnpm --filter @sbn/web exec playwright install chromium`.
   `pnpm --filter @sbn/web exec playwright show-trace <path from the output>`. In CI, download the
   `playwright-report` artifact.
 - **Hosted:** `GET /api/health` (below); Vercel → Logs for server errors, which are logged by name
-  and code only; Supabase → Logs for auth and database. `LOG_LEVEL` is validated, but no logger
-  reads it yet ([M9 checklist](docs/security/m9-checklist.md)).
+  and code only; Supabase → Logs for auth and database. As of M3c (2026-09-28), `LOG_LEVEL` is
+  validated but no logger reads it ([M9 checklist](docs/security/m9-checklist.md)).
 
 ## Design system (M1)
 

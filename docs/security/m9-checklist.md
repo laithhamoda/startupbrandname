@@ -15,8 +15,9 @@ or a decision drops it.
       Google.
 - [ ] **Other headers.** On 2026-09-28 the live site sent `Strict-Transport-Security` (Vercel's
       default) but no `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy` or frame
-      protection (`frame-ancestors`); `next.config.ts` sets only `X-Robots-Tag`. Pages are also
-      served with `Access-Control-Allow-Origin: *`: check that nothing needs it.
+      protection (`frame-ancestors`), and on `main` as of M3c `next.config.ts` set only
+      `X-Robots-Tag`. Pages are also served with `Access-Control-Allow-Origin: *`: check that
+      nothing needs it.
 - [ ] **`security.txt`** at `/.well-known/security.txt` (RFC 9116), with a contact (#78) and an
       expiry date.
 
@@ -37,8 +38,8 @@ or a decision drops it.
 
 ## Logging, monitoring and alerting
 
-- [ ] **Logger.** A structured logger that honours `LOG_LEVEL` (validated, but read by nothing
-      today), with security events: failed and rate-limited sign-ins, consent changes, account
+- [ ] **Logger.** A structured logger that honours `LOG_LEVEL` (validated, but read by nothing on
+      `main` as of M3c, 2026-09-28), with security events: failed and rate-limited sign-ins, consent changes, account
       deletions, permission errors from database functions. Never answer text or an email address
       (OBS-1).
 - [ ] **Monitoring and alerting.** `/api/health` uptime, error rate, AI spend close to
