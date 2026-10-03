@@ -28,8 +28,11 @@ the new app runs on the old schema.
    else breaks. All six CI jobs are green.
 2. **Merge.** Vercel deploys `main` to production, still on the old schema. `DB deploy` migrates
    staging by itself (it runs on every push to `main` that touches `supabase/migrations`).
-3. **Check staging.** The `DB deploy` run is green, and a preview deployment (any open pull
-   request's) works against the migrated staging database.
+3. **Check staging.** The `DB deploy` run is green. Vercel builds no preview of `main`, and a pull
+   request opened before the merge does not hold the merged code, so push a throwaway branch at
+   the merge commit: `git fetch origin && git push origin origin/main:refs/heads/staging-check`.
+   Its Vercel Preview runs on the migrated staging database; check the feature there, then delete
+   the branch with `git push origin --delete staging-check`.
 4. **Migrate production.** GitHub → Actions → **DB deploy** → Run workflow: branch `main`, target
    `production`, and the confirmation the form asks for. The run then waits for the owner's approval
    of the `db-production` environment.
@@ -55,8 +58,9 @@ the release order requires: nothing needs rolling back.
 1. Stop. Do not re-run the workflow and hope. A failure on staging means production is not touched:
    do not migrate production until staging is green.
 2. Read the error in the `DB deploy` log. See what each database has applied: Supabase dashboard →
-   Database → Migrations, or `pnpm supabase migration list` after
-   `pnpm supabase link --project-ref <ref>` (it asks for that database's password).
+   Database → Migrations. Do not `supabase link` a local clone to a hosted project: the link
+   stays (in the ignored `supabase/.temp`), and a later `supabase db push` from that clone would
+   migrate the hosted database directly, past the owner's approval.
 3. Fix forward. Never edit a merged migration.
    - **The database's data or state makes the file fail** (CI proves every file applies to an empty
      database; staging and production hold real rows): correct that state with a reviewed statement
