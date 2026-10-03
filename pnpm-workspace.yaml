@@ -10,7 +10,8 @@ ignoredBuiltDependencies:
 
 # Versions published less than 3 days ago (in minutes) are not picked when resolving, so a
 # compromised release is usually pulled before it can land here (D-142). pnpm 10 does not check
-# versions already in the lockfile; pnpm 12 does, even with --frozen-lockfile. An urgent fix (a
-# Dependabot security update, for example) goes in `minimumReleaseAgeExclude` as `name@version`
-# until it is 3 days old.
+# versions already in the lockfile. pnpm 11.3 and later also check them, even with
+# --frozen-lockfile, unless trustLockfile is on (it is off by default). Dependabot's cooldown skips
+# security updates, but pnpm still resolves a fix only once it is 3 days old: until then, an
+# urgent one goes in `minimumReleaseAgeExclude` as `name@version`.
 minimumReleaseAge: 4320
