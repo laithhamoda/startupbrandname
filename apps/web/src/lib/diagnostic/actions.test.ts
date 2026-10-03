@@ -101,12 +101,12 @@ describe('saveAnswer', () => {
     expect(log.error).not.toHaveBeenCalled();
   });
 
-  it('says "stale" when the project is gone', async () => {
+  it('says "gone" when the project was deleted', async () => {
     const { client, writes } = fakeClient();
     signedIn(client);
     vi.mocked(loadProject).mockResolvedValue(null);
 
-    expect(await saveAnswer(numberOfPartners(3))).toEqual({ status: 'error', reason: 'stale' });
+    expect(await saveAnswer(numberOfPartners(3))).toEqual({ status: 'error', reason: 'gone' });
     expect(writes.upsert).not.toHaveBeenCalled();
   });
 

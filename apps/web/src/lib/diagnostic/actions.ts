@@ -145,14 +145,16 @@ export type SaveResult =
   /** Not saved yet: confirm the AI's reading of a dialect answer first (D-119). */
   | { status: 'confirm'; text: string }
   /**
-   * Not saved. `stale`: the project is gone or this follow-up no longer applies, so trying again
-   * cannot help. `failed`: anything else, such as the database being unreachable; the editor
-   * keeps the draft so the founder can try again.
+   * Not saved. `gone`: the project was deleted; `stale`: this follow-up no longer applies. Trying
+   * again cannot help either, so the editor says why and links to where the founder can go on.
+   * `failed`: anything else, such as the database being unreachable; the editor keeps the draft
+   * so the founder can try again.
    */
-  | { status: 'error'; reason: 'failed' | 'stale' };
+  | { status: 'error'; reason: 'failed' | 'stale' | 'gone' };
 
 const FAILED = { status: 'error', reason: 'failed' } as const satisfies SaveResult;
 const STALE = { status: 'error', reason: 'stale' } as const satisfies SaveResult;
+const GONE = { status: 'error', reason: 'gone' } as const satisfies SaveResult;
 
 /** How far a save got, for the log line when it fails. */
 interface SaveTrace {
@@ -259,7 +261,7 @@ async function save(
   trace.stage = 'load';
   const loaded = await loadProject(supabase, projectId);
   // Deleted, perhaps in another tab.
-  if (!loaded) return STALE;
+  if (!loaded) return GONE;
   const { project, answers } = loaded;
 
   const coreId = isQuestionId(step) ? step : null;

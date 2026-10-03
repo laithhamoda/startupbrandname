@@ -66,6 +66,37 @@ test('an answer that cannot reach the server stays in the form', async ({ page }
   await expect(page).toHaveURL(/\/q\/A8$/);
 });
 
+test('an answer for a project deleted in another window says why and leads on', async ({
+  page,
+}) => {
+  await signUpByEmail(page, uniqueEmail('save-gone'));
+  await createProject(page);
+  const city = page.getByLabel('المدينة');
+  await city.fill('إربد');
+
+  // The same founder deletes the project in a second window.
+  const other = await page.context().newPage();
+  await other.goto(page.url().replace(/\/q\/A1$/, ''));
+  await other.getByRole('button', { name: 'احذف المشروع', exact: true }).click();
+  await other
+    .getByRole('dialog', { name: 'حذف المشروع نهائيًا؟' })
+    .getByRole('button', { name: 'نعم، احذف المشروع' })
+    .click();
+  await expect(other).toHaveURL(/\/ar\/projects$/);
+  await other.close();
+
+  // The explanation stays on screen: nothing replaces the page with a missing-page notice.
+  await page.getByRole('button', { name: 'التالي' }).click();
+  await expect(page.getByText(/^لم يعد هذا المشروع موجودًا/)).toBeVisible();
+  await expect(page).toHaveURL(/\/q\/A1$/);
+  await expect(city).toHaveValue('إربد');
+  await expectNoViolations(page);
+
+  // Nothing is left that could be saved, so the link leaves without asking first.
+  await page.getByRole('link', { name: 'العودة إلى مشاريعي', exact: true }).click();
+  await expect(page).toHaveURL(/\/ar\/projects$/);
+});
+
 const ACTION_FAILED = 'تعذّر إكمال الطلب. حاول مرة أخرى بعد قليل.';
 
 test('project settings that cannot reach the server say so and stay usable', async ({ page }) => {

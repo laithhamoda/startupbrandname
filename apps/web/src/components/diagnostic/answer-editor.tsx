@@ -91,8 +91,8 @@ export function AnswerEditor(props: AnswerEditorProps) {
         router.push(outcome.next ?? props.overviewHref);
         return;
       }
-      // The project or this follow-up changed elsewhere: show the page as it is now.
-      if (outcome.status === 'error' && outcome.reason === 'stale') router.refresh();
+      // A project deleted or a follow-up dropped elsewhere ('gone', 'stale') leaves the page as
+      // it is, so the founder can read why; the message links to a page rendered fresh.
       setResult(outcome);
     });
   }
@@ -124,9 +124,10 @@ export function AnswerEditor(props: AnswerEditorProps) {
   const askUnknown =
     result?.status === 'rejected' &&
     result.findings.some((finding) => finding.code === 'R4_unknown_text');
-  const stale = result?.status === 'error' && result.reason === 'stale';
-  // A stale answer can no longer be saved, so leaving loses nothing that could be kept.
-  const unsaved = !stale && !sameDraft(draft, savedDraft);
+  // The project was deleted, or this follow-up no longer applies (perhaps in another tab).
+  const lost = result?.status === 'error' && result.reason !== 'failed' ? result.reason : null;
+  // Such an answer can no longer be saved, so leaving loses nothing that could be kept.
+  const unsaved = lost === null && !sameDraft(draft, savedDraft);
 
   return (
     <form
@@ -254,9 +255,14 @@ export function AnswerEditor(props: AnswerEditorProps) {
         {result?.status === 'error' && result.reason === 'failed' ? (
           <RuleAlert message={t('error')} />
         ) : null}
-        {stale ? (
+        {lost === 'stale' ? (
           <RuleAlert message={t('stale')}>
             <TextLink href={props.overviewHref}>{t('staleOverview')}</TextLink>
+          </RuleAlert>
+        ) : null}
+        {lost === 'gone' ? (
+          <RuleAlert message={t('gone')}>
+            <TextLink href="/projects">{t('goneProjects')}</TextLink>
           </RuleAlert>
         ) : null}
         {notes.length > 0 ? <FindingList findings={notes} /> : null}

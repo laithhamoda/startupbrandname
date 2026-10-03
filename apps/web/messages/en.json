@@ -165,6 +165,8 @@
     "error": "Could not save. Your answer is still here: please try again.",
     "stale": "This question no longer applies to your project, so this answer was not saved. Your other answers are safe.",
     "staleOverview": "Back to the project overview",
+    "gone": "This project no longer exists (perhaps it was deleted in another window), so this answer was not saved.",
+    "goneProjects": "Back to my projects",
     "leave": {
       "title": "Leave without saving your answer?",
       "body": "Your answer to this question is not saved yet. If you leave this page now, what you typed will be lost.",
