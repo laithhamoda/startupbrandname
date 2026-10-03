@@ -1,3 +1,4 @@
+import { revalidatePath } from 'next/cache';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { log } from '@/lib/log';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
@@ -6,6 +7,7 @@ import {
   setCrossborderConsent,
   startGoogleLogin,
   submitOnboarding,
+  updatePreferences,
   verifyEmailCode,
 } from './actions';
 
@@ -29,8 +31,14 @@ vi.mock('@/lib/log', async (importOriginal) => ({
   log: { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() },
 }));
 
-/** A signed-in client without a profile; its RPCs answer from `results`. */
-function signedIn(results: Record<string, { data?: unknown; error?: unknown }> = {}) {
+/**
+ * A signed-in client without a profile; its RPCs answer from `results`. `writes` holds the error
+ * of the profile update and of the auth metadata update, if they fail.
+ */
+function signedIn(
+  results: Record<string, { data?: unknown; error?: unknown }> = {},
+  writes: { profile?: unknown; metadata?: unknown } = {},
+) {
   const rpc = vi.fn((name: string) =>
     Promise.resolve({ data: null, error: null, ...results[name] }),
   );
@@ -38,23 +46,30 @@ function signedIn(results: Record<string, { data?: unknown; error?: unknown }> =
   const signInWithOAuth = vi.fn(() =>
     Promise.resolve({ data: { url: 'http://127.0.0.1:54321/auth/v1/authorize' }, error: null }),
   );
+  const updateUser = vi.fn<(attributes: unknown) => Promise<{ error: unknown }>>(() =>
+    Promise.resolve({ error: writes.metadata ?? null }),
+  );
+  const update = vi.fn<(values: unknown) => { eq: () => Promise<{ error: unknown }> }>(() => ({
+    eq: () => Promise.resolve({ error: writes.profile ?? null }),
+  }));
   const client = {
     rpc,
     auth: {
       getClaims: () => Promise.resolve({ data: { claims: { sub: 'user-1' } } }),
       signOut: () => Promise.resolve({ error: null }),
-      updateUser: () => Promise.resolve({ error: null }),
+      updateUser,
       verifyOtp,
       signInWithOAuth,
     },
     from: () => ({
       select: () => ({ maybeSingle: () => Promise.resolve({ data: null, error: null }) }),
+      update,
     }),
   };
   vi.mocked(createSupabaseServerClient).mockResolvedValue(
     client as unknown as Awaited<ReturnType<typeof createSupabaseServerClient>>,
   );
-  return { rpc, verifyOtp, signInWithOAuth };
+  return { rpc, verifyOtp, signInWithOAuth, updateUser, update };
 }
 
 function codeForm(code: string, next?: string): FormData {
@@ -62,6 +77,13 @@ function codeForm(code: string, next?: string): FormData {
   form.set('email', 'founder@example.test');
   form.set('code', code);
   if (next !== undefined) form.set('next', next);
+  return form;
+}
+
+function preferencesForm(country: string, language: string): FormData {
+  const form = new FormData();
+  form.set('country', country);
+  form.set('language', language);
   return form;
 }
 
@@ -213,6 +235,68 @@ describe('submitOnboarding', () => {
       status: 'error',
       error: 'failed',
     });
+  });
+});
+
+describe('updatePreferences', () => {
+  it('saves the country and the language of the sign-in emails', async () => {
+    const { update, updateUser } = signedIn();
+
+    expect(await updatePreferences('ar', { status: 'idle' }, preferencesForm('DZ', 'ar'))).toEqual({
+      status: 'saved',
+    });
+    expect(update).toHaveBeenCalledWith({ country_code: 'DZ', locale: 'ar' });
+    expect(updateUser).toHaveBeenCalledWith({ data: { locale: 'ar' } });
+    expect(revalidatePath).toHaveBeenCalledWith('/ar/account');
+  });
+
+  it('opens the account page in the new language', async () => {
+    signedIn();
+
+    expect(
+      await redirectTarget(
+        updatePreferences('ar', { status: 'idle' }, preferencesForm('JO', 'en')),
+      ),
+    ).toBe('/en/account');
+  });
+
+  it('reports a profile that could not be saved, and leaves the emails alone', async () => {
+    const { updateUser } = signedIn({}, { profile: { code: '42501' } });
+
+    expect(await updatePreferences('en', { status: 'idle' }, preferencesForm('JO', 'en'))).toEqual({
+      status: 'error',
+    });
+    expect(log.error).toHaveBeenCalledWith('account.preferences_failed', {
+      code: '42501',
+      stage: 'profile',
+    });
+    expect(updateUser).not.toHaveBeenCalled();
+  });
+
+  it('reports an email language that could not be saved instead of "saved"', async () => {
+    signedIn({}, { metadata: { code: 'unexpected_failure', status: 500 } });
+
+    expect(await updatePreferences('ar', { status: 'idle' }, preferencesForm('JO', 'ar'))).toEqual({
+      status: 'error',
+    });
+    expect(log.error).toHaveBeenCalledWith('account.preferences_failed', {
+      code: 'unexpected_failure',
+      status: 500,
+      stage: 'auth_metadata',
+    });
+    expect(revalidatePath).not.toHaveBeenCalled();
+  });
+
+  it('refuses a country or language that does not exist without writing', async () => {
+    const { update } = signedIn();
+
+    expect(await updatePreferences('ar', { status: 'idle' }, preferencesForm('XX', 'ar'))).toEqual({
+      status: 'error',
+    });
+    expect(await updatePreferences('ar', { status: 'idle' }, preferencesForm('JO', 'fr'))).toEqual({
+      status: 'error',
+    });
+    expect(update).not.toHaveBeenCalled();
   });
 });
 
