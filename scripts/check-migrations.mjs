@@ -6,6 +6,8 @@
 //   production;
 // - a new migration's version does not sort after the newest one on the base branch, so it would
 //   run in a different order on an empty database than on the hosted ones;
+// - a new migration's version is not a real UTC time at most a day ahead: once merged, a mistyped
+//   future version would make every later migration sort after it;
 // - a new migration drops, renames, moves or retypes something (see DESTRUCTIVE) without a line
 //   `-- contract: <reason>`. The app and the database deploy separately and the deployed app must
 //   keep working on both schemas, so removals go in a later contract migration, once no deployed
@@ -16,6 +18,8 @@ import { fileURLToPath } from 'node:url';
 export const MIGRATIONS_DIR = 'supabase/migrations/';
 const FILE_NAME = /^(\d{14})_[a-z0-9_]+\.sql$/;
 const CONTRACT = /^[ \t]*--[ \t]*contract:[ \t]*\S/im;
+// The Supabase CLI names a migration with the UTC time it is created; a day covers any time zone.
+const MAX_AHEAD_MS = 24 * 60 * 60 * 1000;
 
 // Each statement is matched lowercased, with comments removed, string and dollar-quoted bodies
 // emptied (a function body runs when it is called, not when the migration runs) and whitespace
@@ -213,15 +217,27 @@ export function findDestructive(sql) {
   return found;
 }
 
+/** The time a 14-digit version stands for, in ms, or null when it is not a real UTC time. */
+function versionTime(version) {
+  const [year, month, day, hour, minute, second] = /^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/
+    .exec(version)
+    .slice(1)
+    .map(Number);
+  const time = Date.UTC(year, month - 1, day, hour, minute, second);
+  // Date.UTC carries a field that is out of range (month 13 becomes January of the next year).
+  return new Date(time).toISOString().replace(/\D/g, '').startsWith(version) ? time : null;
+}
+
 /**
  * Checks the migration changes of a branch.
  * - baseFiles: the file names in supabase/migrations on the base branch
  * - changes: [{ status, path }] from `git diff -z --name-status --no-renames base...HEAD`, where
  *   a rename appears as a deletion plus an addition
  * - read(path): the committed contents of an added file
+ * - now: the current time in ms
  * Returns the problems found; an empty list means the migrations are safe to merge.
  */
-export function checkMigrations({ baseFiles, changes, read }) {
+export function checkMigrations({ baseFiles, changes, read, now = Date.now() }) {
   const newest = baseFiles
     .map((name) => FILE_NAME.exec(name)?.[1])
     .filter(Boolean)
@@ -247,6 +263,12 @@ export function checkMigrations({ baseFiles, changes, read }) {
         `${path}: the name must be <14-digit UTC timestamp>_<snake_case>.sql (pnpm supabase migration new <name>).`,
       );
       continue;
+    }
+    const time = versionTime(version);
+    if (time === null || time > now + MAX_AHEAD_MS) {
+      problems.push(
+        `${path}: version ${version} must be the UTC time the migration was created, at most a day ahead. Rename it with a current timestamp.`,
+      );
     }
     if (newest && version <= newest) {
       problems.push(

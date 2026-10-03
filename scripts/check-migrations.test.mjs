@@ -241,8 +241,14 @@ describe('findDestructive', () => {
 describe('checkMigrations', () => {
   const baseFiles = ['20260926100000_accounts.sql', '20260928090000_ai_usage.sql'];
   const path = (name) => `supabase/migrations/${name}`;
+  const now = Date.UTC(2026, 9, 3, 12, 0, 0);
   const check = (changes, files = {}) =>
-    checkMigrations({ baseFiles, changes, read: (p) => files[p] ?? 'create table x (id int);' });
+    checkMigrations({
+      baseFiles,
+      changes,
+      read: (p) => files[p] ?? 'create table x (id int);',
+      now,
+    });
 
   it('passes a new expand migration that sorts after the base', () => {
     expect(check([{ status: 'A', path: path('20260929100000_vouchers.sql') }])).toEqual([]);
@@ -272,6 +278,25 @@ describe('checkMigrations', () => {
       expect.stringContaining('version 20260928090000 must sort after 20260928090000'),
     ]);
     expect(check([{ status: 'A', path: path('20260927000000_older.sql') }])).toHaveLength(1);
+  });
+
+  it('fails a version that is not a real UTC time at most a day ahead', () => {
+    const add = (version) => check([{ status: 'A', path: path(`${version}_x.sql`) }]);
+    expect(add('20261004120000')).toEqual([]);
+    expect(add('20261004120001')).toEqual([
+      expect.stringContaining('version 20261004120001 must be the UTC time the migration was'),
+    ]);
+    // A mistyped year, month, day, hour, minute and second.
+    for (const version of [
+      '20621001000000',
+      '20261301000000',
+      '20260931000000',
+      '20261002240000',
+      '20261002236000',
+      '20261002235960',
+    ]) {
+      expect(add(version), version).toHaveLength(1);
+    }
   });
 
   it('fails a name the Supabase CLI would not order correctly', () => {
