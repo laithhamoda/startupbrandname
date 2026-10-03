@@ -69,10 +69,19 @@ the release order requires: nothing needs rolling back.
 
 ## Rolling back
 
-**App.** Vercel → Project → Deployments → the last good production deployment → **Instant
-Rollback**. It takes seconds and needs no build. Vercel then stops promoting new `main`
-deployments by itself until a deployment is promoted again (**Undo Rollback** or **Promote**).
+**App.** Vercel → Project → Deployments → a good production deployment → **Instant Rollback**. It
+takes seconds and needs no build. Vercel then stops promoting new `main` deployments by itself
+until a deployment is promoted again (**Undo Rollback** or **Promote**).
 
+- **Plan limit.** Until the team moves to Vercel Pro (D-021), Instant Rollback reaches only the
+  production deployment immediately before the current one. To go further back, revert the merge
+  commits in a pull request to `main` (`git revert -m 1 <merge commit>`, newest first); Vercel
+  deploys `main` once it is merged. On Pro, any earlier production deployment can be chosen.
+- **Old variables.** A rolled-back deployment runs with the environment variables it was built
+  with, so it undoes an environment switch set after it (`AI_PROVIDER=off`,
+  `MARKET_DZ_ENABLED=false`). Set the switch again: Deployments → the rolled-back deployment →
+  **Redeploy** (the same commit, built with today's variables), then **Promote** the new one. The
+  settings switch (`ai.limit.global_daily_usd`) lives in the database and survives a rollback.
 - The database stays migrated. That is safe because every migration only adds; do not roll back to
   a deployment older than the change that stopped using an object a contract migration has since
   removed.
@@ -84,7 +93,7 @@ owner's decision only, as a last resort. After a restore, account deletions made
 must be applied again ([M9 checklist](../security/m9-checklist.md)).
 
 **Milestone tags.** Annotated tags on `main` mark each finished milestone, as anchors for comparing
-and rolling back. The lead creates them; one is added per milestone.
+and reverting. The lead creates them; one is added per milestone.
 
 | Tag   | Commit    | Milestone                                     |
 | ----- | --------- | --------------------------------------------- |
@@ -94,9 +103,11 @@ and rolling back. The lead creates them; one is added per milestone.
 | `m3b` | `77288b0` | The diagnostic screens                        |
 | `m3c` | `7c763e9` | AI in the diagnostic, Haiku with consent only |
 
-`git diff tags/m3c origin/main -- supabase/migrations` lists the migrations added since M3c (the
-`tags/` prefix avoids old local branches with the same names). To roll the app back to a milestone,
-pick the production deployment whose commit is the tag's in Vercel's deployment list.
+`git diff --name-status tags/m3c origin/main -- supabase/migrations` lists the migrations added
+since M3c (the `tags/` prefix avoids old local branches with the same names). To bring the app back
+to a milestone, revert in one pull request, newest first, the commits that
+`git log --first-parent --oneline tags/m3c..origin/main` lists. On Vercel Pro, an Instant Rollback
+to the production deployment whose commit is the tag's also works, within the limits above.
 
 ## Kill switches
 
@@ -109,7 +120,10 @@ pick the production deployment whose commit is the tag's in Vercel's deployment 
 | Google sign-in                 | The "Continue with Google" button                                | Supabase → Authentication → Sign In / Providers → Google off; or `AUTH_GOOGLE_ENABLED=false` and redeploy | Within a minute: the app caches the provider check for 60 s (D-089) | Provider on; or `true` and redeploy               |
 | New accounts                   | Every new signup; existing users still sign in. Emergencies only | Supabase → Authentication → Sign In / Providers → Allow new users to sign up off                          | At once                                                             | Switch it on again                                |
 | Search indexing                | Indexing of the public pages                                     | Vercel Production: `SITE_INDEXABLE=false`, then redeploy                                                  | Next deployment                                                     | `true`, redeploy ([launch-seo.md](launch-seo.md)) |
-| The whole release              | The current app version                                          | Instant Rollback (above)                                                                                  | Seconds                                                             | Undo Rollback                                     |
+| The whole release              | The current app version                                          | Instant Rollback to the previous deployment, or a revert pull request ([above](#rolling-back))            | Seconds; a revert once merged and built                             | Undo Rollback; revert the revert                  |
+
+A rollback brings back the variables of the deployment it restores, which can undo the switches
+held in variables: see **Old variables** under [Rolling back](#rolling-back).
 
 A settings change made in the SQL editor exists only in that database. If it stays beyond the
 incident, add a migration with the same value, so staging, local databases and a later settings
