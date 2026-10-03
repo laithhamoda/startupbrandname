@@ -6,7 +6,7 @@
 //   production;
 // - a new migration's version does not sort after the newest one on the base branch, so it would
 //   run in a different order on an empty database than on the hosted ones;
-// - a new migration drops, renames or retypes something (see DESTRUCTIVE) without a line
+// - a new migration drops, renames, moves or retypes something (see DESTRUCTIVE) without a line
 //   `-- contract: <reason>`. The app and the database deploy separately and the deployed app must
 //   keep working on both schemas, so removals go in a later contract migration, once no deployed
 //   code uses the old shape.
@@ -36,6 +36,12 @@ const DESTRUCTIVE = [
     name: 'renames something',
     regex:
       /^alter (table|view|materialized view|function|procedure|routine|schema|type|domain|sequence)\b.*\brename (?!constraint\b)/,
+  },
+  {
+    // To the deployed code, which names the object with its schema, a move is a rename.
+    name: 'moves something to another schema',
+    regex:
+      /^alter (table|view|materialized view|function|procedure|routine|aggregate|type|domain|sequence|extension)\b.*\bset schema\b/,
   },
   {
     name: 'changes a column type',

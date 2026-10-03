@@ -92,6 +92,29 @@ describe('findDestructive', () => {
     expect(kinds('alter table a rename constraint k to l; alter index i rename to j;')).toEqual([]);
   });
 
+  it('finds tables, functions and views moved to another schema', () => {
+    expect(kinds('alter table public.x set schema private;')).toEqual([
+      'moves something to another schema',
+    ]);
+    expect(kinds('ALTER FUNCTION public.f() SET SCHEMA private;')).toEqual([
+      'moves something to another schema',
+    ]);
+    expect(kinds('alter view if exists public.v set schema private;')).toEqual([
+      'moves something to another schema',
+    ]);
+    expect(kinds('do $$ begin alter table public.x set schema private; end $$;')).toEqual([
+      'moves something to another schema',
+    ]);
+  });
+
+  it('does not mistake a function setting for a move', () => {
+    expect(
+      kinds(
+        "alter function public.f() set search_path = ''; alter function public.g() set schema_x.y = 1;",
+      ),
+    ).toEqual([]);
+  });
+
   it('finds column type changes', () => {
     expect(kinds('alter table a alter column b type bigint;')).toEqual(['changes a column type']);
     expect(kinds('alter table a alter column b set data type text;')).toEqual([
