@@ -4,6 +4,17 @@ What personal data the platform processes, why, where and for how long (GDPR Art
 describes `main` as of M3c and gathers facts decided in D-061, D-065, D-082, D-092 and D-098. The
 privacy page draft (`apps/web/src/app/[locale]/(site)/privacy/content.tsx`) must say the same.
 
+**Privacy page gaps.** As of M3c (2026-09-28) the draft is behind this register. Remove an item
+when the page says it:
+
+- It lists answers and project content "in later milestones"; they are stored now (Diagnostic
+  answers and projects, including people the answers name).
+- It names Anthropic "to run the AI mentor"; today Anthropic reviews typed answers (AI answer
+  review; PRIV-1, PRIV-4).
+- It does not disclose the IP addresses and browsers kept with sessions and in the auth audit log,
+  and says deleting the account covers all data, which the audit log outlives (PRIV-15).
+- It does not mention hosting logs (Hosting and logs).
+
 **[LEGAL REVIEW REQUIRED]:** every legal basis and transfer mechanism below is a working
 assumption until the legal review (#73). Items marked "to confirm" need a check with the provider.
 
