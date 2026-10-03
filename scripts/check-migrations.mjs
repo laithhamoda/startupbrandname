@@ -19,7 +19,9 @@ const CONTRACT = /^[ \t]*--[ \t]*contract:[ \t]*\S/im;
 
 // Each statement is matched lowercased, with comments removed, string and dollar-quoted bodies
 // emptied (a function body runs when it is called, not when the migration runs) and whitespace
-// collapsed. The body of a DO block runs with the migration, so it is checked as well (ANYWHERE).
+// collapsed. The body of a DO block, or of a routine the migration creates and then calls, runs
+// with the migration, so it is checked as well (ANYWHERE). Code the migration runs only
+// indirectly, through a trigger or a column default, is not followed.
 const DESTRUCTIVE = [
   {
     name: 'drops an object',
@@ -51,8 +53,8 @@ const DESTRUCTIVE = [
   { name: 'empties a table', regex: /^truncate\b/ },
 ];
 
-// The same patterns anywhere in a statement, for the body of a DO block: PL/pgSQL puts a
-// statement after IF … THEN or BEGIN, or passes it to EXECUTE as a string.
+// The same patterns anywhere in a statement, for code that runs with the migration: PL/pgSQL puts
+// a statement after IF … THEN or BEGIN, or passes it to EXECUTE as a string.
 const ANYWHERE = DESTRUCTIVE.map(({ name, regex }) => ({
   name,
   regex: new RegExp(regex.source.replace(/^\^/, '\\b')),
@@ -155,27 +157,60 @@ export function sqlStatements(sql) {
 
 const shorten = (statement) => (statement.length > 80 ? `${statement.slice(0, 77)}...` : statement);
 
+// CREATE [OR REPLACE] FUNCTION|PROCEDURE [schema.]name(…), capturing the name.
+const CREATES_ROUTINE =
+  /^create (?:or replace )?(?:function|procedure) (?:(?:[\w$]+|"[^"]*")\.)?([\w$]+|"[^"]*") ?\(/;
+// Statements that run while the migration runs, and with them any routine they call. A grant, a
+// policy or a trigger names a routine without running it.
+const RUNS_NOW = /^(select|call|insert|update|delete|merge|with|values)\b/;
+
+const escapeRegExp = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 /** What makes each destructive statement in a migration destructive, in file order. */
 export function findDestructive(sql) {
-  return parseSql(sql).flatMap(({ text, literals }) => {
-    const found = DESTRUCTIVE.filter(({ regex }) => regex.test(text)).map(({ name }) => ({
-      name,
-      statement: shorten(text),
-    }));
-    // A DO block runs while the migration runs, unlike a function body. Its code is checked with
-    // the text of its strings, which EXECUTE runs as SQL.
-    if (/^do\b/.test(text)) {
-      for (const body of literals) {
-        for (const { text: inner } of parseSql(body, true)) {
-          for (const { name, regex } of ANYWHERE) {
-            const match = regex.exec(inner);
-            if (match) found.push({ name, statement: shorten(`do … ${inner.slice(match.index)}`) });
-          }
+  const statements = parseSql(sql);
+  // The functions and procedures the migration creates. A body runs with the migration only when
+  // the migration calls the routine.
+  const routines = statements.flatMap(({ text, literals }) => {
+    const name = CREATES_ROUTINE.exec(text)?.[1].replaceAll('"', '');
+    if (!name) return [];
+    const call = new RegExp(`(^|[^\\w$])"?${escapeRegExp(name)}"? ?\\(`);
+    return [{ name, bodies: literals, call }];
+  });
+  const followed = new Set();
+  const found = [];
+
+  // Code that runs with the migration (a DO block, or a routine it calls) is checked with the text
+  // of its strings, which EXECUTE runs as SQL.
+  const checkCode = (label, bodies) => {
+    for (const body of bodies) {
+      for (const { text } of parseSql(body, true)) {
+        for (const { name, regex } of ANYWHERE) {
+          const match = regex.exec(text);
+          if (!match) continue;
+          found.push({ name, statement: shorten(`${label} … ${text.slice(match.index)}`) });
         }
+        followCalls(text);
       }
     }
-    return found;
-  });
+  };
+  const followCalls = (text) => {
+    for (const routine of routines) {
+      if (!followed.has(routine) && routine.call.test(text)) {
+        followed.add(routine);
+        checkCode(`${routine.name}()`, routine.bodies);
+      }
+    }
+  };
+
+  for (const { text, literals } of statements) {
+    for (const { name, regex } of DESTRUCTIVE) {
+      if (regex.test(text)) found.push({ name, statement: shorten(text) });
+    }
+    if (/^do\b/.test(text)) checkCode('do', literals);
+    else if (RUNS_NOW.test(text)) followCalls(text);
+  }
+  return found;
 }
 
 /**

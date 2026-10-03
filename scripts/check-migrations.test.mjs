@@ -170,6 +170,45 @@ describe('findDestructive', () => {
     ).toEqual([{ name: 'drops a column', statement: 'do … alter table public.x drop column y' }]);
   });
 
+  it('checks the body of a function or procedure the migration creates and then calls', () => {
+    expect(
+      findDestructive(
+        'create function private.tmp() returns void language plpgsql as $$ begin drop table public.x; end $$;\n' +
+          'select private.tmp();',
+      ),
+    ).toEqual([{ name: 'drops an object', statement: 'tmp() … drop table public.x' }]);
+    expect(
+      kinds(
+        `create or replace procedure "Cleanup" () language plpgsql as $$ begin execute 'truncate public.x'; end $$;` +
+          'call "Cleanup"();',
+      ),
+    ).toEqual(['empties a table']);
+  });
+
+  it('follows calls from code that runs with the migration, each routine once', () => {
+    expect(
+      kinds(
+        'create function private.inner() returns void language plpgsql as $$ begin ' +
+          'perform private.inner(); alter table public.x drop column y; end $$;' +
+          'create function private.outer() returns void language plpgsql as $$ begin ' +
+          'perform private.inner(); end $$;' +
+          'do $$ begin perform private.outer(); perform private.inner(); end $$;',
+      ),
+    ).toEqual(['drops a column']);
+  });
+
+  it('does not follow a routine that is only granted, scheduled or named by a policy', () => {
+    expect(
+      kinds(
+        'create function private.purge() returns void language plpgsql as $$ begin truncate public.x; end $$;' +
+          'grant execute on function private.purge() to service_role;' +
+          "select cron.schedule('purge', '0 3 * * *', $$select private.purge()$$);" +
+          'create policy p on public.y using (private.purge() is null);' +
+          'select private.purge_all();',
+      ),
+    ).toEqual([]);
+  });
+
   it('leaves a DO block without destructive statements alone', () => {
     expect(
       kinds(
