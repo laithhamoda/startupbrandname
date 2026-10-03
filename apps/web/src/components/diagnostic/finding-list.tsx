@@ -1,4 +1,5 @@
 import type { QuestionId } from '@sbn/question-bank';
+import { LinkPending } from '@/components/ui/link-pending';
 import { RuleAlert } from '@/components/ui/rule-alert';
 import { Link } from '@/i18n/navigation';
 import type { FindingView } from '@/lib/diagnostic/findings';
@@ -28,8 +29,12 @@ export function FindingList({
                 {finding.related.map((related) => (
                   <li key={related.id}>
                     {relatedHref ? (
-                      <Link href={relatedHref(related.id)} className="underline underline-offset-4">
+                      <Link
+                        href={relatedHref(related.id)}
+                        className="relative underline underline-offset-4"
+                      >
                         {related.label}
+                        <LinkPending />
                       </Link>
                     ) : (
                       related.label
