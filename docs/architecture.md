@@ -159,8 +159,10 @@ depend only on zod (and the Anthropic SDK), never on each other or on the app.
   runtime values that change without a release live in `settings`.
 - **Languages.** next-intl with `/ar` and `/en` prefixes (D-070, D-075); Arabic messages are the
   reference catalogue.
-- **Deletion.** Every user table cascades from `auth.users`, so `delete_my_account()` and the
-  24-hour purge of incomplete accounts (D-079) remove everything.
+- **Deletion.** Every user table in `public` cascades from `auth.users`, so `delete_my_account()`
+  and the 24-hour purge of incomplete accounts (D-079) empty them all. Supabase's auth audit log
+  does not cascade: its entries outlive the account until PRIV-15 is decided
+  ([M9 checklist](security/m9-checklist.md)).
 - **Observability.** `GET /api/health` reports region and Supabase reachability; errors are
   logged by name and code only, never with answer text. See the M9 checklist for what is missing.
 

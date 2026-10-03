@@ -8,9 +8,10 @@ the EU (#73).
 ## What users can already do themselves
 
 On `/account`: see and change their country and language, give or withdraw the cross-border
-consent, and delete the account, which removes everything at once (`delete_my_account()`; every
-table cascades from `auth.users`). Answers are corrected in the diagnostic itself. The email
-address cannot be changed by the user yet.
+consent, and delete the account (`delete_my_account()`). That empties every table in `public` at
+once, since each cascades from `auth.users`; Supabase's auth audit log does not
+([Deletion](#deletion)). Answers are corrected in the diagnostic itself. The email address cannot
+be changed by the user yet.
 
 ## Receiving a request
 
@@ -35,7 +36,7 @@ from auth.users
 where lower(email) = lower('<email address>');
 ```
 
-Everything the platform holds about it, as one JSON document:
+Everything the database holds about it, except the auth audit log (below), as one JSON document:
 
 ```sql
 with target as (select '<user id>'::uuid as id)
@@ -46,6 +47,8 @@ select jsonb_pretty(jsonb_build_object(
       'email', u.email,
       'created_at', u.created_at,
       'last_sign_in_at', u.last_sign_in_at,
+      -- The interface language the app saves, and for Google the name and photo it sent.
+      'metadata', u.raw_user_meta_data,
       -- How the user signs in; for Google, the name, email and photo Google sent.
       'identities', coalesce((
         select jsonb_agg(jsonb_build_object(
@@ -55,6 +58,17 @@ select jsonb_pretty(jsonb_build_object(
         ) order by i.created_at)
         from auth.identities i
         where i.user_id = u.id
+      ), '[]'::jsonb),
+      -- Each signed-in device, with its IP address and browser.
+      'sessions', coalesce((
+        select jsonb_agg(jsonb_build_object(
+          'created_at', s.created_at,
+          'refreshed_at', s.refreshed_at,
+          'ip', s.ip,
+          'user_agent', s.user_agent
+        ) order by s.created_at)
+        from auth.sessions s
+        where s.user_id = u.id
       ), '[]'::jsonb)
     )
     from auth.users u join target t on u.id = t.id
@@ -121,16 +135,36 @@ correct it by hand after confirming identity, and record it.
 
 ## Deletion
 
-The user deletes the account on `/account`. If they cannot, after confirming identity:
+The user deletes the account on `/account`. If they cannot, after confirming identity, run this in
+the production SQL editor.
+
+**This cannot be undone**, and a backup restore is no remedy (it loses everyone's writes since the
+backup). The statement deletes only when the ID and the verified email address belong to the same
+account: check that it returns exactly one row.
 
 ```sql
-delete from auth.users where id = '<user id>';
+delete from auth.users
+where id = '<user id>' and lower(email) = lower('<verified email address>')
+returning id, email;
 ```
 
-This is exactly what `delete_my_account()` does: profiles, consents, projects, answers, AI reviews
-and usage counters go with it. Copies in Supabase's daily backups remain until those backups
-expire; if a backup is ever restored, the deletion must be run again
-([operations.md](operations.md#rolling-back)).
+This is what `delete_my_account()` does: profiles, consents, projects, answers, AI reviews and
+usage counters cascade from `auth.users`, and so do Supabase's sessions and identities. Copies in
+Supabase's daily backups remain until those backups expire; if a backup is ever restored, the
+deletion must be run again ([operations.md](operations.md#rolling-back)).
+
+**The auth audit log does not cascade.** Its sign-in events, with the email address and an IP
+address, stay after the account is deleted. Whether they are deleted on request, purged after a
+period or no longer stored is still open (PRIV-15 and #31,
+[M9 checklist](../security/m9-checklist.md)). Until that is decided, tell the user in the reply
+that these security records remain, and note it in the private log. If the owner decides to erase
+them for this request:
+
+```sql
+delete from auth.audit_log_entries
+where payload ->> 'actor_id' = '<user id>'
+returning id;
+```
 
 ## Withdrawing consent or objecting
 
