@@ -20,6 +20,8 @@ describe('deidentify (CLAUDE.md rule 5)', () => {
     ['0555-12-34-56 ou 0661.23.45.67', '[phone1] ou [phone2]'],
     ['رقمي ٠٧٩١٢٣٤٥٦٧', 'رقمي [phone1]'],
     ['(079) 123-4567', '([phone1]'],
+    ['أرقامنا 0791234567 0799999999', 'أرقامنا [phone1] [phone2]'],
+    ['عدد الفروع 3\n0791234567', 'عدد الفروع 3\n[phone1]'],
   ])('removes phone numbers in any format: %s', (input, expected) => {
     expect(text(input)).toBe(expected);
   });
@@ -29,6 +31,8 @@ describe('deidentify (CLAUDE.md rule 5)', () => {
     ['call me on 213 555 12 34 56 please', 'call me on [phone1] please'],
     ['جوالي: ٩٦٢٧٩١٢٣٤٥٦٧', 'جوالي: [phone1]'],
     ['وللتواصل اتصلوا بنا على 966501234567', 'وللتواصل اتصلوا بنا على [phone1]'],
+    ['هاتفنا 962791234567', 'هاتفنا [phone1]'],
+    ['Tel: 962791234567', 'Tel: [phone1]'],
   ])('removes international numbers without a prefix after a contact word: %s', (input, out) => {
     expect(text(input)).toBe(out);
   });
@@ -45,6 +49,7 @@ describe('deidentify (CLAUDE.md rule 5)', () => {
   it.each([
     ['الحساب JO71 CBJO 0010 0000 0000 0131 0003 02 لدى البنك', 'الحساب [iban1] لدى البنك'],
     ['IBAN: DZ580002100001113000000570', 'IBAN: [iban1]'],
+    ['GB29 NWBK 6016 1331 9268 19', '[iban1]'],
   ])('removes IBANs: %s', (input, expected) => {
     expect(text(input)).toBe(expected);
   });
@@ -58,9 +63,23 @@ describe('deidentify (CLAUDE.md rule 5)', () => {
     expect(text(input)).toBe(expected);
   });
 
-  // A false positive would hide a founder's figure from the review (PRIV-2): mandatory cases.
+  // A false positive would hide a founder's figure from the review, or part of it, so that a
+  // rewrite could lose its first digits (PRIV-2): mandatory cases.
   it.each([
     'السعر 1500 دينار أردني',
+    'الميزانية 1 000 000 000 سنتيم',
+    'رأس المال 15 000 000 000 دج',
+    'رأس المال 15 000 000 000',
+    'نحتاج 2.000.000.000 سنتيم',
+    'نحتاج 2.000.000.000',
+    'التكلفة ١٥ ٠٠٠ ٠٠٠ ٠٠٠ دج',
+    'Telecom market 12000000000',
+    'Telemedicine market 25000000000 by 2030',
+    'contacts reached 12000000000 impressions',
+    'قطاع اتصالات 15000000000',
+    'اتصالات: السوق 15000000000 سنويا',
+    'FY25 plan aims high',
+    'FY25 PLAN AIMS HIGH',
     'رأس المال 1,500,000 دينار جزائري',
     'نبدأ في 2026 بـ 3 موظفين',
     'تأسست الشركة سنة 1999',
@@ -119,6 +138,9 @@ describe('deidentify (CLAUDE.md rule 5)', () => {
       `الرقم الوطني ${'1 '.repeat(1990)}`,
       `اتصل ${'9.'.repeat(1995)}`,
       `tel:${'('.repeat(3996)}`,
+      '1 000 '.repeat(666),
+      '0 '.repeat(2000),
+      `JO12${' ABCD'.repeat(799)}`,
     ];
     for (const input of inputs) {
       const started = performance.now();

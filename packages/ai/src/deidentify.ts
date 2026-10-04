@@ -10,8 +10,9 @@ import { randomUUID } from 'node:crypto';
  *
  * Every pattern is bounded (CodeQL js/polynomial-redos): answers are at most 4000 characters, and
  * deidentify.test.ts times the worst inputs. A number is replaced only when it cannot be an
- * amount: it starts with + or 0, or it follows a contact or ID word and no currency follows it.
- * Amounts, years and counts stay as written (the negative tests are mandatory).
+ * amount: no currency follows it, and it starts with + or 0 without continuing a number written
+ * in groups ("15 000 000"), or it follows a contact or ID word. Amounts, years and counts stay as
+ * written, never even in part (the negative tests are mandatory).
  */
 
 /** Text that went through deidentify(). Model prompts accept nothing else (PRIV-7). */
@@ -57,9 +58,14 @@ const LINK = new RegExp(
   'giu',
 );
 
-/** An IBAN: country code, check digits, then groups of four, with or without spaces. */
+/**
+ * An IBAN: country code, check digits, then groups of four capitals or digits, with or without
+ * spaces. Every IBAN holds at least IBAN_MIN_DIGITS digits, which a phrase such as "FY25 PLAN AIMS
+ * HIGH" does not.
+ */
 const IBAN =
-  /(?<![\p{L}\p{N}])[A-Z]{2}[0-9]{2}(?: ?[A-Za-z0-9]{4}){3,7}(?: ?[A-Za-z0-9]{1,3})?(?![\p{L}\p{N}])/gu;
+  /(?<![\p{L}\p{N}])[A-Z]{2}[0-9]{2}(?: ?[A-Z0-9]{4}){3,7}(?: ?[A-Z0-9]{1,3})?(?![\p{L}\p{N}])/gu;
+const IBAN_MIN_DIGITS = 10;
 
 const ID_WORDS = [
   'الرقم الوطني',
@@ -105,16 +111,13 @@ const CONTACT_WORDS = [
   'رقم الموبايل',
   'رقم الواتساب',
   'رقمي',
+  'رقمنا',
   'اتصال',
   'اتصل',
-  'هاتفي',
   'هاتف',
-  'تلفوني',
   'تلفون',
   'تليفون',
-  'جوالي',
   'جوال',
-  'موبايلي',
   'موبايل',
   'واتساب',
   'واتس اب',
@@ -137,24 +140,36 @@ const CONTACT_WORDS = [
   'tel',
 ];
 
+/** Endings an Arabic contact word may carry: هاتفي، هاتفنا، اتصلوا. */
+const CONTACT_SUFFIX = '(?:ي|نا|وا|ه|ها|كم|ني)?';
+
 /**
  * An international number written without + or 00 (11 to 15 digits, such as 962791234567), only
- * after a contact word: on its own it could be an amount in centimes.
+ * after a whole contact word: on its own it could be an amount in centimes, and "Telecom" or
+ * "اتصالات" name a market, not a way to reach the founder.
  */
 const CONTACT_NUMBER = new RegExp(
-  `(${START}${ARABIC_PREFIX}(?:${CONTACT_WORDS.join('|')})${NOT_DIGIT}{0,20})` +
+  `(${START}${ARABIC_PREFIX}(?:${CONTACT_WORDS.join('|')})${CONTACT_SUFFIX}${END}${NOT_DIGIT}{0,20})` +
     `([1-9١-٩۱-۹](?:[\\s.()-]{0,2}${DIGIT}){10,14})${END}${NO_CURRENCY}`,
   'giu',
 );
 
 /**
+ * Not the rest of a number written in groups of thousands: "15 000 000 000", "2.000.000" or
+ * "1,500,000" (one to three digits, then a space, a dot or a comma). A group after the first
+ * starts with 0 but is never a phone number. A line break does not join two numbers.
+ */
+const NOT_A_LATER_GROUP = '(?<!(?<!\\p{N})\\p{N}{1,3}[ \\u00A0\\u2009\\u202F.,٬])';
+
+/**
  * A phone number: an international prefix (+ or 00) or a leading 0, then 8 to 14 more digits,
  * optionally split by spaces, dots, dashes or brackets. Amounts ("1500", "1,500,000", "2026")
- * never start with 0 or +, so they are left alone.
+ * never start with 0 or +, and a later group of a grouped amount or a number followed by a
+ * currency is not one, so they are left alone.
  */
 const PHONE = new RegExp(
-  `${START}(?:\\+|00|0|٠٠|٠|۰۰|۰)(?:[\\s.()-]{0,3}${DIGIT}){8,14}${END}`,
-  'gu',
+  `${START}${NOT_A_LATER_GROUP}(?:\\+|00|0|٠٠|٠|۰۰|۰)(?:[\\s.()-]{0,3}${DIGIT}){8,14}${END}${NO_CURRENCY}`,
+  'giu',
 );
 
 const PLACEHOLDER = /\[(?:email|phone|name|link|iban|id)\d{0,3}\]/g;
@@ -187,8 +202,10 @@ export function deidentify(text: string, identity: Identity = {}): DeidentifiedT
     originals.set(token, original);
     return token;
   };
-  const whole = (pattern: RegExp, kind: Kind) => (value: string) =>
-    value.replace(pattern, (match) => placeholder(kind, match));
+  const whole =
+    (pattern: RegExp, kind: Kind, applies: (match: string) => boolean = () => true) =>
+    (value: string) =>
+      value.replace(pattern, (match) => (applies(match) ? placeholder(kind, match) : match));
   // Keeps the word before the value (group 1) and replaces the value (group 2).
   const after = (pattern: RegExp, kind: Kind) => (value: string) =>
     value.replace(
@@ -207,7 +224,7 @@ export function deidentify(text: string, identity: Identity = {}): DeidentifiedT
     whole(EMAIL, 'email'),
     whole(LINK, 'link'),
     // Before phones: an IBAN or an ID number may contain a run that starts with 0.
-    whole(IBAN, 'iban'),
+    whole(IBAN, 'iban', (match) => (match.match(/[0-9]/g)?.length ?? 0) >= IBAN_MIN_DIGITS),
     after(ID_NUMBER, 'id'),
     whole(PHONE, 'phone'),
     after(CONTACT_NUMBER, 'phone'),
