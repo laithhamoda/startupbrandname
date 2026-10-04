@@ -481,6 +481,26 @@ export function withText(draft: Draft, path: string, text: string): Draft {
   return replace(draft, path === '' ? [] : path.split('.')) as Draft;
 }
 
+/** The text of one box, by its path as in `withText`; undefined where there is no text. */
+export function textAt(draft: Draft, path: string): string | undefined {
+  let node: unknown = draft;
+  for (const key of path === '' ? [] : path.split('.')) {
+    if (typeof node !== 'object' || node === null) return undefined;
+    node = (node as Record<string, unknown>)[key];
+  }
+  return typeof node === 'string' ? node : undefined;
+}
+
+/**
+ * True when an edit added or removed rows of a list answer. Marks and questions name boxes by row
+ * ("items.1.amount"), so after such an edit they would point at other boxes.
+ */
+export function rowsChanged(before: Draft, after: Draft): boolean {
+  const rows = (draft: Draft) =>
+    typeof draft === 'object' && draft !== null && 'items' in draft ? draft.items.length : null;
+  return rows(before) !== rows(after);
+}
+
 /** The amounts typed in a draft, with their currency, to ask dinars or centimes (D-108). */
 export function typedAmounts(field: Field, draft: Draft): MoneyDraft[] {
   switch (field.kind) {

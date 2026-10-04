@@ -7,6 +7,8 @@ import {
   fromDraft,
   isSingleControl,
   mayBeCentimes,
+  rowsChanged,
+  textAt,
   toDraft,
   withText,
 } from './draft';
@@ -154,6 +156,42 @@ describe('drafts', () => {
     expect(isSingleControl(getQuestion('C1').field)).toBe(true);
     expect(isSingleControl(getQuestion('F3').field)).toBe(false);
     expect(isSingleControl(getQuestion('D6').field)).toBe(false);
+  });
+
+  it('read the text of one box, where a reading would be written', () => {
+    const draft: DraftByKind['cost_items'] = {
+      items: [
+        { label: 'قطع', amount: '8', currency: 'JOD' },
+        { label: 'توصيل', amount: '1.500', currency: 'JOD' },
+      ],
+    };
+    expect(textAt(draft, 'items.1.amount')).toBe('1.500');
+    expect(textAt(draft, 'items.2.amount')).toBeUndefined();
+    expect(textAt(draft, 'items')).toBeUndefined();
+    expect(textAt('1.500', '')).toBe('1.500');
+    expect(textAt(withText(draft, 'items.1.amount', '1500'), 'items.1.amount')).toBe('1500');
+  });
+
+  it('tell an edit that adds or removes rows, after which marks point at other boxes', () => {
+    const draft: DraftByKind['cost_items'] = {
+      items: [
+        { label: 'قطع', amount: '8', currency: 'JOD' },
+        { label: '', amount: '1.500', currency: 'JOD' },
+        { label: 'تغليف', amount: '200', currency: 'JOD' },
+      ],
+    };
+    // Rows [A, B, C], with a question about B's "1.500" at items.1.amount: once A goes, that path
+    // is C's box, and a pick would have replaced C's 200.
+    const removed = { items: draft.items.slice(1) };
+    expect(rowsChanged(draft, removed)).toBe(true);
+    expect(textAt(removed, 'items.1.amount')).toBe('200');
+    const added = { items: [...draft.items, { label: '', amount: '', currency: 'JOD' }] };
+    expect(rowsChanged(draft, added)).toBe(true);
+    expect(rowsChanged(draft, withText(draft, 'items.0.amount', '9'))).toBe(false);
+    expect(rowsChanged('12', '125')).toBe(false);
+    expect(rowsChanged({ amount: '1', currency: 'JOD' }, { amount: '', currency: 'JOD' })).toBe(
+      false,
+    );
   });
 
   it('put a picked reading back into a number answer', () => {

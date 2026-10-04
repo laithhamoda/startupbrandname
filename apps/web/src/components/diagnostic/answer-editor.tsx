@@ -26,6 +26,8 @@ import {
   isSingleControl,
   mayBeCentimes,
   type NumberChoice,
+  rowsChanged,
+  textAt,
   withText,
 } from '@/lib/diagnostic/draft';
 import type { FindingView } from '@/lib/diagnostic/findings';
@@ -90,10 +92,15 @@ export function AnswerEditor(props: AnswerEditorProps) {
   const lastValue = useRef<unknown>(null);
   // This attempt's answer to dinars or centimes, kept while a reading is picked (D-108, UX-2).
   const lastCentimes = useRef<boolean | undefined>(undefined);
+  // Set when "Next" or a save has something to say: focus then moves to it once, and never
+  // because an edit cleared feedback that no longer applies.
+  const announce = useRef(false);
 
   // Move keyboard and screen-reader focus to whatever the server or the checks said: the first
   // box marked wrong when its message sits under it (UX-3), else the feedback below the answer.
   useEffect(() => {
+    if (!announce.current) return;
+    announce.current = false;
     const placed = [...clientErrors, ...(result?.status === 'invalid' ? result.errors : [])].some(
       (error) => error.message !== null,
     );
@@ -135,12 +142,14 @@ export function AnswerEditor(props: AnswerEditorProps) {
       }
       // A project deleted or a follow-up dropped elsewhere ('gone', 'stale') leaves the page as
       // it is, so the founder can read why; the message links to a page rendered fresh.
+      announce.current = true;
       setResult(outcome);
     });
   }
 
   /** `current`: the draft to send, when it has only just changed (a picked reading). */
   function submit(centimes?: boolean, current: Draft = draft) {
+    announce.current = true;
     setResult(null);
     if (centimes === undefined && mayBeCentimes(props.field, current)) {
       setLocal({ kind: 'centimes' });
@@ -179,6 +188,28 @@ export function AnswerEditor(props: AnswerEditorProps) {
     const next = withText(draft, choice.draftPath, reading.text);
     setDraft(next);
     submit(lastCentimes.current, next);
+  }
+
+  /**
+   * The founder edits the answer. Marks name boxes by row, so once rows come or go they wait for
+   * the next "Next"; the question about a number's two readings goes once its box changes, so a
+   * pick never lands in another box.
+   */
+  function edit(next: Draft) {
+    setDraft(next);
+    if (result?.status === 'saved' || result?.status === 'confirm') setResult(null);
+    const reshaped = rowsChanged(draft, next);
+    if (reshaped) {
+      setClientErrors([]);
+      if (result?.status === 'invalid') setResult(null);
+    }
+    if (
+      local.kind === 'readings' &&
+      (reshaped || textAt(next, local.choice.draftPath) !== textAt(draft, local.choice.draftPath))
+    ) {
+      setClientErrors([]);
+      setLocal({ kind: 'none' });
+    }
   }
 
   const saved = result?.status === 'saved' ? result : null;
@@ -230,10 +261,7 @@ export function AnswerEditor(props: AnswerEditorProps) {
         describedBy={props.helpId}
         field={props.field}
         draft={draft}
-        onChange={(next) => {
-          setDraft(next);
-          if (saved || confirm) setResult(null);
-        }}
+        onChange={edit}
         errors={errors}
         options={props.options}
       />
