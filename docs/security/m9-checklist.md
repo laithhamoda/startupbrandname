@@ -13,11 +13,11 @@ or a decision drops it.
       prerendering and the CDN cache, while the alternatives weaken the policy. Decide the
       trade-off and record it. `form-action` must allow the Google sign-in hand-over to Supabase and
       Google.
-- [ ] **Other headers.** On 2026-09-28 the live site sent `Strict-Transport-Security` (Vercel's
-      default) but no `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy` or frame
-      protection (`frame-ancestors`), and on `main` as of M3c `next.config.ts` set only
-      `X-Robots-Tag`. Pages are also served with `Access-Control-Allow-Origin: *`: check that
-      nothing needs it.
+- [ ] **Other headers.** Since the audit fixes (D-130), every response sends `X-Frame-Options`,
+      `frame-ancestors 'none'`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`
+      and `Strict-Transport-Security` (`next.config.ts`). Left for M9: `includeSubDomains` and
+      `preload` on HSTS (owner decision), `payment=` for PayPal (M7), and pages served with
+      `Access-Control-Allow-Origin: *`: check that nothing needs it.
 - [ ] **`security.txt`** at `/.well-known/security.txt` (RFC 9116), with a contact (#78) and an
       expiry date.
 
@@ -38,10 +38,10 @@ or a decision drops it.
 
 ## Logging, monitoring and alerting
 
-- [ ] **Logger.** A structured logger that honours `LOG_LEVEL` (validated, but read by nothing on
-      `main` as of M3c, 2026-09-28), with security events: failed and rate-limited sign-ins, consent changes, account
-      deletions, permission errors from database functions. Never answer text or an email address
-      (OBS-1).
+- [ ] **Security events.** The structured logger exists since the audit fixes
+      (`apps/web/src/lib/log.ts`, D-126). Left for M9: log security events through it (failed and
+      rate-limited sign-ins, consent changes, account deletions, permission errors from database
+      functions), never answer text or an email address (OBS-1, SEC-11).
 - [ ] **Monitoring and alerting.** `/api/health` uptime, error rate, AI spend close to
       `ai.limit.global_daily_usd`, failed `DB deploy` runs and cron jobs, each alerting the owner
       (OBS-3). The audit proposed adding this to M9's definition of done in CLAUDE.md §9; that text

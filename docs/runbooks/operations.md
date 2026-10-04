@@ -200,7 +200,7 @@ Vercel applies a variable change to the next deployment only: redeploy after cha
 | `ANTHROPIC_API_KEY`                     | Unset                                 | Sensitive                                  | Sensitive                                   |
 | `VERCEL`, `VERCEL_ENV`, `VERCEL_REGION` | Unset                                 | Set by Vercel                              | Set by Vercel                               |
 
-As of M3c (2026-09-28), `LOG_LEVEL` is validated but no logger reads it (M9 checklist). The
+`LOG_LEVEL` sets the lowest level that `apps/web/src/lib/log.ts` writes to the server logs (D-126). The
 schemas are `apps/web/src/env/server.ts` and `client.ts`; a new variable follows the checklist in
 [CONTRIBUTING.md](../../CONTRIBUTING.md).
 
