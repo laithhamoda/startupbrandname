@@ -122,39 +122,81 @@ describe('provenanceOf (rule 2, D-104, D-114)', () => {
 describe('loadProject', () => {
   const id = '6f1c1f1e-7d4b-4c55-9a51-0f6f5d2b9e10';
 
-  function clientWith(rows: { question_id: string; normalized_value: unknown }[]) {
-    const project = {
-      id,
-      title: 'صيانة مكيّفات المطاعم',
-      country_code: 'JO',
-      currency: 'JOD',
-      mode: 'quick',
-      created_at: '2026-09-28T10:00:00Z',
-      updated_at: '2026-09-28T10:00:00Z',
-    };
-    const query = (result: unknown) => {
+  const project = {
+    id,
+    title: 'صيانة مكيّفات المطاعم',
+    country_code: 'JO',
+    currency: 'JOD',
+    mode: 'quick',
+    created_at: '2026-09-28T10:00:00Z',
+    updated_at: '2026-09-28T10:00:00Z',
+  };
+
+  /** A client answering the project query with `projectResult` and the answers query with `rows`. */
+  function clientWith(
+    rows: { question_id: string; normalized_value: unknown }[],
+    {
+      projectResult = Promise.resolve({ data: project, error: null }),
+      answersError = null,
+    }: { projectResult?: Promise<unknown>; answersError?: unknown } = {},
+  ) {
+    const asked: string[] = [];
+    const query = (result: Promise<unknown>) => {
       const chain = {
         select: () => chain,
         eq: () => chain,
-        maybeSingle: () => Promise.resolve(result),
-        then: (resolve: (value: unknown) => unknown) => Promise.resolve(result).then(resolve),
+        maybeSingle: () => result,
+        then: (resolve: (value: unknown) => unknown) => result.then(resolve),
       };
       return chain;
     };
-    return {
-      from: (table: string) =>
-        table === 'projects'
-          ? query({ data: project, error: null })
-          : query({ data: rows, error: null }),
+    const client = {
+      from: (table: string) => {
+        asked.push(table);
+        return table === 'projects'
+          ? query(projectResult)
+          : query(Promise.resolve({ data: answersError ? null : rows, error: answersError }));
+      },
     } as unknown as SupabaseServerClient;
+    return { client, asked };
   }
+
+  it('asks for the project and its answers at once (PERF-4)', async () => {
+    let answerProject: (value: unknown) => void = () => undefined;
+    const { client, asked } = clientWith([{ question_id: 'A6', normalized_value: answered(12) }], {
+      projectResult: new Promise((resolve) => {
+        answerProject = resolve;
+      }),
+    });
+
+    const loading = loadProject(client, id);
+    // The answers query is under way while the project row is still on its way.
+    expect(asked).toEqual(['projects', 'answers']);
+    answerProject({ data: project, error: null });
+
+    expect((await loading)?.answers).toEqual({ A6: answered(12) });
+  });
+
+  it('is null for a project that is not the account’s, whatever its answers', async () => {
+    const { client } = clientWith([], {
+      projectResult: Promise.resolve({ data: null, error: null }),
+    });
+    expect(await loadProject(client, id)).toBeNull();
+    expect(await loadProject(clientWith([]).client, 'not-a-uuid')).toBeNull();
+  });
+
+  it('throws when the answers cannot be read', async () => {
+    const failure = { code: '57014', message: 'canceling statement due to statement timeout' };
+    const { client } = clientWith([], { answersError: failure });
+    await expect(loadProject(client, id)).rejects.toBe(failure);
+  });
 
   it('logs stored answers it cannot read by question ID, never by value', async () => {
     const loaded = await loadProject(
       clientWith([
         { question_id: 'A2', normalized_value: answered('founder@example.com') },
         { question_id: 'A6', normalized_value: answered(12) },
-      ]),
+      ]).client,
       id,
     );
 
@@ -171,7 +213,7 @@ describe('loadProject', () => {
       clientWith([
         { question_id: 'G4', normalized_value: answered(soleOwner) },
         { question_id: 'G4.1', normalized_value: answered(true) },
-      ]),
+      ]).client,
       id,
     );
     expect(log.warn).not.toHaveBeenCalled();
