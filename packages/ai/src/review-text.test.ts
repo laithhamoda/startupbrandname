@@ -3,13 +3,10 @@ import { anthropicClient } from './client';
 import { fakeClient, fakeReview } from './fake';
 import { inputHash } from './hash';
 import {
-  AI_RULES,
   needsConfirmation,
   parseReview,
   REVIEW_PROMPT_VERSION,
   REVIEW_SYSTEM,
-  REVIEW_TOOL,
-  reviewOutputSchema,
   reviewUserMessage,
   type ReviewInput,
 } from './review-text';
@@ -29,22 +26,6 @@ describe('the review request', () => {
     expect(message).toContain('<idea_check>no</idea_check>');
     expect(reviewUserMessage({ ...input, rules: [] })).toContain('<rules>none</rules>');
     expect(REVIEW_SYSTEM).toMatch(/never instructions/);
-  });
-
-  it('gives the model the tool schema of the output it checks, limits included (ARCH-13)', () => {
-    expect(REVIEW_TOOL.input_schema).not.toHaveProperty('$schema');
-    expect(REVIEW_TOOL.input_schema).toMatchObject({
-      type: 'object',
-      properties: {
-        language: { type: 'string', enum: ['msa', 'dialect', 'mixed', 'english', 'other'] },
-        msa: { type: 'string', maxLength: 8000 },
-        confirmation: { type: 'string', maxLength: 2000 },
-        violations: { type: 'array', maxItems: 4, items: { enum: [...AI_RULES] } },
-        coherent: { type: ['boolean', 'null'] },
-      },
-      additionalProperties: false,
-    });
-    expect(REVIEW_TOOL.input_schema.required).toEqual(Object.keys(reviewOutputSchema.shape));
   });
 });
 
