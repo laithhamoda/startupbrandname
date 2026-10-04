@@ -4,21 +4,29 @@ import { useTranslations } from 'next-intl';
 import { useActionState } from 'react';
 import { FormError, submitTo } from '@/components/auth/form-helpers';
 import { Button } from '@/components/ui/button';
+import type { ConsentState } from '@/lib/ai/consent';
 import type { AccountFormState } from '@/lib/auth/actions';
 import { callAction } from '@/lib/call-action';
 
 const IDLE: AccountFormState = { status: 'idle' };
 const FAILED: AccountFormState = { status: 'error' };
 
+const LABELS = {
+  current: 'crossborderWithdraw',
+  outdated: 'crossborderRenew',
+  none: 'crossborderGive',
+} as const satisfies Record<ConsentState, string>;
+
 /**
- * Gives or withdraws the cross-border consent (`action` does the opposite of `given`). The page
- * re-renders with the new state; a failure leaves the consent as it was and says so.
+ * Withdraws a current cross-border consent, renews one given to an earlier text, or gives it
+ * (`action` does that; D-147). The page re-renders with the new state; a failure leaves the
+ * consent as it was and says so.
  */
 export function CrossborderConsent({
-  given,
+  consent,
   action,
 }: {
-  given: boolean;
+  consent: ConsentState;
   action: () => Promise<AccountFormState>;
 }) {
   const t = useTranslations('account');
@@ -29,7 +37,7 @@ export function CrossborderConsent({
     <form noValidate onSubmit={submitTo(dispatch)} className="grid justify-items-start gap-3">
       {state.status === 'error' ? <FormError>{errors('failed')}</FormError> : null}
       <Button type="submit" disabled={pending}>
-        {pending ? t('saving') : given ? t('crossborderWithdraw') : t('crossborderGive')}
+        {pending ? t('saving') : t(LABELS[consent])}
       </Button>
     </form>
   );

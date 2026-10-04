@@ -1,5 +1,6 @@
 import 'server-only';
 import { z } from 'zod';
+import { errorFields, log } from '@/lib/log';
 import type { SupabaseServerClient } from '@/lib/supabase/server';
 
 /**
@@ -26,4 +27,19 @@ export async function crossborderConsentState(
   const legacy = await supabase.rpc('has_crossborder_consent');
   if (legacy.error) throw legacy.error;
   return legacy.data ? 'current' : 'none';
+}
+
+/**
+ * The consent state for a page that only adapts to it (the diagnostic step), or null after
+ * logging why when it cannot be read: the page then shows no consent prompt.
+ */
+export async function consentStateOrNull(
+  supabase: SupabaseServerClient,
+): Promise<ConsentState | null> {
+  try {
+    return await crossborderConsentState(supabase);
+  } catch (error) {
+    await log.warn('ai.consent_unreadable', errorFields(error));
+    return null;
+  }
 }

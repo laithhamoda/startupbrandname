@@ -6,6 +6,7 @@ import { DeleteAccount } from '@/components/account/delete-account';
 import { PreferencesForm } from '@/components/account/preferences-form';
 import { Button } from '@/components/ui/button';
 import { currentLocale } from '@/i18n/locale';
+import { crossborderConsentState } from '@/lib/ai/consent';
 import { deleteAccount, setCrossborderConsent, signOut } from '@/lib/auth/actions';
 import { requireAccount } from '@/lib/auth/session';
 import { countryOptions } from '@/lib/countries';
@@ -29,8 +30,12 @@ export default async function AccountPage() {
   const { supabase, user, profile } = await requireAccount(locale);
   const t = await getTranslations('account');
 
-  const { data: crossborder, error } = await supabase.rpc('has_crossborder_consent');
-  if (error) throw error;
+  const crossborder = await crossborderConsentState(supabase);
+  const status = {
+    current: t('crossborderOn'),
+    outdated: t('crossborderOutdated'),
+    none: t('crossborderOff'),
+  }[crossborder];
 
   return (
     <div className="mx-auto grid max-w-[75rem] gap-2 px-4 py-12 sm:px-6">
@@ -55,10 +60,12 @@ export default async function AccountPage() {
       </Section>
 
       <Section title={t('crossborderTitle')}>
-        <p className="reading">{crossborder ? t('crossborderOn') : t('crossborderOff')}</p>
+        <p className="reading">{t('crossborderScope')}</p>
+        {/* A consent to an earlier text no longer counts until it is renewed (D-147). */}
+        <p className={crossborder === 'outdated' ? 'reading font-bold' : 'reading'}>{status}</p>
         <CrossborderConsent
-          given={crossborder}
-          action={setCrossborderConsent.bind(null, locale, !crossborder)}
+          consent={crossborder}
+          action={setCrossborderConsent.bind(null, locale, crossborder !== 'current')}
         />
       </Section>
 
