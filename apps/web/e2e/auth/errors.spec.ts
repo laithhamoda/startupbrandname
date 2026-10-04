@@ -116,6 +116,13 @@ test('project settings that cannot reach the server say so and stay usable', asy
   await expect(dialog.getByText(ACTION_FAILED)).toBeVisible();
   await expectNoViolations(page);
 
+  // Opening the dialog again starts afresh: the earlier error is not shown or announced again.
+  await page.keyboard.press('Escape');
+  await expect(dialog).toBeHidden();
+  await page.getByRole('button', { name: 'احذف المشروع', exact: true }).click();
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByText(ACTION_FAILED)).toHaveCount(0);
+
   await page.unrouteAll();
   await dialog.getByRole('button', { name: 'نعم، احذف المشروع' }).click();
   await expect(page).toHaveURL(/\/ar\/projects$/);
@@ -136,6 +143,12 @@ test('account forms that cannot reach the server say so, and the delete dialog s
   const dialog = page.getByRole('dialog', { name: 'حذف الحساب نهائيًا؟' });
   await dialog.getByRole('button', { name: 'نعم، احذف حسابي' }).click();
   await expect(dialog.getByText(ACTION_FAILED)).toBeVisible();
+
+  await page.keyboard.press('Escape');
+  await expect(dialog).toBeHidden();
+  await page.getByRole('button', { name: 'احذف حسابي', exact: true }).click();
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByText(ACTION_FAILED)).toHaveCount(0);
 
   await page.unrouteAll();
   await dialog.getByRole('button', { name: 'نعم، احذف حسابي' }).click();

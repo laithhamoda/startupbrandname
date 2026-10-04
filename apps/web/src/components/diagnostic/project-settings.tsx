@@ -31,10 +31,6 @@ export function ProjectSettings({
     () => callAction(switchMode, FAILED),
     IDLE,
   );
-  const [deleteState, deleteAction, deleting] = useActionState(
-    () => callAction(deleteProject, FAILED),
-    IDLE,
-  );
 
   return (
     <section
@@ -60,18 +56,28 @@ export function ProjectSettings({
           title={t('deleteTitle')}
           description={t('deleteBody')}
         >
-          <form
-            noValidate
-            onSubmit={submitTo(deleteAction)}
-            className="grid justify-items-start gap-4"
-          >
-            {deleteState.status === 'error' ? <FormError>{errors('failed')}</FormError> : null}
-            <Button type="submit" disabled={deleting} className="border-danger text-danger">
-              {deleting ? t('deleting') : t('deleteConfirm')}
-            </Button>
-          </form>
+          <DeleteForm deleteProject={deleteProject} />
         </Dialog>
       </div>
     </section>
+  );
+}
+
+/**
+ * Rendered only while the dialog is open, so each opening starts afresh: the error of an
+ * earlier attempt is not shown, or announced, again before a new one.
+ */
+function DeleteForm({ deleteProject }: { deleteProject: () => Promise<SettingsResult> }) {
+  const t = useTranslations('diagnostic.overview');
+  const errors = useTranslations('auth.errors');
+  const [state, dispatch, pending] = useActionState(() => callAction(deleteProject, FAILED), IDLE);
+
+  return (
+    <form noValidate onSubmit={submitTo(dispatch)} className="grid justify-items-start gap-4">
+      {state.status === 'error' ? <FormError>{errors('failed')}</FormError> : null}
+      <Button type="submit" disabled={pending} className="border-danger text-danger">
+        {pending ? t('deleting') : t('deleteConfirm')}
+      </Button>
+    </form>
   );
 }
