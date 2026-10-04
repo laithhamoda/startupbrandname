@@ -51,7 +51,7 @@ export function LoginFlow({
   if (step === 'code') {
     return (
       <div className="grid gap-6">
-        <StepHeading>{t('stepCode')}</StepHeading>
+        <StepHeading key="code">{t('stepCode')}</StepHeading>
         <CodeStep
           email={email}
           mode="login"
@@ -73,7 +73,10 @@ export function LoginFlow({
 
   return (
     <div className="grid gap-6">
-      <StepHeading focus={cameBack}>{t('stepEmail')}</StepHeading>
+      {/* Its own key, so React mounts a new heading instead of reusing the code step's. */}
+      <StepHeading key="email" focus={cameBack}>
+        {t('stepEmail')}
+      </StepHeading>
       {googleFailed && googleState.status === 'idle' ? (
         <FormError>{t('errors.google')}</FormError>
       ) : null}
