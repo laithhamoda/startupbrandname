@@ -32,7 +32,7 @@ export interface Finding {
   questionId: QuestionId | FollowUpId;
   /** Other answers involved, shown side by side (R6). */
   related?: readonly QuestionId[];
-  /** The founder's own word, for `{word}` (currency). */
+  /** The founder's own word, for `{word}`: a currency word, or a number with two readings. */
   word?: string;
   /** Parts still missing (C2), as keys of PROFILE_PARTS. */
   missing?: readonly ProfilePart[];
@@ -251,15 +251,28 @@ export function reviewAnswer(id: QuestionId, answer: Answer, answers: Answers = 
   return specific ? findings.filter((finding) => finding.code !== 'R7_too_short') : findings;
 }
 
-/** R3: what a number field says when the typed text is not a single number. */
+const R3_CODES = {
+  not_a_number: 'R3_not_numeric',
+  range: 'R3_range',
+  ambiguous: 'R3_ambiguous',
+} as const satisfies Record<string, FindingCode>;
+
+/**
+ * R3: what a number field says when the typed text is not one number it can read. A number
+ * with two readings ("1.500") asks which one is meant, with the founder's own `word`; any other
+ * case offers the question's ranges.
+ */
 export function reviewNumberText(id: QuestionId, text: string): Finding[] {
   const question = getQuestion(id);
   if (question.field.kind !== 'number') return [];
   const reading = readNumber(text);
   if (reading.ok || reading.reason === 'empty') return [];
+  if (reading.reason === 'two_readings') {
+    return [{ code: 'R3_two_readings', severity: 'ask', questionId: id, word: reading.typed }];
+  }
   return [
     {
-      code: reading.reason === 'range' ? 'R3_range' : 'R3_not_numeric',
+      code: R3_CODES[reading.reason],
       severity: 'ask',
       questionId: id,
       ranges: question.field.ranges,

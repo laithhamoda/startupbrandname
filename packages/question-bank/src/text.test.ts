@@ -40,27 +40,114 @@ describe('counts', () => {
 });
 
 describe('readNumber', () => {
+  // Each form in Western and in Arabic-Indic digits: founders type both (CLAUDE.md §3).
   it.each([
+    // Forms read before this table existed: still read the same way.
     ['1500', 1500],
-    ['1,500', 1500],
     ['١٥٠٠', 1500],
     ['١٬٥٠٠', 1500],
     ['٢٫٥', 2.5],
     ['۳۰', 30],
+    ['12.5', 12.5],
+    ['١٢.٥', 12.5],
+    ['1,500,000', 1_500_000],
+    ['١,٥٠٠,٠٠٠', 1_500_000],
+    ['1,500.25', 1500.25],
     ['1.5 مليون', 1_500_000],
+    ['١٫٥ مليون', 1_500_000],
     ['2k', 2000],
     ['3 آلاف', 3000],
     ['٣ الاف دينار', 3000],
     ['2 مليار', 2_000_000_000],
+    ['2 million', 2_000_000],
     ['حوالي 40 ساعة', 40],
+    ['250 د.أ', 250],
+    ['20%', 20],
+    // Thousands grouped by spaces, as in French (UX-2).
+    ['1 500', 1500],
+    ['١ ٥٠٠', 1500],
+    ['1\u00A0500', 1500],
+    ['1\u202F500 000', 1_500_000],
+    ['1 500 000 دج', 1_500_000],
+    // Thousands grouped by dots, two groups or more.
+    ['1.500.000', 1_500_000],
+    ['١.٥٠٠.٠٠٠', 1_500_000],
+    // A decimal comma, with one or two digits.
+    ['12,5', 12.5],
+    ['١٢,٥', 12.5],
+    ['12,50', 12.5],
+    ['2,5 مليون', 2_500_000],
+    ['1.500,25', 1500.25],
+    ['1 500,25', 1500.25],
+    ['0,500', 0.5],
+    ['0.500', 0.5],
+    ['1500.000', 1500],
+    // Scales are exact: no floating-point remainder.
+    ['1.1k', 1100],
+    ['0,3 مليون', 300_000],
+    ['-5', -5],
   ])('reads %s as %d', (text, value) => {
     expect(readNumber(text)).toEqual({ ok: true, value });
   });
 
+  it.each([
+    ['1.500', 1500, 1.5],
+    ['١.٥٠٠', 1500, 1.5],
+    ['1,500', 1500, 1.5],
+    ['١,٥٠٠', 1500, 1.5],
+    ['12,500', 12_500, 12.5],
+  ])('asks which reading "%s" has: %d or %d', (text, grouped, decimal) => {
+    const reading = readNumber(text);
+    expect(reading).toMatchObject({ ok: false, reason: 'two_readings', typed: text });
+    if (reading.ok || reading.reason !== 'two_readings') return;
+    expect(reading.readings.map((alternative) => alternative.value)).toEqual([grouped, decimal]);
+  });
+
+  it('gives each reading back as a text with only that reading', () => {
+    expect(readNumber('حوالي ١.٥٠٠ مليون دج')).toEqual({
+      ok: false,
+      reason: 'two_readings',
+      typed: '١.٥٠٠',
+      readings: [
+        { value: 1_500_000_000, number: '1500', text: 'حوالي 1500 مليون دج' },
+        { value: 1_500_000, number: '1.5', text: 'حوالي 1.5 مليون دج' },
+      ],
+    });
+    for (const alternative of [
+      { text: '1500', value: 1500 },
+      { text: '1.5', value: 1.5 },
+    ]) {
+      expect(readNumber(alternative.text)).toEqual({ ok: true, value: alternative.value });
+    }
+  });
+
+  it.each([
+    '12 5',
+    '15 00',
+    '1,5000',
+    '1500,000',
+    '1.5.3',
+    '1,5.25',
+    '1 500.000',
+    '1٫5٫3',
+    '.5',
+    '3 محلات و 5 موظفين',
+    '5 أو 6',
+    '10/20',
+    '+962 79 000 0000',
+    'مليون و500',
+    'ألف و ٥٠٠',
+  ])('never reads only part of "%s"', (text) => {
+    expect(readNumber(text)).toEqual({ ok: false, reason: 'ambiguous' });
+  });
+
   it('does not guess a range or words without digits', () => {
     expect(readNumber('200-300')).toEqual({ ok: false, reason: 'range' });
+    expect(readNumber('١٠-٢٠')).toEqual({ ok: false, reason: 'range' });
+    expect(readNumber('1,500 - 2,000')).toEqual({ ok: false, reason: 'range' });
     expect(readNumber('من 5 إلى 10')).toEqual({ ok: false, reason: 'range' });
     expect(readNumber('خمسين')).toEqual({ ok: false, reason: 'not_a_number' });
+    expect(readNumber('1'.repeat(400))).toEqual({ ok: false, reason: 'not_a_number' });
     expect(readNumber('   ')).toEqual({ ok: false, reason: 'empty' });
   });
 

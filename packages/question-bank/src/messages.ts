@@ -25,6 +25,14 @@ export const MESSAGES = {
     ar: 'اكتب رقمًا واحدًا، أو اختر أحد النطاقات المقترحة.',
     en: 'Type a single number, or pick one of the suggested ranges.',
   },
+  R3_ambiguous: {
+    ar: 'لم نتأكّد من قراءة هذا الرقم. اكتبه بالأرقام وحدها، مثل 1500 أو 12.5، أو اختر النطاق الأقرب.',
+    en: 'We could not be sure how to read this number. Type it in digits only, such as 1500 or 12.5, or pick the closest range.',
+  },
+  R3_two_readings: {
+    ar: 'يمكن قراءة «{word}» بطريقتين. أيّهما تقصد؟',
+    en: '“{word}” can be read in two ways. Which do you mean?',
+  },
   R4_unknown_text: {
     ar: 'يبدو أنك لا تعرف الإجابة بعد. هل نحفظها «لا أعرف»؟ ستصبح افتراضًا نختبره في خطة التحقّق.',
     en: 'It looks like you do not know yet. Save it as “I don’t know”? It becomes an assumption to test in the validation plan.',

@@ -61,6 +61,16 @@ describe('R3: a number that cannot be read', () => {
     expect(finding).toMatchObject({ code: 'R3_not_numeric', severity: 'ask' });
     expect(finding?.ranges).toHaveLength(5);
     expect(reviewNumberText('A6', '10-20')[0]?.code).toBe('R3_range');
+    expect(reviewNumberText('A6', '10 أو 12')[0]).toMatchObject({
+      code: 'R3_ambiguous',
+      ranges: expect.any(Array) as unknown,
+    });
+  });
+
+  it('asks which reading a number with two readings has, in the founder’s words', () => {
+    expect(reviewNumberText('C8', '١.٥٠٠')).toEqual([
+      { code: 'R3_two_readings', severity: 'ask', questionId: 'C8', word: '١.٥٠٠' },
+    ]);
   });
 
   it('is silent for readable numbers, empty input and non-number questions', () => {
