@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { containsPhrase, findPhrases, fold, sentenceCount, wordCount } from './text';
-import { readNumber, rangeValue, westernDigits } from './numbers';
+import { numberText, readNumber, rangeValue, westernDigits } from './numbers';
 
 describe('fold', () => {
   it('unifies hamza carriers, alif maqsura, ta marbuta and diacritics', () => {
@@ -122,6 +122,44 @@ describe('readNumber', () => {
     ]) {
       expect(readNumber(alternative.text)).toEqual({ ok: true, value: alternative.value });
     }
+  });
+
+  it.each([
+    '1.500',
+    '1,500',
+    '12.125',
+    '2,375',
+    '33.333',
+    '999.999',
+    '١٢.١٢٥',
+    '-12.125',
+    '1.125 مليون',
+    'حوالي 2,375 دج',
+  ])('reads each reading of "%s" back as itself, so a pick is saved', (text) => {
+    const reading = readNumber(text);
+    if (reading.ok || reading.reason !== 'two_readings') throw new Error(`${text}: one reading`);
+    for (const alternative of reading.readings) {
+      expect(readNumber(alternative.text), alternative.text).toEqual({
+        ok: true,
+        value: alternative.value,
+      });
+    }
+  });
+
+  it('writes a decimal reading of three digits with a trailing zero', () => {
+    const reading = readNumber('12.125');
+    expect(reading).toMatchObject({
+      readings: [
+        { value: 12_125, number: '12125', text: '12125' },
+        { value: 12.125, number: '12.125', text: '12.1250' },
+      ],
+    });
+  });
+
+  it.each([
+    12.125, 33.333, 33.334, 1.125, 999.999, 0.125, 1500.125, 12.5, 1500, 2_000_000, -12.125,
+  ])('writes %d as a text read back as itself', (value) => {
+    expect(readNumber(numberText(value))).toEqual({ ok: true, value });
   });
 
   it.each([

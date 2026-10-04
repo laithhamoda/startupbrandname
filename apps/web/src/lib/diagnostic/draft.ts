@@ -2,6 +2,7 @@ import {
   type Field,
   type FieldKind,
   type NumberAlternative,
+  numberText,
   readCurrency,
   readNumber,
   type ValueByKind,
@@ -61,7 +62,8 @@ export interface DraftContext {
   competitors: readonly string[];
 }
 
-const text = (value: number | undefined) => (value === undefined ? '' : String(value));
+// Saved numbers go back in their boxes in a form read back unchanged: 33.333 as "33.3330".
+const text = (value: number | undefined) => (value === undefined ? '' : numberText(value));
 
 export function emptyDraft(field: Field, context: DraftContext): Draft {
   const money = (): MoneyDraft => ({ amount: '', currency: context.currency });
@@ -138,7 +140,7 @@ export function toDraft(field: Field, stored: unknown, context: DraftContext): D
     case 'currency':
       return stored as string;
     case 'number':
-      return (stored as number).toString();
+      return text(stored as number);
     case 'boolean':
       return stored as boolean;
     case 'multi': {
@@ -147,11 +149,11 @@ export function toDraft(field: Field, stored: unknown, context: DraftContext): D
     }
     case 'money': {
       const value = stored as ValueByKind['money'];
-      return { amount: String(value.amount), currency: value.currency };
+      return { amount: text(value.amount), currency: value.currency };
     }
     case 'money_range': {
       const value = stored as ValueByKind['money_range'];
-      return { min: String(value.min), max: String(value.max), currency: value.currency };
+      return { min: text(value.min), max: text(value.max), currency: value.currency };
     }
     case 'country_city':
       return { ...(stored as ValueByKind['country_city']) };
@@ -159,7 +161,7 @@ export function toDraft(field: Field, stored: unknown, context: DraftContext): D
       return {
         items: (stored as ValueByKind['cost_items']).items.map((item) => ({
           ...item,
-          amount: String(item.amount),
+          amount: text(item.amount),
         })),
       };
     case 'people':
@@ -180,7 +182,7 @@ export function toDraft(field: Field, stored: unknown, context: DraftContext): D
       return {
         items: (stored as ValueByKind['competitor_prices']).items.map((item) => ({
           name: item.name,
-          amount: item.price ? String(item.price.amount) : '',
+          amount: item.price ? text(item.price.amount) : '',
           currency: item.price?.currency ?? context.currency,
           unknown: item.price === null,
         })),
@@ -189,7 +191,7 @@ export function toDraft(field: Field, stored: unknown, context: DraftContext): D
       return {
         items: (stored as ValueByKind['percent_split']).items.map((item) => ({
           label: item.label,
-          percent: String(item.percent),
+          percent: text(item.percent),
         })),
       };
     case 'yes_no_detail': {
@@ -207,9 +209,9 @@ export function toDraft(field: Field, stored: unknown, context: DraftContext): D
     case 'sales_forecast': {
       const value = stored as ValueByKind['sales_forecast'];
       return {
-        month1: String(value.month1),
-        month6: String(value.month6),
-        month12: String(value.month12),
+        month1: text(value.month1),
+        month6: text(value.month6),
+        month12: text(value.month12),
       };
     }
     case 'three_texts':
@@ -218,9 +220,9 @@ export function toDraft(field: Field, stored: unknown, context: DraftContext): D
       return {
         items: (stored as ValueByKind['staff_plan']).items.map((item) => ({
           role: item.role,
-          amount: String(item.monthlyCost.amount),
+          amount: text(item.monthlyCost.amount),
           currency: item.monthlyCost.currency,
-          startMonth: String(item.startMonth),
+          startMonth: text(item.startMonth),
         })),
       };
     case 'customer_profile': {

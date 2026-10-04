@@ -22,6 +22,34 @@ describe('drafts', () => {
     }
   });
 
+  it('give back a saved fraction of three digits as it was, not as a question (UX-2)', () => {
+    const shares = getQuestion('G4').field;
+    const value = {
+      items: [
+        { label: 'ليث', percent: 33.333 },
+        { label: 'سارة', percent: 33.333 },
+        { label: 'عمر', percent: 33.334 },
+      ],
+    };
+    const draft = toDraft(shares, value, context);
+    expect(draft).toMatchObject({ items: [{ percent: '33.3330' }, {}, { percent: '33.3340' }] });
+    expect(fromDraft(shares, draft)).toEqual({ ok: true, value });
+    const price = getQuestion('F1').field;
+    expect(fromDraft(price, toDraft(price, { amount: 12.125, currency: 'JOD' }, context))).toEqual({
+      ok: true,
+      value: { amount: 12.125, currency: 'JOD' },
+    });
+
+    // A picked reading is saved, not asked about again.
+    const typed = { amount: '12.125', currency: 'JOD' };
+    const conversion = fromDraft(price, typed);
+    if (conversion.ok || !conversion.choice) throw new Error('12.125 has two readings');
+    const decimal = conversion.choice.readings[1];
+    expect(
+      fromDraft(price, withText(typed, conversion.choice.draftPath, decimal?.text ?? '')),
+    ).toEqual({ ok: true, value: { amount: 12.125, currency: 'JOD' } });
+  });
+
   it('start empty drafts from the project, but never the report currency (D-111)', () => {
     expect(emptyDraft(getQuestion('F1').field, context)).toEqual({ amount: '', currency: 'JOD' });
     expect(emptyDraft(getQuestion('F8').field, context)).toBe('');

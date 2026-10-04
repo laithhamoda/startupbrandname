@@ -18,7 +18,10 @@ export interface NumberAlternative {
   value: number;
   /** The number written for this reading only, without separators: "1500" or "1.5". */
   number: string;
-  /** What the founder typed, with the number written that way, to put back in the box. */
+  /**
+   * What the founder typed, with the number written that way, to put back in the box: read back
+   * as `value` (numberText), so "12.125" picked as a decimal comes back as "12.1250".
+   */
   text: string;
 }
 
@@ -181,7 +184,7 @@ export function readNumber(input: string): NumberReading {
     return {
       value: signed(digits),
       number: negative ? `-${number}` : number,
-      text: `${typed.slice(0, start)}${number}${typed.slice(end)}`,
+      text: `${typed.slice(0, start)}${numberText(decimalValue(digits, 0))}${typed.slice(end)}`,
     };
   };
   return {
@@ -190,6 +193,17 @@ export function readNumber(input: string): NumberReading {
     typed: typed.slice(start, end),
     readings: [alternative(first), alternative(second)],
   };
+}
+
+/**
+ * A number written so that `readNumber` reads it back as that same number, to put in a box: a
+ * picked reading, or a saved answer edited again. "12.125" would be asked about (12125 or
+ * 12.125), so a fraction of three digits after a whole part of one to three digits gets a
+ * trailing zero: "12.1250".
+ */
+export function numberText(value: number): string {
+  const text = String(value);
+  return /^-?[1-9]\d{0,2}\.\d{3}$/.test(text) ? `${text}0` : text;
 }
 
 /**
