@@ -4,7 +4,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(40);
+select plan(44);
 
 insert into auth.users (id, email, created_at) values
   ('a2000000-0000-4000-8000-000000000001', 'ai-owner@example.test', now()),
@@ -58,6 +58,14 @@ as $$
     p_reservation, p_project, p_tool, repeat('a', 64), p_output, p_model, 'review-text-2',
     p_tokens_in, p_tokens_out, 0, 0
   );
+$$;
+
+-- Today's cost held by calls not recorded yet, read as the database owner.
+create function pg_temp.held() returns numeric
+language sql
+as $$
+  select held_usd from private.ai_spend_daily
+  where day = (now() at time zone 'utc')::date and model = 'claude-haiku-4-5-20251001';
 $$;
 
 -- ---------------------------------------------------------------------------------------------
@@ -156,6 +164,14 @@ select is(
   'the counter stops at the limit'
 );
 
+reset role;
+select is(
+  pg_temp.held(),
+  0.035::numeric,
+  'each reservation holds the most its call can cost: 8000 × 1.25 + 1500 × 5 USD per million tokens'
+);
+set local role authenticated;
+
 select pg_temp.act_as('b2000000-0000-4000-8000-000000000002');
 select is(
   pg_temp.keep('s1', public.reserve_ai_run()) ->> 'reason',
@@ -224,6 +240,13 @@ select is(
   0.0013::numeric,
   'its cost comes from the settings price: 900 × 1 + 80 × 5 USD per million tokens'
 );
+reset role;
+select is(
+  pg_temp.held(),
+  0.035::numeric,
+  'recording a run releases its hold, and the two calls still open keep theirs'
+);
+set local role authenticated;
 select throws_ok(
   $$select pg_temp.record(pg_temp.kept('r1'))$$,
   '42501',
@@ -280,10 +303,10 @@ select is_empty($$select * from public.tool_runs$$, 'another user sees no foreig
 
 reset role;
 select results_eq(
-  $$select calls, cost_usd from private.ai_spend_daily
+  $$select calls, cost_usd, held_usd from private.ai_spend_daily
     where day = (now() at time zone 'utc')::date and model = 'claude-haiku-4-5-20251001'$$,
-  $$values (2, 0.0168::numeric)$$,
-  'today''s ledger counts both runs and their cost'
+  $$values (2, 0.0168::numeric, 0.035::numeric)$$,
+  'today''s ledger counts both runs and their cost, and holds the two calls never recorded'
 );
 
 select pg_temp.act_as('a2000000-0000-4000-8000-000000000001');
@@ -306,18 +329,28 @@ set local role authenticated;
 select public.delete_my_account();
 reset role;
 
-select is(
-  (select sum(cost_usd) from private.ai_spend_daily where day = (now() at time zone 'utc')::date),
-  0.0168::numeric,
-  'deleting the account leaves today''s spend as it was too'
+select results_eq(
+  $$select sum(cost_usd), sum(held_usd) from private.ai_spend_daily
+    where day = (now() at time zone 'utc')::date$$,
+  $$values (0.0168::numeric, 0.035::numeric)$$,
+  'deleting the account, with its reservations, leaves today''s spend and holds as they were'
 );
 
 -- ---------------------------------------------------------------------------------------------
 -- The global spend cap and switching AI off (D-120)
 -- ---------------------------------------------------------------------------------------------
 
-update public.settings set value = '0.01' where key = 'ai.limit.global_daily_usd';
+update public.settings set value = '0.03' where key = 'ai.limit.global_daily_usd';
 select pg_temp.act_as('b2000000-0000-4000-8000-000000000002');
+set local role authenticated;
+select is(
+  public.reserve_ai_run(),
+  '{"reservation": null, "reason": "global_cap"}'::jsonb,
+  'calls never recorded count towards the cap at their most: 0.0168 spent and 0.035 held pass 0.03'
+);
+
+reset role;
+update public.settings set value = '0.01' where key = 'ai.limit.global_daily_usd';
 set local role authenticated;
 select is(
   public.reserve_ai_run(),
@@ -332,6 +365,16 @@ select is(public.reserve_ai_run() ->> 'reason', 'disabled', 'a cap of 0 turns AI
 
 reset role;
 update public.settings set value = '5' where key = 'ai.limit.global_daily_usd';
+update public.settings set value = '"claude-unpriced"' where key = 'ai.model.fast';
+set local role authenticated;
+select is(
+  public.reserve_ai_run() ->> 'reason',
+  'disabled',
+  'a fast model without a price turns AI off, so no call is held or counted as free'
+);
+
+reset role;
+update public.settings set value = '"claude-haiku-4-5-20251001"' where key = 'ai.model.fast';
 delete from public.settings where key = 'ai.limit.tokens_in_per_call';
 set local role authenticated;
 select is(

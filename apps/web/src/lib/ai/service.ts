@@ -231,6 +231,8 @@ async function review(
   try {
     result = await client.reviewText(settings.model, input, { signal });
   } catch (thrown) {
+    // Not recorded: the API may still bill a call cut off here, so its reservation keeps holding
+    // the most it can cost in today's spend (D-146).
     rememberFailure(failureKey);
     return outOfTime(signal) ? skipped('timeout', questionId) : failed('model', thrown, questionId);
   }

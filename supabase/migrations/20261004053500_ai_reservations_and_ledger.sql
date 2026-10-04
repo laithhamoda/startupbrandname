@@ -1,6 +1,7 @@
 -- Audit fixes, PR B: AI calls are recorded only against a one-time reservation, their cost is
 -- computed here from the settings price, and the spend of each day is kept in a ledger that no
--- deletion lowers (D-146; SEC-1, COST-1, OBS-2; CLAUDE.md rule 10).
+-- deletion lowers, where each reservation holds the most its call can cost until the call is
+-- recorded (D-146; SEC-1, COST-1, OBS-2; CLAUDE.md rule 10).
 --
 -- Until now any signed-in user could call record_tool_run() with a cost of their choosing and
 -- close AI for every founder until midnight UTC, and deleting a project or an account removed its
@@ -18,7 +19,8 @@
 -- The input tokens one call may count: input, cache writes and cache reads together. A review
 -- sends about 6000 at most (the instructions, the question and an answer of 4000 characters).
 -- Output tokens are capped at 1500, the max_tokens of every call. Tokens are reported by the app,
--- so these bounds cap what one reservation can add to today's spend.
+-- so these bounds cap what one reservation can add to today's spend, and they give the most one
+-- call can cost, which each reservation holds until its run is recorded.
 insert into public.settings (key, value) values ('ai.limit.tokens_in_per_call', '8000');
 
 -- ---------------------------------------------------------------------------------------------
@@ -28,12 +30,15 @@ insert into public.settings (key, value) values ('ai.limit.tokens_in_per_call', 
 create table private.ai_reservations (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users (id) on delete cascade,
+  -- The model the call is for, and the most it can cost, held in the ledger until it is recorded.
+  model text not null check (char_length(model) between 1 and 80),
+  held_usd numeric(14, 6) not null check (held_usd >= 0),
   created_at timestamptz not null default now(),
   used_at timestamptz
 );
 
 comment on table private.ai_reservations is
-  'One row per AI call allowed by reserve_ai_run(). record_ai_run() uses each one once, within 5 minutes.';
+  'One row per AI call allowed by reserve_ai_run(), with the cost it holds. record_ai_run() uses each one once, within 5 minutes.';
 
 create index ai_reservations_user_created_idx on private.ai_reservations (user_id, created_at);
 
@@ -54,11 +59,15 @@ create table private.ai_spend_daily (
   cache_write_tokens bigint not null default 0 check (cache_write_tokens >= 0),
   cache_read_tokens bigint not null default 0 check (cache_read_tokens >= 0),
   cost_usd numeric(14, 6) not null default 0 check (cost_usd >= 0),
+  -- The most the calls reserved but not recorded can cost. A call cut off by the time budget
+  -- (D-150) or whose record failed may still be billed, so it counts towards the cap at that
+  -- most, and its hold gives way to its real cost once it is recorded.
+  held_usd numeric(14, 6) not null default 0 check (held_usd >= 0),
   primary key (day, model)
 );
 
 comment on table private.ai_spend_daily is
-  'AI calls, tokens and cost per UTC day and model, with no user or project key, so deleting an account or a project never lowers it. The global cap reads it.';
+  'AI calls, tokens and cost per UTC day and model, and the cost held by calls not recorded, with no user or project key, so deleting an account or a project never lowers it. The global cap reads it.';
 
 alter table private.ai_spend_daily enable row level security;
 revoke all on table private.ai_spend_daily from public, anon, authenticated;
@@ -89,8 +98,10 @@ group by 1, 2;
 
 -- Allows one AI call for today (UTC). Returns {"reservation": <uuid or null>, "reason": …}:
 -- 'ok' with a reservation for record_ai_run(); 'user_limit' when the user has made today's calls;
--- 'global_cap' when today's spend has reached the cap; 'disabled' when a limit is missing or 0.
--- The cap is checked against recorded spend, so calls already in flight can pass it slightly.
+-- 'global_cap' when today's spend has reached the cap; 'disabled' when a limit is missing or 0,
+-- or the fast model has no price. The reservation holds the most its call can cost in today's
+-- ledger, so a call that is never recorded still counts towards the cap. Calls reserved at the
+-- same moment can pass the cap by their holds.
 create function public.reserve_ai_run()
 returns jsonb
 language plpgsql
@@ -103,6 +114,9 @@ declare
   v_calls integer;
   v_budget numeric;
   v_tokens_in integer;
+  v_model text;
+  v_price jsonb;
+  v_hold numeric;
   v_count integer;
   v_reservation uuid;
 begin
@@ -116,12 +130,34 @@ begin
   from public.settings where key = 'ai.limit.global_daily_usd';
   select (value #>> '{}')::integer into v_tokens_in
   from public.settings where key = 'ai.limit.tokens_in_per_call';
-  if coalesce(v_calls, 0) <= 0 or coalesce(v_budget, 0) <= 0 or coalesce(v_tokens_in, 0) <= 0 then
+  select value #>> '{}' into v_model from public.settings where key = 'ai.model.fast';
+  select value -> v_model into v_price from public.settings where key = 'ai.prices';
+
+  -- The most one call can cost (USD per million tokens, D-122): every input token at the dearest
+  -- of the input rates, and the 1500 output tokens record_ai_run() counts at most.
+  v_hold := round(
+    (
+      v_tokens_in * greatest(
+        (v_price ->> 'input')::numeric,
+        (v_price ->> 'cache_write')::numeric,
+        (v_price ->> 'cache_read')::numeric
+      )
+      + 1500 * (v_price ->> 'output')::numeric
+    ) / 1000000,
+    6
+  );
+
+  if coalesce(v_calls, 0) <= 0
+    or coalesce(v_budget, 0) <= 0
+    or coalesce(v_tokens_in, 0) <= 0
+    or not coalesce(v_price ?& array['input', 'output', 'cache_write', 'cache_read'], false)
+    or v_hold is null
+  then
     return jsonb_build_object('reservation', null, 'reason', 'disabled');
   end if;
 
   if (
-    select coalesce(sum(cost_usd), 0) from private.ai_spend_daily where day = v_day
+    select coalesce(sum(cost_usd + held_usd), 0) from private.ai_spend_daily where day = v_day
   ) >= v_budget then
     return jsonb_build_object('reservation', null, 'reason', 'global_cap');
   end if;
@@ -137,12 +173,16 @@ begin
     return jsonb_build_object('reservation', null, 'reason', 'user_limit');
   end if;
 
-  -- A reservation older than a day can never be used again.
+  -- A reservation older than a day can never be used again; its hold stays in the ledger.
   delete from private.ai_reservations
   where user_id = v_user and created_at < now() - interval '1 day';
 
-  insert into private.ai_reservations (user_id) values (v_user)
+  insert into private.ai_reservations (user_id, model, held_usd) values (v_user, v_model, v_hold)
   returning id into v_reservation;
+
+  insert into private.ai_spend_daily as spend (day, model, held_usd)
+  values (v_day, v_model, v_hold)
+  on conflict (day, model) do update set held_usd = spend.held_usd + excluded.held_usd;
 
   return jsonb_build_object('reservation', v_reservation, 'reason', 'ok');
 end;
@@ -152,7 +192,8 @@ $$;
 -- minutes, for one of their projects, and returns the run's id. The cost is computed here from
 -- the model's price in settings ('ai.prices'), never taken from the caller; a model without a
 -- price, an unknown tool or an output over 16 KB is refused. Tokens are clamped to the bounds
--- above. The day's ledger row grows in the same transaction.
+-- above. In the same transaction the reservation's hold leaves the ledger and the run's cost
+-- joins it; a refused record keeps the hold.
 create function public.record_ai_run(
   p_reservation uuid,
   p_project_id uuid,
@@ -180,6 +221,9 @@ declare
   v_cache_write integer;
   v_cache_read integer;
   v_cost numeric;
+  v_hold numeric;
+  v_hold_model text;
+  v_hold_day date;
   v_id bigint;
 begin
   if v_user is null then
@@ -191,7 +235,9 @@ begin
   where id = p_reservation
     and user_id = v_user
     and used_at is null
-    and created_at > now() - interval '5 minutes';
+    and created_at > now() - interval '5 minutes'
+  returning held_usd, model, (created_at at time zone 'utc')::date
+  into v_hold, v_hold_model, v_hold_day;
   if not found then
     raise exception 'record_ai_run: no open reservation' using errcode = '42501';
   end if;
@@ -246,6 +292,10 @@ begin
     v_in, v_out, v_cache_write, v_cache_read, v_cost
   )
   returning id into v_id;
+
+  update private.ai_spend_daily
+  set held_usd = greatest(held_usd - v_hold, 0)
+  where day = v_hold_day and model = v_hold_model;
 
   insert into private.ai_spend_daily as spend (
     day, model, calls, tokens_in, tokens_out, cache_write_tokens, cache_read_tokens, cost_usd
