@@ -78,7 +78,7 @@ async function review(
       (AI_RULES as readonly string[]).includes(rule),
     ),
     ideaCheck: questionId === 'B1',
-    answer: deidentify(text, { email: context.userEmail }),
+    answer: deidentify(text, { email: context.userEmail }).text,
   };
   const hash = inputHash({
     tool: TOOL,
