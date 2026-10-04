@@ -17,6 +17,9 @@ export default defineConfig({
   testDir: './e2e',
   forbidOnly: isCI,
   retries: isCI ? 1 : 0,
+  // A test that passes only when retried fails the run (CICD-8): the retry shows what went wrong
+  // in the trace, and the flake is fixed rather than hidden.
+  failOnFlakyTests: isCI,
   reporter: isCI ? [['github'], ['html', { open: 'never' }]] : 'list',
   // Baselines come from the pinned Playwright container in CI, so no per-platform suffix (D-055).
   snapshotPathTemplate: '{testDir}/__screenshots__/{testFilePath}/{arg}{ext}',
