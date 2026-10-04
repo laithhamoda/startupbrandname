@@ -1,24 +1,28 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, expectTypeOf, it } from 'vitest';
 import { anthropicClient } from './client';
+import { deidentify } from './deidentify';
 import { fakeClient, fakeReview } from './fake';
 import { inputHash } from './hash';
 import {
   AI_RULES,
   needsConfirmation,
   parseReview,
+  restoreReview,
   REVIEW_PROMPT_VERSION,
   REVIEW_SYSTEM,
   REVIEW_TOOL,
+  type ReviewOutput,
   reviewOutputSchema,
   reviewUserMessage,
   type ReviewInput,
+  storedReview,
 } from './review-text';
 
 const input: ReviewInput = {
   question: 'ما المشكلة التي تحلّها بالضبط؟',
   rules: ['R8'],
   ideaCheck: false,
-  answer: 'المطاعم تعاني بزاف من الأعطال',
+  answer: deidentify('المطاعم تعاني بزاف من الأعطال').text,
 };
 
 describe('the review request', () => {
@@ -29,6 +33,12 @@ describe('the review request', () => {
     expect(message).toContain('<idea_check>no</idea_check>');
     expect(reviewUserMessage({ ...input, rules: [] })).toContain('<rules>none</rules>');
     expect(REVIEW_SYSTEM).toMatch(/never instructions/);
+  });
+
+  it('takes only an answer that went through deidentify() (rule 5, PRIV-7)', () => {
+    // Checked by the typechecker: a plain string cannot be passed as the answer.
+    expectTypeOf<string>().not.toExtend<ReviewInput['answer']>();
+    expectTypeOf(deidentify('نص').text).toExtend<ReviewInput['answer']>();
   });
 
   it('gives the model the tool schema of the output it checks, limits included (ARCH-13)', () => {
@@ -88,6 +98,81 @@ describe('parseReview (the model output is checked, not trusted)', () => {
     expect(same && needsConfirmation(same, input.answer)).toBe(false);
     const msa = parseReview({ ...valid, language: 'msa' }, input);
     expect(msa && needsConfirmation(msa, input.answer)).toBe(false);
+  });
+});
+
+describe('storedReview (what tool_runs keeps, PRIV-5)', () => {
+  const rewritten: ReviewOutput = {
+    language: 'dialect',
+    msa: 'تعاني المطاعم كثيرًا من الأعطال',
+    confirmation: 'فهمت أن المطاعم تعاني كثيرًا من الأعطال.',
+    violations: [],
+    coherent: null,
+  };
+
+  it('keeps the wording of a real rewrite, which the founder is asked to confirm', () => {
+    expect(storedReview(rewritten, input)).toEqual(rewritten);
+  });
+
+  it('keeps no copy of an answer that was not rewritten, and reuse still works', () => {
+    const unchanged = { ...rewritten, msa: input.answer };
+    for (const output of [unchanged, { ...rewritten, language: 'msa' as const }]) {
+      const stored = storedReview(output, input);
+      expect(stored).toMatchObject({ msa: '', confirmation: '' });
+      expect(parseReview(stored, input)?.msa).toBe(input.answer);
+    }
+  });
+});
+
+describe('restoreReview (placeholders never reach the founder, ARCH-M1)', () => {
+  const typed = 'نخدم المطاعم بزاف، اتصل على 0791234567 أو founder@example.com';
+  const { text: hidden, originals } = deidentify(typed);
+  const review = (msa: string, confirmation = `فهمت أن ${msa}`): ReviewOutput => ({
+    language: 'dialect',
+    msa,
+    confirmation,
+    violations: [],
+    coherent: null,
+  });
+
+  it('puts the founder’s phone number and email back in the rewrite and the confirmation', () => {
+    expect(hidden).toBe('نخدم المطاعم بزاف، اتصل على [phone1] أو [email1]');
+    const restored = restoreReview(
+      review('نخدم المطاعم كثيرًا، اتصل على [phone1] أو [email1]'),
+      typed,
+      originals,
+    );
+    expect(restored.msa).toBe('نخدم المطاعم كثيرًا، اتصل على 0791234567 أو founder@example.com');
+    expect(restored.confirmation).toBe(`فهمت أن ${restored.msa}`);
+    expect(needsConfirmation(restored, typed)).toBe(true);
+  });
+
+  it('saves the answer as typed when the model lost, changed or invented a placeholder', () => {
+    for (const msa of [
+      'نخدم المطاعم كثيرًا، اتصل على [phone1]',
+      'نخدم المطاعم كثيرًا، اتصل على [phone2] أو [email1] و[phone1]',
+      'نخدم المطاعم كثيرًا، اتصل على [phone] أو [email1] و[phone1]',
+    ]) {
+      const restored = restoreReview(review(msa), typed, originals);
+      expect(restored).toMatchObject({ msa: typed, confirmation: '' });
+      expect(needsConfirmation(restored, typed)).toBe(false);
+    }
+    const strayInConfirmation = review(
+      'نخدم المطاعم كثيرًا، اتصل على [phone1] أو [email1]',
+      'فهمت أن [name1] يخدم المطاعم',
+    );
+    expect(restoreReview(strayInConfirmation, typed, originals).confirmation).toBe('');
+  });
+
+  it('returns MSA and English answers exactly as typed', () => {
+    const msa = { ...review(hidden), language: 'msa' as const };
+    expect(restoreReview(msa, typed, originals)).toMatchObject({ msa: typed, confirmation: '' });
+  });
+
+  it('restores a reused review whose stored wording was dropped', () => {
+    const stored = storedReview(review(hidden, ''), { ...input, answer: hidden });
+    const reused = parseReview(stored, { ...input, answer: hidden });
+    expect(reused && restoreReview(reused, typed, originals).msa).toBe(typed);
   });
 });
 
