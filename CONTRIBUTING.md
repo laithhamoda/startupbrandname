@@ -111,10 +111,12 @@ The full order, rollback and kill switches: [docs/runbooks/operations.md](docs/r
 - [ ] Every new table: RLS enabled, `revoke all` from `anon` and `authenticated`, then only the
       grants and policies it needs, with `(select auth.uid())`.
 - [ ] Every `security definer` function: `set search_path = ''`, checks `auth.uid()`, execute
-      revoked from `public` and `anon`, granted to `authenticated` only.
+      revoked from `public` and `anon`, granted to `authenticated` only
+      (`supabase/tests/function_guard.test.sql` fails otherwise).
 - [ ] A table that holds a user's data references `auth.users` or `public.projects` with
       `on delete cascade`, so `delete_my_account()` and the purge of incomplete accounts remove it.
       A record that must outlive the account waits for a decision (#31).
+      `supabase/tests/erasure_guard.test.sql` fails a user or project column that is not erased.
 - [ ] A table or column that holds a user's data: add it to the export in
       `docs/runbooks/data-requests.md` and to `docs/privacy/processing-register.md`.
 - [ ] pgTAP tests; `pnpm db:reset`, `pnpm db:test`, `pnpm db:lint`.
