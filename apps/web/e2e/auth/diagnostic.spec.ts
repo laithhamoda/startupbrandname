@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { FAKE_FAILURE_MARKER } from '@sbn/ai';
-import { QUESTIONS } from '@sbn/question-bank';
+import { getQuestion, QUESTIONS } from '@sbn/question-bank';
 import { expect, type Page, test } from '@playwright/test';
 import { signInByEmail, signUpByEmail, uniqueEmail } from './helpers';
 
@@ -125,6 +125,125 @@ test('answer rules speak in place, and a picked range or «لا أعرف» is sa
   await expect(page).toHaveURL(/\/q\/F4$/);
   await page.goto(`/ar/projects/${id}`);
   await expect(page.getByText(/كل وحدة تبيعها تخسر فيها/)).toBeVisible();
+});
+
+test('a number is never misread: ranges, two readings and whole numbers', async ({ page }) => {
+  await signUpByEmail(page, uniqueEmail('numbers'));
+  const id = await createProject(page, 'full');
+
+  // "10-20" is a range, so R3 asks for one number or a suggested range (ARCH-7).
+  await page.goto(`/ar/projects/${id}/q/A6`);
+  await page.getByRole('textbox').fill('10-20');
+  await page.getByRole('button', { name: NEXT }).click();
+  await expect(page.getByText('اكتب رقمًا واحدًا، أو اختر أحد النطاقات المقترحة.')).toBeVisible();
+
+  // A suggested range on a whole-number question saves a whole number (UX-1).
+  await page.goto(`/ar/projects/${id}/q/C8`);
+  await page.getByRole('textbox').fill('كثير');
+  await page.getByRole('button', { name: NEXT }).click();
+  await page.getByRole('button', { name: '11–50' }).click();
+  await expect(page).toHaveURL(/\/q\/D1$/);
+  await page.goto(`/ar/projects/${id}/q/C8`);
+  await expect(page.getByRole('textbox')).toHaveValue('31');
+
+  // "1.500" is 1500 or 1.5 depending on the convention: the founder picks (UX-2).
+  await page.getByRole('textbox').fill('1.500');
+  await page.getByRole('button', { name: NEXT }).click();
+  await expect(page.getByText('يمكن قراءة «1.500» بطريقتين. أيّهما تقصد؟')).toBeVisible();
+  await page.getByRole('button', { name: '1500', exact: true }).click();
+  // Over 1000 people with no channel yet calls for the C8.1 follow-up.
+  await expect(page).toHaveURL(/\/q\/C8-1$/);
+  await page.goto(`/ar/projects/${id}/q/C8`);
+  await expect(page.getByRole('textbox')).toHaveValue('1500');
+
+  // A fraction or a number out of bounds says what is wrong, under the box, which takes focus.
+  await page.goto(`/ar/projects/${id}/q/A2`);
+  const years = page.getByRole('textbox');
+  await years.fill('2.5');
+  await page.getByRole('button', { name: NEXT }).click();
+  await expect(years).toHaveAccessibleDescription(/اكتب عددًا صحيحًا دون كسور، مثل 3\./);
+  await expect(years).toHaveAttribute('aria-invalid', 'true');
+  await expect(years).toBeFocused();
+  await years.fill('70');
+  await page.getByRole('button', { name: NEXT }).click();
+  await expect(page.getByText('اكتب رقمًا من 0 إلى 60.')).toBeVisible();
+});
+
+test('an error sits under the box it is about, and rows keep the focus (UX-3, UX-8)', async ({
+  page,
+}) => {
+  await signUpByEmail(page, uniqueEmail('field-errors'));
+  const id = await createProject(page, 'full');
+
+  await page.goto(`/ar/projects/${id}/q/F3`);
+  await page.getByLabel('البند', { exact: true }).fill('قطع غيار');
+  await page.getByLabel('المبلغ').fill('8');
+  await page.getByRole('button', { name: 'أضف' }).click();
+  // The new row takes focus in its first box.
+  const second = page.getByRole('group', { name: 'البند 2' });
+  const secondLabel = second.getByLabel('البند', { exact: true });
+  await expect(secondLabel).toBeFocused();
+  await second.getByLabel('المبلغ').fill('5');
+
+  // The second row's label is missing: the message names that box, which takes focus.
+  await page.getByRole('button', { name: NEXT }).click();
+  await expect(secondLabel).toHaveAttribute('aria-invalid', 'true');
+  await expect(secondLabel).toHaveAccessibleDescription('أكمل الخانات المطلوبة.');
+  await expect(secondLabel).toBeFocused();
+  await expect(page.getByLabel('البند', { exact: true }).first()).not.toHaveAttribute(
+    'aria-invalid',
+  );
+
+  // Removing the row moves focus to the row before it, and says so.
+  await page.getByRole('button', { name: 'احذف البند 2' }).click();
+  await expect(page.getByText('البند 1', { exact: true })).toBeFocused();
+  await expect(page.getByRole('status').filter({ hasText: 'حُذف البند.' })).toBeAttached();
+  await next(page, 'F4');
+});
+
+test('each step has its own title, and moving on puts focus on the question (UX-5)', async ({
+  page,
+}) => {
+  await signUpByEmail(page, uniqueEmail('step-focus'));
+  await createProject(page, 'quick');
+
+  // A full page load leaves focus where the browser puts it.
+  await page.reload();
+  const heading = page.getByRole('heading', { level: 1 });
+  await expect(page).toHaveTitle(/^السؤال 1 من 20 · المؤسس والموارد · التشخيص/);
+  await expect(page.getByText('السؤال 1 من 20 في النسخة السريعة')).toBeVisible();
+  await expect(page.getByText('السؤال 1 من 2 في هذا المحور')).toBeVisible();
+  await expect(heading).not.toBeFocused();
+
+  // Moving on inside the app: the new question takes focus, and the title says where it is.
+  await page.getByLabel('المدينة').fill('إربد');
+  await next(page, 'A8');
+  await expect(heading).toHaveText(getQuestion('A8').label.ar);
+  await expect(heading).toBeFocused();
+  await expect(page).toHaveTitle(/^السؤال 2 من 20 · المؤسس والموارد · التشخيص/);
+});
+
+test('a follow-up keeps its warning when the founder comes back to it (ARCH-6)', async ({
+  page,
+}) => {
+  await signUpByEmail(page, uniqueEmail('follow-up-note'));
+  const id = await createProject(page, 'full');
+
+  await page.goto(`/ar/projects/${id}/q/G4`);
+  await page.getByLabel('الاسم').fill('المؤسس');
+  await page.getByLabel('النسبة %').fill('50');
+  await page.getByRole('button', { name: 'أضف' }).click();
+  const second = page.getByRole('group', { name: 'الشريك 2' });
+  await second.getByLabel('الاسم').fill('شريك');
+  await second.getByLabel('النسبة %').fill('50');
+  await next(page, 'G4-1');
+
+  const warning = page.getByText(/دون اتفاق مكتوب بين الشركاء/);
+  await page.getByRole('radio', { name: 'لا' }).click();
+  await page.getByRole('button', { name: NEXT }).click();
+  await expect(warning).toBeVisible();
+  await page.goto(`/ar/projects/${id}/q/G4-1`);
+  await expect(warning).toBeVisible();
 });
 
 test('all 64 questions render in Arabic and in English (M3 definition of done)', async ({
