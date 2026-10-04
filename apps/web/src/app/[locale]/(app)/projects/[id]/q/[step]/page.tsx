@@ -16,7 +16,10 @@ import { getTranslations } from 'next-intl/server';
 import { notFound, redirect } from 'next/navigation';
 import { AnswerEditor } from '@/components/diagnostic/answer-editor';
 import { AxisProgress, CompletenessPanel } from '@/components/diagnostic/progress';
+import { TextLink } from '@/components/ui/text-link';
 import { currentLocale } from '@/i18n/locale';
+import { consentStateOrNull } from '@/lib/ai/consent';
+import { activeProvider } from '@/lib/ai/provider';
 import { requireAccount } from '@/lib/auth/session';
 import { countryOptions } from '@/lib/countries';
 import { currencyOptions } from '@/lib/diagnostic/currencies';
@@ -29,6 +32,12 @@ export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('diagnostic');
   return { title: t('pageTitle'), robots: { index: false, follow: false } };
 }
+
+/**
+ * Saving an answer runs here (Server Actions run in the page's function). A typed answer may wait
+ * up to 8 seconds for the AI review (D-150); this leaves room for the database around it.
+ */
+export const maxDuration = 30;
 
 /** One question (or follow-up) of the diagnostic, with the project's progress beside it. */
 export default async function StepPage({ params }: PageProps<'/[locale]/projects/[id]/q/[step]'>) {
@@ -75,6 +84,10 @@ export default async function StepPage({ params }: PageProps<'/[locale]/projects
   const headingId = 'question-heading';
   const helpId = 'question-help';
 
+  // Typed answers of the core questions may go to the AI review, with a current consent (D-147).
+  const typed = core?.field.kind === 'short_text' || core?.field.kind === 'long_text';
+  const consent = typed && activeProvider() ? await consentStateOrNull(supabase) : null;
+
   return (
     <div className="mx-auto grid max-w-[75rem] gap-10 px-4 py-8 sm:px-6 lg:grid-cols-[minmax(0,1fr)_18rem] lg:gap-16 lg:py-12">
       <div className="grid content-start gap-6">
@@ -96,12 +109,23 @@ export default async function StepPage({ params }: PageProps<'/[locale]/projects
             {question.help[locale]}
           </p>
         </div>
+        {consent === 'outdated' ? (
+          <p
+            role="note"
+            className="reading border-s-[3px] border-ink bg-sunken px-4 py-3 text-small"
+          >
+            {t.rich('consentOutdated', {
+              account: (chunks) => <TextLink href="/account">{chunks}</TextLink>,
+            })}
+          </p>
+        ) : null}
         <AnswerEditor
           key={step}
           locale={locale}
           projectId={project.id}
           step={step}
           field={question.field}
+          reviewsText={consent === 'current'}
           headingId={headingId}
           helpId={helpId}
           allowUnknown={core?.allowUnknown ?? false}

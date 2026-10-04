@@ -70,7 +70,7 @@ export const FAQ: Localized<FaqContent> = {
         id: 'data',
         question: 'أين تُحفظ بياناتي، ومن يراها؟',
         answer:
-          'تُحفظ في قاعدة بيانات في فرانكفورت بألمانيا، ولا يستطيع أي مستخدم آخر الوصول إلى مشاريعك. والمرشد الذكي يعمل فقط بموافقتك، لأن معالجته تتم في الولايات المتحدة، ونحذف اسمك وبريدك قبل أي طلب إليه. التفاصيل في سياسة الخصوصية.',
+          'تُحفظ في قاعدة بيانات في فرانكفورت بألمانيا، ولا يستطيع أي مستخدم آخر الوصول إلى مشاريعك. ومراجعة إجاباتك المكتوبة بالذكاء الاصطناعي، والمرشد الذكي لاحقًا، تعملان فقط بموافقتك، لأن معالجتهما تتم لدى Anthropic في الولايات المتحدة. ونحذف قبل أي طلب اسمك وعناوين البريد الإلكتروني وما نتعرّف عليه من بيانات التواصل. التفاصيل في سياسة الخصوصية.',
       },
       {
         id: 'payment',
@@ -153,7 +153,7 @@ export const FAQ: Localized<FaqContent> = {
         id: 'data',
         question: 'Where is my data kept, and who can see it?',
         answer:
-          'In a database in Frankfurt, Germany, and no other user can reach your projects. The AI mentor runs only with your consent, because it is processed in the United States, and we remove your name and email before any request to it. Details are in the privacy policy.',
+          'In a database in Frankfurt, Germany, and no other user can reach your projects. The AI review of the answers you type, and later the AI mentor, run only with your consent, because they are processed by Anthropic in the United States. Before any request we remove your name, email addresses and the contact details we recognise. Details are in the privacy policy.',
       },
       {
         id: 'payment',

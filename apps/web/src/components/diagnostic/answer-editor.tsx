@@ -22,6 +22,8 @@ interface AnswerEditorProps {
   projectId: string;
   step: string;
   field: Field;
+  /** A typed answer goes to the AI review before it is saved (consent given, AI on; D-150). */
+  reviewsText: boolean;
   headingId: string;
   helpId: string;
   allowUnknown: boolean;
@@ -62,6 +64,8 @@ export function AnswerEditor(props: AnswerEditorProps) {
   const [local, setLocal] = useState<Local>({ kind: 'none' });
   const [result, setResult] = useState<SaveResult | null>(null);
   const [pending, startTransition] = useTransition();
+  // A typed answer under AI review can take a few seconds, so the button says it is checked.
+  const [checking, setChecking] = useState(false);
   const feedback = useRef<HTMLDivElement>(null);
   const form = useRef<HTMLFormElement>(null);
   // The value behind a pending AI confirmation, resent unchanged when the founder agrees (D-119).
@@ -74,6 +78,7 @@ export function AnswerEditor(props: AnswerEditorProps) {
 
   function send(submission: Parameters<typeof saveAnswer>[0]['submission']) {
     if (submission.kind === 'value') lastValue.current = submission.value;
+    setChecking(props.reviewsText && submission.kind === 'value');
     const sent = draft;
     startTransition(async () => {
       // A dropped connection keeps the draft on screen so the founder can try again.
@@ -277,7 +282,7 @@ export function AnswerEditor(props: AnswerEditorProps) {
           </ButtonLink>
         ) : (
           <Button type="submit" variant="primary" disabled={pending}>
-            {pending ? t('saving') : t('next')}
+            {pending ? (checking ? t('checking') : t('saving')) : t('next')}
           </Button>
         )}
         {props.previousHref ? (

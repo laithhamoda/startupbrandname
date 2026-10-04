@@ -58,7 +58,7 @@ function fakeClient(results: { upsert?: unknown; delete?: unknown } = {}) {
 function signedIn(client: unknown, answers: Answers = {}) {
   vi.mocked(requireAccount).mockResolvedValue({
     supabase: client,
-    user: { id: 'user-1', email: 'founder@example.com' },
+    user: { id: 'user-1', email: 'founder@example.com', names: ['Laith Ahmad', 'Laith'] },
     profile: { country_code: 'JO', locale: 'ar' },
   } as unknown as Awaited<ReturnType<typeof requireAccount>>);
   vi.mocked(loadProject).mockResolvedValue({ project, answers });
@@ -191,6 +191,29 @@ describe('saveAnswer', () => {
       reason: 'failed',
     });
     expect(writes.upsert).not.toHaveBeenCalled();
+  });
+
+  it('gives the AI review the account’s email and sign-in names to remove (rule 5)', async () => {
+    const { client } = fakeClient();
+    signedIn(client);
+    const typed = 'أصحاب المطاعم الصغيرة في وسط إربد';
+
+    const result = await saveAnswer({
+      locale: 'ar',
+      projectId,
+      step: 'B3',
+      submission: { kind: 'value', value: typed },
+    });
+
+    expect(result.status).toBe('saved');
+    expect(reviewWithAi).toHaveBeenCalledWith(
+      expect.objectContaining({
+        identity: { email: 'founder@example.com', names: ['Laith Ahmad', 'Laith'] },
+        projectId,
+      }),
+      'B3',
+      typed,
+    );
   });
 
   it('saves the confirmed answer as typed when the model reading does not fit the question', async () => {

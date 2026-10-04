@@ -70,7 +70,12 @@ export const AXIS_A = [
     field: {
       kind: 'people',
       minItems: 0,
-      labels: { name: t('الاسم أو الصفة', 'Name or title'), detail: t('الدور', 'Role') },
+      // No name is asked for (data minimisation): a people field is not sent to the AI review
+      // today, but the mentor and the report will read the answers later (D-148).
+      labels: {
+        name: t('الدور أو الصفة (لا حاجة إلى الاسم)', 'Role or title (no name needed)'),
+        detail: t('المسؤولية', 'Responsibility'),
+      },
     },
     label: t(
       'هل لديك فريق أو شركاء؟ اذكر أدوارهم',

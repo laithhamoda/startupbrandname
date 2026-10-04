@@ -263,8 +263,25 @@ export type Database = {
         };
         Returns: string;
       };
+      crossborder_consent_state: { Args: never; Returns: string };
       delete_my_account: { Args: never; Returns: undefined };
       has_crossborder_consent: { Args: never; Returns: boolean };
+      record_ai_run: {
+        Args: {
+          p_cache_read_tokens: number;
+          p_cache_write_tokens: number;
+          p_input_hash: string;
+          p_model: string;
+          p_output: Json;
+          p_project_id: string;
+          p_prompt_version: string;
+          p_reservation: string;
+          p_tokens_in: number;
+          p_tokens_out: number;
+          p_tool_id: string;
+        };
+        Returns: number;
+      };
       record_tool_run: {
         Args: {
           p_cache_read_tokens: number;
@@ -282,6 +299,7 @@ export type Database = {
         Returns: number;
       };
       reserve_ai_call: { Args: never; Returns: boolean };
+      reserve_ai_run: { Args: never; Returns: Json };
       set_crossborder_consent: {
         Args: { p_given: boolean; p_text_version: string };
         Returns: undefined;

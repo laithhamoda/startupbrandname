@@ -123,3 +123,14 @@ describe('the question bank (M3 definition of done: all 64 questions)', () => {
     expect(totalIn([...items, { amount: 1, currency: 'USD' }], 'JOD')).toBeNull();
   });
 });
+
+describe('A4 (the team)', () => {
+  it('asks for a role or title, never a name (D-148)', () => {
+    const field = getQuestion('A4').field;
+    if (field.kind !== 'people') throw new Error('A4 is a people field');
+    expect(field.labels.name).toEqual({
+      ar: 'الدور أو الصفة (لا حاجة إلى الاسم)',
+      en: 'Role or title (no name needed)',
+    });
+  });
+});

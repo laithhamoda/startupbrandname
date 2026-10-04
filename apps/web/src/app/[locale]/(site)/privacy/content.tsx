@@ -1,7 +1,9 @@
 // Placeholder privacy policy (M2). Draft wording only: it must be replaced after legal review
-// (CLAUDE.md §10). Keep the processor list in step with docs/DECISIONS.md.
+// (CLAUDE.md §10). Keep the processor list in step with docs/DECISIONS.md and the record of
+// processing (docs/privacy/processing-register.md). The signup box says the user has read this
+// policy, so a change here also bumps TERMS_VERSION in src/config/legal.ts.
 
-export const PRIVACY_UPDATED = '2026-09-27';
+export const PRIVACY_UPDATED = '2026-10-04';
 
 export function PrivacyAr() {
   return (
@@ -23,16 +25,31 @@ export function PrivacyAr() {
           </li>
           <li>سجل موافقاتك وسحبها، مع نسخة النص الذي وافقت عليه.</li>
           <li>
-            إذا دخلت بحساب Google، يحفظ نظام الدخول اسمك وصورتك كما أرسلهما Google. لا نستخدمهما ولا
-            نعرضهما.
+            مشاريعك: اسم المشروع وبلده وعملته، وكل إجابة كما كتبتها حرفيًا مع صيغتها المعتمدة. قد
+            تذكر إجاباتك أشخاصًا آخرين، كشركائك أو مورّديك، فصِفهم بأدوارهم دون أسمائهم.
           </li>
-          <li>في المراحل القادمة: إجاباتك ومحتوى مشاريعك.</li>
+          <li>
+            نتائج المراجعة الذكية لإجاباتك المكتوبة، إن وافقت عليها: لغة الإجابة والقواعد التي
+            تخالفها، والصياغة الفصحى حين تُعاد صياغة الإجابة. وعدد مرات استخدامك لها في كل يوم.
+          </li>
+          <li>
+            إذا دخلت بحساب Google، يحفظ نظام الدخول اسمك وصورتك كما أرسلهما Google. لا نعرضهما،
+            ونستخدم الاسم فقط لحذفه من إجاباتك قبل المراجعة الذكية.
+          </li>
+          <li>
+            يسجّل نظام الدخول عنوان IP ونوع المتصفح مع كل جلسة وكل عملية دخول، لحماية الحسابات من
+            إساءة الاستخدام.
+          </li>
+          <li>
+            سجلات التشغيل لدى مزوّدي الاستضافة: عناوين IP ومسارات الطلبات وأوقاتها ورموز الأخطاء،
+            دون نصوص إجاباتك.
+          </li>
         </ul>
       </section>
       <section>
         <h2>أين تُعالج بياناتك</h2>
         <ul>
-          <li>Supabase: قاعدة البيانات وتسجيل الدخول، في ألمانيا (فرانكفورت).</li>
+          <li>Supabase: قاعدة البيانات وتسجيل الدخول والنسخ الاحتياطية، في ألمانيا (فرانكفورت).</li>
           <li>
             Vercel: تشغيل الموقع، وخوادمه في ألمانيا (فرانكفورت)، والملفات العامة عبر شبكة توزيع
             عالمية.
@@ -41,8 +58,13 @@ export function PrivacyAr() {
           <li>Vercel Web Analytics: إحصاءات الزيارات، دون ملفات تعريف ارتباط.</li>
           <li>Google: فقط إذا اخترت الدخول بحساب Google، في الولايات المتحدة.</li>
           <li>
-            Anthropic: فقط بموافقتك الاختيارية، لتشغيل المرشد الذكي، في الولايات المتحدة. يُرسَل
-            محتوى المشروع دون اسمك أو بريدك.
+            Anthropic: فقط بموافقتك الاختيارية، في الولايات المتحدة، لمراجعة إجاباتك المكتوبة وإعادة
+            صياغتها، ولاحقًا لتشغيل المرشد الذكي. نحذف قبل الإرسال اسمك في حساب Google وعناوين
+            البريد الإلكتروني، وما نتعرّف عليه من بيانات التواصل والأرقام: أرقام الهاتف التي تبدأ
+            برمز دولي أو بصفر، والأرقام المكتوبة بصيغة دولية بعد كلمة مثل «هاتف» أو «واتساب»، وروابط
+            الصفحات كروابط الحسابات والمحادثات، وأرقام الحسابات المصرفية (IBAN)، وأرقام الهوية بعد
+            كلمة مثل «الرقم الوطني» أو «جواز السفر». أما بقية الأرقام والأسماء التي تكتبها بنفسك
+            فتُرسَل كما هي.
           </li>
         </ul>
       </section>
@@ -50,23 +72,43 @@ export function PrivacyAr() {
         <h2>مدة الاحتفاظ</h2>
         <ul>
           <li>الحساب الذي لا يكتمل خلال 24 ساعة يُحذف تلقائيًا.</li>
-          <li>حذف الحساب من صفحة حسابك فوري، ويشمل كل بياناتك.</li>
+          <li>
+            تبقى مشاريعك وإجاباتك ونتائج مراجعتها إلى أن تحذفها أو تحذف حسابك. [مدة الاحتفاظ في
+            النسخة المجانية تُطبَّق عند إطلاق الخطط المدفوعة.]
+          </li>
+          <li>
+            حذف الحساب من صفحة حسابك فوري، ويشمل الحساب وملفك وموافقاتك ومشاريعك وإجاباتك ونتائج
+            مراجعتها وعدّادات استخدامك.
+          </li>
+          <li>
+            تبقى البيانات المحذوفة في النسخ الاحتياطية اليومية إلى أن تنتهي صلاحيتها. [مدة الاحتفاظ
+            بالنسخ الاحتياطية تُحدَّد بعد المراجعة القانونية.]
+          </li>
+          <li>
+            قد تبقى سجلات عمليات الدخول، مع عنوان IP، لدى نظام الدخول بعد حذف الحساب. [مدة الاحتفاظ
+            بها تُحدَّد قبل الإطلاق العام.]
+          </li>
+          <li>
+            نحتفظ بمجاميع يومية لاستخدام الذكاء الاصطناعي وتكلفته، دون ربطها بأي حساب أو مشروع.
+          </li>
           <li>[مدد الاحتفاظ الأخرى تُحدَّد بعد المراجعة القانونية.]</li>
         </ul>
       </section>
       <section>
         <h2>حقوقك</h2>
         <p>
-          يمكنك الاطلاع على بياناتك وتصحيح بلدك ولغتك وسحب موافقتك وحذف حسابك في أي وقت من صفحة
-          حسابك.
+          يمكنك من صفحة حسابك في أي وقت تصحيح بلدك ولغتك، ومنح موافقتك على المعالجة خارج بلدك أو
+          تجديدها أو سحبها، وحذف حسابك. وتجد إجاباتك في صفحات مشاريعك، حيث يمكنك تعديلها أو حذف
+          المشروع. وللحصول على نسخة من كل بياناتك، راسلنا على [عنوان التواصل يُضاف بعد المراجعة
+          القانونية].
         </p>
       </section>
       <section>
         <h2>إحصاءات الزيارات</h2>
         <p>
           نحصي زيارات الصفحات بأداة Vercel Web Analytics دون ملفات تعريف ارتباط. تُسجَّل الصفحة دون
-          أي معاملات في رابطها، والموقع الذي جئت منه، وبلدك، ونوع متصفحك ونظام التشغيل والجهاز،
-          بصورة مجمّعة لا نستخدمها لتحديد هويتك.
+          أي معاملات في رابطها، ويحلّ رمزٌ عام محلّ معرّف المشروع في الرابط، ويُسجَّل الموقع الذي
+          جئت منه، وبلدك، ونوع متصفحك ونظام التشغيل والجهاز، بصورة مجمّعة لا نستخدمها لتحديد هويتك.
         </p>
       </section>
       <section>
@@ -103,16 +145,34 @@ export function PrivacyEn() {
           </li>
           <li>Your consents and withdrawals, with the version of the text you agreed to.</li>
           <li>
-            If you sign in with Google, the sign-in system keeps the name and photo Google sends. We
-            neither use nor show them.
+            Your projects: the project name, country and currency, and every answer exactly as you
+            typed it, with its accepted wording. Your answers may name other people, such as
+            partners or suppliers, so describe them by their role, without their names.
           </li>
-          <li>In later milestones: your answers and the content of your projects.</li>
+          <li>
+            The results of the AI review of your typed answers, if you consent to it: the language
+            of the answer, the rules it breaks, and the Modern Standard Arabic wording when the
+            answer is rewritten; and how many times you use it each day.
+          </li>
+          <li>
+            If you sign in with Google, the sign-in system keeps the name and photo Google sends. We
+            do not show them, and we use the name only to remove it from your answers before the AI
+            review.
+          </li>
+          <li>
+            The sign-in system records your IP address and browser type with each session and each
+            sign-in, to protect accounts from misuse.
+          </li>
+          <li>
+            Our hosting providers’ logs: IP addresses, request paths and times, and error codes,
+            never the text of your answers.
+          </li>
         </ul>
       </section>
       <section>
         <h2>Where your data is processed</h2>
         <ul>
-          <li>Supabase: database and sign-in, in Germany (Frankfurt).</li>
+          <li>Supabase: database, sign-in and backups, in Germany (Frankfurt).</li>
           <li>
             Vercel: runs the website, with its servers in Germany (Frankfurt) and public files on a
             global delivery network.
@@ -121,8 +181,14 @@ export function PrivacyEn() {
           <li>Vercel Web Analytics: visit statistics, without cookies.</li>
           <li>Google: only if you choose to sign in with Google, in the United States.</li>
           <li>
-            Anthropic: only with your optional consent, to run the AI mentor, in the United States.
-            Project content is sent without your name or email.
+            Anthropic: only with your optional consent, in the United States, to check and rewrite
+            your typed answers and, later, to run the AI mentor. Before sending, we remove the name
+            on your Google account, email addresses, and the contact details and numbers we
+            recognise: phone numbers that start with an international prefix or a 0, and numbers in
+            international form after a word such as “phone” or “WhatsApp”; links to a page, such as
+            a profile or a chat; bank account numbers in IBAN form; and ID numbers after a word such
+            as “national number” or “passport”. Other numbers, and names you type yourself, are sent
+            as written.
           </li>
         </ul>
       </section>
@@ -131,7 +197,23 @@ export function PrivacyEn() {
         <ul>
           <li>An account that is not completed within 24 hours is deleted automatically.</li>
           <li>
-            Deleting your account from your account page is immediate and covers all your data.
+            Your projects, answers and their review results are kept until you delete them or your
+            account. [The free plan’s retention period applies once paid plans open.]
+          </li>
+          <li>
+            Deleting your account from your account page is immediate and covers your account,
+            profile, consents, projects, answers, review results and usage counters.
+          </li>
+          <li>
+            Deleted data stays in the daily backups until they expire. [The backup retention period
+            will be set after legal review.]
+          </li>
+          <li>
+            Records of sign-ins, with the IP address, may stay with the sign-in system after the
+            account is deleted. [Their retention period will be set before public launch.]
+          </li>
+          <li>
+            We keep daily totals of AI use and its cost, with no link to any account or project.
           </li>
           <li>[Other retention periods will be set after legal review.]</li>
         </ul>
@@ -139,17 +221,19 @@ export function PrivacyEn() {
       <section>
         <h2>Your rights</h2>
         <p>
-          On your account page you can see your data, correct your country and language, withdraw
-          your consent and delete your account at any time.
+          On your account page you can, at any time, correct your country and language, give, renew
+          or withdraw your consent to processing outside your country, and delete your account. Your
+          answers are on your project pages, where you can change them or delete the project. To get
+          a copy of all your data, write to us at [contact address to be added after legal review].
         </p>
       </section>
       <section>
         <h2>Visit statistics</h2>
         <p>
           We count page visits with Vercel Web Analytics, without cookies. It records the page
-          without any parameters in its address, the site you came from, your country, and your
-          browser, operating system and device type, in aggregate form that we do not use to
-          identify you.
+          without any parameters in its address and with project IDs replaced by a generic token,
+          the site you came from, your country, and your browser, operating system and device type,
+          in aggregate form that we do not use to identify you.
         </p>
       </section>
       <section>
