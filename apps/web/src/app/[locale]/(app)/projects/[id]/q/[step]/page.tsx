@@ -1,14 +1,11 @@
 import {
   AXIS_NAMES,
   completeness,
-  diagnosticSequence,
-  FOLLOW_UPS,
-  getQuestion,
-  isQuestionId,
   positionInAxis,
   previousStep,
-  reviewAnswer,
-  reviewProject,
+  resolveStep,
+  sequenceModeFor,
+  stepNotes,
   valueOf,
 } from '@sbn/question-bank';
 import type { Metadata } from 'next';
@@ -50,31 +47,25 @@ export default async function StepPage({ params }: PageProps<'/[locale]/projects
   const { project, answers } = loaded;
   const t = await getTranslations('diagnostic');
 
-  const core = isQuestionId(step) ? getQuestion(step) : null;
-  const followUp = core ? null : FOLLOW_UPS.find((candidate) => candidate.id === step);
+  const resolved = resolveStep(step, answers);
+  if (!resolved) notFound();
   // A follow-up the answers no longer call for goes back to its question.
-  if (followUp && !followUp.when(answers))
-    redirect(`/${locale}${stepPath(project.id, followUp.parent)}`);
-  const question = core ?? followUp;
-  if (!question) notFound();
+  if (resolved.status === 'inactive') {
+    redirect(`/${locale}${stepPath(project.id, resolved.parent)}`);
+  }
+  const question = resolved.step;
+  const core = question.question;
 
   // Questions outside the quick mode stay reachable (from the overview), in full-mode order.
-  const mode = diagnosticSequence(project.mode, answers).includes(step) ? project.mode : 'full';
+  const mode = sequenceModeFor(project.mode, answers, step);
   const previous = previousStep(mode, answers, step);
-  const axis = (core ?? getQuestion(followUp?.parent ?? 'A1')).axis;
+  const axis = question.axis;
   const position = core ? positionInAxis(mode, core.id) : null;
   const score = completeness(answers);
 
   const saved = answers[step];
-  const notes =
-    core && saved
-      ? [
-          ...reviewAnswer(core.id, saved, answers),
-          ...reviewProject(answers).filter(
-            (finding) => finding.questionId === step || finding.related?.includes(core.id),
-          ),
-        ].filter((finding) => finding.severity === 'warn' || finding.severity === 'block')
-      : [];
+  // The same warnings saveAnswer showed after the save, follow-ups included (ARCH-6).
+  const notes = stepNotes(step, answers);
 
   const context = {
     currency: project.currency,
@@ -128,7 +119,7 @@ export default async function StepPage({ params }: PageProps<'/[locale]/projects
           reviewsText={consent === 'current'}
           headingId={headingId}
           helpId={helpId}
-          allowUnknown={core?.allowUnknown ?? false}
+          allowUnknown={question.allowUnknown}
           savedUnknown={saved?.status === 'unknown'}
           initialDraft={toDraft(
             question.field,

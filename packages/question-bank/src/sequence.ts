@@ -1,6 +1,7 @@
-import { FOLLOW_UPS } from './follow-ups';
-import { questionsFor } from './questions';
-import type { Axis, FollowUpId, QuestionId, Text } from './types';
+import { z } from 'zod';
+import { FOLLOW_UPS, findFollowUp } from './follow-ups';
+import { getQuestion, isQuestionId, questionsFor } from './questions';
+import type { Axis, Field, FollowUpId, Question, QuestionId, Text } from './types';
 import type { Answers } from './values';
 
 /** Axis names (docs/SPEC.md §1). */
@@ -15,8 +16,64 @@ export const AXIS_NAMES: Readonly<Record<Axis, Text>> = {
   H: { ar: 'الأهداف والقيود', en: 'Goals and limits' },
 };
 
-export type Mode = 'quick' | 'full';
+/** The two diagnostic versions: the 20 ★ questions, or all 64 (SPEC §1). */
+export const MODES = ['quick', 'full'] as const;
+export type Mode = (typeof MODES)[number];
+/** A mode as stored with a project or sent by a form; any other value is refused. */
+export const modeSchema = z.enum(MODES);
+
 export type StepId = QuestionId | FollowUpId;
+
+/** A step as the diagnostic shows and saves it: a core question, or a follow-up. */
+export interface Step {
+  id: StepId;
+  /** The core question; null for a follow-up. */
+  question: Question | null;
+  /** The question a follow-up belongs to; null for a core question. */
+  parent: QuestionId | null;
+  field: Field;
+  label: Text;
+  help: Text;
+  axis: Axis;
+  /** «لا أعرف» is offered where the question allows it, never on a follow-up (D-104). */
+  allowUnknown: boolean;
+}
+
+/**
+ * What a step is for these answers, the one answer for the step page and saveAnswer (rule 3):
+ * `active`, the step to show and save; `inactive`, a follow-up its trigger no longer calls for
+ * (D-116), with the question it belongs to; null for an ID that is no step.
+ */
+export function resolveStep(
+  id: string,
+  answers: Answers,
+): { status: 'active'; step: Step } | { status: 'inactive'; parent: QuestionId } | null {
+  if (isQuestionId(id)) {
+    const question = getQuestion(id);
+    const { field, label, help, axis, allowUnknown } = question;
+    return {
+      status: 'active',
+      step: { id, question, parent: null, field, label, help, axis, allowUnknown },
+    };
+  }
+  const followUp = findFollowUp(id);
+  if (!followUp) return null;
+  if (!followUp.when(answers)) return { status: 'inactive', parent: followUp.parent };
+  const { field, label, help, parent } = followUp;
+  return {
+    status: 'active',
+    step: {
+      id: followUp.id,
+      question: null,
+      parent,
+      field,
+      label,
+      help,
+      axis: getQuestion(parent).axis,
+      allowUnknown: false,
+    },
+  };
+}
 
 /**
  * The order a founder meets the questions in: the mode's core questions, each followed by the
@@ -32,6 +89,14 @@ export function diagnosticSequence(mode: Mode, answers: Answers): StepId[] {
     }
   }
   return steps;
+}
+
+/**
+ * The order to move on from `step` in: the project's mode, or the full order for a question
+ * outside it, which stays reachable from the overview (D-117).
+ */
+export function sequenceModeFor(mode: Mode, answers: Answers, step: StepId): Mode {
+  return diagnosticSequence(mode, answers).includes(step) ? mode : 'full';
 }
 
 /** The step after `current`, or null at the end. A step no longer in the sequence restarts it. */

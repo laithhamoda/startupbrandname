@@ -7,6 +7,7 @@ import {
   reviewNumberText,
   reviewProject,
   ruleFinding,
+  stepNotes,
 } from './review';
 import { sampleAnswers } from './testing';
 import type { QuestionId } from './types';
@@ -319,5 +320,37 @@ describe('across answers', () => {
   it('warns when partners have no written agreement (G4.1)', () => {
     expect(project({ 'G4.1': answered(false) })).toEqual(['G4_no_agreement']);
     expect(project({ 'G4.1': answered(true) })).toEqual([]);
+  });
+});
+
+describe('stepNotes: the warnings shown with a saved answer (ARCH-6)', () => {
+  const base = sampleAnswers();
+  const partners = answered({
+    items: [
+      { label: 'أ', percent: 50 },
+      { label: 'ب', percent: 50 },
+    ],
+  });
+
+  it('lists a question’s own warnings and the cross-answer ones it is part of', () => {
+    const answers = { ...base, A6: answered(6), A7: answered('lt3'), H5: answered('m12') };
+    expect(stepNotes('A6', answers).map((finding) => finding.code)).toEqual(['A6_low_hours']);
+    expect(stepNotes('H5', answers).map((finding) => finding.code)).toEqual([
+      'R6_breakeven_vs_runway',
+    ]);
+    expect(stepNotes('A7', answers).map((finding) => finding.code)).toEqual([
+      'R6_breakeven_vs_runway',
+    ]);
+  });
+
+  it('keeps a follow-up’s warning on a later visit (G4.1 without an agreement)', () => {
+    const answers = { ...base, G4: partners, 'G4.1': answered(false) };
+    expect(stepNotes('G4.1', answers).map((finding) => finding.code)).toEqual(['G4_no_agreement']);
+    expect(stepNotes('G4.1', { ...answers, 'G4.1': answered(true) })).toEqual([]);
+  });
+
+  it('says nothing about a step without an answer, or about blocking rules', () => {
+    expect(stepNotes('F1', {})).toEqual([]);
+    expect(stepNotes('B3', { B3: answered('الجميع') })).toEqual([]);
   });
 });

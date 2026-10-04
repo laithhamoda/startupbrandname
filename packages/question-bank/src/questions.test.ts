@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { answerSchema, valueSchema } from './fields';
-import { FOLLOW_UPS, getFollowUp } from './follow-ups';
+import { findFollowUp, FOLLOW_UPS } from './follow-ups';
 import { rangeValue } from './numbers';
 import { getQuestion, ideaQuestion, isQuestionId, QUESTIONS, questionsFor } from './questions';
 import { sampleAnswers, sampleValue } from './testing';
@@ -123,8 +123,9 @@ describe('the question bank (M3 definition of done: all 64 questions)', () => {
     expect(isQuestionId('Z9')).toBe(false);
     expect(getQuestion('C2').field.kind).toBe('customer_profile');
     expect(() => getQuestion('Z9' as 'A1')).toThrow('Unknown question');
-    expect(getFollowUp('G4.1').parent).toBe('G4');
-    expect(() => getFollowUp('A1.9')).toThrow('Unknown follow-up');
+    expect(findFollowUp('G4.1')?.parent).toBe('G4');
+    expect(findFollowUp('A1.9')).toBeUndefined();
+    expect(findFollowUp('G4')).toBeUndefined();
   });
 
   it('reads a stored value only as its own field kind', () => {

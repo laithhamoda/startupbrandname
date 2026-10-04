@@ -190,6 +190,29 @@ describe('saveAnswer', () => {
     expect(writes.upsert).not.toHaveBeenCalled();
   });
 
+  it('keeps a follow-up’s warning with its saved answer (G4.1 without an agreement)', async () => {
+    const { client } = fakeClient();
+    const partners = {
+      items: [
+        { label: 'أ', percent: 50 },
+        { label: 'ب', percent: 50 },
+      ],
+    };
+    signedIn(client, { G4: { status: 'answered', value: partners } });
+
+    const result = await saveAnswer({
+      locale: 'ar',
+      projectId,
+      step: 'G4.1',
+      submission: { kind: 'value', value: false },
+    });
+
+    expect(result).toMatchObject({
+      status: 'saved',
+      notes: [{ code: 'G4_no_agreement', severity: 'warn' }],
+    });
+  });
+
   it('says "stale" for a follow-up that no longer applies', async () => {
     const { client, writes } = fakeClient();
     // G4.1 (a written agreement) applies only while G4 lists two partners or more.

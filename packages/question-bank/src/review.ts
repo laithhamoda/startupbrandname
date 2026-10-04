@@ -12,7 +12,8 @@ import {
 } from './lexicon';
 import type { FindingCode } from './messages';
 import { readNumber } from './numbers';
-import { getQuestion } from './questions';
+import { getQuestion, isQuestionId } from './questions';
+import type { StepId } from './sequence';
 import { containsPhrase, fold, sentenceCount, wordCount } from './text';
 import type { FollowUpId, NumberRange, Question, QuestionId, Text } from './types';
 import { type Answers, totalIn, type ValueByKind, valueOf } from './values';
@@ -417,4 +418,22 @@ export function reviewProject(answers: Answers): Finding[] {
   }
 
   return findings;
+}
+
+/**
+ * The warnings about a step's saved answer, shown with it after saving and on every later visit
+ * until the answers change (SPEC §2): its own checks and the cross-answer ones it is part of.
+ * Follow-ups included: G4.1 without a written agreement keeps its warning (ARCH-6).
+ */
+export function stepNotes(step: StepId, answers: Answers): Finding[] {
+  const answer = answers[step];
+  if (!answer) return [];
+  const core = isQuestionId(step) ? step : null;
+  return [
+    ...(core ? reviewAnswer(core, answer, answers) : []),
+    ...reviewProject(answers).filter(
+      (finding) =>
+        finding.questionId === step || (core !== null && finding.related?.includes(core)),
+    ),
+  ].filter((finding) => finding.severity === 'warn' || finding.severity === 'block');
 }

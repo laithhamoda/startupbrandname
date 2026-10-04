@@ -9,16 +9,18 @@ import {
   type QuestionId,
   diagnosticSequence,
   FOLLOW_UPS,
-  getQuestion,
   isCurrencyCode,
-  isQuestionId,
   type Language,
+  type Mode,
+  modeSchema,
   nextStep,
   numberLimits,
   rangeValue,
+  resolveStep,
   reviewAnswer,
-  reviewProject,
+  sequenceModeFor,
   type StepId,
+  stepNotes,
   VALUE_ISSUES,
   valueSchema,
 } from '@sbn/question-bank';
@@ -56,7 +58,6 @@ import { projectPath, stepFromSlug, stepPath } from './steps';
 //   what is happening, and a failure is announced (FormError, role="alert").
 
 const localeSchema = z.enum(routing.locales);
-const modeSchema = z.enum(['quick', 'full']);
 
 // -----------------------------------------------------------------------------------------------
 // New project
@@ -292,13 +293,11 @@ async function save(
   if (!loaded) return GONE;
   const { project, answers } = loaded;
 
-  const coreId = isQuestionId(step) ? step : null;
-  const followUp = coreId ? null : FOLLOW_UPS.find((candidate) => candidate.id === step);
+  const resolved = resolveStep(step, answers);
   // An earlier answer changed (perhaps in another tab) and this follow-up no longer applies.
-  if (followUp && !followUp.when(answers)) return STALE;
-  const field = coreId ? getQuestion(coreId).field : followUp?.field;
-  if (!field) return STALE;
-  const allowUnknown = coreId ? getQuestion(coreId).allowUnknown : false;
+  if (resolved?.status !== 'active') return STALE;
+  const { field, allowUnknown } = resolved.step;
+  const coreId = resolved.step.question?.id ?? null;
 
   trace.stage = 'review';
   let answer: Answer;
@@ -405,23 +404,13 @@ async function save(
 
   const current = await dropInactiveFollowUps(supabase, project.id, updated);
 
-  const notes = [
-    ...(coreId ? reviewAnswer(coreId, answer, current) : []),
-    ...reviewProject(current).filter(
-      (finding) =>
-        finding.questionId === step || (coreId !== null && finding.related?.includes(coreId)),
-    ),
-  ].filter((finding) => finding.severity === 'warn' || finding.severity === 'block');
-
   revalidatePath(`/${locale}${projectPath(project.id)}`, 'layout');
-  const sequenceMode = diagnosticSequence(project.mode, current).includes(step)
-    ? project.mode
-    : 'full';
-  const next = nextStep(sequenceMode, current, step);
+  const next = nextStep(sequenceModeFor(project.mode, current, step), current, step);
   return {
     status: 'saved',
     next: next ? stepPath(project.id, next) : null,
-    notes: notes.map((finding) => viewFinding(finding, locale)),
+    // The same warnings the step page shows when the founder comes back (stepNotes).
+    notes: stepNotes(step, current).map((finding) => viewFinding(finding, locale)),
   };
 }
 
@@ -448,7 +437,7 @@ async function settingsFailed(
 export async function switchMode(
   localeInput: Locale,
   projectId: string,
-  mode: 'quick' | 'full',
+  mode: Mode,
 ): Promise<SettingsResult> {
   const locale = localeSchema.parse(localeInput);
   const id = z.uuid().parse(projectId);

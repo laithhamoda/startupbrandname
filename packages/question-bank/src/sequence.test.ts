@@ -1,12 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import type { Answer } from './fields';
+import { getQuestion } from './questions';
 import {
   AXIS_NAMES,
   diagnosticSequence,
   firstUnanswered,
+  MODES,
+  modeSchema,
   nextStep,
   positionInAxis,
   previousStep,
+  resolveStep,
+  sequenceModeFor,
 } from './sequence';
 import { sampleAnswers } from './testing';
 import { AXES } from './types';
@@ -52,5 +57,52 @@ describe('the diagnostic sequence', () => {
   it('counts the position inside the axis for the current mode', () => {
     expect(positionInAxis('full', 'F3')).toEqual({ index: 3, total: 8 });
     expect(positionInAxis('quick', 'F3')).toEqual({ index: 2, total: 5 });
+  });
+});
+
+describe('one answer to "what is this step?" (ARCH-6)', () => {
+  const partners = answered({
+    items: [
+      { label: 'أ', percent: 50 },
+      { label: 'ب', percent: 50 },
+    ],
+  });
+
+  it('resolves a core question with its own field, axis and «لا أعرف»', () => {
+    const resolved = resolveStep('F3', {});
+    expect(resolved).toMatchObject({
+      status: 'active',
+      step: { id: 'F3', parent: null, axis: 'F', allowUnknown: true },
+    });
+    expect(resolved?.status === 'active' && resolved.step.question).toBe(getQuestion('F3'));
+  });
+
+  it('resolves a follow-up its answers call for, in its parent’s axis, without «لا أعرف»', () => {
+    expect(resolveStep('G4.1', { G4: partners })).toMatchObject({
+      status: 'active',
+      step: { id: 'G4.1', question: null, parent: 'G4', axis: 'G', allowUnknown: false },
+    });
+  });
+
+  it('sends a follow-up its answers no longer call for back to its question (D-116)', () => {
+    expect(resolveStep('G4.1', {})).toEqual({ status: 'inactive', parent: 'G4' });
+  });
+
+  it('knows no other step', () => {
+    expect(resolveStep('Z9', {})).toBeNull();
+    expect(resolveStep('A1.9', {})).toBeNull();
+  });
+
+  it('moves on in the project’s mode, or in the full order outside it (D-117)', () => {
+    expect(sequenceModeFor('quick', {}, 'F3')).toBe('quick');
+    expect(sequenceModeFor('quick', {}, 'F2')).toBe('full');
+    expect(sequenceModeFor('full', {}, 'F2')).toBe('full');
+    expect(sequenceModeFor('quick', { A2: answered(0) }, 'A2.1')).toBe('full');
+  });
+
+  it('accepts the two modes only', () => {
+    expect(MODES).toEqual(['quick', 'full']);
+    expect(modeSchema.safeParse('quick').success).toBe(true);
+    expect(modeSchema.safeParse('slow').success).toBe(false);
   });
 });

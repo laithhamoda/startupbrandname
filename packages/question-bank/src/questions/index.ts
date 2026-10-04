@@ -1,3 +1,4 @@
+import type { Mode } from '../sequence';
 import type { Question, QuestionId } from '../types';
 import { AXIS_A } from './a-founder';
 import { AXIS_B } from './b-idea';
@@ -43,6 +44,6 @@ export function ideaQuestion(): Question {
 }
 
 /** The questions of a diagnostic mode: the 20 ★ questions for quick, all 64 for full. */
-export function questionsFor(mode: 'quick' | 'full'): readonly Question[] {
+export function questionsFor(mode: Mode): readonly Question[] {
   return mode === 'quick' ? QUESTIONS.filter((question) => question.star) : QUESTIONS;
 }
