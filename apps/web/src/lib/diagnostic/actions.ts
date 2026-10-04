@@ -31,6 +31,7 @@ import { redirect, unstable_rethrow } from 'next/navigation';
 import { z } from 'zod';
 import { type Locale, routing } from '@/i18n/routing';
 import type { Json } from '@/lib/supabase/database.types';
+import type { SupabaseServerClient } from '@/lib/supabase/server';
 import { aiFindings } from '@/lib/ai/findings';
 import { reviewWithAi } from '@/lib/ai/service';
 import { requireAccount } from '@/lib/auth/session';
@@ -38,7 +39,7 @@ import { isCountryCode } from '@/lib/countries';
 import { errorFields, log } from '@/lib/log';
 import { type FindingView, viewFinding } from './findings';
 import { loadProject, provenanceOf } from './project';
-import { projectPath, stepFromSlug, stepPath } from './steps';
+import { projectPath, stepFromSlug, stepPath, stepSlug } from './steps';
 
 // Every action receives the page locale explicitly (Server Actions cannot read [locale]) and
 // validates all input: the question bank decides what an answer may be (CLAUDE.md rule 7).
@@ -63,20 +64,26 @@ const localeSchema = z.enum(routing.locales);
 // New project
 // -----------------------------------------------------------------------------------------------
 
-export type NewProjectState =
-  | { status: 'idle' }
-  | {
-      status: 'error';
-      error: 'invalid' | 'limit' | 'failed';
-      invalid?: ('title' | 'country' | 'currency' | 'mode')[];
-    };
-
 const newProjectSchema = z.object({
   title: z.string().trim().min(1).max(120),
   country: z.string().refine(isCountryCode),
   currency: z.string().refine(isCurrencyCode),
   mode: modeSchema,
 });
+const newProjectFields = newProjectSchema.keyof();
+
+/** The new-project form's fields, named as the schema names them. */
+export type NewProjectField = z.infer<typeof newProjectFields>;
+
+export type NewProjectState =
+  | { status: 'idle' }
+  | { status: 'error'; error: 'invalid' | 'limit' | 'failed'; invalid?: NewProjectField[] };
+
+/**
+ * The SQLSTATE create_project() raises when the account already has as many projects as its
+ * plan allows (supabase/migrations/20260927200000_projects_and_answers.sql, D-109).
+ */
+const PROJECT_LIMIT_SQLSTATE = 'SB001';
 
 export async function createProject(
   localeInput: Locale,
@@ -91,10 +98,11 @@ export async function createProject(
     mode: formData.get('mode') ?? '',
   });
   if (!parsed.success) {
-    const invalid = [...new Set(parsed.error.issues.map((issue) => issue.path[0]))] as (
-      'title' | 'country' | 'currency' | 'mode'
-    )[];
-    return { status: 'error', error: 'invalid', invalid };
+    const invalid = parsed.error.issues.flatMap((issue) => {
+      const field = newProjectFields.safeParse(issue.path[0]);
+      return field.success ? [field.data] : [];
+    });
+    return { status: 'error', error: 'invalid', invalid: [...new Set(invalid)] };
   }
 
   const { supabase } = await requireAccount(locale);
@@ -105,7 +113,7 @@ export async function createProject(
     p_mode: parsed.data.mode,
   });
   if (error) {
-    if (error.code === 'SB001') return { status: 'error', error: 'limit' };
+    if (error.code === PROJECT_LIMIT_SQLSTATE) return { status: 'error', error: 'limit' };
     await log.error('diagnostic.create_failed', errorFields(error));
     return { status: 'error', error: 'failed' };
   }
@@ -225,7 +233,7 @@ function blockingFindings(questionId: QuestionId, answer: Answer, answers: Answe
  * next save retries, so a failure is logged instead of failing the save.
  */
 async function dropInactiveFollowUps(
-  supabase: Awaited<ReturnType<typeof requireAccount>>['supabase'],
+  supabase: SupabaseServerClient,
   projectId: string,
   answers: Answers,
 ): Promise<Answers> {
@@ -259,7 +267,7 @@ async function dropInactiveFollowUps(
 export async function saveAnswer(input: SaveInput): Promise<SaveResult> {
   const parsedInput = saveSchema.safeParse(input);
   if (!parsedInput.success) return FAILED;
-  const step = stepFromSlug(parsedInput.data.step.replace('.', '-'));
+  const step = stepFromSlug(stepSlug(parsedInput.data.step));
   if (!step) return FAILED;
 
   const trace: SaveTrace = { stage: 'account' };

@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { reviewWithAi } from '@/lib/ai/service';
 import { requireAccount } from '@/lib/auth/session';
 import { log } from '@/lib/log';
-import { deleteProject, saveAnswer, type SaveInput, switchMode } from './actions';
+import { createProject, deleteProject, saveAnswer, type SaveInput, switchMode } from './actions';
 import { loadProject } from './project';
 
 vi.mock('@/lib/auth/session', () => ({ requireAccount: vi.fn() }));
@@ -350,6 +350,40 @@ describe('saveAnswer', () => {
       questionId: 'B3',
       reason: 'schema',
     });
+  });
+});
+
+describe('createProject', () => {
+  const form = (fields: Record<string, string>) => {
+    const data = new FormData();
+    for (const [name, value] of Object.entries(fields)) data.set(name, value);
+    return data;
+  };
+
+  it('names the fields that need an answer, as the schema names them', async () => {
+    expect(
+      await createProject(
+        'ar',
+        { status: 'idle' },
+        form({ title: ' ', country: 'JO', currency: '', mode: 'quick' }),
+      ),
+    ).toEqual({ status: 'error', error: 'invalid', invalid: ['title', 'currency'] });
+  });
+
+  it('says the plan allows no more projects when the database refuses one (D-109)', async () => {
+    const client = {
+      rpc: vi.fn(() => Promise.resolve({ data: null, error: { code: 'SB001', message: 'limit' } })),
+    };
+    signedIn(client);
+
+    expect(
+      await createProject(
+        'ar',
+        { status: 'idle' },
+        form({ title: 'صيانة', country: 'JO', currency: 'JOD', mode: 'quick' }),
+      ),
+    ).toEqual({ status: 'error', error: 'limit' });
+    expect(log.error).not.toHaveBeenCalled();
   });
 });
 

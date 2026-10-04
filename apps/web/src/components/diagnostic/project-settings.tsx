@@ -1,5 +1,6 @@
 'use client';
 
+import type { Mode } from '@sbn/question-bank';
 import { useTranslations } from 'next-intl';
 import { useActionState } from 'react';
 import { FormError, submitTo } from '@/components/auth/form-helpers';
@@ -21,7 +22,7 @@ export function ProjectSettings({
   switchMode,
   deleteProject,
 }: {
-  mode: 'quick' | 'full';
+  mode: Mode;
   switchMode: () => Promise<SettingsResult>;
   deleteProject: () => Promise<SettingsResult>;
 }) {

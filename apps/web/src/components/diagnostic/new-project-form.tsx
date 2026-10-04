@@ -9,7 +9,11 @@ import { SelectField } from '@/components/ui/select-field';
 import { Field } from '@/components/ui/field';
 import { TextInput, controlClass } from '@/components/ui/text-input';
 import type { Locale } from '@/i18n/routing';
-import { createProject, type NewProjectState } from '@/lib/diagnostic/actions';
+import {
+  createProject,
+  type NewProjectField,
+  type NewProjectState,
+} from '@/lib/diagnostic/actions';
 import type { CurrencyOptions } from '@/lib/diagnostic/currencies';
 
 /**
@@ -33,7 +37,7 @@ export function NewProjectForm({
     { status: 'idle' },
   );
   const form = useFocusFirstInvalid(state);
-  const invalid = (name: 'title' | 'country' | 'currency' | 'mode') =>
+  const invalid = (name: NewProjectField) =>
     state.status === 'error' && state.invalid?.includes(name) ? t('fieldError') : undefined;
 
   return (
