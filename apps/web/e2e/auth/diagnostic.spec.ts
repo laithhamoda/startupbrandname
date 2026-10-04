@@ -1,4 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
+import { FAKE_FAILURE_MARKER } from '@sbn/ai';
 import { QUESTIONS } from '@sbn/question-bank';
 import { expect, type Page, test } from '@playwright/test';
 import { signInByEmail, signUpByEmail, uniqueEmail } from './helpers';
@@ -243,6 +244,22 @@ test('without consent, nothing is sent to the model and the answer is saved as t
   await next(page, 'B2');
   await page.goto(`/ar/projects/${id}/q/B1`);
   await expect(idea).toHaveValue('بدي أقدّم صيانة دورية لمكيّفات المطاعم الصغيرة');
+});
+
+test('when the AI review fails, the answer is still saved as typed (D-124)', async ({ page }) => {
+  await signUpByEmail(page, uniqueEmail('ai-failure'), true);
+  const id = await createProject(page, 'full');
+
+  // The stand-in model fails like an unreachable API on this marker (packages/ai/src/fake.ts).
+  const typed = `بدي أقدّم صيانة دورية لمكيّفات المطاعم الصغيرة ${FAKE_FAILURE_MARKER}`;
+  await page.goto(`/ar/projects/${id}/q/B1`);
+  const idea = page.getByRole('textbox', { name: /صف فكرتك في جملة واحدة/ });
+  await idea.fill(typed);
+  await next(page, 'B2');
+  await expect(page.getByText('هل فهمنا إجابتك كما تقصد؟')).toHaveCount(0);
+
+  await page.goto(`/ar/projects/${id}/q/B1`);
+  await expect(idea).toHaveValue(typed);
 });
 
 test('the diagnostic pages have no WCAG 2.2 AA violations', async ({ page }) => {
