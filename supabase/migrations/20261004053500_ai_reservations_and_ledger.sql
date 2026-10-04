@@ -63,7 +63,10 @@ comment on table private.ai_spend_daily is
 alter table private.ai_spend_daily enable row level security;
 revoke all on table private.ai_spend_daily from public, anon, authenticated;
 
--- The runs recorded so far, so today's cap and the cost history start from what is known.
+-- The runs recorded so far, so today's cap and the cost history start from what is known. A run
+-- with an empty model, or with a cost no review comes near (one costs about 0.02 USD at most),
+-- could only come from the record_tool_run() hole closed below: the first is left out and the
+-- second counts as 1 USD, so neither can stop this migration on a check or an overflow.
 insert into private.ai_spend_daily (
   day, model, calls, tokens_in, tokens_out, cache_write_tokens, cache_read_tokens, cost_usd
 )
@@ -75,9 +78,9 @@ select
   sum(tokens_out),
   sum(cache_write_tokens),
   sum(cache_read_tokens),
-  sum(cost_usd)
+  sum(least(cost_usd, 1))
 from public.tool_runs
-where model is not null
+where char_length(model) between 1 and 80
 group by 1, 2;
 
 -- ---------------------------------------------------------------------------------------------
