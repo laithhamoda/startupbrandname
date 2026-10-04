@@ -1,6 +1,15 @@
 'use client';
 
-import { type Field, message, type NumberRange } from '@sbn/question-bank';
+import {
+  type Field,
+  type FindingCode,
+  isQuestionId,
+  message,
+  type NumberAlternative,
+  type NumberRange,
+  reviewNumberText,
+  type StepId,
+} from '@sbn/question-bank';
 import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState, useTransition } from 'react';
 import { Button, ButtonLink } from '@/components/ui/button';
@@ -10,7 +19,13 @@ import { useRouter } from '@/i18n/navigation';
 import type { Locale } from '@/i18n/routing';
 import { callAction } from '@/lib/call-action';
 import { type SaveResult, saveAnswer } from '@/lib/diagnostic/actions';
-import { type Draft, fromDraft, mayBeCentimes } from '@/lib/diagnostic/draft';
+import {
+  type Draft,
+  fromDraft,
+  mayBeCentimes,
+  type NumberChoice,
+  withText,
+} from '@/lib/diagnostic/draft';
 import type { FindingView } from '@/lib/diagnostic/findings';
 import { sameDraft } from '@/lib/diagnostic/leave';
 import { type EditorOptions, FieldEditor } from './field-editor';
@@ -20,7 +35,7 @@ import { LeaveGuard } from './leave-guard';
 interface AnswerEditorProps {
   locale: Locale;
   projectId: string;
-  step: string;
+  step: StepId;
   field: Field;
   /** A typed answer goes to the AI review before it is saved (consent given, AI on; D-150). */
   reviewsText: boolean;
@@ -40,8 +55,10 @@ interface AnswerEditorProps {
 
 type Local =
   | { kind: 'none' }
-  /** R3: the number could not be read; offer the question's ranges. */
-  | { kind: 'ranges'; ranges: readonly NumberRange[] }
+  /** R3: the number could not be read (why, in `code`); offer the question's ranges. */
+  | { kind: 'ranges'; code: FindingCode; ranges: readonly NumberRange[] }
+  /** A box holds a number with two readings, "1.500": the founder picks one (UX-2). */
+  | { kind: 'readings'; choice: NumberChoice }
   /** An amount inside a list could not be read. */
   | { kind: 'unreadable' }
   /** D-108: an Algerian-dinar amount that may be in centimes. */
@@ -70,16 +87,17 @@ export function AnswerEditor(props: AnswerEditorProps) {
   const form = useRef<HTMLFormElement>(null);
   // The value behind a pending AI confirmation, resent unchanged when the founder agrees (D-119).
   const lastValue = useRef<unknown>(null);
+  // This attempt's answer to dinars or centimes, kept while a reading is picked (D-108, UX-2).
+  const lastCentimes = useRef<boolean | undefined>(undefined);
 
   // Move keyboard and screen-reader focus to whatever the server or the checks said.
   useEffect(() => {
     if (result || local.kind !== 'none') feedback.current?.focus();
   }, [result, local]);
 
-  function send(submission: Parameters<typeof saveAnswer>[0]['submission']) {
+  function send(submission: Parameters<typeof saveAnswer>[0]['submission'], sent = draft) {
     if (submission.kind === 'value') lastValue.current = submission.value;
     setChecking(props.reviewsText && submission.kind === 'value');
-    const sent = draft;
     startTransition(async () => {
       // A dropped connection keeps the draft on screen so the founder can try again.
       const outcome = await callAction(
@@ -103,25 +121,45 @@ export function AnswerEditor(props: AnswerEditorProps) {
     });
   }
 
-  function submit(centimes?: boolean) {
+  /** `current`: the draft to send, when it has only just changed (a picked reading). */
+  function submit(centimes?: boolean, current: Draft = draft) {
     setResult(null);
-    if (centimes === undefined && mayBeCentimes(props.field, draft)) {
+    if (centimes === undefined && mayBeCentimes(props.field, current)) {
       setLocal({ kind: 'centimes' });
       return;
     }
-    const conversion = fromDraft(props.field, draft, centimes ?? false);
+    lastCentimes.current = centimes;
+    const conversion = fromDraft(props.field, current, centimes ?? false);
     if (!conversion.ok) {
-      setUnreadable(conversion.unreadable);
+      const { unreadable: paths, choice } = conversion;
+      if (paths.length === 0 && choice) {
+        setUnreadable([choice.path]);
+        setLocal({ kind: 'readings', choice });
+        return;
+      }
+      setUnreadable(paths);
+      // R3 says why the number was not read: a range, two numbers, or no digits (ARCH-7).
+      const [finding] =
+        props.field.kind === 'number' && isQuestionId(props.step)
+          ? reviewNumberText(props.step, current as string)
+          : [];
       setLocal(
-        props.field.kind === 'number'
-          ? { kind: 'ranges', ranges: props.field.ranges }
+        finding?.ranges
+          ? { kind: 'ranges', code: finding.code, ranges: finding.ranges }
           : { kind: 'unreadable' },
       );
       return;
     }
     setUnreadable([]);
     setLocal({ kind: 'none' });
-    send({ kind: 'value', value: conversion.value });
+    send({ kind: 'value', value: conversion.value }, current);
+  }
+
+  /** The founder picked one reading of "1.500": the box now says only that, and is sent. */
+  function pick(choice: NumberChoice, reading: NumberAlternative) {
+    const next = withText(draft, choice.path, reading.text);
+    setDraft(next);
+    submit(lastCentimes.current, next);
   }
 
   const saved = result?.status === 'saved' ? result : null;
@@ -168,7 +206,7 @@ export function AnswerEditor(props: AnswerEditorProps) {
         {props.savedUnknown && !result ? <RuleAlert message={t('savedUnknown')} /> : null}
 
         {local.kind === 'ranges' ? (
-          <RuleAlert message={message('R3_not_numeric', props.locale)}>
+          <RuleAlert message={message(local.code, props.locale)}>
             <div className="mt-2 flex flex-wrap gap-2">
               {local.ranges.map((range) => (
                 <Button
@@ -189,6 +227,24 @@ export function AnswerEditor(props: AnswerEditorProps) {
                         ? String(range.min)
                         : `${String(range.min)}–${String(range.max)}`}
                   </bdi>
+                </Button>
+              ))}
+            </div>
+          </RuleAlert>
+        ) : null}
+
+        {local.kind === 'readings' ? (
+          <RuleAlert message={message('R3_two_readings', props.locale, local.choice.typed)}>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {local.choice.readings.map((reading) => (
+                <Button
+                  key={reading.number}
+                  disabled={pending}
+                  onClick={() => {
+                    pick(local.choice, reading);
+                  }}
+                >
+                  <bdi className="num">{reading.number}</bdi>
                 </Button>
               ))}
             </div>

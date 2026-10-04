@@ -1,7 +1,7 @@
 import { FOLLOW_UPS, getQuestion, QUESTIONS, valueSchema } from '@sbn/question-bank';
 import { sampleValue } from '@sbn/question-bank/testing';
 import { describe, expect, it } from 'vitest';
-import { type DraftByKind, emptyDraft, fromDraft, mayBeCentimes, toDraft } from './draft';
+import { type DraftByKind, emptyDraft, fromDraft, mayBeCentimes, toDraft, withText } from './draft';
 
 const context = { currency: 'JOD', country: 'JO', competitors: ['فنّي مستقل', 'شركة صيانة'] };
 
@@ -47,14 +47,58 @@ describe('drafts', () => {
   });
 
   it('report the boxes that do not hold a number', () => {
-    expect(fromDraft(getQuestion('A6').field, 'عشرين')).toEqual({ ok: false, unreadable: [''] });
+    expect(fromDraft(getQuestion('A6').field, 'عشرين')).toEqual({
+      ok: false,
+      unreadable: [''],
+      choice: null,
+    });
     const draft: DraftByKind['cost_items'] = {
       items: [{ label: 'قطع', amount: 'كثير', currency: 'JOD' }],
     };
     expect(fromDraft(getQuestion('F3').field, draft)).toEqual({
       ok: false,
       unreadable: ['items.0.amount'],
+      choice: null,
     });
+  });
+
+  it('ask which reading a number with one separator has, once the rest is readable (UX-2)', () => {
+    const field = getQuestion('F3').field;
+    const draft: DraftByKind['cost_items'] = {
+      items: [
+        { label: 'قطع', amount: '12,5', currency: 'JOD' },
+        { label: 'توصيل', amount: '١.٥٠٠', currency: 'JOD' },
+        { label: 'تغليف', amount: '1,500', currency: 'JOD' },
+      ],
+    };
+    const conversion = fromDraft(field, draft);
+    expect(conversion).toMatchObject({
+      ok: false,
+      unreadable: [],
+      choice: { path: 'items.1.amount', typed: '١.٥٠٠' },
+    });
+    if (conversion.ok || !conversion.choice) return;
+    const [grouped] = conversion.choice.readings;
+    expect(grouped?.value).toBe(1500);
+
+    // The pick replaces only that box; the next box is asked about in turn.
+    const picked = withText(draft, conversion.choice.path, grouped?.text ?? '');
+    expect(picked).toEqual({
+      items: [draft.items[0], { ...draft.items[1], amount: '1500' }, draft.items[2]],
+    });
+    expect(fromDraft(field, picked)).toMatchObject({ choice: { path: 'items.2.amount' } });
+
+    // An unreadable box comes first.
+    expect(
+      fromDraft(field, {
+        items: [...draft.items, { label: 'x', amount: 'كثير', currency: 'JOD' }],
+      }),
+    ).toMatchObject({ unreadable: ['items.3.amount'], choice: { path: 'items.1.amount' } });
+  });
+
+  it('put a picked reading back into a number answer', () => {
+    expect(withText('1.500', '', '1.5')).toBe('1.5');
+    expect(fromDraft(getQuestion('A6').field, '1,500')).toMatchObject({ choice: { path: '' } });
   });
 
   it('leave empty numbers out so the server asks for them', () => {
