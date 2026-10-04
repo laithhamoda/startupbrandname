@@ -3,7 +3,6 @@ import type { Answer } from './fields';
 import {
   missingProfileParts,
   profilePartsFor,
-  reviewAmountText,
   reviewAnswer,
   reviewNumberText,
   reviewProject,
@@ -263,21 +262,6 @@ describe('question-specific checks (SPEC §1, Logic column)', () => {
       if (answer) expect(reviewAnswer(id as QuestionId, answer, answers), id).toEqual([]);
     }
     expect(reviewProject(answers)).toEqual([]);
-  });
-});
-
-describe('currency in typed amounts (CLAUDE.md §3, D-108)', () => {
-  it('asks which currency an ambiguous word means when none is chosen', () => {
-    expect(reviewAmountText('F1', '30 دينار')).toEqual([
-      { code: 'currency_ambiguous', severity: 'ask', questionId: 'F1', word: 'دينار' },
-    ]);
-    expect(reviewAmountText('F1', '30 دينار', 'JOD')).toEqual([]);
-  });
-
-  it('asks dinars or centimes for Algerian millions', () => {
-    expect(reviewAmountText('F1', '2 مليون', 'DZD')).toEqual([
-      { code: 'currency_centimes', severity: 'ask', questionId: 'F1' },
-    ]);
   });
 });
 

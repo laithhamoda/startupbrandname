@@ -1,4 +1,3 @@
-import { readCurrency } from './currency';
 import type { Answer } from './fields';
 import {
   DONT_KNOW,
@@ -32,7 +31,7 @@ export interface Finding {
   questionId: QuestionId | FollowUpId;
   /** Other answers involved, shown side by side (R6). */
   related?: readonly QuestionId[];
-  /** The founder's own word, for `{word}`: a currency word, or a number with two readings. */
+  /** The founder's own word, for `{word}`: a number with two readings. */
   word?: string;
   /** Parts still missing (C2), as keys of PROFILE_PARTS. */
   missing?: readonly ProfilePart[];
@@ -306,28 +305,6 @@ export function reviewNumberText(id: QuestionId, text: string): Finding[] {
       ranges: question.field.ranges,
     },
   ];
-}
-
-/**
- * Currency questions for an amount typed as text (CLAUDE.md §3, D-108). `currency` is the one
- * already chosen for the field; the text never replaces it.
- */
-export function reviewAmountText(
-  id: QuestionId | FollowUpId,
-  text: string,
-  currency?: string,
-): Finding[] {
-  const reading = readCurrency(text, currency);
-  const findings: Finding[] = [];
-  if (reading.maybeCentimes) {
-    findings.push({ code: 'currency_centimes', severity: 'ask', questionId: id });
-  }
-  if (currency === undefined) {
-    for (const word of reading.ambiguous) {
-      findings.push({ code: 'currency_ambiguous', severity: 'ask', questionId: id, word });
-    }
-  }
-  return findings;
 }
 
 // ---------------------------------------------------------------------------------------------

@@ -129,10 +129,6 @@ export const MESSAGES = {
     ar: 'اجعل هدفك قابلًا للقياس برقم: كم عميلًا، أو كم مبيعات، أو بأي تاريخ.',
     en: 'Make the goal measurable with a number: how many customers, how much in sales, or by what date.',
   },
-  currency_ambiguous: {
-    ar: 'أي عملة تقصد؟ كلمة «{word}» تُستخدم لأكثر من عملة.',
-    en: 'Which currency do you mean? “{word}” is used for more than one currency.',
-  },
   currency_centimes: {
     ar: 'هل المبلغ بالدينار أم بالسنتيم؟ في الاستعمال اليومي تعني «مليون» غالبًا 10,000 دينار جزائري.',
     en: 'Is this amount in dinars or centimes? In everyday use, «مليون» often means 10,000 Algerian dinars.',
