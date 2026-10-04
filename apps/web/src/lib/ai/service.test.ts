@@ -189,22 +189,28 @@ describe('consent (D-147)', () => {
     });
   });
 
-  it('stays off on the previous schema, where the reservation does not exist yet', async () => {
-    const { supabase } = database({
+  it.each([
+    ['the previous schema', { data: null, error: { code: 'PGRST202' } }],
+    // The reservation migration applied, the consent one not (yet): an old consent must not count.
+    ['a database migrated in part', { data: { reservation: randomUUID(), reason: 'ok' } }],
+  ])('stays off on %s, whatever has_crossborder_consent() says', async (_case, reserve) => {
+    const { supabase, rpc } = database({
       rpc: {
         crossborder_consent_state: { data: null, error: { code: 'PGRST202' } },
         has_crossborder_consent: { data: true },
-        reserve_ai_run: { data: null, error: { code: 'PGRST202' } },
+        reserve_ai_run: reserve,
       },
     });
 
     expect(await reviewWithAi(context(supabase), 'B1', IDEA)).toBeNull();
     expect(reviewText).not.toHaveBeenCalled();
-    expect(log.error).toHaveBeenCalledWith('ai.error', {
-      code: 'PGRST202',
-      stage: 'reserve',
+    expect(reserveCalls(rpc)).toBe(0);
+    expect(rpc).not.toHaveBeenCalledWith('has_crossborder_consent');
+    expect(log.warn).toHaveBeenCalledWith('ai.skipped', {
+      reason: 'previous_schema',
       questionId: 'B1',
     });
+    expect(log.error).not.toHaveBeenCalled();
   });
 });
 

@@ -44,6 +44,8 @@ type SkipReason =
   | 'off'
   | 'no_consent'
   | 'consent_outdated'
+  /** The database does not count consents by text version yet (D-155). */
+  | 'previous_schema'
   | 'no_settings'
   | 'no_idea'
   | 'idea_unclear'
@@ -67,8 +69,11 @@ const EXPECTED: ReadonlySet<SkipReason> = new Set([
   'idea_unclear',
 ]);
 
+/** The reasons that need someone to act: the API is slow, or a migration is waiting. */
+const NOTABLE: ReadonlySet<SkipReason> = new Set(['timeout', 'previous_schema']);
+
 async function skipped(reason: SkipReason, questionId: QuestionId): Promise<null> {
-  const write = EXPECTED.has(reason) ? log.debug : reason === 'timeout' ? log.warn : log.info;
+  const write = EXPECTED.has(reason) ? log.debug : NOTABLE.has(reason) ? log.warn : log.info;
   await write('ai.skipped', { reason, questionId });
   return null;
 }
@@ -271,9 +276,16 @@ export async function reviewWithAi(
   if (!client) return skipped('off', questionId);
   const trace: Run['trace'] = { stage: 'consent', questionId };
   try {
+    // Only the database's own count of the text versions lets a review run, never a fallback.
     const consent = await crossborderConsentState(context.supabase);
     if (consent !== 'current') {
-      return await skipped(consent === 'outdated' ? 'consent_outdated' : 'no_consent', questionId);
+      const reason =
+        consent === null
+          ? 'previous_schema'
+          : consent === 'outdated'
+            ? 'consent_outdated'
+            : 'no_consent';
+      return await skipped(reason, questionId);
     }
     trace.stage = 'settings';
     const settings = await readSettings(context.supabase);

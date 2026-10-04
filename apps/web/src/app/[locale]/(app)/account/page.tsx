@@ -6,7 +6,7 @@ import { DeleteAccount } from '@/components/account/delete-account';
 import { PreferencesForm } from '@/components/account/preferences-form';
 import { Button } from '@/components/ui/button';
 import { currentLocale } from '@/i18n/locale';
-import { crossborderConsentState } from '@/lib/ai/consent';
+import { accountConsentState } from '@/lib/ai/consent';
 import { deleteAccount, setCrossborderConsent, signOut } from '@/lib/auth/actions';
 import { requireAccount } from '@/lib/auth/session';
 import { countryOptions } from '@/lib/countries';
@@ -30,7 +30,7 @@ export default async function AccountPage() {
   const { supabase, user, profile } = await requireAccount(locale);
   const t = await getTranslations('account');
 
-  const crossborder = await crossborderConsentState(supabase);
+  const crossborder = await accountConsentState(supabase, user.id);
   const status = {
     current: t('crossborderOn'),
     outdated: t('crossborderOutdated'),
