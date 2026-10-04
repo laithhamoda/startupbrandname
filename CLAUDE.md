@@ -96,7 +96,7 @@ You write code a senior reviewer would approve without rework. You do not guess;
 2. **Provenance on every fact.** Each answer and each computed/external value carries `source` (`user` | `assumption` | `external`), `confidence` (`high` | `medium` | `low`), `validated` (bool). External values carry `source_url` and `retrieved_at`.
 3. **Single source of truth.** Editing a canvas cell edits the underlying answer and triggers dependency-aware recomputation. No duplicated state.
 4. **Dependency-aware recompute.** Each tool run stores `input_hash`. Unchanged inputs → reuse output. Never re-run web search or LLM calls without an input change or explicit refresh.
-5. **De-identify before any LLM call.** Send project content only. Strip name, email, phone; replace user id with a random per-request token. Enforce this in one module (`lib/ai/deidentify.ts`) with tests.
+5. **De-identify before any LLM call.** Send project content only. Strip name, email, phone; replace user id with a random per-request token. Enforce this in one module (`packages/ai/src/deidentify.ts`) with tests.
 6. **RLS on every table.** Users access only their own projects. Affiliates see only their vouchers — never user project data. Service-role key is server-only.
 7. **No secrets in the client bundle.** Validate all inputs with zod at every server boundary.
 8. **No legal, tax or regulatory value hard-coded.** They live in `country_pack_items` / `tax_rules` with `source_url` and `last_verified`. Any item older than 90 days, or with status `under_review` / `stale`, renders with the label "تحقّق من المصدر الرسمي".
