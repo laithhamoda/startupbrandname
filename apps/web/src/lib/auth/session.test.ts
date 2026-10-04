@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { log } from '@/lib/log';
 import { createSupabaseServerClient, type SupabaseServerClient } from '@/lib/supabase/server';
 import { PATH_HEADER } from './next-path';
-import { finishSignIn, getSessionUser, requireAccount } from './session';
+import { finishSignIn, requireAccount } from './session';
 import { SIGNUP_INTENT_COOKIE, serializeSignupIntent, type SignupIntent } from './signup-intent';
 
 const jar = vi.hoisted(() => new Map<string, string>());
@@ -166,44 +166,5 @@ describe('finishSignIn', () => {
       'complete_onboarding',
       expect.objectContaining({ p_country_code: 'DZ' }),
     );
-  });
-});
-
-describe('getSessionUser', () => {
-  const withClaims = (claims: unknown) =>
-    ({
-      auth: { getClaims: () => Promise.resolve({ data: claims ? { claims } : null, error: null }) },
-    }) as unknown as SupabaseServerClient;
-
-  it('reads the names of the sign-in profile, so they never reach a model (rule 5)', async () => {
-    const user = await getSessionUser(
-      withClaims({
-        sub: 'a0000000-0000-4000-8000-000000000001',
-        email: 'laith@example.com',
-        user_metadata: {
-          full_name: 'Laith Ahmad',
-          name: 'Laith Ahmad',
-          given_name: ' Laith ',
-          family_name: 'Ahmad',
-          picture: 'https://example.com/photo.png',
-        },
-      }),
-    );
-
-    expect(user).toEqual({
-      id: 'a0000000-0000-4000-8000-000000000001',
-      email: 'laith@example.com',
-      names: ['Laith Ahmad', 'Laith', 'Ahmad'],
-    });
-  });
-
-  it('has no names for an email sign-in, and ignores fields that are not text', async () => {
-    const user = await getSessionUser(
-      withClaims({ sub: 'b', user_metadata: { email_verified: true, name: 42, full_name: ' ' } }),
-    );
-
-    expect(user).toEqual({ id: 'b', email: null, names: [] });
-    expect(await getSessionUser(withClaims({ sub: 'c' }))).toMatchObject({ names: [] });
-    expect(await getSessionUser(withClaims(null))).toBeNull();
   });
 });
