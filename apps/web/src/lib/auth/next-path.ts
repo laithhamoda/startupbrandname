@@ -21,3 +21,23 @@ export function localeOfPath(path: string): Locale {
 export function projectsPath(locale: Locale): string {
   return `/${locale}/projects`;
 }
+
+/**
+ * The request header in which proxy.ts passes the page's own path to the page, so a sign-in
+ * redirect can come back to it. The proxy overwrites whatever the browser sent.
+ */
+export const PATH_HEADER = 'x-sbn-path';
+
+/**
+ * The sign-in page, with a way back to `from` (checked by safeNextPath) and, after a failed
+ * Google sign-in, the explanation to show. The projects list is where sign-in goes anyway, so it
+ * adds nothing to the address.
+ */
+export function loginPath(locale: Locale, from?: string | null, error?: 'google'): string {
+  const query = new URLSearchParams();
+  if (error) query.set('error', error);
+  const next = safeNextPath(from, projectsPath(locale));
+  if (next !== projectsPath(locale)) query.set('next', next);
+  const search = query.toString();
+  return search ? `/${locale}/login?${search}` : `/${locale}/login`;
+}

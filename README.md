@@ -73,9 +73,9 @@ Chromium: `pnpm --filter @sbn/web exec playwright install chromium`.
 - **End-to-end failures:** Playwright keeps a trace for each failed test; open it with
   `pnpm --filter @sbn/web exec playwright show-trace <path from the output>`. In CI, download the
   `playwright-report` artifact.
-- **Hosted:** `GET /api/health` (below); Vercel → Logs for server errors, which are logged by name
-  and code only; Supabase → Logs for auth and database. As of M3c (2026-09-28), `LOG_LEVEL` is
-  validated but no logger reads it ([M9 checklist](docs/security/m9-checklist.md)).
+- **Hosted:** `GET /api/health` (below); Vercel → Logs for server errors, written as JSON lines by
+  `apps/web/src/lib/log.ts` (event names and error codes only, never answers or email addresses;
+  `LOG_LEVEL` sets the lowest level written, D-126); Supabase → Logs for auth and database.
 
 ## Design system (M1)
 

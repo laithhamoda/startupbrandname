@@ -9,6 +9,7 @@ import {
   type Mode,
 } from '@sbn/question-bank';
 import { z } from 'zod';
+import { log } from '@/lib/log';
 import type { SupabaseServerClient } from '@/lib/supabase/server';
 
 export interface Project {
@@ -43,28 +44,63 @@ function toProject(row: {
   };
 }
 
-/**
- * Answers as the question bank understands them. A stored value that no longer fits its
- * question (edited outside the app, or from an older version) counts as missing, never as data.
- */
-export function parseAnswers(
-  rows: readonly { question_id: string; normalized_value: unknown }[],
-): Answers {
+interface AnswerRow {
+  question_id: string;
+  normalized_value: unknown;
+}
+
+/** The answers, and the IDs of stored rows that could not be read. */
+function readAnswers(rows: readonly AnswerRow[]): { answers: Answers; unreadable: string[] } {
   const answers: Answers = {};
+  const unreadable: string[] = [];
+  const followUpRows: AnswerRow[] = [];
   for (const row of rows) {
     const id = row.question_id;
-    if (isQuestionId(id)) {
-      const question = getQuestion(id);
-      const parsed = answerSchema(question.field, question.allowUnknown).safeParse(
-        row.normalized_value,
-      );
-      if (parsed.success) answers[id] = parsed.data;
+    if (!isQuestionId(id)) {
+      followUpRows.push(row);
       continue;
     }
-    const followUp = FOLLOW_UPS.find((candidate) => candidate.id === id);
-    if (!followUp) continue;
+    const question = getQuestion(id);
+    const parsed = answerSchema(question.field, question.allowUnknown).safeParse(
+      row.normalized_value,
+    );
+    if (parsed.success) answers[id] = parsed.data;
+    else unreadable.push(id);
+  }
+  // Follow-ups last: whether one applies depends on the core answers only.
+  for (const row of followUpRows) {
+    const followUp = FOLLOW_UPS.find((candidate) => candidate.id === row.question_id);
+    if (!followUp) {
+      unreadable.push(row.question_id);
+      continue;
+    }
+    // Its trigger no longer holds, and the delete after the last save did not go through (D-116).
+    if (!followUp.when(answers)) continue;
     const parsed = answerSchema(followUp.field, false).safeParse(row.normalized_value);
     if (parsed.success) answers[followUp.id] = parsed.data;
+    else unreadable.push(followUp.id);
+  }
+  return { answers, unreadable };
+}
+
+/**
+ * Answers as the question bank understands them. A stored value that no longer fits its
+ * question (edited outside the app, or from an older version) counts as missing, never as data,
+ * and so does a follow-up whose trigger no longer holds (one source of truth, rule 3).
+ */
+export function parseAnswers(rows: readonly AnswerRow[]): Answers {
+  return readAnswers(rows).answers;
+}
+
+/** Reads a project's stored answers; rows that no longer fit are logged by ID, never by value. */
+async function answersOf(projectId: string, rows: readonly AnswerRow[]): Promise<Answers> {
+  const { answers, unreadable } = readAnswers(rows);
+  if (unreadable.length > 0) {
+    await log.warn('diagnostic.answers_unreadable', {
+      projectId,
+      questionId: unreadable[0],
+      count: unreadable.length,
+    });
   }
   return answers;
 }
@@ -91,10 +127,15 @@ export async function listProjects(
     );
   if (answersError) throw answersError;
 
-  return projects.map((row) => ({
-    project: toProject(row),
-    answers: parseAnswers(rows.filter((answer) => answer.project_id === row.id)),
-  }));
+  return Promise.all(
+    projects.map(async (row) => ({
+      project: toProject(row),
+      answers: await answersOf(
+        row.id,
+        rows.filter((answer) => answer.project_id === row.id),
+      ),
+    })),
+  );
 }
 
 const idSchema = z.uuid();
@@ -118,7 +159,7 @@ export async function loadProject(
     .select('question_id, normalized_value')
     .eq('project_id', id);
   if (answersError) throw answersError;
-  return { project: toProject(row), answers: parseAnswers(rows) };
+  return { project: toProject(row), answers: await answersOf(id, rows) };
 }
 
 /** Provenance stored with an answer (CLAUDE.md rule 2, D-104, D-114). */

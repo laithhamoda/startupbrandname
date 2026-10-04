@@ -66,6 +66,18 @@ test('pages stay out of search indexes until public launch', async ({ page, requ
   expect(robots).toMatch(/Disallow: \//);
 });
 
+test('pages and files send the baseline browser security headers', async ({ page, request }) => {
+  for (const response of [await page.goto('/ar'), await request.get('/robots.txt')]) {
+    const headers = response?.headers() ?? {};
+    expect(headers['x-frame-options']).toBe('DENY');
+    expect(headers['content-security-policy']).toBe("frame-ancestors 'none'");
+    expect(headers['x-content-type-options']).toBe('nosniff');
+    expect(headers['referrer-policy']).toBe('strict-origin-when-cross-origin');
+    expect(headers['permissions-policy']).toBe('camera=(), microphone=(), geolocation=()');
+    expect(headers['strict-transport-security']).toBe('max-age=63072000');
+  }
+});
+
 test('each language version links to the other with hreflang', async ({ page }) => {
   await page.goto('/en');
 

@@ -2,6 +2,7 @@ import { completeness, displayPercent } from '@sbn/question-bank';
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { ButtonLink } from '@/components/ui/button';
+import { LinkPending } from '@/components/ui/link-pending';
 import { PLANS } from '@/config/plans';
 import { Link } from '@/i18n/navigation';
 import { currentLocale } from '@/i18n/locale';
@@ -61,9 +62,10 @@ export default async function ProjectsPage() {
             >
               <Link
                 href={projectPath(project.id)}
-                className="font-display text-body font-bold text-ink underline-offset-4 hover:underline"
+                className="relative justify-self-start font-display text-body font-bold text-ink underline-offset-4 hover:underline"
               >
                 {project.title}
+                <LinkPending />
               </Link>
               <span className="text-small text-ink-2">
                 {countries.find((option) => option.value === project.countryCode)?.label}

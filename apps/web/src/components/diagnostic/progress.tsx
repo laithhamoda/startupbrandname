@@ -11,7 +11,7 @@ import {
 } from '@sbn/question-bank';
 import { Check } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { Link } from '@/i18n/navigation';
+import { TextLink } from '@/components/ui/text-link';
 import { cn } from '@/lib/cn';
 
 /** Eight segments, one per axis, filled by the share answered; the current axis is outlined. */
@@ -124,9 +124,9 @@ export function CompletenessPanel({
         </li>
       </ul>
       {overviewHref ? (
-        <Link href={overviewHref} className="text-small text-teal-ink underline underline-offset-4">
+        <TextLink href={overviewHref} className="justify-self-start text-small">
           {t('overview')}
-        </Link>
+        </TextLink>
       ) : null}
     </section>
   );

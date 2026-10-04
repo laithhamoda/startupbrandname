@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import type { ReactNode } from 'react';
+import { CrossborderConsent } from '@/components/account/crossborder-consent';
 import { DeleteAccount } from '@/components/account/delete-account';
 import { PreferencesForm } from '@/components/account/preferences-form';
 import { Button } from '@/components/ui/button';
@@ -55,11 +56,10 @@ export default async function AccountPage() {
 
       <Section title={t('crossborderTitle')}>
         <p className="reading">{crossborder ? t('crossborderOn') : t('crossborderOff')}</p>
-        <form action={setCrossborderConsent.bind(null, locale, !crossborder)}>
-          <Button type="submit">
-            {crossborder ? t('crossborderWithdraw') : t('crossborderGive')}
-          </Button>
-        </form>
+        <CrossborderConsent
+          given={crossborder}
+          action={setCrossborderConsent.bind(null, locale, !crossborder)}
+        />
       </Section>
 
       <Section title={t('session')}>

@@ -13,14 +13,17 @@ const IDLE: AuthFormState = { status: 'idle' };
 
 /**
  * Sign-in: email, then the code; or Google when it is configured (`googleEnabled`).
- * `googleFailed` comes back from the callback.
+ * `googleFailed` comes back from the callback. Either way sign-in ends on `next`, the page that
+ * asked for it (checked by safeNextPath on the server, again by each action).
  */
 export function LoginFlow({
   googleEnabled,
   googleFailed,
+  next,
 }: {
   googleEnabled: boolean;
   googleFailed: boolean;
+  next: string;
 }) {
   const locale = useLocale();
   const t = useTranslations('auth');
@@ -39,7 +42,7 @@ export function LoginFlow({
     IDLE,
   );
   const [googleState, continueWithGoogle, googlePending] = useActionState(
-    async (): Promise<AuthFormState> => startGoogleLogin(locale),
+    async (): Promise<AuthFormState> => startGoogleLogin(locale, next),
     IDLE,
   );
 
@@ -50,6 +53,7 @@ export function LoginFlow({
         <CodeStep
           email={email}
           mode="login"
+          next={next}
           onChangeEmail={() => {
             setStep('email');
           }}

@@ -30,6 +30,16 @@ const money = z.object({ amount, currency: currencyCode }).strict();
 const optionValue = (options: readonly Option[]) =>
   z.enum(options.map((item) => item.value) as [string, ...string[]]);
 
+/**
+ * A website's host: a domain name whose top-level domain is letters, or an Arabic one, which the
+ * URL parser has already turned into punycode (.الأردن is xn--mgbayh7gpa). zod's own domain
+ * check (z.httpUrl) refuses those. IP addresses and single names such as localhost still fail.
+ */
+const WEBSITE_HOST =
+  /^(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+(?:[a-z]{2,63}|xn--[a-z0-9-]{1,59})$/i;
+/** http or https to a domain name only: never javascript:, data:, file: or an IP address. */
+const website = z.url({ protocol: z.regexes.httpProtocol, hostname: WEBSITE_HOST }).max(300);
+
 /** Tolerance for percentages that must add up to 100 (G4). */
 const PERCENT_TOLERANCE = 0.01;
 
@@ -97,7 +107,8 @@ export function valueSchema(field: Field): z.ZodType {
               z
                 .object({
                   name: text(80),
-                  url: z.url().max(300).optional(),
+                  // Reports will render these answers as links (M5).
+                  url: website.optional(),
                   strength: text(200),
                   weakness: text(200),
                 })

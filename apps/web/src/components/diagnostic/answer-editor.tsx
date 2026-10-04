@@ -5,13 +5,17 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState, useTransition } from 'react';
 import { Button, ButtonLink } from '@/components/ui/button';
 import { RuleAlert } from '@/components/ui/rule-alert';
+import { TextLink } from '@/components/ui/text-link';
 import { useRouter } from '@/i18n/navigation';
 import type { Locale } from '@/i18n/routing';
+import { callAction } from '@/lib/call-action';
 import { type SaveResult, saveAnswer } from '@/lib/diagnostic/actions';
 import { type Draft, fromDraft, mayBeCentimes } from '@/lib/diagnostic/draft';
 import type { FindingView } from '@/lib/diagnostic/findings';
+import { sameDraft } from '@/lib/diagnostic/leave';
 import { type EditorOptions, FieldEditor } from './field-editor';
 import { FindingList } from './finding-list';
+import { LeaveGuard } from './leave-guard';
 
 interface AnswerEditorProps {
   locale: Locale;
@@ -41,6 +45,8 @@ type Local =
   /** D-108: an Algerian-dinar amount that may be in centimes. */
   | { kind: 'centimes' };
 
+const SAVE_FAILED: SaveResult = { status: 'error', reason: 'failed' };
+
 /**
  * One question's answer: edit, then save and move on. Rules that reject an answer show their
  * message in place and keep what was typed (SPEC §2); warnings are shown once, then the founder
@@ -50,11 +56,14 @@ export function AnswerEditor(props: AnswerEditorProps) {
   const t = useTranslations('diagnostic');
   const router = useRouter();
   const [draft, setDraft] = useState<Draft>(props.initialDraft);
+  // What the server holds, to tell whether leaving the page would lose a typed answer (UX-6).
+  const [savedDraft, setSavedDraft] = useState<Draft>(props.initialDraft);
   const [unreadable, setUnreadable] = useState<string[]>([]);
   const [local, setLocal] = useState<Local>({ kind: 'none' });
   const [result, setResult] = useState<SaveResult | null>(null);
   const [pending, startTransition] = useTransition();
   const feedback = useRef<HTMLDivElement>(null);
+  const form = useRef<HTMLFormElement>(null);
   // The value behind a pending AI confirmation, resent unchanged when the founder agrees (D-119).
   const lastValue = useRef<unknown>(null);
 
@@ -65,17 +74,26 @@ export function AnswerEditor(props: AnswerEditorProps) {
 
   function send(submission: Parameters<typeof saveAnswer>[0]['submission']) {
     if (submission.kind === 'value') lastValue.current = submission.value;
+    const sent = draft;
     startTransition(async () => {
-      const outcome = await saveAnswer({
-        locale: props.locale,
-        projectId: props.projectId,
-        step: props.step,
-        submission,
-      });
+      // A dropped connection keeps the draft on screen so the founder can try again.
+      const outcome = await callAction(
+        () =>
+          saveAnswer({
+            locale: props.locale,
+            projectId: props.projectId,
+            step: props.step,
+            submission,
+          }),
+        SAVE_FAILED,
+      );
+      if (outcome.status === 'saved') setSavedDraft(sent);
       if (outcome.status === 'saved' && outcome.notes.length === 0) {
         router.push(outcome.next ?? props.overviewHref);
         return;
       }
+      // A project deleted or a follow-up dropped elsewhere ('gone', 'stale') leaves the page as
+      // it is, so the founder can read why; the message links to a page rendered fresh.
       setResult(outcome);
     });
   }
@@ -107,9 +125,14 @@ export function AnswerEditor(props: AnswerEditorProps) {
   const askUnknown =
     result?.status === 'rejected' &&
     result.findings.some((finding) => finding.code === 'R4_unknown_text');
+  // The project was deleted, or this follow-up no longer applies (perhaps in another tab).
+  const lost = result?.status === 'error' && result.reason !== 'failed' ? result.reason : null;
+  // Such an answer can no longer be saved, so leaving loses nothing that could be kept.
+  const unsaved = lost === null && !sameDraft(draft, savedDraft);
 
   return (
     <form
+      ref={form}
       noValidate
       onSubmit={(event) => {
         event.preventDefault();
@@ -231,7 +254,19 @@ export function AnswerEditor(props: AnswerEditorProps) {
             </ul>
           </RuleAlert>
         ) : null}
-        {result?.status === 'error' ? <RuleAlert message={t('error')} /> : null}
+        {result?.status === 'error' && result.reason === 'failed' ? (
+          <RuleAlert message={t('error')} />
+        ) : null}
+        {lost === 'stale' ? (
+          <RuleAlert message={t('stale')}>
+            <TextLink href={props.overviewHref}>{t('staleOverview')}</TextLink>
+          </RuleAlert>
+        ) : null}
+        {lost === 'gone' ? (
+          <RuleAlert message={t('gone')}>
+            <TextLink href="/projects">{t('goneProjects')}</TextLink>
+          </RuleAlert>
+        ) : null}
         {notes.length > 0 ? <FindingList findings={notes} /> : null}
       </div>
 
@@ -260,6 +295,7 @@ export function AnswerEditor(props: AnswerEditorProps) {
           </Button>
         ) : null}
       </div>
+      <LeaveGuard active={unsaved} form={form} />
     </form>
   );
 }

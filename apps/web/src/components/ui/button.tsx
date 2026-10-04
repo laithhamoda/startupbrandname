@@ -1,6 +1,7 @@
 import type { ComponentProps } from 'react';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/lib/cn';
+import { LinkPending } from './link-pending';
 
 type Variant = 'primary' | 'secondary' | 'quiet';
 
@@ -27,11 +28,20 @@ export function Button({
   return <button type={type} className={cn(BASE, VARIANTS[variant], className)} {...props} />;
 }
 
-/** A link that looks like a button, for navigation such as "Start for free". */
+/**
+ * A link that looks like a button, for navigation such as "Start for free". While the page
+ * loads, the link shows that it is on its way (LinkPending).
+ */
 export function ButtonLink({
   variant = 'secondary',
   className,
+  children,
   ...props
 }: ComponentProps<typeof Link> & { variant?: Variant }) {
-  return <Link className={cn(BASE, 'no-underline', VARIANTS[variant], className)} {...props} />;
+  return (
+    <Link className={cn(BASE, 'relative no-underline', VARIANTS[variant], className)} {...props}>
+      {children}
+      <LinkPending />
+    </Link>
+  );
 }

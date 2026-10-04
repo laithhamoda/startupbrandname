@@ -48,7 +48,16 @@
   "notFound": {
     "title": "Page not found",
     "body": "The link may have changed, or the page may have been removed.",
-    "home": "Back to the home page"
+    "home": "Back to the home page",
+    "projects": "Back to my projects"
+  },
+  "errors": {
+    "title": "Something went wrong",
+    "body": "This page could not be shown. Everything you saved is safe. Try again, or come back in a few minutes.",
+    "retry": "Try again",
+    "projects": "Back to my projects",
+    "home": "Back to the home page",
+    "reference": "Reference:"
   },
   "aboutYou": {
     "country": "Country of residence",
@@ -153,7 +162,17 @@
     "confirmYes": "Yes, that is right",
     "confirmEdit": "Edit my answer",
     "invalid": "Check your answer:",
-    "error": "Could not save. Please try again.",
+    "error": "Could not save. Your answer is still here: please try again.",
+    "stale": "This question no longer applies to your project, so this answer was not saved. Your other answers are safe.",
+    "staleOverview": "Back to the project overview",
+    "gone": "This project no longer exists (perhaps it was deleted in another window), so this answer was not saved.",
+    "goneProjects": "Back to my projects",
+    "leave": {
+      "title": "Leave without saving your answer?",
+      "body": "Your answer to this question is not saved yet. If you leave this page now, what you typed will be lost.",
+      "stay": "Stay on this question",
+      "go": "Leave without saving"
+    },
     "errors": {
       "required": "Complete the required fields.",
       "minItems": "{count, plural, one {Add at least one item.} other {Add at least # items.}}",
@@ -250,10 +269,12 @@
       "toFullLead": "64 questions plus follow-ups. Your current answers stay as they are.",
       "toQuick": "Back to the quick version",
       "toQuickLead": "20 core questions. None of your answers is deleted.",
+      "switching": "Switching…",
       "delete": "Delete the project",
       "deleteLead": "Deletes the project and all its answers for good.",
       "deleteTitle": "Delete the project for good?",
       "deleteBody": "The project and all its answers will be deleted at once and cannot be recovered.",
+      "deleting": "Deleting…",
       "deleteConfirm": "Yes, delete the project"
     }
   },
@@ -265,6 +286,7 @@
     "languageHint": "The language of the interface and of our emails.",
     "save": "Save",
     "saved": "Changes saved.",
+    "saving": "Saving…",
     "crossborderTitle": "AI mentor and processing outside your country",
     "crossborderOn": "Your consent is on: the content of your projects, without your name or email, is sent to Anthropic in the United States to run the AI mentor.",
     "crossborderOff": "Your consent is off: the AI mentor and other AI features are switched off, and the rest of the platform works fully.",
@@ -277,6 +299,7 @@
     "deleteButton": "Delete my account",
     "deleteConfirmTitle": "Delete your account for good?",
     "deleteConfirmBody": "Your account and all your data will be deleted at once and cannot be recovered.",
+    "deleting": "Deleting…",
     "deleteConfirm": "Yes, delete my account"
   },
   "goodbye": {
