@@ -64,7 +64,8 @@ export default async function ProjectsPage() {
                 href={projectPath(project.id)}
                 className="relative justify-self-start font-display text-body font-bold text-ink underline-offset-4 hover:underline"
               >
-                {project.title}
+                {/* Typed by the founder, in any script: its own direction (UX-12). */}
+                <span dir="auto">{project.title}</span>
                 <LinkPending />
               </Link>
               <span className="text-small text-ink-2">

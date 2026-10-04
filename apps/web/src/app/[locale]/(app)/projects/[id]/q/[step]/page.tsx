@@ -118,7 +118,10 @@ export default async function StepPage({ params }: PageProps<'/[locale]/projects
         <AxisProgress byAxis={score.byAxis} current={axis} language={locale} />
         <div className="grid gap-1 text-small text-muted">
           <p className="flex flex-wrap gap-x-3">
-            <span className="text-ink-2">{project.title}</span>
+            {/* Typed by the founder, in any script: its own direction (UX-12). */}
+            <span dir="auto" className="text-ink-2">
+              {project.title}
+            </span>
             <span>{AXIS_NAMES[axis][locale]}</span>
             <span>
               {position
