@@ -55,7 +55,10 @@ type SkipReason =
 
 type Stage = 'consent' | 'settings' | 'cache' | 'reserve' | 'model' | 'record';
 
-/** The ordinary reasons, logged at debug level: AI is off, or the founder has not consented. */
+/**
+ * The ordinary reasons, logged at debug level: AI is off, there is no current consent, or the
+ * idea is not clear yet (D-072).
+ */
 const EXPECTED: ReadonlySet<SkipReason> = new Set([
   'off',
   'no_consent',
