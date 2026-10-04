@@ -1,0 +1,345 @@
+{
+  "A1": {
+    "kind": "country_city",
+    "allowUnknown": false,
+    "value": { "country": "string", "city": "string" }
+  },
+  "A2": { "kind": "number", "allowUnknown": true, "value": "integer" },
+  "A3": {
+    "kind": "multi",
+    "allowUnknown": true,
+    "value": {
+      "values": {
+        "list": {
+          "oneOf": [
+            "customer_service",
+            "design",
+            "finance",
+            "languages",
+            "management",
+            "marketing",
+            "operations",
+            "production",
+            "sales",
+            "technology"
+          ]
+        }
+      },
+      "other?": "string"
+    }
+  },
+  "A4": {
+    "kind": "people",
+    "allowUnknown": true,
+    "value": { "items": { "list": { "name": "string", "detail?": "string" } } }
+  },
+  "A5": {
+    "kind": "money_range",
+    "allowUnknown": true,
+    "value": { "min": "number", "max": "number", "currency": "string" }
+  },
+  "A6": { "kind": "number", "allowUnknown": true, "value": "number" },
+  "A7": {
+    "kind": "single",
+    "allowUnknown": true,
+    "value": { "oneOf": ["3to6", "6to12", "gt12", "lt3"] }
+  },
+  "A8": {
+    "kind": "single",
+    "allowUnknown": true,
+    "value": { "oneOf": ["main_income", "scalable_company", "side_income"] }
+  },
+  "B1": { "kind": "short_text", "allowUnknown": false, "value": "string" },
+  "B2": { "kind": "long_text", "allowUnknown": true, "value": "string" },
+  "B3": { "kind": "short_text", "allowUnknown": true, "value": "string" },
+  "B4": { "kind": "long_text", "allowUnknown": true, "value": "string" },
+  "B5": { "kind": "number", "allowUnknown": true, "value": "integer" },
+  "B6": { "kind": "long_text", "allowUnknown": true, "value": "string" },
+  "B7": {
+    "kind": "single",
+    "allowUnknown": false,
+    "value": { "oneOf": ["digital", "hybrid", "physical_product", "service"] }
+  },
+  "B8": { "kind": "long_text", "allowUnknown": true, "value": "string" },
+  "C1": {
+    "kind": "single",
+    "allowUnknown": false,
+    "value": { "oneOf": ["b2b", "b2c", "b2g", "mixed"] }
+  },
+  "C2": {
+    "kind": "customer_profile",
+    "allowUnknown": true,
+    "value": {
+      "ageBand?": { "oneOf": ["18_24", "25_34", "35_44", "45_54", "55_64", "65_plus", "under_18"] },
+      "city?": "string",
+      "incomeBand?": { "oneOf": ["high", "low", "lower_middle", "middle", "upper_middle"] },
+      "occupation?": "string",
+      "sector?": {
+        "oneOf": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E",
+          "F",
+          "G",
+          "H",
+          "I",
+          "J",
+          "K",
+          "L",
+          "M",
+          "N",
+          "P",
+          "Q",
+          "R",
+          "S"
+        ]
+      },
+      "size?": { "oneOf": ["large", "medium", "micro", "small"] },
+      "decisionMaker?": "string"
+    }
+  },
+  "C3": { "kind": "short_text", "allowUnknown": true, "value": "string" },
+  "C4": { "kind": "short_text", "allowUnknown": true, "value": "string" },
+  "C5": {
+    "kind": "yes_no_detail",
+    "allowUnknown": true,
+    "value": { "answer": "boolean", "detail?": "string" }
+  },
+  "C6": {
+    "kind": "single",
+    "allowUnknown": true,
+    "value": { "oneOf": ["no", "paid", "promised"] }
+  },
+  "C7": {
+    "kind": "multi",
+    "allowUnknown": true,
+    "value": {
+      "values": {
+        "list": {
+          "oneOf": [
+            "community",
+            "education",
+            "email",
+            "events",
+            "marketplaces",
+            "messaging",
+            "search",
+            "shops",
+            "social_media",
+            "word_of_mouth",
+            "workplaces"
+          ]
+        }
+      },
+      "other?": "string"
+    }
+  },
+  "C8": { "kind": "number", "allowUnknown": true, "value": "integer" },
+  "D1": {
+    "kind": "single",
+    "allowUnknown": true,
+    "value": { "oneOf": ["city", "country", "multi_country", "neighbourhood"] }
+  },
+  "D2": {
+    "kind": "single",
+    "allowUnknown": false,
+    "value": {
+      "oneOf": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G",
+        "H",
+        "I",
+        "J",
+        "K",
+        "L",
+        "M",
+        "N",
+        "P",
+        "Q",
+        "R",
+        "S"
+      ]
+    }
+  },
+  "D3": {
+    "kind": "competitors",
+    "allowUnknown": true,
+    "value": {
+      "items": {
+        "list": { "name": "string", "url?": "string", "strength": "string", "weakness": "string" }
+      }
+    }
+  },
+  "D4": {
+    "kind": "competitor_prices",
+    "allowUnknown": true,
+    "value": {
+      "items": {
+        "list": {
+          "name": "string",
+          "price": { "nullable": { "amount": "number", "currency": "string" } }
+        }
+      }
+    }
+  },
+  "D5": { "kind": "long_text", "allowUnknown": true, "value": "string" },
+  "D6": {
+    "kind": "yes_no_percent",
+    "allowUnknown": true,
+    "value": { "answer": "boolean", "percent?": "number" }
+  },
+  "D7": {
+    "kind": "seasonality",
+    "allowUnknown": true,
+    "value": { "seasonal": "boolean", "peakMonths": { "list": "integer" } }
+  },
+  "D8": { "kind": "long_text", "allowUnknown": true, "value": "string" },
+  "E1": { "kind": "long_text", "allowUnknown": true, "value": "string" },
+  "E2": {
+    "kind": "three_texts",
+    "allowUnknown": true,
+    "value": { "items": { "tuple": ["string", "string", "string"] } }
+  },
+  "E3": {
+    "kind": "cost_items",
+    "allowUnknown": true,
+    "value": {
+      "items": { "list": { "label": "string", "amount": "number", "currency": "string" } }
+    }
+  },
+  "E4": {
+    "kind": "people",
+    "allowUnknown": true,
+    "value": { "items": { "list": { "name": "string", "detail?": "string" } } }
+  },
+  "E5": { "kind": "short_text", "allowUnknown": true, "value": "string" },
+  "E6": {
+    "kind": "single",
+    "allowUnknown": true,
+    "value": { "oneOf": ["field", "home", "office", "online_only", "shop"] }
+  },
+  "E7": { "kind": "number", "allowUnknown": true, "value": "integer" },
+  "E8": {
+    "kind": "staff_plan",
+    "allowUnknown": true,
+    "value": {
+      "items": {
+        "list": {
+          "role": "string",
+          "monthlyCost": { "amount": "number", "currency": "string" },
+          "startMonth": "integer"
+        }
+      }
+    }
+  },
+  "F1": {
+    "kind": "money",
+    "allowUnknown": true,
+    "value": { "amount": "number", "currency": "string" }
+  },
+  "F2": {
+    "kind": "single",
+    "allowUnknown": false,
+    "value": { "oneOf": ["bundles", "commission", "fixed", "hourly", "subscription"] }
+  },
+  "F3": {
+    "kind": "cost_items",
+    "allowUnknown": true,
+    "value": {
+      "items": { "list": { "label": "string", "amount": "number", "currency": "string" } }
+    }
+  },
+  "F4": {
+    "kind": "cost_items",
+    "allowUnknown": true,
+    "value": {
+      "items": { "list": { "label": "string", "amount": "number", "currency": "string" } }
+    }
+  },
+  "F5": {
+    "kind": "cost_items",
+    "allowUnknown": true,
+    "value": {
+      "items": { "list": { "label": "string", "amount": "number", "currency": "string" } }
+    }
+  },
+  "F6": {
+    "kind": "sales_forecast",
+    "allowUnknown": true,
+    "value": { "month1": "number", "month6": "number", "month12": "number" }
+  },
+  "F7": {
+    "kind": "single",
+    "allowUnknown": true,
+    "value": { "oneOf": ["cash", "credit", "deposit", "instalments"] }
+  },
+  "F8": { "kind": "currency", "allowUnknown": false, "value": "string" },
+  "G1": {
+    "kind": "single",
+    "allowUnknown": false,
+    "value": { "oneOf": ["company", "dont_know", "sole"] }
+  },
+  "G2": {
+    "kind": "single",
+    "allowUnknown": true,
+    "value": { "oneOf": ["in_progress", "no", "yes"] }
+  },
+  "G3": { "kind": "boolean", "allowUnknown": true, "value": "boolean" },
+  "G4": {
+    "kind": "percent_split",
+    "allowUnknown": true,
+    "value": { "items": { "list": { "label": "string", "percent": "number" } } }
+  },
+  "G5": {
+    "kind": "single",
+    "allowUnknown": true,
+    "value": { "oneOf": ["none", "registered", "unregistered"] }
+  },
+  "G6": { "kind": "boolean", "allowUnknown": true, "value": "boolean" },
+  "G7": {
+    "kind": "single",
+    "allowUnknown": true,
+    "value": { "oneOf": ["no", "no_preference", "yes"] }
+  },
+  "G8": { "kind": "single", "allowUnknown": true, "value": { "oneOf": ["no", "partly", "yes"] } },
+  "H1": { "kind": "short_text", "allowUnknown": true, "value": "string" },
+  "H2": { "kind": "short_text", "allowUnknown": true, "value": "string" },
+  "H3": {
+    "kind": "multi",
+    "allowUnknown": true,
+    "value": {
+      "values": {
+        "list": { "oneOf": ["competition", "family", "grant", "investor", "loan", "self"] }
+      },
+      "other?": "undefined"
+    }
+  },
+  "H4": { "kind": "long_text", "allowUnknown": true, "value": "string" },
+  "H5": {
+    "kind": "single",
+    "allowUnknown": true,
+    "value": { "oneOf": ["m12", "m18", "m24", "m36", "m6", "more"] }
+  },
+  "H6": { "kind": "long_text", "allowUnknown": true, "value": "string" },
+  "H7": {
+    "kind": "single",
+    "allowUnknown": true,
+    "value": { "oneOf": ["cities", "countries", "franchise", "no"] }
+  },
+  "H8": {
+    "kind": "single",
+    "allowUnknown": false,
+    "value": { "oneOf": ["bank", "course", "grant_body", "investor", "self"] }
+  },
+  "A2.1": { "kind": "long_text", "allowUnknown": false, "value": "string" },
+  "C8.1": { "kind": "long_text", "allowUnknown": false, "value": "string" },
+  "F6.1": { "kind": "long_text", "allowUnknown": false, "value": "string" },
+  "G4.1": { "kind": "boolean", "allowUnknown": false, "value": "boolean" }
+}
