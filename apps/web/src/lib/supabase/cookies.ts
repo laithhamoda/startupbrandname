@@ -1,4 +1,5 @@
 import type { CookieOptions } from '@supabase/ssr';
+import { isHttpsDeployment } from '@/env/deployment';
 
 /**
  * Hardening applied to every Supabase auth cookie. The app talks to Supabase only from the
@@ -11,7 +12,7 @@ export function hardenAuthCookie(options: CookieOptions): CookieOptions {
     ...options,
     httpOnly: true,
     sameSite: 'lax',
-    secure: process.env.VERCEL === '1',
+    secure: isHttpsDeployment(),
     path: '/',
   };
 }

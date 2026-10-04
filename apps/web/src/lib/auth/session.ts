@@ -4,6 +4,7 @@ import { redirect, unstable_rethrow } from 'next/navigation';
 import { cache } from 'react';
 import { z } from 'zod';
 import { TERMS_VERSION, CROSSBORDER_VERSION } from '@/config/legal';
+import { isHttpsDeployment } from '@/env/deployment';
 import { getServerEnv } from '@/env/server';
 import type { Locale } from '@/i18n/routing';
 import type { CountryCode } from '@/lib/countries';
@@ -136,7 +137,7 @@ export async function saveSignupIntent(intent: SignupIntent): Promise<void> {
   (await cookies()).set(SIGNUP_INTENT_COOKIE, serializeSignupIntent(intent), {
     httpOnly: true,
     sameSite: 'lax',
-    secure: process.env.VERCEL === '1',
+    secure: isHttpsDeployment(),
     path: '/',
     maxAge: SIGNUP_INTENT_MAX_AGE_SECONDS,
   });
