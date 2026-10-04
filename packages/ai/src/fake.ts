@@ -4,7 +4,9 @@ import type { ReviewOutput } from './review-text';
 /**
  * A deterministic stand-in for the model, for tests and CI (AI_PROVIDER=fake): no network, no
  * cost. It recognises a few dialect words, rewrites them from a small table, and treats a B1
- * answer of at least four words as a coherent idea. It never flags a rule.
+ * answer of at least four words as a coherent idea. It never flags a rule. An answer that
+ * contains FAKE_FAILURE_MARKER makes it fail like an unreachable API, so the end-to-end tests can
+ * check that a founder's answer is saved anyway (D-124). It never runs in production (D-123).
  */
 const DIALECT: Readonly<Record<string, string>> = {
   بزاف: 'كثيرًا',
@@ -15,6 +17,8 @@ const DIALECT: Readonly<Record<string, string>> = {
   بدي: 'أريد',
   هلق: 'الآن',
 };
+
+export const FAKE_FAILURE_MARKER = 'fake-ai-failure';
 
 const ARABIC = /[؀-ۿ]/;
 const LATIN = /[A-Za-z]/;
@@ -43,6 +47,9 @@ export function fakeReview(answer: string, ideaCheck: boolean): ReviewOutput {
 export function fakeClient(): AiClient {
   return {
     reviewText(_model, input) {
+      if (input.answer.includes(FAKE_FAILURE_MARKER)) {
+        return Promise.reject(new Error('The fake model failed on purpose.'));
+      }
       return Promise.resolve({
         input: fakeReview(input.answer, input.ideaCheck),
         usage: { inputTokens: 0, outputTokens: 0, cacheWriteTokens: 0, cacheReadTokens: 0 },

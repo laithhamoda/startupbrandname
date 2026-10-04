@@ -1,7 +1,7 @@
 import { describe, expect, expectTypeOf, it } from 'vitest';
 import { anthropicClient } from './client';
 import { deidentify } from './deidentify';
-import { fakeClient, fakeReview } from './fake';
+import { FAKE_FAILURE_MARKER, fakeClient, fakeReview } from './fake';
 import { inputHash } from './hash';
 import {
   AI_RULES,
@@ -197,6 +197,11 @@ describe('the fake model used in tests', () => {
       cacheWriteTokens: 0,
       cacheReadTokens: 0,
     });
+  });
+
+  it('fails like an unreachable API when the answer carries the failure marker', async () => {
+    const failing = { ...input, answer: deidentify(`صيانة ${FAKE_FAILURE_MARKER}`).text };
+    await expect(fakeClient().reviewText('any', failing)).rejects.toThrow(/on purpose/);
   });
 });
 
