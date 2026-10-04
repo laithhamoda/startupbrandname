@@ -1,0 +1,400 @@
+import { execFileSync } from 'node:child_process';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+
+import { describe, expect, it } from 'vitest';
+
+import {
+  checkMigrations,
+  findDestructive,
+  readChanges,
+  sqlStatements,
+} from './check-migrations.mjs';
+
+const kinds = (sql) => findDestructive(sql).map(({ name }) => name);
+const migration = (name) =>
+  readFileSync(new URL(`../supabase/migrations/${name}`, import.meta.url), 'utf8');
+
+describe('sqlStatements', () => {
+  it('splits statements and normalizes case and whitespace', () => {
+    expect(sqlStatements('CREATE TABLE a (id int);\n\n  ALTER TABLE a\n  ADD b text;')).toEqual([
+      'create table a (id int)',
+      'alter table a add b text',
+    ]);
+  });
+
+  it('removes line comments and nested block comments', () => {
+    expect(
+      sqlStatements('-- drop table a;\nselect 1; /* drop /* table */ b; */ select 2;'),
+    ).toEqual(['select 1', 'select 2']);
+  });
+
+  it('empties string literals, keeping semicolons inside them out of the split', () => {
+    expect(sqlStatements("insert into t values ('drop table x; it''s', E'a\\'; b');")).toEqual([
+      "insert into t values ('', e'')",
+    ]);
+  });
+
+  it('empties dollar-quoted bodies, tagged or not', () => {
+    expect(
+      sqlStatements(
+        'create function f() returns void language sql as $$ drop table x; $$;' +
+          'create function g() returns void language plpgsql as $body$ begin execute $q$drop table y$q$; end $body$;',
+      ),
+    ).toEqual([
+      "create function f() returns void language sql as ''",
+      "create function g() returns void language plpgsql as ''",
+    ]);
+  });
+
+  it('keeps quoted identifiers and positional parameters', () => {
+    expect(sqlStatements('drop table "odd;name""x"; select $1;')).toEqual([
+      'drop table "odd;name""x"',
+      'select $1',
+    ]);
+  });
+});
+
+describe('findDestructive', () => {
+  it('finds drops of tables, views, functions, types and schemas', () => {
+    expect(kinds('drop table if exists public.a;')).toEqual(['drops an object']);
+    expect(kinds('DROP FUNCTION public.f(text, boolean);')).toEqual(['drops an object']);
+    expect(kinds('drop materialized view v; drop type t; drop schema s cascade;')).toHaveLength(3);
+  });
+
+  it('leaves drops that keep the data alone', () => {
+    expect(
+      kinds(
+        'drop policy "p" on public.a; drop index a_idx; drop trigger t on public.a;' +
+          'alter table a drop constraint a_check;' +
+          'alter table a alter column b drop not null, alter column c drop default;',
+      ),
+    ).toEqual([]);
+  });
+
+  it('finds dropped columns, with or without the COLUMN keyword', () => {
+    expect(kinds('alter table public.a drop column b, add column c boolean;')).toEqual([
+      'drops a column',
+    ]);
+    expect(kinds('alter table a drop if exists b;')).toEqual(['drops a column']);
+    expect(kinds('alter table a drop constraint k, drop b;')).toEqual(['drops a column']);
+  });
+
+  it('finds renames of tables, columns, functions and type values', () => {
+    expect(kinds('alter table a rename to b;')).toEqual(['renames something']);
+    expect(kinds('alter table a rename column b to c;')).toEqual(['renames something']);
+    expect(kinds('alter function public.f() rename to g;')).toEqual(['renames something']);
+    expect(kinds("alter type status rename value 'a' to 'b';")).toEqual(['renames something']);
+  });
+
+  it('leaves renames of constraints and indexes alone', () => {
+    expect(kinds('alter table a rename constraint k to l; alter index i rename to j;')).toEqual([]);
+  });
+
+  it('finds tables, functions and views moved to another schema', () => {
+    expect(kinds('alter table public.x set schema private;')).toEqual([
+      'moves something to another schema',
+    ]);
+    expect(kinds('ALTER FUNCTION public.f() SET SCHEMA private;')).toEqual([
+      'moves something to another schema',
+    ]);
+    expect(kinds('alter view if exists public.v set schema private;')).toEqual([
+      'moves something to another schema',
+    ]);
+    expect(kinds('do $$ begin alter table public.x set schema private; end $$;')).toEqual([
+      'moves something to another schema',
+    ]);
+  });
+
+  it('does not mistake a function setting for a move', () => {
+    expect(
+      kinds(
+        "alter function public.f() set search_path = ''; alter function public.g() set schema_x.y = 1;",
+      ),
+    ).toEqual([]);
+  });
+
+  it('finds column type changes', () => {
+    expect(kinds('alter table a alter column b type bigint;')).toEqual(['changes a column type']);
+    expect(kinds('alter table a alter column b set data type text;')).toEqual([
+      'changes a column type',
+    ]);
+    expect(kinds('alter table a alter b type bigint using b::bigint;')).toEqual([
+      'changes a column type',
+    ]);
+  });
+
+  it('does not mistake a column named type for a type change', () => {
+    expect(
+      kinds('alter table a alter column type set not null; alter table a add column type text;'),
+    ).toEqual([]);
+  });
+
+  it('finds dropped type attributes and truncations', () => {
+    expect(kinds('alter type t drop attribute a;')).toEqual(['drops a type attribute']);
+    expect(kinds('truncate public.a;')).toEqual(['empties a table']);
+  });
+
+  it('ignores statements inside function bodies, comments and strings', () => {
+    expect(
+      kinds(
+        'create function f() returns void language plpgsql as $$ begin drop table t; end; $$;\n' +
+          "-- drop table a;\ninsert into public.settings (key, value) values ('k', '\"drop table a\"');",
+      ),
+    ).toEqual([]);
+  });
+
+  it('checks the body of a DO block, which runs with the migration', () => {
+    expect(
+      kinds(
+        'do $$ begin if exists (select 1) then alter table public.x drop column y; end if; end $$;',
+      ),
+    ).toEqual(['drops a column']);
+    expect(kinds("do $$ begin execute 'drop table public.x'; end $$;")).toEqual([
+      'drops an object',
+    ]);
+    expect(
+      kinds(
+        "DO LANGUAGE plpgsql $body$ BEGIN EXECUTE format('alter table %I rename to %I', 'a', 'b'); END $body$;",
+      ),
+    ).toEqual(['renames something']);
+    expect(kinds("do 'begin truncate public.x; end';")).toEqual(['empties a table']);
+  });
+
+  it('names the destructive statement found in a DO block', () => {
+    expect(
+      findDestructive(
+        'do $$ begin if exists (select 1) then alter table public.x drop column y; end if; end $$;',
+      ),
+    ).toEqual([{ name: 'drops a column', statement: 'do … alter table public.x drop column y' }]);
+  });
+
+  it('checks the body of a function or procedure the migration creates and then calls', () => {
+    expect(
+      findDestructive(
+        'create function private.tmp() returns void language plpgsql as $$ begin drop table public.x; end $$;\n' +
+          'select private.tmp();',
+      ),
+    ).toEqual([{ name: 'drops an object', statement: 'tmp() … drop table public.x' }]);
+    expect(
+      kinds(
+        `create or replace procedure "Cleanup" () language plpgsql as $$ begin execute 'truncate public.x'; end $$;` +
+          'call "Cleanup"();',
+      ),
+    ).toEqual(['empties a table']);
+  });
+
+  it('follows calls from code that runs with the migration, each routine once', () => {
+    expect(
+      kinds(
+        'create function private.inner() returns void language plpgsql as $$ begin ' +
+          'perform private.inner(); alter table public.x drop column y; end $$;' +
+          'create function private.outer() returns void language plpgsql as $$ begin ' +
+          'perform private.inner(); end $$;' +
+          'do $$ begin perform private.outer(); perform private.inner(); end $$;',
+      ),
+    ).toEqual(['drops a column']);
+  });
+
+  it('does not follow a routine that is only granted, scheduled or named by a policy', () => {
+    expect(
+      kinds(
+        'create function private.purge() returns void language plpgsql as $$ begin truncate public.x; end $$;' +
+          'grant execute on function private.purge() to service_role;' +
+          "select cron.schedule('purge', '0 3 * * *', $$select private.purge()$$);" +
+          'create policy p on public.y using (private.purge() is null);' +
+          'select private.purge_all();',
+      ),
+    ).toEqual([]);
+  });
+
+  it('leaves a DO block without destructive statements alone', () => {
+    expect(
+      kinds(
+        "do $$ begin if not exists (select 1 from pg_type where typname = 'status') then " +
+          "create type public.status as enum ('a', 'b'); end if; end $$;" +
+          'do $$ begin alter table public.x drop constraint if exists x_check; end $$;',
+      ),
+    ).toEqual([]);
+  });
+
+  it('finds the drops shipped with the app change in 20260926140000 (D-086)', () => {
+    expect(kinds(migration('20260926140000_signup_without_declarations.sql'))).toEqual([
+      'drops an object',
+      'drops a column',
+    ]);
+  });
+
+  it('passes the expand-only migrations', () => {
+    for (const name of [
+      '20260924000000_baseline_private_schema.sql',
+      '20260926100000_accounts.sql',
+      '20260927200000_projects_and_answers.sql',
+      '20260928090000_ai_usage.sql',
+    ]) {
+      expect(kinds(migration(name)), name).toEqual([]);
+    }
+  });
+});
+
+describe('checkMigrations', () => {
+  const baseFiles = ['20260926100000_accounts.sql', '20260928090000_ai_usage.sql'];
+  const path = (name) => `supabase/migrations/${name}`;
+  const now = Date.UTC(2026, 9, 3, 12, 0, 0);
+  const check = (changes, files = {}) =>
+    checkMigrations({
+      baseFiles,
+      changes,
+      read: (p) => files[p] ?? 'create table x (id int);',
+      now,
+    });
+
+  it('passes a new expand migration that sorts after the base', () => {
+    expect(check([{ status: 'A', path: path('20260929100000_vouchers.sql') }])).toEqual([]);
+  });
+
+  it('fails when a merged migration is edited or deleted', () => {
+    const problems = check([
+      { status: 'M', path: path('20260928090000_ai_usage.sql') },
+      { status: 'D', path: path('20260926100000_accounts.sql') },
+    ]);
+    expect(problems).toHaveLength(2);
+    expect(problems[0]).toMatch(/ai_usage\.sql: edited after it was merged/);
+    expect(problems[1]).toMatch(/accounts\.sql: deleted or renamed after it was merged/);
+  });
+
+  it('fails a rename, which git reports as a deletion and an addition', () => {
+    const problems = check([
+      { status: 'D', path: path('20260928090000_ai_usage.sql') },
+      { status: 'A', path: path('20260928090000_ai_usage_renamed.sql') },
+    ]);
+    expect(problems.some((p) => p.includes('deleted or renamed'))).toBe(true);
+    expect(problems.some((p) => p.includes('must sort after 20260928090000'))).toBe(true);
+  });
+
+  it('fails a new version at or below the newest on the base', () => {
+    expect(check([{ status: 'A', path: path('20260928090000_same.sql') }])).toEqual([
+      expect.stringContaining('version 20260928090000 must sort after 20260928090000'),
+    ]);
+    expect(check([{ status: 'A', path: path('20260927000000_older.sql') }])).toHaveLength(1);
+  });
+
+  it('fails a version that is not a real UTC time at most a day ahead', () => {
+    const add = (version) => check([{ status: 'A', path: path(`${version}_x.sql`) }]);
+    expect(add('20261004120000')).toEqual([]);
+    expect(add('20261004120001')).toEqual([
+      expect.stringContaining('version 20261004120001 must be the UTC time the migration was'),
+    ]);
+    // A mistyped year, month, day, hour, minute and second.
+    for (const version of [
+      '20621001000000',
+      '20261301000000',
+      '20260931000000',
+      '20261002240000',
+      '20261002236000',
+      '20261002235960',
+    ]) {
+      expect(add(version), version).toHaveLength(1);
+    }
+  });
+
+  it('fails a name the Supabase CLI would not order correctly', () => {
+    expect(check([{ status: 'A', path: path('2026093_short.sql') }])).toEqual([
+      expect.stringContaining('the name must be <14-digit UTC timestamp>_<snake_case>.sql'),
+    ]);
+    expect(check([{ status: 'A', path: path('20260929100000_Bad-Name.sql') }])).toHaveLength(1);
+  });
+
+  it('fails two new migrations with the same version', () => {
+    expect(
+      check([
+        { status: 'A', path: path('20260929100000_a.sql') },
+        { status: 'A', path: path('20260929100000_b.sql') },
+      ]),
+    ).toEqual([
+      expect.stringContaining('is also used by supabase/migrations/20260929100000_a.sql'),
+    ]);
+  });
+
+  it('fails a destructive statement without a contract line, naming it', () => {
+    const file = path('20260929100000_cleanup.sql');
+    const problems = check([{ status: 'A', path: file }], {
+      [file]: 'alter table public.profiles drop column legacy;',
+    });
+    expect(problems).toEqual([
+      expect.stringContaining('drops a column ("alter table public.profiles drop column legacy")'),
+    ]);
+  });
+
+  it('accepts a destructive statement in a contract migration with a reason', () => {
+    const file = path('20260929100000_cleanup.sql');
+    const sql = '-- contract: no deployed code reads profiles.legacy since #12\n';
+    expect(
+      check([{ status: 'A', path: file }], {
+        [file]: `${sql}alter table public.profiles drop column legacy;`,
+      }),
+    ).toEqual([]);
+    expect(
+      check([{ status: 'A', path: file }], {
+        [file]: '-- contract:\nalter table public.profiles drop column legacy;',
+      }),
+    ).toHaveLength(1);
+  });
+
+  it('ignores files outside supabase/migrations and works without base migrations', () => {
+    expect(check([{ status: 'M', path: 'supabase/tests/projects.test.sql' }])).toEqual([]);
+    expect(
+      checkMigrations({
+        baseFiles: [],
+        changes: [{ status: 'A', path: path('20260924000000_baseline.sql') }],
+        read: () => 'create schema private;',
+      }),
+    ).toEqual([]);
+  });
+});
+
+describe('readChanges', () => {
+  it('reads paths from git as they are, so an unusual file name is still checked', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'check-migrations-'));
+    // A throwaway repository that ignores the machine's git settings.
+    const env = {
+      ...process.env,
+      GIT_CONFIG_GLOBAL: '/dev/null',
+      GIT_CONFIG_NOSYSTEM: '1',
+      GIT_AUTHOR_NAME: 'Test',
+      GIT_AUTHOR_EMAIL: 'test@example.test',
+      GIT_COMMITTER_NAME: 'Test',
+      GIT_COMMITTER_EMAIL: 'test@example.test',
+    };
+    const git = (...args) => execFileSync('git', args, { cwd: dir, env, encoding: 'utf8' });
+    const write = (name, sql) => writeFileSync(join(dir, 'supabase/migrations', name), sql);
+    try {
+      mkdirSync(join(dir, 'supabase/migrations'), { recursive: true });
+      git('init', '-q', '-b', 'main');
+      // Git's default, which quotes a path with non-ASCII characters unless -z is used.
+      git('config', 'core.quotePath', 'true');
+      write('20260928090000_ai_usage.sql', 'create table a (id int);');
+      git('add', '.');
+      git('commit', '-q', '-m', 'base');
+      write('20260928090000_ai_usage.sql', 'create table a (id bigint);');
+      write('20260929090000_café.sql', 'drop table a;');
+      git('add', '.');
+      git('commit', '-q', '-m', 'change');
+
+      const changes = readChanges('main~1', dir);
+      expect(changes.baseFiles).toEqual(['20260928090000_ai_usage.sql']);
+      expect(changes.changes).toEqual([
+        { status: 'M', path: 'supabase/migrations/20260928090000_ai_usage.sql' },
+        { status: 'A', path: 'supabase/migrations/20260929090000_café.sql' },
+      ]);
+      expect(changes.read('supabase/migrations/20260929090000_café.sql')).toBe('drop table a;');
+      expect(checkMigrations(changes)).toEqual([
+        expect.stringContaining('20260928090000_ai_usage.sql: edited after it was merged'),
+        expect.stringContaining('20260929090000_café.sql: the name must be'),
+      ]);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});

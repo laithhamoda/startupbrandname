@@ -3,7 +3,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(25);
+select plan(30);
 
 insert into auth.users (id, email, created_at) values
   ('a1000000-0000-4000-8000-000000000001', 'owner@example.test', now()),
@@ -172,16 +172,53 @@ select isnt(
   'the limit counts each account''s own projects'
 );
 
+-- From here on the other account owns a project too, so every statement names its target by ID.
+select set_config('test.own_project_id', (select id::text from public.projects), true);
+
+-- Both touch no row: the foreign project is invisible to them.
+update public.projects set title = 'مشروع مسروق'
+  where id = current_setting('test.project_id')::uuid;
+delete from public.projects where id = current_setting('test.project_id')::uuid;
+
+select lives_ok(
+  $$insert into public.answers (project_id, question_id, normalized_value, source, confidence)
+    values (current_setting('test.own_project_id')::uuid, 'C1', '{"status": "answered", "value": "x"}', 'user', 'medium')$$,
+  'the other account saves an answer in its own project'
+);
+
+select throws_ok(
+  $$update public.answers set project_id = current_setting('test.project_id')::uuid
+    where project_id = current_setting('test.own_project_id')::uuid and question_id = 'C1'$$,
+  '42501',
+  null,
+  'another account cannot move its own answer into a foreign project'
+);
+
 reset role;
 
 select is(
-  (select count(*)::int from public.answers where validated),
+  (select title from public.projects where id = current_setting('test.project_id')::uuid),
+  'صيانة',
+  'another account cannot rename a foreign project'
+);
+
+select is(
+  (select count(*)::int from public.projects where id = current_setting('test.project_id')::uuid),
+  1,
+  'another account cannot delete a foreign project'
+);
+
+select is(
+  (
+    select count(*)::int from public.answers
+    where project_id = current_setting('test.project_id')::uuid and validated
+  ),
   0,
   'another account cannot change foreign answers'
 );
 
 select is(
-  (select count(*)::int from public.answers),
+  (select count(*)::int from public.answers where project_id = current_setting('test.project_id')::uuid),
   3,
   'another account cannot delete foreign answers'
 );
@@ -198,7 +235,17 @@ select is(
   'the account''s projects are deleted with it'
 );
 
-select is((select count(*)::int from public.answers), 0, 'their answers are deleted too');
+select is(
+  (select count(*)::int from public.answers where project_id = current_setting('test.project_id')::uuid),
+  0,
+  'their answers are deleted too'
+);
+
+select is(
+  (select count(*)::int from public.answers where project_id = current_setting('test.own_project_id')::uuid),
+  1,
+  'the other account''s answers stay'
+);
 
 select * from finish();
 
