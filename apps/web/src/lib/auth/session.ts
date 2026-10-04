@@ -22,6 +22,8 @@ import {
 export interface SessionUser {
   id: string;
   email: string | null;
+  /** Names from the sign-in profile, removed from every text sent to a model (rule 5, D-148). */
+  names: string[];
 }
 
 export interface Profile {
@@ -29,12 +31,30 @@ export interface Profile {
   locale: string;
 }
 
+/** The profile fields that may hold the founder's name; Google sign-in fills some of them. */
+const NAME_FIELDS = ['full_name', 'name', 'given_name', 'family_name'] as const;
+const profileName = z.string().trim().min(1).max(200);
+
+/** The distinct names in a session token's user metadata. */
+export function profileNames(metadata: unknown): string[] {
+  if (typeof metadata !== 'object' || metadata === null) return [];
+  const names = NAME_FIELDS.flatMap((field) => {
+    const name = profileName.safeParse((metadata as Record<string, unknown>)[field]);
+    return name.success ? [name.data] : [];
+  });
+  return [...new Set(names)];
+}
+
 /** The signed-in user from the verified session token, or null. */
 export async function getSessionUser(supabase: SupabaseServerClient): Promise<SessionUser | null> {
   const { data } = await supabase.auth.getClaims();
   const claims = data?.claims;
   if (!claims) return null;
-  return { id: claims.sub, email: typeof claims.email === 'string' ? claims.email : null };
+  return {
+    id: claims.sub,
+    email: typeof claims.email === 'string' ? claims.email : null,
+    names: profileNames(claims.user_metadata),
+  };
 }
 
 /** The user's profile, which exists only once onboarding is complete. */
