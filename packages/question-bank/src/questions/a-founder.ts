@@ -74,7 +74,7 @@ export const AXIS_A = [
       // today, but the mentor and the report will read the answers later (D-148).
       labels: {
         name: t('الدور أو الصفة (لا حاجة إلى الاسم)', 'Role or title (no name needed)'),
-        detail: t('الدور', 'Role'),
+        detail: t('المسؤولية', 'Responsibility'),
       },
     },
     label: t(
