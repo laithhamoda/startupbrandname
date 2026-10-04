@@ -125,7 +125,7 @@ describe('the question bank (M3 definition of done: all 64 questions)', () => {
 });
 
 describe('A4 (the team)', () => {
-  it('asks for a role or title, never a name, so none reaches the AI review (D-148)', () => {
+  it('asks for a role or title, never a name (D-148)', () => {
     const field = getQuestion('A4').field;
     if (field.kind !== 'people') throw new Error('A4 is a people field');
     expect(field.labels.name).toEqual({

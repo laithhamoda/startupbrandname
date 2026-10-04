@@ -70,7 +70,8 @@ export const AXIS_A = [
     field: {
       kind: 'people',
       minItems: 0,
-      // No name is asked for: names a founder types reach the AI review as written (D-148).
+      // No name is asked for (data minimisation): a people field is not sent to the AI review
+      // today, but the mentor and the report will read the answers later (D-148).
       labels: {
         name: t('الدور أو الصفة (لا حاجة إلى الاسم)', 'Role or title (no name needed)'),
         detail: t('الدور', 'Role'),
