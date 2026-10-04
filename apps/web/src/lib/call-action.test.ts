@@ -17,6 +17,15 @@ describe('callAction', () => {
     );
   });
 
+  it('turns an error thrown on the server into the failure result too', async () => {
+    // In production the client receives such an error with only its digest.
+    const thrown = Object.assign(new Error('An error occurred in the Server Components render.'), {
+      digest: '2417253870',
+    });
+
+    expect(await callAction(() => Promise.reject(thrown), FAILED)).toBe(FAILED);
+  });
+
   it('lets a redirect through', async () => {
     let signal = new Error('not thrown');
     try {

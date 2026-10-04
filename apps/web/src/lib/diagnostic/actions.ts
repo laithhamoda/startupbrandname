@@ -44,7 +44,9 @@ import { projectPath, stepFromSlug, stepPath } from './steps';
 //   database refused or could not be reached, the project is gone). The failure is logged with
 //   lib/log.ts and the form shows it next to the button, keeping what the person entered.
 // - It throws only for invariant violations: input no page of ours can send, such as an unknown
-//   locale. Those reach the error pages (error.tsx), with a digest that matches the log.
+//   locale. instrumentation.ts logs those with their digest. A form that calls the action
+//   through callAction shows them as its failure message, like a dropped connection; any other
+//   caller gets the error page (error.tsx), whose reference number is that digest.
 // - redirect() and notFound() are signals, not errors: a catch that covers them calls
 //   unstable_rethrow(error) first, on the server and in the component that awaits the action.
 // - The form calls it through useActionState and callAction (lib/call-action.ts, which turns a
