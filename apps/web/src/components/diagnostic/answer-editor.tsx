@@ -229,21 +229,27 @@ export function AnswerEditor(props: AnswerEditorProps) {
     ? []
     : [...new Set(errors.flatMap((error) => (error.message === null ? [] : [error.message])))];
   const failed = result?.status === 'error' && result.reason === 'failed';
-  // The feedback is announced by taking focus, named by its first message, in the order shown
-  // below; its messages are not live regions as well, or they would be read twice (UX-15).
-  const label = [
-    { shown: props.savedUnknown && !result, id: 'feedback-unknown' },
-    { shown: local.kind === 'ranges', id: 'feedback-r3' },
-    { shown: local.kind === 'readings', id: 'feedback-readings' },
-    { shown: local.kind === 'centimes', id: 'feedback-centimes' },
-    { shown: confirm !== null, id: 'feedback-confirm' },
-    { shown: result?.status === 'rejected', id: 'feedback-finding-0' },
-    { shown: summary.length > 0, id: 'feedback-invalid' },
-    { shown: failed, id: 'feedback-error' },
-    { shown: lost === 'stale', id: 'feedback-stale' },
-    { shown: lost === 'gone', id: 'feedback-gone' },
-    { shown: notes.length > 0, id: 'feedback-note-0' },
-  ].find((message) => message.shown)?.id;
+  // The saved «لا أعرف» is mentioned until "Next" has something else to say.
+  const showUnknown =
+    props.savedUnknown && !result && local.kind === 'none' && clientErrors.length === 0;
+  const numbered = (prefix: string, count: number) =>
+    Array.from({ length: count }, (_, index) => `${prefix}-${String(index)}`);
+  // The feedback is announced by taking focus: named by its first message and described by the
+  // rest, in the order shown below. Its messages are not live regions as well, or they would be
+  // read twice (UX-15).
+  const [label, ...description] = [
+    showUnknown ? ['feedback-unknown'] : [],
+    local.kind === 'ranges' ? ['feedback-r3'] : [],
+    local.kind === 'readings' ? ['feedback-readings'] : [],
+    local.kind === 'centimes' ? ['feedback-centimes'] : [],
+    confirm ? ['feedback-confirm', 'feedback-confirm-text', 'feedback-confirm-note'] : [],
+    result?.status === 'rejected' ? numbered('feedback-finding', result.findings.length) : [],
+    summary.length > 0 ? ['feedback-invalid', 'feedback-invalid-list'] : [],
+    failed ? ['feedback-error'] : [],
+    lost === 'stale' ? ['feedback-stale'] : [],
+    lost === 'gone' ? ['feedback-gone'] : [],
+    numbered('feedback-note', notes.length),
+  ].flat();
 
   return (
     <form
@@ -270,9 +276,15 @@ export function AnswerEditor(props: AnswerEditorProps) {
         ref={feedback}
         tabIndex={-1}
         className="grid gap-3 focus:outline-none"
-        {...(label ? { role: 'group', 'aria-labelledby': label } : {})}
+        {...(label
+          ? {
+              role: 'group',
+              'aria-labelledby': label,
+              ...(description.length > 0 ? { 'aria-describedby': description.join(' ') } : {}),
+            }
+          : {})}
       >
-        {props.savedUnknown && !result ? (
+        {showUnknown ? (
           <RuleAlert id="feedback-unknown" live={false} message={t('savedUnknown')} />
         ) : null}
 
@@ -358,10 +370,12 @@ export function AnswerEditor(props: AnswerEditorProps) {
             <p id="feedback-confirm" className="font-bold">
               {t('confirmTitle')}
             </p>
-            <p lang="ar" dir="rtl" className="text-body">
+            <p id="feedback-confirm-text" lang="ar" dir="rtl" className="text-body">
               {confirm.text}
             </p>
-            <p className="text-muted">{t('confirmNote')}</p>
+            <p id="feedback-confirm-note" className="text-muted">
+              {t('confirmNote')}
+            </p>
             <div className="flex flex-wrap gap-2">
               <Button
                 variant="primary"
@@ -389,7 +403,7 @@ export function AnswerEditor(props: AnswerEditorProps) {
         ) : null}
         {summary.length > 0 ? (
           <RuleAlert id="feedback-invalid" live={false} message={t('invalid')}>
-            <ul className="mt-1 grid list-disc gap-1 ps-5">
+            <ul id="feedback-invalid-list" className="mt-1 grid list-disc gap-1 ps-5">
               {summary.map((text) => (
                 <li key={text}>{text}</li>
               ))}
