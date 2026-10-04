@@ -11,19 +11,29 @@ import type { FindingView } from '@/lib/diagnostic/findings';
 export function FindingList({
   findings,
   relatedHref,
+  idPrefix,
+  live = true,
 }: {
   findings: readonly FindingView[];
   /** A link to each related question (a path without the language prefix), on the overview. */
   relatedHref?: (id: QuestionId) => string;
+  /** Names each message `${idPrefix}-${index}`, for the label of the area around them. */
+  idPrefix?: string;
+  /** False inside an area that takes focus to be read (RuleAlert). */
+  live?: boolean;
 }) {
   return (
     <ul className="grid gap-3">
-      {findings.map((finding) => (
+      {findings.map((finding, index) => (
         <li
           key={finding.code}
           className={finding.severity === 'block' ? '[&>div]:border-danger' : undefined}
         >
-          <RuleAlert message={finding.text}>
+          <RuleAlert
+            message={finding.text}
+            live={live}
+            {...(idPrefix ? { id: `${idPrefix}-${String(index)}` } : {})}
+          >
             {finding.related.length > 0 ? (
               <ul className="mt-1 grid gap-0.5 text-muted">
                 {finding.related.map((related) => (

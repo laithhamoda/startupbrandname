@@ -192,6 +192,22 @@ export function AnswerEditor(props: AnswerEditorProps) {
   const summary = isSingleControl(props.field)
     ? []
     : [...new Set(errors.flatMap((error) => (error.message === null ? [] : [error.message])))];
+  const failed = result?.status === 'error' && result.reason === 'failed';
+  // The feedback is announced by taking focus, named by its first message, in the order shown
+  // below; its messages are not live regions as well, or they would be read twice (UX-15).
+  const label = [
+    { shown: props.savedUnknown && !result, id: 'feedback-unknown' },
+    { shown: local.kind === 'ranges', id: 'feedback-r3' },
+    { shown: local.kind === 'readings', id: 'feedback-readings' },
+    { shown: local.kind === 'centimes', id: 'feedback-centimes' },
+    { shown: confirm !== null, id: 'feedback-confirm' },
+    { shown: result?.status === 'rejected', id: 'feedback-finding-0' },
+    { shown: summary.length > 0, id: 'feedback-invalid' },
+    { shown: failed, id: 'feedback-error' },
+    { shown: lost === 'stale', id: 'feedback-stale' },
+    { shown: lost === 'gone', id: 'feedback-gone' },
+    { shown: notes.length > 0, id: 'feedback-note-0' },
+  ].find((message) => message.shown)?.id;
 
   return (
     <form
@@ -221,12 +237,14 @@ export function AnswerEditor(props: AnswerEditorProps) {
         ref={feedback}
         tabIndex={-1}
         className="grid gap-3 focus:outline-none"
-        aria-live="polite"
+        {...(label ? { role: 'group', 'aria-labelledby': label } : {})}
       >
-        {props.savedUnknown && !result ? <RuleAlert message={t('savedUnknown')} /> : null}
+        {props.savedUnknown && !result ? (
+          <RuleAlert id="feedback-unknown" live={false} message={t('savedUnknown')} />
+        ) : null}
 
         {local.kind === 'ranges' ? (
-          <RuleAlert message={message(local.code, props.locale)}>
+          <RuleAlert id="feedback-r3" live={false} message={message(local.code, props.locale)}>
             <div className="mt-2 flex flex-wrap gap-2">
               {local.ranges.map((range) => (
                 <Button
@@ -254,7 +272,11 @@ export function AnswerEditor(props: AnswerEditorProps) {
         ) : null}
 
         {local.kind === 'readings' ? (
-          <RuleAlert message={message('R3_two_readings', props.locale, local.choice.typed)}>
+          <RuleAlert
+            id="feedback-readings"
+            live={false}
+            message={message('R3_two_readings', props.locale, local.choice.typed)}
+          >
             <div className="mt-2 flex flex-wrap gap-2">
               {local.choice.readings.map((reading) => (
                 <Button
@@ -272,7 +294,11 @@ export function AnswerEditor(props: AnswerEditorProps) {
         ) : null}
 
         {local.kind === 'centimes' ? (
-          <RuleAlert message={message('currency_centimes', props.locale)}>
+          <RuleAlert
+            id="feedback-centimes"
+            live={false}
+            message={message('currency_centimes', props.locale)}
+          >
             <div className="mt-2 flex flex-wrap gap-2">
               <Button
                 disabled={pending}
@@ -296,7 +322,9 @@ export function AnswerEditor(props: AnswerEditorProps) {
 
         {confirm ? (
           <div className="grid gap-3 border-s-[3px] border-teal bg-sunken px-4 py-3 text-small">
-            <p className="font-bold">{t('confirmTitle')}</p>
+            <p id="feedback-confirm" className="font-bold">
+              {t('confirmTitle')}
+            </p>
             <p lang="ar" dir="rtl" className="text-body">
               {confirm.text}
             </p>
@@ -323,9 +351,11 @@ export function AnswerEditor(props: AnswerEditorProps) {
             </div>
           </div>
         ) : null}
-        {result?.status === 'rejected' ? <FindingList findings={result.findings} /> : null}
+        {result?.status === 'rejected' ? (
+          <FindingList findings={result.findings} idPrefix="feedback-finding" live={false} />
+        ) : null}
         {summary.length > 0 ? (
-          <RuleAlert message={t('invalid')}>
+          <RuleAlert id="feedback-invalid" live={false} message={t('invalid')}>
             <ul className="mt-1 grid list-disc gap-1 ps-5">
               {summary.map((text) => (
                 <li key={text}>{text}</li>
@@ -333,20 +363,20 @@ export function AnswerEditor(props: AnswerEditorProps) {
             </ul>
           </RuleAlert>
         ) : null}
-        {result?.status === 'error' && result.reason === 'failed' ? (
-          <RuleAlert message={t('error')} />
-        ) : null}
+        {failed ? <RuleAlert id="feedback-error" live={false} message={t('error')} /> : null}
         {lost === 'stale' ? (
-          <RuleAlert message={t('stale')}>
+          <RuleAlert id="feedback-stale" live={false} message={t('stale')}>
             <TextLink href={props.overviewHref}>{t('staleOverview')}</TextLink>
           </RuleAlert>
         ) : null}
         {lost === 'gone' ? (
-          <RuleAlert message={t('gone')}>
+          <RuleAlert id="feedback-gone" live={false} message={t('gone')}>
             <TextLink href="/projects">{t('goneProjects')}</TextLink>
           </RuleAlert>
         ) : null}
-        {notes.length > 0 ? <FindingList findings={notes} /> : null}
+        {notes.length > 0 ? (
+          <FindingList findings={notes} idPrefix="feedback-note" live={false} />
+        ) : null}
       </div>
 
       <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
