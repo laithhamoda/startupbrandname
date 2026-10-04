@@ -8,10 +8,14 @@ const DONT_KNOW = 'لا أعرف (يُحفظ افتراضًا)';
 const NEXT = 'التالي';
 
 /** Creates a project from "My projects" and returns its ID; lands on the first question. */
-async function createProject(page: Page, mode: 'quick' | 'full'): Promise<string> {
+async function createProject(
+  page: Page,
+  mode: 'quick' | 'full',
+  title = 'صيانة مكيّفات المطاعم',
+): Promise<string> {
   await page.goto('/ar/projects');
   await page.getByRole('link', { name: 'مشروع جديد' }).click();
-  await page.getByLabel('اسم المشروع').fill('صيانة مكيّفات المطاعم');
+  await page.getByLabel('اسم المشروع').fill(title);
   await page.getByLabel('عملة المشروع').selectOption('JOD');
   await page.getByRole('radio', { name: mode === 'quick' ? /السريعة/ : /الكاملة/ }).click();
   await page.getByRole('button', { name: 'أنشئ المشروع وابدأ' }).click();
@@ -137,6 +141,15 @@ test('a number is never misread: ranges, two readings and whole numbers', async 
   await page.getByRole('button', { name: NEXT }).click();
   await expect(page.getByText('اكتب رقمًا واحدًا، أو اختر أحد النطاقات المقترحة.')).toBeVisible();
 
+  // A decimal reading of three digits is saved once picked, and saved again unchanged.
+  await page.getByRole('textbox').fill('12.125');
+  await page.getByRole('button', { name: NEXT }).click();
+  await page.getByRole('button', { name: '12.125', exact: true }).click();
+  await expect(page).toHaveURL(/\/q\/A7$/);
+  await page.goto(`/ar/projects/${id}/q/A6`);
+  await expect(page.getByRole('textbox')).toHaveValue('12.1250');
+  await next(page, 'A7');
+
   // A suggested range on a whole-number question saves a whole number (UX-1).
   await page.goto(`/ar/projects/${id}/q/C8`);
   await page.getByRole('textbox').fill('كثير');
@@ -178,39 +191,73 @@ test('an error sits under the box it is about, and rows keep the focus (UX-3, UX
   await page.goto(`/ar/projects/${id}/q/F3`);
   await page.getByLabel('البند', { exact: true }).fill('قطع غيار');
   await page.getByLabel('المبلغ').fill('8');
-  await page.getByRole('button', { name: 'أضف' }).click();
+  const add = page.getByRole('button', { name: 'أضف', exact: true });
+  const row = (number: number) =>
+    page.getByRole('group', { name: `البند ${String(number)}`, exact: true });
+  await add.click();
   // The new row takes focus in its first box.
-  const second = page.getByRole('group', { name: 'البند 2' });
-  const secondLabel = second.getByLabel('البند', { exact: true });
+  const secondLabel = row(2).getByLabel('البند', { exact: true });
   await expect(secondLabel).toBeFocused();
-  await second.getByLabel('المبلغ').fill('5');
+  await row(2).getByLabel('المبلغ').fill('5');
+  await add.click();
+  await row(3).getByLabel('البند', { exact: true }).fill('توصيل');
+  await row(3).getByLabel('المبلغ').fill('3');
 
   // The second row's label is missing: the message names that box, which takes focus.
   await page.getByRole('button', { name: NEXT }).click();
   await expect(secondLabel).toHaveAttribute('aria-invalid', 'true');
   await expect(secondLabel).toHaveAccessibleDescription('أكمل الخانات المطلوبة.');
   await expect(secondLabel).toBeFocused();
-  await expect(page.getByLabel('البند', { exact: true }).first()).not.toHaveAttribute(
-    'aria-invalid',
-  );
+  await expect(page.locator('[aria-invalid="true"]')).toHaveCount(1);
 
-  // Removing the row moves focus to the row before it, and says so.
+  // Removing the first row: focus goes to "Add", and no mark is left on a row it was not about.
+  await page.getByRole('button', { name: 'احذف البند 1' }).click();
+  await expect(add).toBeFocused();
+  await expect(page.getByRole('status').filter({ hasText: 'حُذف البند.' })).toBeAttached();
+  await expect(page.locator('[aria-invalid="true"]')).toHaveCount(0);
+  await page.getByRole('button', { name: NEXT }).click();
+  await expect(row(1).getByLabel('البند', { exact: true })).toBeFocused();
+  await expect(page.locator('[aria-invalid="true"]')).toHaveCount(1);
+
+  // Removing the last row moves focus to the row before it.
   await page.getByRole('button', { name: 'احذف البند 2' }).click();
   await expect(page.getByText('البند 1', { exact: true })).toBeFocused();
-  await expect(page.getByRole('status').filter({ hasText: 'حُذف البند.' })).toBeAttached();
+  await row(1).getByLabel('البند', { exact: true }).fill('قطع غيار');
   await next(page, 'F4');
+
+  // A choice left empty: the feedback that takes focus is read with its message (UX-15).
+  await page.goto(`/ar/projects/${id}/q/C7`);
+  await page.getByRole('button', { name: NEXT }).click();
+  const feedback = page.getByRole('group', { name: 'راجع إجابتك:' });
+  await expect(feedback).toBeFocused();
+  await expect(feedback).toHaveAccessibleDescription('اختر خيارًا واحدًا على الأقل.');
+
+  // A list offers no row beyond its limit (D3: 15 competitors, three to start with).
+  await page.goto(`/ar/projects/${id}/q/D3`);
+  for (let number = 4; number <= 15; number += 1) {
+    await add.click();
+    await expect(
+      page.getByRole('group', { name: `المنافس ${String(number)}`, exact: true }),
+    ).toBeVisible();
+  }
+  await expect(add).toHaveCount(0);
+  await expect(page.getByText('الحد الأقصى لعدد البنود 15.')).toBeVisible();
 });
 
 test('each step has its own title, and moving on puts focus on the question (UX-5)', async ({
   page,
 }) => {
   await signUpByEmail(page, uniqueEmail('step-focus'));
-  await createProject(page, 'quick');
+  // A Latin title keeps its own direction under /ar, and never reaches the page title (UX-12).
+  const title = 'C++ Academy!';
+  const id = await createProject(page, 'quick', title);
 
   // A full page load leaves focus where the browser puts it.
   await page.reload();
   const heading = page.getByRole('heading', { level: 1 });
   await expect(page).toHaveTitle(/^السؤال 1 من 20 · المؤسس والموارد · التشخيص/);
+  await expect(page).not.toHaveTitle(/Academy/);
+  await expect(page.getByText(title, { exact: true })).toHaveAttribute('dir', 'auto');
   await expect(page.getByText('السؤال 1 من 20 في النسخة السريعة')).toBeVisible();
   await expect(page.getByText('السؤال 1 من 2 في هذا المحور')).toBeVisible();
   await expect(heading).not.toBeFocused();
@@ -221,6 +268,13 @@ test('each step has its own title, and moving on puts focus on the question (UX-
   await expect(heading).toHaveText(getQuestion('A8').label.ar);
   await expect(heading).toBeFocused();
   await expect(page).toHaveTitle(/^السؤال 2 من 20 · المؤسس والموارد · التشخيص/);
+
+  await page.goto(`/ar/projects/${id}`);
+  await expect(heading.getByText(title, { exact: true })).toHaveAttribute('dir', 'auto');
+  await page.goto('/ar/projects');
+  await expect(
+    page.getByRole('link', { name: title }).getByText(title, { exact: true }),
+  ).toHaveAttribute('dir', 'auto');
 });
 
 test('a follow-up keeps its warning when the founder comes back to it (ARCH-6)', async ({
@@ -302,6 +356,18 @@ test('answers survive signing out, and the diagnostic resumes where it stopped',
   await page.goto('/ar/account');
   await page.getByRole('button', { name: 'تسجيل الخروج' }).click();
   await expect(page).toHaveURL(/\/ar$/);
+
+  // Back from the code step, the email step's heading takes focus; a first load leaves it be
+  // (UX-8). Any address reaches the code step, so this one sends nothing.
+  await page.goto('/ar/login');
+  const emailStep = page.getByRole('heading', { name: 'بريدك الإلكتروني' });
+  await expect(emailStep).toBeVisible();
+  await expect(emailStep).not.toBeFocused();
+  await page.getByLabel('البريد الإلكتروني').fill(uniqueEmail('other-address'));
+  await page.getByRole('button', { name: 'أرسل الرمز' }).click();
+  await page.getByRole('button', { name: 'استخدم بريدًا آخر أو اطلب رمزًا جديدًا' }).click();
+  await expect(emailStep).toBeFocused();
+
   await page.waitForTimeout(61_000);
   await signInByEmail(page, email);
 
