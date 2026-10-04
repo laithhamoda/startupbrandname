@@ -1,7 +1,6 @@
 'use server';
 
 import { westernDigits } from '@sbn/question-bank';
-import type { AuthError } from '@supabase/supabase-js';
 import { revalidatePath } from 'next/cache';
 import { cookies, headers } from 'next/headers';
 import { redirect, unstable_rethrow } from 'next/navigation';
@@ -13,6 +12,7 @@ import { COUNTRY_CODES } from '@/lib/countries';
 import { errorFields, log } from '@/lib/log';
 import { closedCountries } from '@/lib/markets';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { type AuthErrorCode, errorCodeOf } from './errors';
 import { googleSignInAvailable } from './google';
 import { projectsPath, safeNextPath } from './next-path';
 import { type OnboardingField, parseOnboarding } from './onboarding';
@@ -29,8 +29,7 @@ import { SIGNUP_INTENT_COOKIE } from './signup-intent';
 // Every action receives the page locale explicitly: Server Actions cannot read the [locale]
 // segment. Results carry codes, never text; the forms translate them.
 
-export type AuthErrorCode =
-  'invalidEmail' | 'invalidCode' | 'rateLimited' | 'failed' | 'signupExpired' | 'answers';
+export type { AuthErrorCode } from './errors';
 
 export type AuthFormState =
   | { status: 'idle' }
@@ -56,16 +55,6 @@ function parseLocale(value: unknown): Locale {
 /** Where to go after sign-in: `value` when it is a page of this site, else the projects. */
 function nextPathOf(locale: Locale, value: unknown): string {
   return safeNextPath(typeof value === 'string' ? value : null, projectsPath(locale));
-}
-
-function errorCodeOf(error: AuthError): AuthErrorCode {
-  if (error.status === 429 || error.code === 'over_email_send_rate_limit') return 'rateLimited';
-  // Supabase uses otp_expired for a wrong code too ("Token has expired or is invalid").
-  if (error.code === 'otp_expired') return 'invalidCode';
-  if (error.code === 'validation_failed' || error.code === 'email_address_invalid') {
-    return 'invalidEmail';
-  }
-  return 'failed';
 }
 
 async function siteOrigin(): Promise<string> {
