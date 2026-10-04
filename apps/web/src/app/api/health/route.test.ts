@@ -86,11 +86,32 @@ describe('GET /api/health', () => {
   });
 
   it('does not expose configuration values', async () => {
+    vi.stubEnv('ANTHROPIC_API_KEY', 'sk-ant-test-secret');
     mockFetch(() => Promise.resolve(new Response(null, { status: 200 })));
 
     const text = await (await GET()).text();
 
     expect(text).not.toContain(SUPABASE_URL);
     expect(text).not.toContain(PUBLISHABLE_KEY);
+    expect(text).not.toContain('sk-ant-test-secret');
+    expect(text).not.toContain('anthropic');
+  });
+
+  it.each([
+    [{ AI_PROVIDER: 'anthropic', ANTHROPIC_API_KEY: 'sk-ant-test' }, 'on'],
+    [{ AI_PROVIDER: 'anthropic', ANTHROPIC_API_KEY: undefined }, 'off'],
+    [{ AI_PROVIDER: 'fake', VERCEL_ENV: 'preview' }, 'on'],
+    [{ AI_PROVIDER: 'fake', VERCEL_ENV: 'production' }, 'off'],
+    [{ AI_PROVIDER: 'off', ANTHROPIC_API_KEY: 'sk-ant-test' }, 'off'],
+  ])('says whether AI is on, without the reason: %o', async (env, ai) => {
+    for (const [name, value] of Object.entries(env)) vi.stubEnv(name, value);
+    mockFetch(() => Promise.resolve(new Response(null, { status: 200 })));
+
+    const response = await GET();
+    const body: unknown = await response.json();
+
+    // AI off is a setting, not a fault: the service stays healthy.
+    expect(response.status).toBe(200);
+    expect(body).toMatchObject({ status: 'ok', ai });
   });
 });
