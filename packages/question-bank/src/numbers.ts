@@ -7,11 +7,13 @@ const PERSIAN = '۰۱۲۳۴۵۶۷۸۹';
 /** Scale words in Arabic (MSA and dialects), English and French, as powers of ten. */
 const SCALES: readonly { words: readonly string[]; exponent: number }[] = [
   { words: ['الف', 'الاف', 'آلاف', 'thousand', 'k', 'mille'], exponent: 3 },
-  // No bare "m": it is as likely to mean metres or minutes.
+  // No bare "m": it is as likely to mean metres or minutes, so readNumber asks (SHORT_SCALE).
   { words: ['مليون', 'ملايين', 'million', 'millions', 'mn'], exponent: 6 },
   { words: ['مليار', 'مليارات', 'billion', 'milliard', 'milliards', 'bn'], exponent: 9 },
 ];
 const SCALE_WORDS = SCALES.flatMap((scale) => scale.words);
+/** A lone "m" or "b" after a number: a million or a billion written short, or metres, minutes. */
+const SHORT_SCALE = /^\s*[mb](?!\p{L})/iu;
 
 /** One way to read a number that can be read two ways. */
 export interface NumberAlternative {
@@ -162,13 +164,23 @@ export function readNumber(input: string): NumberReading {
   const end = start + token.length;
   const before = text.slice(0, start);
   const after = text.slice(end);
-  // All of the number, and only one: a second number, a mark just before the digits (".5") or a
-  // scale word before them («مليون و500») would otherwise be dropped without a word (UX-2).
-  if (/\d/.test(after) || /[.,٫٬]$/.test(before) || containsPhrase(before, SCALE_WORDS)) {
+  // A minus joined to the digits makes the number negative. Any other dash before them, or a
+  // minus set apart ("- 5", "–5"), may be a list bullet or a slip.
+  const dash = /([-−–—])(\s*)$/.exec(before);
+  const negative = dash !== null && dash[2] === '' && (dash[1] === '-' || dash[1] === '−');
+  // All of the number, and only one: a second number, a mark just before the digits (".5"), a
+  // scale word before them («مليون و500»), such a dash, or a lone m or b after them ("1.5M")
+  // would otherwise be dropped or guessed without a word (UX-2).
+  if (
+    /\d/.test(after) ||
+    /[.,٫٬]$/.test(before) ||
+    containsPhrase(before, SCALE_WORDS) ||
+    (dash !== null && !negative) ||
+    SHORT_SCALE.test(after)
+  ) {
     return { ok: false, reason: 'ambiguous' };
   }
 
-  const negative = /[-−]$/.test(before);
   const exponent = exponentAfter(after);
   const signed = (digits: Digits) => {
     const value = decimalValue(digits, exponent);

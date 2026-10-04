@@ -89,6 +89,12 @@ describe('readNumber', () => {
     ['1.1k', 1100],
     ['0,3 مليون', 300_000],
     ['-5', -5],
+    ['−5', -5],
+    // Units that are not scales.
+    ['20 min', 20],
+    ['40 hours', 40],
+    ['5 MB', 5],
+    ['3h', 3],
   ])('reads %s as %d', (text, value) => {
     expect(readNumber(text)).toEqual({ ok: true, value });
   });
@@ -178,6 +184,11 @@ describe('readNumber', () => {
     '+962 79 000 0000',
     'مليون و500',
     'ألف و ٥٠٠',
+    // A dash that is not a minus joined to the digits: a list bullet or a slip.
+    '- 5',
+    '− ٥',
+    '–5',
+    '— 5',
   ])('never reads only part of "%s"', (text) => {
     expect(readNumber(text)).toEqual({ ok: false, reason: 'ambiguous' });
   });
@@ -192,9 +203,12 @@ describe('readNumber', () => {
     expect(readNumber('   ')).toEqual({ ok: false, reason: 'empty' });
   });
 
-  it('keeps metres and minutes apart from millions', () => {
-    expect(readNumber('20 m')).toEqual({ ok: true, value: 20 });
-  });
+  it.each(['1.5M', '2m', '20 m', '٢٠ M', '3B', '3 b'])(
+    'asks about "%s": a lone m or b is a million or a billion, or metres or minutes',
+    (text) => {
+      expect(readNumber(text)).toEqual({ ok: false, reason: 'ambiguous' });
+    },
+  );
 
   it('turns Arabic-Indic and Persian digits into Western ones', () => {
     expect(westernDigits('٠١٢٣٤٥٦٧٨٩ ۰۱۲')).toBe('0123456789 012');
