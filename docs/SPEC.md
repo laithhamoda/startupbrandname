@@ -1,5 +1,6 @@
 # docs/SPEC.md — Functional Specification
 
+> Decisions that changed this spec since it was written are listed in [SPEC-CHANGES.md](SPEC-CHANGES.md).
 > Companion to `CLAUDE.md`. Place this file at `docs/SPEC.md`.
 > Labels are Arabic (MSA). IDs and schema are English.
 
