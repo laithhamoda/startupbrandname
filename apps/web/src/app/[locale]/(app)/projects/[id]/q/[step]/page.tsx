@@ -2,6 +2,7 @@ import {
   AXIS_NAMES,
   completeness,
   positionInAxis,
+  positionInMode,
   previousStep,
   resolveStep,
   sequenceModeFor,
@@ -11,10 +12,13 @@ import {
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { notFound, redirect } from 'next/navigation';
+import { cache, type ReactNode } from 'react';
 import { AnswerEditor } from '@/components/diagnostic/answer-editor';
 import { AxisProgress, CompletenessPanel } from '@/components/diagnostic/progress';
+import { QuestionHeading } from '@/components/diagnostic/question-heading';
 import { TextLink } from '@/components/ui/text-link';
 import { currentLocale } from '@/i18n/locale';
+import type { Locale } from '@/i18n/routing';
 import { consentStateOrNull } from '@/lib/ai/consent';
 import { activeProvider } from '@/lib/ai/provider';
 import { requireAccount } from '@/lib/auth/session';
@@ -25,10 +29,38 @@ import { viewFinding } from '@/lib/diagnostic/findings';
 import { loadProject } from '@/lib/diagnostic/project';
 import { projectPath, stepFromSlug, stepPath } from '@/lib/diagnostic/steps';
 
-export async function generateMetadata(): Promise<Metadata> {
+/** The project and its answers, read once per request for the page and its title. */
+const loadStep = cache(async (locale: Locale, id: string) => {
+  const { supabase } = await requireAccount(locale);
+  return loadProject(supabase, id);
+});
+
+/**
+ * A title per step (position, axis, "Diagnostic"), so that moving on is announced (UX-5). Never
+ * the project's title: the founder typed it, and the title travels into browser history.
+ */
+export async function generateMetadata({
+  params,
+}: PageProps<'/[locale]/projects/[id]/q/[step]'>): Promise<Metadata> {
+  const locale = await currentLocale();
   const t = await getTranslations('diagnostic');
-  return { title: t('pageTitle'), robots: { index: false, follow: false } };
+  const robots = { index: false, follow: false };
+  const { id, step: slug } = await params;
+  const step = stepFromSlug(slug);
+  const loaded = step ? await loadStep(locale, id) : null;
+  const resolved = step && loaded ? resolveStep(step, loaded.answers) : null;
+  if (!step || !loaded || resolved?.status !== 'active') return { title: t('pageTitle'), robots };
+
+  const axis = AXIS_NAMES[resolved.step.axis][locale];
+  const core = resolved.step.question;
+  if (!core) return { title: t('followUpTitle', { axis }), robots };
+  const mode = sequenceModeFor(loaded.project.mode, loaded.answers, step);
+  const { index, total } = positionInMode(mode, core.id);
+  return { title: t('stepTitle', { index: String(index), total: String(total), axis }), robots };
 }
+
+/** Western digits, isolated from the text around them (CLAUDE.md §6). */
+const num = (chunks: ReactNode) => <bdi className="num">{chunks}</bdi>;
 
 /**
  * Saving an answer runs here (Server Actions run in the page's function). A typed answer may wait
@@ -41,7 +73,7 @@ export default async function StepPage({ params }: PageProps<'/[locale]/projects
   const locale = await currentLocale();
   const { id, step: slug } = await params;
   const { supabase } = await requireAccount(locale);
-  const loaded = await loadProject(supabase, id);
+  const loaded = await loadStep(locale, id);
   const step = stepFromSlug(slug);
   if (!loaded || !step) notFound();
   const { project, answers } = loaded;
@@ -61,6 +93,7 @@ export default async function StepPage({ params }: PageProps<'/[locale]/projects
   const previous = previousStep(mode, answers, step);
   const axis = question.axis;
   const position = core ? positionInAxis(mode, core.id) : null;
+  const overall = core ? positionInMode(mode, core.id) : null;
   const score = completeness(answers);
 
   const saved = answers[step];
@@ -83,19 +116,30 @@ export default async function StepPage({ params }: PageProps<'/[locale]/projects
     <div className="mx-auto grid max-w-[75rem] gap-10 px-4 py-8 sm:px-6 lg:grid-cols-[minmax(0,1fr)_18rem] lg:gap-16 lg:py-12">
       <div className="grid content-start gap-6">
         <AxisProgress byAxis={score.byAxis} current={axis} language={locale} />
-        <p className="flex flex-wrap gap-x-3 text-small text-muted">
-          <span className="text-ink-2">{project.title}</span>
-          <span>{AXIS_NAMES[axis][locale]}</span>
-          <span>
-            {position
-              ? t('position', { index: position.index, total: position.total })
-              : t('followUp')}
-          </span>
-        </p>
+        <div className="grid gap-1 text-small text-muted">
+          <p className="flex flex-wrap gap-x-3">
+            <span className="text-ink-2">{project.title}</span>
+            <span>{AXIS_NAMES[axis][locale]}</span>
+            <span>
+              {position
+                ? t.rich('position', { index: position.index, total: position.total, num })
+                : t('followUp')}
+            </span>
+          </p>
+          {overall ? (
+            <p>
+              {t.rich(mode === 'quick' ? 'overallQuick' : 'overallFull', {
+                index: overall.index,
+                total: overall.total,
+                num,
+              })}
+            </p>
+          ) : null}
+        </div>
         <div className="grid gap-2">
-          <h1 id={headingId} className="reading text-h2 font-extrabold">
+          <QuestionHeading key={step} id={headingId}>
             {question.label[locale]}
-          </h1>
+          </QuestionHeading>
           <p id={helpId} className="reading text-ink-2">
             {question.help[locale]}
           </p>

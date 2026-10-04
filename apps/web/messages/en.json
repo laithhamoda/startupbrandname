@@ -144,7 +144,11 @@
   },
   "diagnostic": {
     "pageTitle": "Diagnostic",
-    "position": "Question {index} of {total}",
+    "stepTitle": "Question {index} of {total} · {axis} · Diagnostic",
+    "followUpTitle": "Follow-up question · {axis} · Diagnostic",
+    "position": "Question <num>{index}</num> of <num>{total}</num> in this part",
+    "overallQuick": "Question <num>{index}</num> of <num>{total}</num> in the quick version",
+    "overallFull": "Question <num>{index}</num> of <num>{total}</num> in the full version",
     "followUp": "Follow-up question",
     "axesProgress": "Progress by axis",
     "next": "Next",

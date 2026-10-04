@@ -117,6 +117,19 @@ export function firstUnanswered(mode: Mode, answers: Answers): StepId | null {
   return diagnosticSequence(mode, answers).find((step) => answers[step] === undefined) ?? null;
 }
 
+/**
+ * "Question 7 of 20" in the version the founder follows (sequenceModeFor), counting its core
+ * questions only, so the count matches the "20 questions" promised when the project was created
+ * (UX-14).
+ */
+export function positionInMode(mode: Mode, id: QuestionId): { index: number; total: number } {
+  const questions = questionsFor(mode);
+  return {
+    index: questions.findIndex((question) => question.id === id) + 1,
+    total: questions.length,
+  };
+}
+
 /** "Question 3 of 8" inside the step's axis, counting the mode's core questions only. */
 export function positionInAxis(mode: Mode, id: QuestionId): { index: number; total: number } {
   const axis = id.charAt(0);

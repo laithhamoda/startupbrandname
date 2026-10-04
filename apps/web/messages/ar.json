@@ -144,7 +144,11 @@
   },
   "diagnostic": {
     "pageTitle": "التشخيص",
-    "position": "السؤال {index} من {total}",
+    "stepTitle": "السؤال {index} من {total} · {axis} · التشخيص",
+    "followUpTitle": "سؤال متابعة · {axis} · التشخيص",
+    "position": "السؤال <num>{index}</num> من <num>{total}</num> في هذا المحور",
+    "overallQuick": "السؤال <num>{index}</num> من <num>{total}</num> في النسخة السريعة",
+    "overallFull": "السؤال <num>{index}</num> من <num>{total}</num> في النسخة الكاملة",
     "followUp": "سؤال متابعة",
     "axesProgress": "التقدّم في المحاور",
     "next": "التالي",

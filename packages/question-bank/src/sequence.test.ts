@@ -9,6 +9,7 @@ import {
   modeSchema,
   nextStep,
   positionInAxis,
+  positionInMode,
   previousStep,
   resolveStep,
   sequenceModeFor,
@@ -57,6 +58,13 @@ describe('the diagnostic sequence', () => {
   it('counts the position inside the axis for the current mode', () => {
     expect(positionInAxis('full', 'F3')).toEqual({ index: 3, total: 8 });
     expect(positionInAxis('quick', 'F3')).toEqual({ index: 2, total: 5 });
+  });
+
+  it('counts the position in the whole version, core questions only (UX-14)', () => {
+    expect(positionInMode('quick', 'A1')).toEqual({ index: 1, total: 20 });
+    expect(positionInMode('quick', 'F3')).toEqual({ index: 14, total: 20 });
+    expect(positionInMode('full', 'F3')).toEqual({ index: 43, total: 64 });
+    expect(positionInMode('full', 'H8')).toEqual({ index: 64, total: 64 });
   });
 });
 
