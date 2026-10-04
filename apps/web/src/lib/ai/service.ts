@@ -147,8 +147,11 @@ function rememberFailure(key: string): void {
 
 export interface AiContext {
   supabase: SupabaseServerClient;
-  /** The account's email and the names from its sign-in profile, removed before any call (rule 5). */
-  identity: Identity;
+  /**
+   * The account's email and the names from its sign-in profile, removed before any call (rule 5).
+   * Both are required, so a caller cannot leave the names out by accident.
+   */
+  identity: Required<Identity>;
   projectId: string;
   answers: Answers;
 }
