@@ -23,6 +23,13 @@ test('a failed Google sign-in comes back to the sign-in page with an explanation
   await expect(page.getByText(/Signing in with Google did not complete/)).toBeVisible();
 });
 
+test('a failed Google sign-in keeps the page that asked for sign-in', async ({ page }) => {
+  await page.goto('/auth/callback?next=/en/account');
+
+  await expect(page).toHaveURL(/\/en\/login\?error=google&next=%2Fen%2Faccount$/);
+  await expect(page.getByText(/Signing in with Google did not complete/)).toBeVisible();
+});
+
 test('the callback never sends the user to another site', async ({ page }) => {
   await page.goto('/auth/callback?next=https://evil.example/ar');
 
