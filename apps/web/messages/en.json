@@ -149,6 +149,8 @@
     "axesProgress": "Progress by axis",
     "next": "Next",
     "saving": "Saving…",
+    "checking": "Checking your answer…",
+    "consentOutdated": "The consent text for the AI review has changed, so your typed answers get the fixed checks only until you renew your consent on <account>your account page</account>.",
     "previous": "Previous",
     "continue": "Continue",
     "dontKnow": "I don’t know (saved as an assumption)",
