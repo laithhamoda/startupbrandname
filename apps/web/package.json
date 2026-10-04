@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "next typegen && eslint . --max-warnings=0",
     "typecheck": "next typegen && tsc --noEmit",
-    "test": "vitest run",
+    "test": "vitest run --coverage",
     "test:e2e": "playwright test --project=site",
     "test:e2e:auth": "playwright test --project=auth",
     "og:images": "playwright test --project=og",
