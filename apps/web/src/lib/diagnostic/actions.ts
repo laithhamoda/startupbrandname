@@ -149,7 +149,10 @@ const saveSchema = z.object({
 export type SaveInput = z.input<typeof saveSchema>;
 
 export type SaveResult =
-  /** Saved. `notes` are warnings about the new answer; `next` is null at the end. */
+  /**
+   * Saved, with warnings about the new answer (`notes`) to read before moving on; `next` is null
+   * at the end. A save with nothing to say redirects to the next step instead (PERF-3).
+   */
   | { status: 'saved'; next: string | null; notes: FindingView[] }
   /** Not saved: a rule asks for another answer, or a clarification (SPEC §2). */
   | { status: 'rejected'; findings: FindingView[] }
@@ -262,7 +265,8 @@ async function dropInactiveFollowUps(
 
 /**
  * Saves one step's answer, or says why not. Failures are returned, never thrown (see the
- * convention at the top of this file), so the editor keeps what the founder typed.
+ * convention at the top of this file), so the editor keeps what the founder typed. A save with
+ * no warning redirects to the next step, or to the overview after the last one.
  */
 export async function saveAnswer(input: SaveInput): Promise<SaveResult> {
   const parsedInput = saveSchema.safeParse(input);
@@ -274,7 +278,8 @@ export async function saveAnswer(input: SaveInput): Promise<SaveResult> {
   try {
     return await save({ ...parsedInput.data, step }, trace);
   } catch (error) {
-    // Redirects (a session that ended) and Next.js's own signals must pass through.
+    // Redirects (to the next step, or a session that ended) and Next.js's own signals must pass
+    // through.
     unstable_rethrow(error);
     await log.error('diagnostic.save_failed', {
       ...errorFields(error),
@@ -414,12 +419,14 @@ async function save(
 
   revalidatePath(`/${locale}${projectPath(project.id)}`, 'layout');
   const next = nextStep(sequenceModeFor(project.mode, current, step), current, step);
-  return {
-    status: 'saved',
-    next: next ? stepPath(project.id, next) : null,
-    // The same warnings the step page shows when the founder comes back (stepNotes).
-    notes: stepNotes(step, current).map((finding) => viewFinding(finding, locale)),
-  };
+  // The same warnings the step page shows when the founder comes back (stepNotes).
+  const notes = stepNotes(step, current).map((finding) => viewFinding(finding, locale));
+  // Nothing to read before moving on: the next page renders in this same response, instead of
+  // the current step being rendered again and the editor then asking for the next (PERF-3).
+  if (notes.length === 0) {
+    redirect(`/${locale}${next ? stepPath(project.id, next) : projectPath(project.id)}`);
+  }
+  return { status: 'saved', next: next ? stepPath(project.id, next) : null, notes };
 }
 
 // -----------------------------------------------------------------------------------------------

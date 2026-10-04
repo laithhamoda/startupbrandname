@@ -15,7 +15,6 @@ import { useEffect, useRef, useState, useTransition } from 'react';
 import { Button, ButtonLink } from '@/components/ui/button';
 import { RuleAlert } from '@/components/ui/rule-alert';
 import { TextLink } from '@/components/ui/text-link';
-import { useRouter } from '@/i18n/navigation';
 import type { Locale } from '@/i18n/routing';
 import { callAction } from '@/lib/call-action';
 import { type SaveResult, saveAnswer } from '@/lib/diagnostic/actions';
@@ -75,7 +74,6 @@ const SAVE_FAILED: SaveResult = { status: 'error', reason: 'failed' };
  */
 export function AnswerEditor(props: AnswerEditorProps) {
   const t = useTranslations('diagnostic');
-  const router = useRouter();
   const [draft, setDraft] = useState<Draft>(props.initialDraft);
   // What the server holds, to tell whether leaving the page would lose a typed answer (UX-6).
   const [savedDraft, setSavedDraft] = useState<Draft>(props.initialDraft);
@@ -119,7 +117,8 @@ export function AnswerEditor(props: AnswerEditorProps) {
     if (submission.kind === 'value') lastValue.current = submission.value;
     setChecking(props.reviewsText && submission.kind === 'value');
     startTransition(async () => {
-      // A dropped connection keeps the draft on screen so the founder can try again.
+      // A dropped connection keeps the draft on screen so the founder can try again. A save with
+      // nothing to say redirects to the next step, which comes back with the response.
       const outcome = await callAction(
         () =>
           saveAnswer({
@@ -135,10 +134,6 @@ export function AnswerEditor(props: AnswerEditorProps) {
         // A picked range is saved: its question and the box's mark have done their work.
         setClientErrors([]);
         setLocal({ kind: 'none' });
-      }
-      if (outcome.status === 'saved' && outcome.notes.length === 0) {
-        router.push(outcome.next ?? props.overviewHref);
-        return;
       }
       // A project deleted or a follow-up dropped elsewhere ('gone', 'stale') leaves the page as
       // it is, so the founder can read why; the message links to a page rendered fresh.
