@@ -25,6 +25,14 @@ export const MESSAGES = {
     ar: 'اكتب رقمًا واحدًا، أو اختر أحد النطاقات المقترحة.',
     en: 'Type a single number, or pick one of the suggested ranges.',
   },
+  R3_ambiguous: {
+    ar: 'لم نتأكّد من قراءة هذا الرقم. اكتبه بالأرقام وحدها، مثل 1500 أو 12.5، أو اختر النطاق الأقرب.',
+    en: 'We could not be sure how to read this number. Type it in digits only, such as 1500 or 12.5, or pick the closest range.',
+  },
+  R3_two_readings: {
+    ar: 'يمكن قراءة «{word}» بطريقتين. أيّهما تقصد؟',
+    en: '“{word}” can be read in two ways. Which do you mean?',
+  },
   R4_unknown_text: {
     ar: 'يبدو أنك لا تعرف الإجابة بعد. هل نحفظها «لا أعرف»؟ ستصبح افتراضًا نختبره في خطة التحقّق.',
     en: 'It looks like you do not know yet. Save it as “I don’t know”? It becomes an assumption to test in the validation plan.',
@@ -120,10 +128,6 @@ export const MESSAGES = {
   H1_not_measurable: {
     ar: 'اجعل هدفك قابلًا للقياس برقم: كم عميلًا، أو كم مبيعات، أو بأي تاريخ.',
     en: 'Make the goal measurable with a number: how many customers, how much in sales, or by what date.',
-  },
-  currency_ambiguous: {
-    ar: 'أي عملة تقصد؟ كلمة «{word}» تُستخدم لأكثر من عملة.',
-    en: 'Which currency do you mean? “{word}” is used for more than one currency.',
   },
   currency_centimes: {
     ar: 'هل المبلغ بالدينار أم بالسنتيم؟ في الاستعمال اليومي تعني «مليون» غالبًا 10,000 دينار جزائري.',

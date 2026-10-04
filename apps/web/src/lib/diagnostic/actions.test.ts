@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { reviewWithAi } from '@/lib/ai/service';
 import { requireAccount } from '@/lib/auth/session';
 import { log } from '@/lib/log';
-import { deleteProject, saveAnswer, type SaveInput, switchMode } from './actions';
+import { createProject, deleteProject, saveAnswer, type SaveInput, switchMode } from './actions';
 import { loadProject } from './project';
 
 vi.mock('@/lib/auth/session', () => ({ requireAccount: vi.fn() }));
@@ -19,8 +19,12 @@ vi.mock('@/lib/log', async (importOriginal) => ({
   log: { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() },
 }));
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }));
+// Messages come back as their key, followed by their values when they have some.
 vi.mock('next-intl/server', () => ({
-  getTranslations: () => Promise.resolve((key: string) => key),
+  getTranslations: () =>
+    Promise.resolve((key: string, values?: Record<string, unknown>) =>
+      values ? `${key} ${JSON.stringify(values)}` : key,
+    ),
 }));
 
 const projectId = '6f1c1f1e-7d4b-4c55-9a51-0f6f5d2b9e10';
@@ -101,6 +105,82 @@ describe('saveAnswer', () => {
     expect(log.error).not.toHaveBeenCalled();
   });
 
+  it('stores a whole number when a range is picked on a whole-number question (UX-1)', async () => {
+    const { client, writes } = fakeClient();
+    signedIn(client);
+
+    const result = await saveAnswer({
+      locale: 'ar',
+      projectId,
+      step: 'C8',
+      submission: { kind: 'range', min: 11, max: 50 },
+    });
+
+    expect(result.status).toBe('saved');
+    expect(writes.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        question_id: 'C8',
+        normalized_value: { status: 'answered', value: 31 },
+        source: 'assumption',
+      }),
+    );
+  });
+
+  it('says what is wrong with a number instead of asking to complete the fields', async () => {
+    const { client, writes } = fakeClient();
+    signedIn(client);
+
+    expect(await saveAnswer(numberOfPartners(2.5))).toEqual({
+      status: 'invalid',
+      errors: [{ path: '', message: 'wholeNumber' }],
+    });
+    expect(await saveAnswer(numberOfPartners(70))).toEqual({
+      status: 'invalid',
+      errors: [{ path: '', message: 'outOfRange {"min":"0","max":"60"}' }],
+    });
+    expect(writes.upsert).not.toHaveBeenCalled();
+  });
+
+  it('names the box of each error and the limit it broke (UX-3)', async () => {
+    const { client, writes } = fakeClient();
+    signedIn(client);
+    const save = (step: string, value: unknown) =>
+      saveAnswer({ locale: 'ar', projectId, step, submission: { kind: 'value', value } });
+
+    expect(
+      await save('F3', {
+        items: [
+          { label: 'قطع', amount: 8, currency: 'JOD' },
+          { label: ' ', amount: 2e12, currency: 'JOD' },
+        ],
+      }),
+    ).toEqual({
+      status: 'invalid',
+      errors: [
+        { path: 'items.1.label', message: 'required' },
+        { path: 'items.1.amount', message: 'outOfRange {"min":"0","max":"1000000000000"}' },
+      ],
+    });
+    expect(
+      await save('G4', {
+        items: [
+          { label: 'أ', percent: 100 },
+          { label: 'ب', percent: 0 },
+        ],
+      }),
+    ).toMatchObject({ errors: [{ path: 'items.1.percent', message: 'aboveMin {"min":"0"}' }] });
+    expect(await save('B3', 'x'.repeat(601))).toEqual({
+      status: 'invalid',
+      errors: [{ path: '', message: 'tooLong {"max":"600"}' }],
+    });
+    const competitor = { name: 'n', strength: 's', weakness: 'w' };
+    expect(await save('D3', { items: Array.from({ length: 16 }, () => competitor) })).toEqual({
+      status: 'invalid',
+      errors: [{ path: 'items', message: 'maxItems {"count":"15"}' }],
+    });
+    expect(writes.upsert).not.toHaveBeenCalled();
+  });
+
   it('says "gone" when the project was deleted', async () => {
     const { client, writes } = fakeClient();
     signedIn(client);
@@ -108,6 +188,29 @@ describe('saveAnswer', () => {
 
     expect(await saveAnswer(numberOfPartners(3))).toEqual({ status: 'error', reason: 'gone' });
     expect(writes.upsert).not.toHaveBeenCalled();
+  });
+
+  it('keeps a follow-up’s warning with its saved answer (G4.1 without an agreement)', async () => {
+    const { client } = fakeClient();
+    const partners = {
+      items: [
+        { label: 'أ', percent: 50 },
+        { label: 'ب', percent: 50 },
+      ],
+    };
+    signedIn(client, { G4: { status: 'answered', value: partners } });
+
+    const result = await saveAnswer({
+      locale: 'ar',
+      projectId,
+      step: 'G4.1',
+      submission: { kind: 'value', value: false },
+    });
+
+    expect(result).toMatchObject({
+      status: 'saved',
+      notes: [{ code: 'G4_no_agreement', severity: 'warn' }],
+    });
   });
 
   it('says "stale" for a follow-up that no longer applies', async () => {
@@ -247,6 +350,40 @@ describe('saveAnswer', () => {
       questionId: 'B3',
       reason: 'schema',
     });
+  });
+});
+
+describe('createProject', () => {
+  const form = (fields: Record<string, string>) => {
+    const data = new FormData();
+    for (const [name, value] of Object.entries(fields)) data.set(name, value);
+    return data;
+  };
+
+  it('names the fields that need an answer, as the schema names them', async () => {
+    expect(
+      await createProject(
+        'ar',
+        { status: 'idle' },
+        form({ title: ' ', country: 'JO', currency: '', mode: 'quick' }),
+      ),
+    ).toEqual({ status: 'error', error: 'invalid', invalid: ['title', 'currency'] });
+  });
+
+  it('says the plan allows no more projects when the database refuses one (D-109)', async () => {
+    const client = {
+      rpc: vi.fn(() => Promise.resolve({ data: null, error: { code: 'SB001', message: 'limit' } })),
+    };
+    signedIn(client);
+
+    expect(
+      await createProject(
+        'ar',
+        { status: 'idle' },
+        form({ title: 'صيانة', country: 'JO', currency: 'JOD', mode: 'quick' }),
+      ),
+    ).toEqual({ status: 'error', error: 'limit' });
+    expect(log.error).not.toHaveBeenCalled();
   });
 });
 

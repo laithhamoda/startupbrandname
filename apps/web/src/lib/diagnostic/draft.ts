@@ -1,6 +1,8 @@
 import {
   type Field,
   type FieldKind,
+  type NumberAlternative,
+  numberText,
   readCurrency,
   readNumber,
   type ValueByKind,
@@ -60,7 +62,8 @@ export interface DraftContext {
   competitors: readonly string[];
 }
 
-const text = (value: number | undefined) => (value === undefined ? '' : String(value));
+// Saved numbers go back in their boxes in a form read back unchanged: 33.333 as "33.3330".
+const text = (value: number | undefined) => (value === undefined ? '' : numberText(value));
 
 export function emptyDraft(field: Field, context: DraftContext): Draft {
   const money = (): MoneyDraft => ({ amount: '', currency: context.currency });
@@ -137,7 +140,7 @@ export function toDraft(field: Field, stored: unknown, context: DraftContext): D
     case 'currency':
       return stored as string;
     case 'number':
-      return (stored as number).toString();
+      return text(stored as number);
     case 'boolean':
       return stored as boolean;
     case 'multi': {
@@ -146,11 +149,11 @@ export function toDraft(field: Field, stored: unknown, context: DraftContext): D
     }
     case 'money': {
       const value = stored as ValueByKind['money'];
-      return { amount: String(value.amount), currency: value.currency };
+      return { amount: text(value.amount), currency: value.currency };
     }
     case 'money_range': {
       const value = stored as ValueByKind['money_range'];
-      return { min: String(value.min), max: String(value.max), currency: value.currency };
+      return { min: text(value.min), max: text(value.max), currency: value.currency };
     }
     case 'country_city':
       return { ...(stored as ValueByKind['country_city']) };
@@ -158,7 +161,7 @@ export function toDraft(field: Field, stored: unknown, context: DraftContext): D
       return {
         items: (stored as ValueByKind['cost_items']).items.map((item) => ({
           ...item,
-          amount: String(item.amount),
+          amount: text(item.amount),
         })),
       };
     case 'people':
@@ -179,7 +182,7 @@ export function toDraft(field: Field, stored: unknown, context: DraftContext): D
       return {
         items: (stored as ValueByKind['competitor_prices']).items.map((item) => ({
           name: item.name,
-          amount: item.price ? String(item.price.amount) : '',
+          amount: item.price ? text(item.price.amount) : '',
           currency: item.price?.currency ?? context.currency,
           unknown: item.price === null,
         })),
@@ -188,7 +191,7 @@ export function toDraft(field: Field, stored: unknown, context: DraftContext): D
       return {
         items: (stored as ValueByKind['percent_split']).items.map((item) => ({
           label: item.label,
-          percent: String(item.percent),
+          percent: text(item.percent),
         })),
       };
     case 'yes_no_detail': {
@@ -206,9 +209,9 @@ export function toDraft(field: Field, stored: unknown, context: DraftContext): D
     case 'sales_forecast': {
       const value = stored as ValueByKind['sales_forecast'];
       return {
-        month1: String(value.month1),
-        month6: String(value.month6),
-        month12: String(value.month12),
+        month1: text(value.month1),
+        month6: text(value.month6),
+        month12: text(value.month12),
       };
     }
     case 'three_texts':
@@ -217,9 +220,9 @@ export function toDraft(field: Field, stored: unknown, context: DraftContext): D
       return {
         items: (stored as ValueByKind['staff_plan']).items.map((item) => ({
           role: item.role,
-          amount: String(item.monthlyCost.amount),
+          amount: text(item.monthlyCost.amount),
           currency: item.monthlyCost.currency,
-          startMonth: String(item.startMonth),
+          startMonth: text(item.startMonth),
         })),
       };
     case 'customer_profile': {
@@ -237,10 +240,46 @@ export function toDraft(field: Field, stored: unknown, context: DraftContext): D
   }
 }
 
+/**
+ * A part of an answer to mark as wrong, by its path in the answer's value, as in a zod issue
+ * ("items.1.amount", '' for the whole answer). `message` is shown under it; null when the
+ * feedback below the answer explains instead (a number R3 asks about).
+ */
+export interface FieldError {
+  path: string;
+  message: string | null;
+}
+
+/** A box whose number has two readings, "1.500" or "1,500": the founder picks one (UX-2). */
+export interface NumberChoice {
+  /** The box, by its path in the value, such as "items.1.price.amount". */
+  path: string;
+  /** The same box in the draft ("items.1.amount"), where the picked reading is written. */
+  draftPath: string;
+  /** The number as typed, for the question. */
+  typed: string;
+  /** Each reading, with the box's text rewritten to mean only that one. */
+  readings: readonly NumberAlternative[];
+}
+
 export type Conversion =
   | { ok: true; value: unknown }
-  /** Paths of number boxes that do not hold a readable number, such as "items.1.amount". */
-  | { ok: false; unreadable: string[] };
+  /**
+   * `unreadable`: paths in the value of number boxes that do not hold one readable number, such
+   * as "items.1.amount". `choice`: the first box whose number has two readings, asked about once
+   * every box is readable.
+   */
+  | { ok: false; unreadable: string[]; choice: NumberChoice | null };
+
+/**
+ * Answers made of one control (a text, a number, a choice): an error about the whole answer
+ * sits under that control. Other answers show it in the feedback below them.
+ */
+export function isSingleControl(field: Field): boolean {
+  return ['short_text', 'long_text', 'number', 'boolean', 'single', 'currency'].includes(
+    field.kind,
+  );
+}
 
 /**
  * The value to submit for a draft. Only numbers are converted; every other rule (required parts,
@@ -249,17 +288,22 @@ export type Conversion =
  */
 export function fromDraft(field: Field, draft: Draft, centimes = false): Conversion {
   const unreadable: string[] = [];
-  const number = (value: string, path: string): number | undefined => {
+  const choices: NumberChoice[] = [];
+  // `path` is where the number sits in the value, the path the server's errors use too;
+  // `draftPath` where it sits in the draft, when the two differ.
+  const number = (value: string, path: string, draftPath = path): number | undefined => {
     if (value.trim() === '') return undefined;
     const reading = readNumber(value);
-    if (!reading.ok) {
+    if (reading.ok) return reading.value;
+    if (reading.reason === 'two_readings') {
+      choices.push({ path, draftPath, typed: reading.typed, readings: reading.readings });
+    } else {
       unreadable.push(path);
-      return undefined;
     }
-    return reading.value;
+    return undefined;
   };
-  const amount = (money: MoneyDraft, path: string) => {
-    const value = number(money.amount, path);
+  const amount = (money: MoneyDraft, path: string, draftPath = path) => {
+    const value = number(money.amount, path, draftPath);
     return value !== undefined && centimes && money.currency === 'DZD' ? value / 100 : value;
   };
   const optional = (value: string) => (value.trim() === '' ? undefined : value);
@@ -339,7 +383,14 @@ export function fromDraft(field: Field, draft: Draft, centimes = false): Convers
           name: item.name,
           price: item.unknown
             ? null
-            : { amount: amount(item, `items.${String(index)}.amount`), currency: item.currency },
+            : {
+                amount: amount(
+                  item,
+                  `items.${String(index)}.price.amount`,
+                  `items.${String(index)}.amount`,
+                ),
+                currency: item.currency,
+              },
         })),
       };
       break;
@@ -390,7 +441,11 @@ export function fromDraft(field: Field, draft: Draft, centimes = false): Convers
         items: (draft as DraftByKind['staff_plan']).items.map((item, index) => ({
           role: item.role,
           monthlyCost: {
-            amount: amount(item, `items.${String(index)}.amount`),
+            amount: amount(
+              item,
+              `items.${String(index)}.monthlyCost.amount`,
+              `items.${String(index)}.amount`,
+            ),
             currency: item.currency,
           },
           startMonth: number(item.startMonth, `items.${String(index)}.startMonth`),
@@ -403,7 +458,47 @@ export function fromDraft(field: Field, draft: Draft, centimes = false): Convers
       break;
     }
   }
-  return unreadable.length > 0 ? { ok: false, unreadable } : { ok: true, value };
+  const [choice = null] = choices;
+  return unreadable.length > 0 || choice ? { ok: false, unreadable, choice } : { ok: true, value };
+}
+
+/**
+ * The draft with the text of one box replaced, by its path ("items.1.amount", or '' for a draft
+ * that is the text itself): where a founder's pick of a reading goes (NumberChoice).
+ */
+export function withText(draft: Draft, path: string, text: string): Draft {
+  const replace = (node: unknown, keys: readonly string[]): unknown => {
+    const [key, ...rest] = keys;
+    if (key === undefined) return text;
+    if (Array.isArray(node)) {
+      return node.map((item: unknown, index) =>
+        String(index) === key ? replace(item, rest) : item,
+      );
+    }
+    const record = node as Record<string, unknown>;
+    return { ...record, [key]: replace(record[key], rest) };
+  };
+  return replace(draft, path === '' ? [] : path.split('.')) as Draft;
+}
+
+/** The text of one box, by its path as in `withText`; undefined where there is no text. */
+export function textAt(draft: Draft, path: string): string | undefined {
+  let node: unknown = draft;
+  for (const key of path === '' ? [] : path.split('.')) {
+    if (typeof node !== 'object' || node === null) return undefined;
+    node = (node as Record<string, unknown>)[key];
+  }
+  return typeof node === 'string' ? node : undefined;
+}
+
+/**
+ * True when an edit added or removed rows of a list answer. Marks and questions name boxes by row
+ * ("items.1.amount"), so after such an edit they would point at other boxes.
+ */
+export function rowsChanged(before: Draft, after: Draft): boolean {
+  const rows = (draft: Draft) =>
+    typeof draft === 'object' && draft !== null && 'items' in draft ? draft.items.length : null;
+  return rows(before) !== rows(after);
 }
 
 /** The amounts typed in a draft, with their currency, to ask dinars or centimes (D-108). */

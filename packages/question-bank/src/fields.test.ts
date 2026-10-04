@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { answerSchema, valueSchema } from './fields';
-import { getQuestion } from './questions';
+import { answerSchema, maxItemsFor, numberLimits, valueSchema } from './fields';
+import { FOLLOW_UPS } from './follow-ups';
+import { getQuestion, QUESTIONS } from './questions';
+import { sampleValue } from './testing';
 import type { Field, QuestionId } from './types';
 
 const fieldOf = (id: QuestionId) => getQuestion(id).field;
@@ -123,6 +125,74 @@ describe('answer values', () => {
 
   it('reject unexpected keys', () => {
     expect(accepts(fieldOf('F1'), { amount: 1, currency: 'JOD', note: 'x' })).toBe(false);
+  });
+});
+
+describe('limits the editor and the messages state', () => {
+  const all = [...QUESTIONS, ...FOLLOW_UPS];
+
+  it('cap every list at maxItemsFor, the same limit the schema applies (ARCH-M2)', () => {
+    const lists = all.filter(({ field }) => maxItemsFor(field) !== null);
+    expect(new Set(lists.map(({ field }) => field.kind))).toEqual(
+      new Set([
+        'cost_items',
+        'people',
+        'competitors',
+        'competitor_prices',
+        'percent_split',
+        'staff_plan',
+      ]),
+    );
+    for (const { id, field } of lists) {
+      const max = maxItemsFor(field) ?? 0;
+      const [row] = (sampleValue(field) as { items: { percent?: number }[] }).items;
+      const rows = (count: number) => ({
+        items: Array.from({ length: count }, () =>
+          field.kind === 'percent_split' ? { ...row, percent: 100 / count } : row,
+        ),
+      });
+      expect(accepts(field, rows(max)), id).toBe(true);
+      const issues = valueSchema(field).safeParse(rows(max + 1)).error?.issues ?? [];
+      expect(issues, id).toContainEqual(
+        expect.objectContaining({
+          code: 'too_big',
+          origin: 'array',
+          maximum: max,
+          path: ['items'],
+        }),
+      );
+    }
+    expect(maxItemsFor(fieldOf('A6'))).toBeNull();
+  });
+
+  it('give the bounds of every number in an answer, read from its schema (UX-3)', () => {
+    expect(numberLimits(fieldOf('A2'), '')).toEqual({ min: 0, max: 60 });
+    expect(numberLimits(fieldOf('F3'), 'items.4.amount')).toEqual({ min: 0, max: 1e12 });
+    expect(numberLimits(fieldOf('D4'), 'items.0.price.amount')).toEqual({ min: 0, max: 1e12 });
+    expect(numberLimits(fieldOf('E8'), 'items.0.startMonth')).toEqual({ min: 1, max: 36 });
+    expect(numberLimits(fieldOf('G4'), 'items.1.percent')).toEqual({ min: 0, max: 100 });
+    expect(numberLimits(fieldOf('D6'), 'percent')).toEqual({ min: 0, max: 100 });
+
+    // Every number in every sample answer has its bounds.
+    const numbers = (value: unknown, path: string[] = []): string[] =>
+      typeof value === 'number'
+        ? [path.join('.')]
+        : typeof value === 'object' && value !== null
+          ? Object.entries(value).flatMap(([key, child]) => numbers(child, [...path, key]))
+          : [];
+    for (const { id, field } of all) {
+      for (const path of numbers(sampleValue(field))) {
+        expect(numberLimits(field, path), `${id} ${path}`).not.toBeNull();
+      }
+    }
+  });
+
+  it('give no bounds where the path holds no number', () => {
+    expect(numberLimits(fieldOf('F3'), 'items.0.label')).toBeNull();
+    expect(numberLimits(fieldOf('F3'), 'items')).toBeNull();
+    expect(numberLimits(fieldOf('F3'), 'items.x.amount')).toBeNull();
+    expect(numberLimits(fieldOf('B3'), '')).toBeNull();
+    expect(numberLimits(fieldOf('E2'), 'items.0')).toBeNull();
   });
 });
 

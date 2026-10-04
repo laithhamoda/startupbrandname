@@ -4,21 +4,25 @@ import {
   type Answer,
   type Answers,
   activeFollowUps,
+  type Field,
   type Finding,
   type QuestionId,
-  answerSchema,
   diagnosticSequence,
   FOLLOW_UPS,
-  getQuestion,
   isCurrencyCode,
-  isQuestionId,
   type Language,
+  type Mode,
+  modeSchema,
   nextStep,
+  numberLimits,
   rangeValue,
+  resolveStep,
   reviewAnswer,
-  reviewProject,
+  sequenceModeFor,
   type StepId,
+  stepNotes,
   VALUE_ISSUES,
+  valueSchema,
 } from '@sbn/question-bank';
 import { needsConfirmation } from '@sbn/ai';
 import { getTranslations } from 'next-intl/server';
@@ -27,6 +31,7 @@ import { redirect, unstable_rethrow } from 'next/navigation';
 import { z } from 'zod';
 import { type Locale, routing } from '@/i18n/routing';
 import type { Json } from '@/lib/supabase/database.types';
+import type { SupabaseServerClient } from '@/lib/supabase/server';
 import { aiFindings } from '@/lib/ai/findings';
 import { reviewWithAi } from '@/lib/ai/service';
 import { requireAccount } from '@/lib/auth/session';
@@ -34,7 +39,7 @@ import { isCountryCode } from '@/lib/countries';
 import { errorFields, log } from '@/lib/log';
 import { type FindingView, viewFinding } from './findings';
 import { loadProject, provenanceOf } from './project';
-import { projectPath, stepFromSlug, stepPath } from './steps';
+import { projectPath, stepFromSlug, stepPath, stepSlug } from './steps';
 
 // Every action receives the page locale explicitly (Server Actions cannot read [locale]) and
 // validates all input: the question bank decides what an answer may be (CLAUDE.md rule 7).
@@ -54,19 +59,10 @@ import { projectPath, stepFromSlug, stepPath } from './steps';
 //   what is happening, and a failure is announced (FormError, role="alert").
 
 const localeSchema = z.enum(routing.locales);
-const modeSchema = z.enum(['quick', 'full']);
 
 // -----------------------------------------------------------------------------------------------
 // New project
 // -----------------------------------------------------------------------------------------------
-
-export type NewProjectState =
-  | { status: 'idle' }
-  | {
-      status: 'error';
-      error: 'invalid' | 'limit' | 'failed';
-      invalid?: ('title' | 'country' | 'currency' | 'mode')[];
-    };
 
 const newProjectSchema = z.object({
   title: z.string().trim().min(1).max(120),
@@ -74,6 +70,20 @@ const newProjectSchema = z.object({
   currency: z.string().refine(isCurrencyCode),
   mode: modeSchema,
 });
+const newProjectFields = newProjectSchema.keyof();
+
+/** The new-project form's fields, named as the schema names them. */
+export type NewProjectField = z.infer<typeof newProjectFields>;
+
+export type NewProjectState =
+  | { status: 'idle' }
+  | { status: 'error'; error: 'invalid' | 'limit' | 'failed'; invalid?: NewProjectField[] };
+
+/**
+ * The SQLSTATE create_project() raises when the account already has as many projects as its
+ * plan allows (supabase/migrations/20260927200000_projects_and_answers.sql, D-109).
+ */
+const PROJECT_LIMIT_SQLSTATE = 'SB001';
 
 export async function createProject(
   localeInput: Locale,
@@ -88,10 +98,11 @@ export async function createProject(
     mode: formData.get('mode') ?? '',
   });
   if (!parsed.success) {
-    const invalid = [...new Set(parsed.error.issues.map((issue) => issue.path[0]))] as (
-      'title' | 'country' | 'currency' | 'mode'
-    )[];
-    return { status: 'error', error: 'invalid', invalid };
+    const invalid = parsed.error.issues.flatMap((issue) => {
+      const field = newProjectFields.safeParse(issue.path[0]);
+      return field.success ? [field.data] : [];
+    });
+    return { status: 'error', error: 'invalid', invalid: [...new Set(invalid)] };
   }
 
   const { supabase } = await requireAccount(locale);
@@ -102,7 +113,7 @@ export async function createProject(
     p_mode: parsed.data.mode,
   });
   if (error) {
-    if (error.code === 'SB001') return { status: 'error', error: 'limit' };
+    if (error.code === PROJECT_LIMIT_SQLSTATE) return { status: 'error', error: 'limit' };
     await log.error('diagnostic.create_failed', errorFields(error));
     return { status: 'error', error: 'failed' };
   }
@@ -142,8 +153,12 @@ export type SaveResult =
   | { status: 'saved'; next: string | null; notes: FindingView[] }
   /** Not saved: a rule asks for another answer, or a clarification (SPEC §2). */
   | { status: 'rejected'; findings: FindingView[] }
-  /** Not saved: the answer does not fit the question. Messages in the page language. */
-  | { status: 'invalid'; messages: string[] }
+  /**
+   * Not saved: the answer does not fit the question. Each error names the part of the answer it
+   * is about by its path ("items.1.amount", '' for the whole answer), in the page language, so
+   * the editor shows it under that box (UX-3).
+   */
+  | { status: 'invalid'; errors: { path: string; message: string }[] }
   /** Not saved yet: confirm the AI's reading of a dialect answer first (D-119). */
   | { status: 'confirm'; text: string }
   /**
@@ -163,26 +178,46 @@ interface SaveTrace {
   stage: 'account' | 'load' | 'review' | 'upsert';
 }
 
-async function issueMessages(
+/**
+ * The errors of a value that does not fit its field, each with its path and a message that
+ * states the limit it broke (UX-3, ARCH-M2). Limits are written as plain Western digits: a
+ * grouped "1,000" could itself be read two ways (UX-2).
+ */
+async function fieldErrors(
+  field: Field,
   issues: readonly z.core.$ZodIssue[],
   language: Language,
-): Promise<string[]> {
+): Promise<{ path: string; message: string }[]> {
   const t = await getTranslations({ locale: language, namespace: 'diagnostic.errors' });
-  const messages = issues.map((issue) => {
+  const messageOf = (issue: z.core.$ZodIssue, path: string): string => {
     if (issue.code === 'custom' && (VALUE_ISSUES as readonly string[]).includes(issue.message)) {
       return t(issue.message as (typeof VALUE_ISSUES)[number]);
     }
+    if (issue.code === 'invalid_type' && issue.expected === 'int') return t('wholeNumber');
     if (issue.code === 'too_small' && issue.origin === 'array') {
       return t('minItems', { count: Number(issue.minimum) });
     }
-    if ((issue.code === 'too_small' || issue.code === 'too_big') && issue.origin === 'number') {
-      return t('outOfRange');
+    if (issue.code === 'too_big' && issue.origin === 'array') {
+      return t('maxItems', { count: String(issue.maximum) });
     }
-    if (issue.code === 'too_big' && issue.origin === 'string') return t('tooLong');
+    if ((issue.code === 'too_small' || issue.code === 'too_big') && issue.origin === 'number') {
+      // A share of 0% (G4): the lower bound itself is refused.
+      if (issue.code === 'too_small' && !issue.inclusive) {
+        return t('aboveMin', { min: String(issue.minimum) });
+      }
+      const limits = numberLimits(field, path);
+      if (limits) return t('outOfRange', { min: String(limits.min), max: String(limits.max) });
+    }
+    if (issue.code === 'too_big' && issue.origin === 'string') {
+      return t('tooLong', { max: String(issue.maximum) });
+    }
     if (issue.code === 'invalid_format') return t('url');
     return t('required');
+  };
+  return issues.map((issue) => {
+    const path = issue.path.map(String).join('.');
+    return { path, message: messageOf(issue, path) };
   });
-  return [...new Set(messages)];
 }
 
 /** Findings that stop the save: a rule asks for another answer or a clarification (SPEC §2). */
@@ -198,7 +233,7 @@ function blockingFindings(questionId: QuestionId, answer: Answer, answers: Answe
  * next save retries, so a failure is logged instead of failing the save.
  */
 async function dropInactiveFollowUps(
-  supabase: Awaited<ReturnType<typeof requireAccount>>['supabase'],
+  supabase: SupabaseServerClient,
   projectId: string,
   answers: Answers,
 ): Promise<Answers> {
@@ -232,7 +267,7 @@ async function dropInactiveFollowUps(
 export async function saveAnswer(input: SaveInput): Promise<SaveResult> {
   const parsedInput = saveSchema.safeParse(input);
   if (!parsedInput.success) return FAILED;
-  const step = stepFromSlug(parsedInput.data.step.replace('.', '-'));
+  const step = stepFromSlug(stepSlug(parsedInput.data.step));
   if (!step) return FAILED;
 
   const trace: SaveTrace = { stage: 'account' };
@@ -266,31 +301,33 @@ async function save(
   if (!loaded) return GONE;
   const { project, answers } = loaded;
 
-  const coreId = isQuestionId(step) ? step : null;
-  const followUp = coreId ? null : FOLLOW_UPS.find((candidate) => candidate.id === step);
+  const resolved = resolveStep(step, answers);
   // An earlier answer changed (perhaps in another tab) and this follow-up no longer applies.
-  if (followUp && !followUp.when(answers)) return STALE;
-  const field = coreId ? getQuestion(coreId).field : followUp?.field;
-  if (!field) return STALE;
-  const allowUnknown = coreId ? getQuestion(coreId).allowUnknown : false;
-
-  let candidate: unknown;
-  if (submission.kind === 'unknown') {
-    if (!allowUnknown) return FAILED;
-    candidate = { status: 'unknown' };
-  } else if (submission.kind === 'range') {
-    if (field.kind !== 'number') return FAILED;
-    candidate = { status: 'answered', value: rangeValue(submission) };
-  } else {
-    candidate = { status: 'answered', value: submission.value };
-  }
+  if (resolved?.status !== 'active') return STALE;
+  const { field, allowUnknown } = resolved.step;
+  const coreId = resolved.step.question?.id ?? null;
 
   trace.stage = 'review';
-  const parsed = answerSchema(field, allowUnknown).safeParse(candidate);
-  if (!parsed.success) {
-    return { status: 'invalid', messages: await issueMessages(parsed.error.issues, locale) };
+  let answer: Answer;
+  if (submission.kind === 'unknown') {
+    if (!allowUnknown) return FAILED;
+    answer = { status: 'unknown' };
+  } else {
+    let value: unknown;
+    if (submission.kind === 'range') {
+      if (field.kind !== 'number') return FAILED;
+      value = rangeValue(submission, field.integer);
+    } else {
+      value = submission.value;
+    }
+    // The value on its own, so each issue keeps its code: inside answerSchema's union with
+    // «لا أعرف», zod reports every issue as invalid_union, read as "complete the fields" (UX-1).
+    const parsed = valueSchema(field).safeParse(value);
+    if (!parsed.success) {
+      return { status: 'invalid', errors: await fieldErrors(field, parsed.error.issues, locale) };
+    }
+    answer = { status: 'answered', value: parsed.data };
   }
-  let answer: Answer = parsed.data;
   let updated: Answers = { ...answers, [step]: answer };
   const typed =
     (submission.kind === 'value' || submission.kind === 'confirmed') &&
@@ -333,12 +370,9 @@ async function save(
       if (needsConfirmation(ai, answer.value as string)) {
         if (submission.kind !== 'confirmed') return { status: 'confirm', text: ai.confirmation };
         // The confirmed reading comes from the stored review, never from the browser.
-        const confirmed = answerSchema(field, allowUnknown).safeParse({
-          status: 'answered',
-          value: ai.msa,
-        });
+        const confirmed = valueSchema(field).safeParse(ai.msa);
         if (confirmed.success) {
-          answer = confirmed.data;
+          answer = { status: 'answered', value: confirmed.data };
           updated = { ...answers, [step]: answer };
           const blocking = blockingFindings(coreId, answer, updated);
           if (blocking.length > 0) {
@@ -378,23 +412,13 @@ async function save(
 
   const current = await dropInactiveFollowUps(supabase, project.id, updated);
 
-  const notes = [
-    ...(coreId ? reviewAnswer(coreId, answer, current) : []),
-    ...reviewProject(current).filter(
-      (finding) =>
-        finding.questionId === step || (coreId !== null && finding.related?.includes(coreId)),
-    ),
-  ].filter((finding) => finding.severity === 'warn' || finding.severity === 'block');
-
   revalidatePath(`/${locale}${projectPath(project.id)}`, 'layout');
-  const sequenceMode = diagnosticSequence(project.mode, current).includes(step)
-    ? project.mode
-    : 'full';
-  const next = nextStep(sequenceMode, current, step);
+  const next = nextStep(sequenceModeFor(project.mode, current, step), current, step);
   return {
     status: 'saved',
     next: next ? stepPath(project.id, next) : null,
-    notes: notes.map((finding) => viewFinding(finding, locale)),
+    // The same warnings the step page shows when the founder comes back (stepNotes).
+    notes: stepNotes(step, current).map((finding) => viewFinding(finding, locale)),
   };
 }
 
@@ -421,7 +445,7 @@ async function settingsFailed(
 export async function switchMode(
   localeInput: Locale,
   projectId: string,
-  mode: 'quick' | 'full',
+  mode: Mode,
 ): Promise<SettingsResult> {
   const locale = localeSchema.parse(localeInput);
   const id = z.uuid().parse(projectId);

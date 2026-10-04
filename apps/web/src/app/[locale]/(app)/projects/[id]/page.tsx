@@ -57,7 +57,10 @@ export default async function ProjectPage({ params }: PageProps<'/[locale]/proje
           <p className="text-small text-muted">
             <TextLink href="/projects">{t('back')}</TextLink>
           </p>
-          <h1 className="text-h1 font-extrabold">{project.title}</h1>
+          <h1 className="text-h1 font-extrabold">
+            {/* Typed by the founder, in any script: its own direction (UX-12). */}
+            <span dir="auto">{project.title}</span>
+          </h1>
           <p className="flex flex-wrap gap-x-4 text-small text-muted">
             <span>{country}</span>
             <span>{project.currency}</span>

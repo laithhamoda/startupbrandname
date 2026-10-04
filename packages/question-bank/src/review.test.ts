@@ -2,10 +2,12 @@ import { describe, expect, it } from 'vitest';
 import type { Answer } from './fields';
 import {
   missingProfileParts,
-  reviewAmountText,
+  profilePartsFor,
   reviewAnswer,
   reviewNumberText,
   reviewProject,
+  ruleFinding,
+  stepNotes,
 } from './review';
 import { sampleAnswers } from './testing';
 import type { QuestionId } from './types';
@@ -55,12 +57,37 @@ describe('R2: "no competitors"', () => {
   });
 });
 
+describe('ruleFinding: one message per rule, whichever check found it', () => {
+  it('names the rule’s message, with the alternative variant of R2 on B4', () => {
+    expect(ruleFinding('B3', 'R1')).toEqual({
+      code: 'R1_everyone',
+      severity: 'reject',
+      questionId: 'B3',
+    });
+    expect(ruleFinding('D3', 'R2').code).toBe('R2_no_competitors');
+    expect(ruleFinding('B4', 'R2').code).toBe('R2_no_alternative');
+    expect(ruleFinding('D5', 'R5').code).toBe('R5_vague');
+    expect(ruleFinding('B2', 'R7').code).toBe('R7_too_short');
+    expect(ruleFinding('B2', 'R8').code).toBe('R8_solution');
+  });
+});
+
 describe('R3: a number that cannot be read', () => {
   it('offers the question’s ranges', () => {
     const [finding] = reviewNumberText('A6', 'حوالي عشرين ساعة');
     expect(finding).toMatchObject({ code: 'R3_not_numeric', severity: 'ask' });
     expect(finding?.ranges).toHaveLength(5);
     expect(reviewNumberText('A6', '10-20')[0]?.code).toBe('R3_range');
+    expect(reviewNumberText('A6', '10 أو 12')[0]).toMatchObject({
+      code: 'R3_ambiguous',
+      ranges: expect.any(Array) as unknown,
+    });
+  });
+
+  it('asks which reading a number with two readings has, in the founder’s words', () => {
+    expect(reviewNumberText('C8', '١.٥٠٠')).toEqual([
+      { code: 'R3_two_readings', severity: 'ask', questionId: 'C8', word: '١.٥٠٠' },
+    ]);
   });
 
   it('is silent for readable numbers, empty input and non-number questions', () => {
@@ -187,6 +214,18 @@ describe('question-specific checks (SPEC §1, Logic column)', () => {
     expect(codes('C2', individual, {})).toEqual([]);
   });
 
+  it('C2: shows and asks for the parts that fit the payer (one split for the editor and the check)', () => {
+    const individual = ['ageBand', 'city', 'incomeBand', 'occupation'];
+    const organisation = ['sector', 'size', 'decisionMaker'];
+    expect(profilePartsFor('b2c')).toEqual({ individual, organisation: [] });
+    expect(profilePartsFor('b2b')).toEqual({ individual: [], organisation });
+    expect(profilePartsFor('b2g')).toEqual({ individual: [], organisation });
+    expect(profilePartsFor('mixed')).toEqual({ individual, organisation });
+    expect(profilePartsFor(undefined)).toEqual({ individual, organisation });
+    expect(missingProfileParts({}, undefined)).toEqual([]);
+    expect(missingProfileParts({ sector: 'I' }, 'b2b')).toEqual(['size', 'decisionMaker']);
+  });
+
   it('C2 (mixed payer): asks for the kind that is closer to complete', () => {
     expect(
       missingProfileParts(
@@ -224,21 +263,6 @@ describe('question-specific checks (SPEC §1, Logic column)', () => {
       if (answer) expect(reviewAnswer(id as QuestionId, answer, answers), id).toEqual([]);
     }
     expect(reviewProject(answers)).toEqual([]);
-  });
-});
-
-describe('currency in typed amounts (CLAUDE.md §3, D-108)', () => {
-  it('asks which currency an ambiguous word means when none is chosen', () => {
-    expect(reviewAmountText('F1', '30 دينار')).toEqual([
-      { code: 'currency_ambiguous', severity: 'ask', questionId: 'F1', word: 'دينار' },
-    ]);
-    expect(reviewAmountText('F1', '30 دينار', 'JOD')).toEqual([]);
-  });
-
-  it('asks dinars or centimes for Algerian millions', () => {
-    expect(reviewAmountText('F1', '2 مليون', 'DZD')).toEqual([
-      { code: 'currency_centimes', severity: 'ask', questionId: 'F1' },
-    ]);
   });
 });
 
@@ -296,5 +320,37 @@ describe('across answers', () => {
   it('warns when partners have no written agreement (G4.1)', () => {
     expect(project({ 'G4.1': answered(false) })).toEqual(['G4_no_agreement']);
     expect(project({ 'G4.1': answered(true) })).toEqual([]);
+  });
+});
+
+describe('stepNotes: the warnings shown with a saved answer (ARCH-6)', () => {
+  const base = sampleAnswers();
+  const partners = answered({
+    items: [
+      { label: 'أ', percent: 50 },
+      { label: 'ب', percent: 50 },
+    ],
+  });
+
+  it('lists a question’s own warnings and the cross-answer ones it is part of', () => {
+    const answers = { ...base, A6: answered(6), A7: answered('lt3'), H5: answered('m12') };
+    expect(stepNotes('A6', answers).map((finding) => finding.code)).toEqual(['A6_low_hours']);
+    expect(stepNotes('H5', answers).map((finding) => finding.code)).toEqual([
+      'R6_breakeven_vs_runway',
+    ]);
+    expect(stepNotes('A7', answers).map((finding) => finding.code)).toEqual([
+      'R6_breakeven_vs_runway',
+    ]);
+  });
+
+  it('keeps a follow-up’s warning on a later visit (G4.1 without an agreement)', () => {
+    const answers = { ...base, G4: partners, 'G4.1': answered(false) };
+    expect(stepNotes('G4.1', answers).map((finding) => finding.code)).toEqual(['G4_no_agreement']);
+    expect(stepNotes('G4.1', { ...answers, 'G4.1': answered(true) })).toEqual([]);
+  });
+
+  it('says nothing about a step without an answer, or about blocking rules', () => {
+    expect(stepNotes('F1', {})).toEqual([]);
+    expect(stepNotes('B3', { B3: answered('الجميع') })).toEqual([]);
   });
 });

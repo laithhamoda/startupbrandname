@@ -152,7 +152,7 @@ describe('messages', () => {
   });
 
   it('fill in the founder’s word', () => {
-    expect(message('currency_ambiguous', 'en', 'dinar')).toContain('“dinar”');
+    expect(message('R3_two_readings', 'en', '1.500')).toContain('“1.500”');
     expect(message('R1_everyone', 'ar')).toContain('الجميع');
   });
 

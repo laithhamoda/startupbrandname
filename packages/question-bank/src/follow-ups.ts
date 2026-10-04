@@ -1,9 +1,12 @@
 import { t } from './questions/define';
-import type { FollowUp, FollowUpId } from './types';
+import type { FollowUp } from './types';
 import { type Answers, valueOf } from './values';
 
+/** A follow-up, with the condition on the answers that calls for it. */
+export type FollowUpDefinition = FollowUp & { when: (answers: Answers) => boolean };
+
 /** Follow-up questions (docs/SPEC.md §1, Logic column). They never count in completeness (D-105). */
-export const FOLLOW_UPS: readonly (FollowUp & { when: (answers: Answers) => boolean })[] = [
+export const FOLLOW_UPS: readonly FollowUpDefinition[] = [
   {
     id: 'A2.1',
     parent: 'A2',
@@ -75,8 +78,7 @@ export function activeFollowUps(answers: Answers): readonly FollowUp[] {
   return FOLLOW_UPS.filter((followUp) => followUp.when(answers));
 }
 
-export function getFollowUp(id: FollowUpId): FollowUp {
-  const followUp = FOLLOW_UPS.find((candidate) => candidate.id === id);
-  if (!followUp) throw new Error(`Unknown follow-up: ${id}`);
-  return followUp;
+/** The follow-up with this ID; undefined for any other string (a URL, a stored row). */
+export function findFollowUp(id: string): FollowUpDefinition | undefined {
+  return FOLLOW_UPS.find((followUp) => followUp.id === id);
 }

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { isCurrencyCode } from './currency';
 import { AGE_BANDS, COMPANY_SIZES, INCOME_BANDS, SECTORS } from './options';
-import type { Field, Option } from './types';
+import type { Field, FieldKind, Option } from './types';
 
 const MAX_AMOUNT = 1_000_000_000_000;
 
@@ -42,6 +42,25 @@ const website = z.url({ protocol: z.regexes.httpProtocol, hostname: WEBSITE_HOST
 
 /** Tolerance for percentages that must add up to 100 (G4). */
 const PERCENT_TOLERANCE = 0.01;
+
+/** The most rows each list answer may hold. */
+const MAX_ITEMS = {
+  cost_items: 50,
+  people: 30,
+  competitors: 15,
+  competitor_prices: 15,
+  percent_split: 20,
+  staff_plan: 50,
+} as const satisfies Partial<Record<FieldKind, number>>;
+
+/**
+ * The most rows a list answer may hold, or null for a field that is not a list. The schema below
+ * and the editor's "Add" both read it, so the editor never offers a row the server refuses
+ * (ARCH-M2).
+ */
+export function maxItemsFor(field: Field): number | null {
+  return (MAX_ITEMS as Partial<Record<FieldKind, number>>)[field.kind] ?? null;
+}
 
 /**
  * The exact shape of a real answer for a field. «لا أعرف» is not a value: it is stored as an
@@ -87,7 +106,7 @@ export function valueSchema(field: Field): z.ZodType {
           items: z
             .array(z.object({ label: text(80), amount, currency: currencyCode }).strict())
             .min(field.minItems)
-            .max(50),
+            .max(MAX_ITEMS.cost_items),
         })
         .strict();
     case 'people':
@@ -96,7 +115,7 @@ export function valueSchema(field: Field): z.ZodType {
           items: z
             .array(z.object({ name: text(80), detail: optionalText(200) }).strict())
             .min(field.minItems)
-            .max(30),
+            .max(MAX_ITEMS.people),
         })
         .strict();
     case 'competitors':
@@ -115,7 +134,7 @@ export function valueSchema(field: Field): z.ZodType {
                 .strict(),
             )
             .min(field.minItems)
-            .max(15),
+            .max(MAX_ITEMS.competitors),
         })
         .strict();
     case 'competitor_prices':
@@ -124,7 +143,7 @@ export function valueSchema(field: Field): z.ZodType {
           items: z
             .array(z.object({ name: text(80), price: money.nullable() }).strict())
             .min(1)
-            .max(15),
+            .max(MAX_ITEMS.competitor_prices),
         })
         .strict();
     case 'percent_split':
@@ -133,7 +152,7 @@ export function valueSchema(field: Field): z.ZodType {
           items: z
             .array(z.object({ label: text(80), percent: z.number().gt(0).max(100) }).strict())
             .min(1)
-            .max(20),
+            .max(MAX_ITEMS.percent_split),
         })
         .strict()
         .refine(
@@ -183,7 +202,7 @@ export function valueSchema(field: Field): z.ZodType {
                 })
                 .strict(),
             )
-            .max(50),
+            .max(MAX_ITEMS.staff_plan),
         })
         .strict();
     case 'customer_profile':
@@ -205,6 +224,30 @@ export function valueSchema(field: Field): z.ZodType {
           'describe_customer',
         );
   }
+}
+
+/** A schema without the optional or nullable wrapper around it. */
+function unwrapped(schema: unknown): unknown {
+  return schema instanceof z.ZodOptional || schema instanceof z.ZodNullable
+    ? unwrapped(schema.unwrap())
+    : schema;
+}
+
+/**
+ * The bounds of the number at `path` in a field's value ("items.1.amount", or '' for a number
+ * answer), read from the schema above, so a message can state them (UX-3). Null where the path
+ * holds no number.
+ */
+export function numberLimits(field: Field, path: string): { min: number; max: number } | null {
+  let schema = unwrapped(valueSchema(field));
+  for (const key of path === '' ? [] : path.split('.')) {
+    if (schema instanceof z.ZodObject) schema = unwrapped(schema.shape[key]);
+    else if (schema instanceof z.ZodArray && /^\d+$/.test(key)) schema = unwrapped(schema.element);
+    else return null;
+  }
+  return schema instanceof z.ZodNumber && schema.minValue !== null && schema.maxValue !== null
+    ? { min: schema.minValue, max: schema.maxValue }
+    : null;
 }
 
 /** A stored answer: a real value, or «لا أعرف» (D-104). */

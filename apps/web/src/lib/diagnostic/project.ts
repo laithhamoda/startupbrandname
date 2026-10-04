@@ -3,10 +3,11 @@ import {
   type Answer,
   type Answers,
   answerSchema,
-  FOLLOW_UPS,
+  findFollowUp,
   getQuestion,
   isQuestionId,
   type Mode,
+  modeSchema,
 } from '@sbn/question-bank';
 import { z } from 'zod';
 import { log } from '@/lib/log';
@@ -21,8 +22,6 @@ export interface Project {
   createdAt: string;
   updatedAt: string;
 }
-
-const modeSchema = z.enum(['quick', 'full']);
 
 function toProject(row: {
   id: string;
@@ -69,7 +68,7 @@ function readAnswers(rows: readonly AnswerRow[]): { answers: Answers; unreadable
   }
   // Follow-ups last: whether one applies depends on the core answers only.
   for (const row of followUpRows) {
-    const followUp = FOLLOW_UPS.find((candidate) => candidate.id === row.question_id);
+    const followUp = findFollowUp(row.question_id);
     if (!followUp) {
       unreadable.push(row.question_id);
       continue;

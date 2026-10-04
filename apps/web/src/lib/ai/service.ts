@@ -17,7 +17,7 @@ import {
   storedReview,
   type ToolCallResult,
 } from '@sbn/ai';
-import { type Answers, getQuestion, type QuestionId } from '@sbn/question-bank';
+import { type Answers, getQuestion, ideaQuestion, type QuestionId } from '@sbn/question-bank';
 import { z } from 'zod';
 import { getServerEnv } from '@/env/server';
 import { errorFields, log } from '@/lib/log';
@@ -188,7 +188,7 @@ async function review(
     rules: question.rules.filter((rule): rule is AiRule =>
       (AI_RULES as readonly string[]).includes(rule),
     ),
-    ideaCheck: questionId === 'B1',
+    ideaCheck: question.ideaCheck,
     answer: hidden.text,
   };
   const hash = inputHash({
@@ -303,12 +303,13 @@ export async function reviewWithAi(
       signal: AbortSignal.timeout(AI_BUDGET_MS),
       trace,
     };
-    if (questionId !== 'B1') {
-      const idea = context.answers.B1;
+    const ideaId = ideaQuestion().id;
+    if (questionId !== ideaId) {
+      const idea = context.answers[ideaId];
       if (idea?.status !== 'answered' || typeof idea.value !== 'string') {
         return await skipped('no_idea', questionId);
       }
-      const ideaReview = await review(run, 'B1', idea.value);
+      const ideaReview = await review(run, ideaId, idea.value);
       // A null review has logged its reason already.
       if (!ideaReview) return null;
       if (ideaReview.coherent !== true) return await skipped('idea_unclear', questionId);

@@ -29,6 +29,8 @@ export function LoginFlow({
   const t = useTranslations('auth');
   const [email, setEmail] = useState('');
   const [step, setStep] = useState<'email' | 'code'>('email');
+  // Back from the code step: the email step's heading takes focus, as in signup (UX-8).
+  const [cameBack, setCameBack] = useState(false);
 
   const [emailState, requestCode, emailPending] = useActionState(
     async (previous: AuthFormState, formData: FormData) => {
@@ -49,12 +51,13 @@ export function LoginFlow({
   if (step === 'code') {
     return (
       <div className="grid gap-6">
-        <StepHeading>{t('stepCode')}</StepHeading>
+        <StepHeading key="code">{t('stepCode')}</StepHeading>
         <CodeStep
           email={email}
           mode="login"
           next={next}
           onChangeEmail={() => {
+            setCameBack(true);
             setStep('email');
           }}
         />
@@ -70,6 +73,10 @@ export function LoginFlow({
 
   return (
     <div className="grid gap-6">
+      {/* Its own key, so React mounts a new heading instead of reusing the code step's. */}
+      <StepHeading key="email" focus={cameBack}>
+        {t('stepEmail')}
+      </StepHeading>
       {googleFailed && googleState.status === 'idle' ? (
         <FormError>{t('errors.google')}</FormError>
       ) : null}

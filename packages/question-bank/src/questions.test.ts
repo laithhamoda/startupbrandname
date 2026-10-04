@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { answerSchema, valueSchema } from './fields';
-import { FOLLOW_UPS, getFollowUp } from './follow-ups';
-import { getQuestion, isQuestionId, QUESTIONS, questionsFor } from './questions';
+import { findFollowUp, FOLLOW_UPS } from './follow-ups';
+import { rangeValue } from './numbers';
+import { getQuestion, ideaQuestion, isQuestionId, QUESTIONS, questionsFor } from './questions';
 import { sampleAnswers, sampleValue } from './testing';
 import { AXES } from './types';
 import { totalIn, valueOf } from './values';
@@ -75,6 +76,13 @@ describe('the question bank (M3 definition of done: all 64 questions)', () => {
     ).toEqual(['A1', 'B1', 'B7', 'C1', 'D2', 'F2', 'F8', 'G1', 'H8']);
   });
 
+  it('marks B1 alone as the idea statement the AI review checks first (D-072)', () => {
+    expect(
+      QUESTIONS.filter((question) => question.ideaCheck).map((question) => question.id),
+    ).toEqual(['B1']);
+    expect(ideaQuestion().id).toBe('B1');
+  });
+
   it('marks B6 as the one optional question', () => {
     expect(
       QUESTIONS.filter((question) => question.optional).map((question) => question.id),
@@ -98,13 +106,26 @@ describe('the question bank (M3 definition of done: all 64 questions)', () => {
     expect(Object.keys(sampleAnswers())).toHaveLength(64);
   });
 
+  it('stores a value its own question accepts for every suggested range (UX-1)', () => {
+    for (const { id, field } of [...QUESTIONS, ...FOLLOW_UPS]) {
+      if (field.kind !== 'number') continue;
+      for (const range of field.ranges) {
+        const value = rangeValue(range, field.integer);
+        expect(valueSchema(field).safeParse(value).success, `${id} ${JSON.stringify(range)}`).toBe(
+          true,
+        );
+      }
+    }
+  });
+
   it('finds questions and follow-ups by ID', () => {
     expect(isQuestionId('F3')).toBe(true);
     expect(isQuestionId('Z9')).toBe(false);
     expect(getQuestion('C2').field.kind).toBe('customer_profile');
     expect(() => getQuestion('Z9' as 'A1')).toThrow('Unknown question');
-    expect(getFollowUp('G4.1').parent).toBe('G4');
-    expect(() => getFollowUp('A1.9')).toThrow('Unknown follow-up');
+    expect(findFollowUp('G4.1')?.parent).toBe('G4');
+    expect(findFollowUp('A1.9')).toBeUndefined();
+    expect(findFollowUp('G4')).toBeUndefined();
   });
 
   it('reads a stored value only as its own field kind', () => {
