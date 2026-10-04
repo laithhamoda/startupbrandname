@@ -54,7 +54,11 @@ export default function GlobalError({
           </div>
           {error.digest ? (
             <p className="text-small text-muted">
-              {ar.reference} <bdi className="num">{error.digest}</bdi>
+              {ar.reference}{' '}
+              <span lang="en" dir="ltr">
+                {en.reference}
+              </span>{' '}
+              <bdi className="num">{error.digest}</bdi>
             </p>
           ) : null}
         </main>
