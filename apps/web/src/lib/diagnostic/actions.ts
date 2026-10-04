@@ -308,10 +308,17 @@ async function save(
     }
   }
 
-  // AI review of typed answers, only with consent and within the limits (D-103, D-120).
+  // AI review of typed answers, only with consent and within the limits (D-103, D-120). It comes
+  // back in the founder's own words, so no placeholder reaches the confirmation text or the saved
+  // answer (D-149).
   if (coreId && typed !== null && answer.status === 'answered') {
     const ai = await reviewWithAi(
-      { supabase, userEmail: user.email, projectId: project.id, answers: updated },
+      {
+        supabase,
+        identity: { email: user.email, names: user.names },
+        projectId: project.id,
+        answers: updated,
+      },
       coreId,
       answer.value as string,
     );
