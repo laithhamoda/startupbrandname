@@ -30,7 +30,7 @@ export function FieldPreview({
       field={field}
       draft={draft}
       onChange={setDraft}
-      unreadable={[]}
+      errors={[]}
       options={options}
     />
   );

@@ -19,8 +19,12 @@ vi.mock('@/lib/log', async (importOriginal) => ({
   log: { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() },
 }));
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }));
+// Messages come back as their key, followed by their values when they have some.
 vi.mock('next-intl/server', () => ({
-  getTranslations: () => Promise.resolve((key: string) => key),
+  getTranslations: () =>
+    Promise.resolve((key: string, values?: Record<string, unknown>) =>
+      values ? `${key} ${JSON.stringify(values)}` : key,
+    ),
 }));
 
 const projectId = '6f1c1f1e-7d4b-4c55-9a51-0f6f5d2b9e10';
@@ -128,11 +132,51 @@ describe('saveAnswer', () => {
 
     expect(await saveAnswer(numberOfPartners(2.5))).toEqual({
       status: 'invalid',
-      messages: ['wholeNumber'],
+      errors: [{ path: '', message: 'wholeNumber' }],
     });
     expect(await saveAnswer(numberOfPartners(70))).toEqual({
       status: 'invalid',
-      messages: ['outOfRange'],
+      errors: [{ path: '', message: 'outOfRange {"min":"0","max":"60"}' }],
+    });
+    expect(writes.upsert).not.toHaveBeenCalled();
+  });
+
+  it('names the box of each error and the limit it broke (UX-3)', async () => {
+    const { client, writes } = fakeClient();
+    signedIn(client);
+    const save = (step: string, value: unknown) =>
+      saveAnswer({ locale: 'ar', projectId, step, submission: { kind: 'value', value } });
+
+    expect(
+      await save('F3', {
+        items: [
+          { label: 'قطع', amount: 8, currency: 'JOD' },
+          { label: ' ', amount: 2e12, currency: 'JOD' },
+        ],
+      }),
+    ).toEqual({
+      status: 'invalid',
+      errors: [
+        { path: 'items.1.label', message: 'required' },
+        { path: 'items.1.amount', message: 'outOfRange {"min":"0","max":"1000000000000"}' },
+      ],
+    });
+    expect(
+      await save('G4', {
+        items: [
+          { label: 'أ', percent: 100 },
+          { label: 'ب', percent: 0 },
+        ],
+      }),
+    ).toMatchObject({ errors: [{ path: 'items.1.percent', message: 'aboveMin {"min":"0"}' }] });
+    expect(await save('B3', 'x'.repeat(601))).toEqual({
+      status: 'invalid',
+      errors: [{ path: '', message: 'tooLong {"max":"600"}' }],
+    });
+    const competitor = { name: 'n', strength: 's', weakness: 'w' };
+    expect(await save('D3', { items: Array.from({ length: 16 }, () => competitor) })).toEqual({
+      status: 'invalid',
+      errors: [{ path: 'items', message: 'maxItems {"count":"15"}' }],
     });
     expect(writes.upsert).not.toHaveBeenCalled();
   });

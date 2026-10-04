@@ -11,7 +11,8 @@ interface Choice {
 
 /**
  * Controlled single choice. Labelled by the question heading (or its own label), since each
- * diagnostic screen asks one question.
+ * diagnostic screen asks one question. `invalid` and `describedBy` mark it wrong and name its
+ * error message.
  */
 export function ChoiceGroup({
   id,
@@ -20,6 +21,8 @@ export function ChoiceGroup({
   value,
   onChange,
   inline = false,
+  invalid = false,
+  describedBy,
 }: {
   id: string;
   labelledBy: string;
@@ -27,12 +30,16 @@ export function ChoiceGroup({
   value: string;
   onChange: (value: string) => void;
   inline?: boolean;
+  invalid?: boolean;
+  describedBy?: string | undefined;
 }) {
   return (
     <RadixRadioGroup.Root
       value={value}
       onValueChange={onChange}
       aria-labelledby={labelledBy}
+      aria-describedby={describedBy}
+      aria-invalid={invalid || undefined}
       className={cn(inline ? 'flex flex-wrap gap-x-8 gap-y-3' : 'grid gap-3')}
     >
       {options.map((option) => {

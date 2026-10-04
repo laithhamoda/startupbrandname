@@ -21,7 +21,9 @@ import { callAction } from '@/lib/call-action';
 import { type SaveResult, saveAnswer } from '@/lib/diagnostic/actions';
 import {
   type Draft,
+  type FieldError,
   fromDraft,
+  isSingleControl,
   mayBeCentimes,
   type NumberChoice,
   withText,
@@ -59,8 +61,6 @@ type Local =
   | { kind: 'ranges'; code: FindingCode; ranges: readonly NumberRange[] }
   /** A box holds a number with two readings, "1.500": the founder picks one (UX-2). */
   | { kind: 'readings'; choice: NumberChoice }
-  /** An amount inside a list could not be read. */
-  | { kind: 'unreadable' }
   /** D-108: an Algerian-dinar amount that may be in centimes. */
   | { kind: 'centimes' };
 
@@ -77,7 +77,8 @@ export function AnswerEditor(props: AnswerEditorProps) {
   const [draft, setDraft] = useState<Draft>(props.initialDraft);
   // What the server holds, to tell whether leaving the page would lose a typed answer (UX-6).
   const [savedDraft, setSavedDraft] = useState<Draft>(props.initialDraft);
-  const [unreadable, setUnreadable] = useState<string[]>([]);
+  // Boxes the browser could not read a number from, marked like the server's errors (UX-3).
+  const [clientErrors, setClientErrors] = useState<FieldError[]>([]);
   const [local, setLocal] = useState<Local>({ kind: 'none' });
   const [result, setResult] = useState<SaveResult | null>(null);
   const [pending, startTransition] = useTransition();
@@ -90,10 +91,22 @@ export function AnswerEditor(props: AnswerEditorProps) {
   // This attempt's answer to dinars or centimes, kept while a reading is picked (D-108, UX-2).
   const lastCentimes = useRef<boolean | undefined>(undefined);
 
-  // Move keyboard and screen-reader focus to whatever the server or the checks said.
+  // Move keyboard and screen-reader focus to whatever the server or the checks said: the first
+  // box marked wrong when its message sits under it (UX-3), else the feedback below the answer.
   useEffect(() => {
-    if (result || local.kind !== 'none') feedback.current?.focus();
-  }, [result, local]);
+    const placed = [...clientErrors, ...(result?.status === 'invalid' ? result.errors : [])].some(
+      (error) => error.message !== null,
+    );
+    if (!result && local.kind === 'none' && !placed) return;
+    const invalid = placed
+      ? form.current?.querySelector<HTMLElement>('[aria-invalid="true"]')
+      : null;
+    // A radio group is not focusable itself; its first option is.
+    const target = invalid?.matches('[role="radiogroup"]')
+      ? invalid.querySelector<HTMLElement>('[role="radio"]')
+      : invalid;
+    (target ?? feedback.current)?.focus();
+  }, [result, local, clientErrors]);
 
   function send(submission: Parameters<typeof saveAnswer>[0]['submission'], sent = draft) {
     if (submission.kind === 'value') lastValue.current = submission.value;
@@ -133,24 +146,25 @@ export function AnswerEditor(props: AnswerEditorProps) {
     if (!conversion.ok) {
       const { unreadable: paths, choice } = conversion;
       if (paths.length === 0 && choice) {
-        setUnreadable([choice.path]);
+        // The question below says which box, and offers its two readings.
+        setClientErrors([{ path: choice.path, message: null }]);
         setLocal({ kind: 'readings', choice });
         return;
       }
-      setUnreadable(paths);
       // R3 says why the number was not read: a range, two numbers, or no digits (ARCH-7).
       const [finding] =
         props.field.kind === 'number' && isQuestionId(props.step)
           ? reviewNumberText(props.step, current as string)
           : [];
+      setClientErrors(paths.map((path) => ({ path, message: finding ? null : t('unreadable') })));
       setLocal(
         finding?.ranges
           ? { kind: 'ranges', code: finding.code, ranges: finding.ranges }
-          : { kind: 'unreadable' },
+          : { kind: 'none' },
       );
       return;
     }
-    setUnreadable([]);
+    setClientErrors([]);
     setLocal({ kind: 'none' });
     send({ kind: 'value', value: conversion.value }, current);
   }
@@ -172,6 +186,12 @@ export function AnswerEditor(props: AnswerEditorProps) {
   const lost = result?.status === 'error' && result.reason !== 'failed' ? result.reason : null;
   // Such an answer can no longer be saved, so leaving loses nothing that could be kept.
   const unsaved = lost === null && !sameDraft(draft, savedDraft);
+  const errors = [...clientErrors, ...(result?.status === 'invalid' ? result.errors : [])];
+  // An answer made of several boxes also lists its errors below it, including those about the
+  // answer as a whole ("the shares must add up to 100%") that no single box can carry.
+  const summary = isSingleControl(props.field)
+    ? []
+    : [...new Set(errors.flatMap((error) => (error.message === null ? [] : [error.message])))];
 
   return (
     <form
@@ -193,7 +213,7 @@ export function AnswerEditor(props: AnswerEditorProps) {
           setDraft(next);
           if (saved || confirm) setResult(null);
         }}
-        unreadable={unreadable}
+        errors={errors}
         options={props.options}
       />
 
@@ -251,8 +271,6 @@ export function AnswerEditor(props: AnswerEditorProps) {
           </RuleAlert>
         ) : null}
 
-        {local.kind === 'unreadable' ? <RuleAlert message={t('unreadable')} /> : null}
-
         {local.kind === 'centimes' ? (
           <RuleAlert message={message('currency_centimes', props.locale)}>
             <div className="mt-2 flex flex-wrap gap-2">
@@ -306,10 +324,10 @@ export function AnswerEditor(props: AnswerEditorProps) {
           </div>
         ) : null}
         {result?.status === 'rejected' ? <FindingList findings={result.findings} /> : null}
-        {result?.status === 'invalid' ? (
+        {summary.length > 0 ? (
           <RuleAlert message={t('invalid')}>
             <ul className="mt-1 grid list-disc gap-1 ps-5">
-              {result.messages.map((text) => (
+              {summary.map((text) => (
                 <li key={text}>{text}</li>
               ))}
             </ul>

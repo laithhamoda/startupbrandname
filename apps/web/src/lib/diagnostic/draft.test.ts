@@ -1,7 +1,15 @@
 import { FOLLOW_UPS, getQuestion, QUESTIONS, valueSchema } from '@sbn/question-bank';
 import { sampleValue } from '@sbn/question-bank/testing';
 import { describe, expect, it } from 'vitest';
-import { type DraftByKind, emptyDraft, fromDraft, mayBeCentimes, toDraft, withText } from './draft';
+import {
+  type DraftByKind,
+  emptyDraft,
+  fromDraft,
+  isSingleControl,
+  mayBeCentimes,
+  toDraft,
+  withText,
+} from './draft';
 
 const context = { currency: 'JOD', country: 'JO', competitors: ['فنّي مستقل', 'شركة صيانة'] };
 
@@ -82,7 +90,7 @@ describe('drafts', () => {
     expect(grouped?.value).toBe(1500);
 
     // The pick replaces only that box; the next box is asked about in turn.
-    const picked = withText(draft, conversion.choice.path, grouped?.text ?? '');
+    const picked = withText(draft, conversion.choice.draftPath, grouped?.text ?? '');
     expect(picked).toEqual({
       items: [draft.items[0], { ...draft.items[1], amount: '1500' }, draft.items[2]],
     });
@@ -94,6 +102,30 @@ describe('drafts', () => {
         items: [...draft.items, { label: 'x', amount: 'كثير', currency: 'JOD' }],
       }),
     ).toMatchObject({ unreadable: ['items.3.amount'], choice: { path: 'items.1.amount' } });
+  });
+
+  it('name unreadable boxes by their path in the value, as the server does (UX-3)', () => {
+    const prices: DraftByKind['competitor_prices'] = {
+      items: [{ name: 'فنّي', amount: 'كثير', currency: 'JOD', unknown: false }],
+    };
+    expect(fromDraft(getQuestion('D4').field, prices)).toMatchObject({
+      unreadable: ['items.0.price.amount'],
+    });
+    const staff: DraftByKind['staff_plan'] = {
+      items: [{ role: 'فنّي', amount: '1.500', currency: 'JOD', startMonth: 'ثلاثة' }],
+    };
+    expect(fromDraft(getQuestion('E8').field, staff)).toMatchObject({
+      unreadable: ['items.0.startMonth'],
+      choice: { path: 'items.0.monthlyCost.amount', draftPath: 'items.0.amount' },
+    });
+  });
+
+  it('tell answers made of one control from those made of several', () => {
+    expect(isSingleControl(getQuestion('B3').field)).toBe(true);
+    expect(isSingleControl(getQuestion('A6').field)).toBe(true);
+    expect(isSingleControl(getQuestion('C1').field)).toBe(true);
+    expect(isSingleControl(getQuestion('F3').field)).toBe(false);
+    expect(isSingleControl(getQuestion('D6').field)).toBe(false);
   });
 
   it('put a picked reading back into a number answer', () => {

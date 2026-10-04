@@ -4,6 +4,7 @@ import {
   type Answer,
   type Answers,
   activeFollowUps,
+  type Field,
   type Finding,
   type QuestionId,
   diagnosticSequence,
@@ -13,6 +14,7 @@ import {
   isQuestionId,
   type Language,
   nextStep,
+  numberLimits,
   rangeValue,
   reviewAnswer,
   reviewProject,
@@ -142,8 +144,12 @@ export type SaveResult =
   | { status: 'saved'; next: string | null; notes: FindingView[] }
   /** Not saved: a rule asks for another answer, or a clarification (SPEC §2). */
   | { status: 'rejected'; findings: FindingView[] }
-  /** Not saved: the answer does not fit the question. Messages in the page language. */
-  | { status: 'invalid'; messages: string[] }
+  /**
+   * Not saved: the answer does not fit the question. Each error names the part of the answer it
+   * is about by its path ("items.1.amount", '' for the whole answer), in the page language, so
+   * the editor shows it under that box (UX-3).
+   */
+  | { status: 'invalid'; errors: { path: string; message: string }[] }
   /** Not saved yet: confirm the AI's reading of a dialect answer first (D-119). */
   | { status: 'confirm'; text: string }
   /**
@@ -163,12 +169,18 @@ interface SaveTrace {
   stage: 'account' | 'load' | 'review' | 'upsert';
 }
 
-async function issueMessages(
+/**
+ * The errors of a value that does not fit its field, each with its path and a message that
+ * states the limit it broke (UX-3, ARCH-M2). Limits are written as plain Western digits: a
+ * grouped "1,000" could itself be read two ways (UX-2).
+ */
+async function fieldErrors(
+  field: Field,
   issues: readonly z.core.$ZodIssue[],
   language: Language,
-): Promise<string[]> {
+): Promise<{ path: string; message: string }[]> {
   const t = await getTranslations({ locale: language, namespace: 'diagnostic.errors' });
-  const messages = issues.map((issue) => {
+  const messageOf = (issue: z.core.$ZodIssue, path: string): string => {
     if (issue.code === 'custom' && (VALUE_ISSUES as readonly string[]).includes(issue.message)) {
       return t(issue.message as (typeof VALUE_ISSUES)[number]);
     }
@@ -176,14 +188,27 @@ async function issueMessages(
     if (issue.code === 'too_small' && issue.origin === 'array') {
       return t('minItems', { count: Number(issue.minimum) });
     }
-    if ((issue.code === 'too_small' || issue.code === 'too_big') && issue.origin === 'number') {
-      return t('outOfRange');
+    if (issue.code === 'too_big' && issue.origin === 'array') {
+      return t('maxItems', { count: String(issue.maximum) });
     }
-    if (issue.code === 'too_big' && issue.origin === 'string') return t('tooLong');
+    if ((issue.code === 'too_small' || issue.code === 'too_big') && issue.origin === 'number') {
+      // A share of 0% (G4): the lower bound itself is refused.
+      if (issue.code === 'too_small' && !issue.inclusive) {
+        return t('aboveMin', { min: String(issue.minimum) });
+      }
+      const limits = numberLimits(field, path);
+      if (limits) return t('outOfRange', { min: String(limits.min), max: String(limits.max) });
+    }
+    if (issue.code === 'too_big' && issue.origin === 'string') {
+      return t('tooLong', { max: String(issue.maximum) });
+    }
     if (issue.code === 'invalid_format') return t('url');
     return t('required');
+  };
+  return issues.map((issue) => {
+    const path = issue.path.map(String).join('.');
+    return { path, message: messageOf(issue, path) };
   });
-  return [...new Set(messages)];
 }
 
 /** Findings that stop the save: a rule asks for another answer or a clarification (SPEC §2). */
@@ -292,7 +317,7 @@ async function save(
     // «لا أعرف», zod reports every issue as invalid_union, read as "complete the fields" (UX-1).
     const parsed = valueSchema(field).safeParse(value);
     if (!parsed.success) {
-      return { status: 'invalid', messages: await issueMessages(parsed.error.issues, locale) };
+      return { status: 'invalid', errors: await fieldErrors(field, parsed.error.issues, locale) };
     }
     answer = { status: 'answered', value: parsed.data };
   }

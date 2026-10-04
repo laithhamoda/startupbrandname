@@ -238,10 +238,22 @@ export function toDraft(field: Field, stored: unknown, context: DraftContext): D
   }
 }
 
+/**
+ * A part of an answer to mark as wrong, by its path in the answer's value, as in a zod issue
+ * ("items.1.amount", '' for the whole answer). `message` is shown under it; null when the
+ * feedback below the answer explains instead (a number R3 asks about).
+ */
+export interface FieldError {
+  path: string;
+  message: string | null;
+}
+
 /** A box whose number has two readings, "1.500" or "1,500": the founder picks one (UX-2). */
 export interface NumberChoice {
-  /** The box, such as "items.1.amount". */
+  /** The box, by its path in the value, such as "items.1.price.amount". */
   path: string;
+  /** The same box in the draft ("items.1.amount"), where the picked reading is written. */
+  draftPath: string;
   /** The number as typed, for the question. */
   typed: string;
   /** Each reading, with the box's text rewritten to mean only that one. */
@@ -251,11 +263,21 @@ export interface NumberChoice {
 export type Conversion =
   | { ok: true; value: unknown }
   /**
-   * `unreadable`: paths of number boxes that do not hold one readable number, such as
-   * "items.1.amount". `choice`: the first box whose number has two readings, asked about once
+   * `unreadable`: paths in the value of number boxes that do not hold one readable number, such
+   * as "items.1.amount". `choice`: the first box whose number has two readings, asked about once
    * every box is readable.
    */
   | { ok: false; unreadable: string[]; choice: NumberChoice | null };
+
+/**
+ * Answers made of one control (a text, a number, a choice): an error about the whole answer
+ * sits under that control. Other answers show it in the feedback below them.
+ */
+export function isSingleControl(field: Field): boolean {
+  return ['short_text', 'long_text', 'number', 'boolean', 'single', 'currency'].includes(
+    field.kind,
+  );
+}
 
 /**
  * The value to submit for a draft. Only numbers are converted; every other rule (required parts,
@@ -265,19 +287,21 @@ export type Conversion =
 export function fromDraft(field: Field, draft: Draft, centimes = false): Conversion {
   const unreadable: string[] = [];
   const choices: NumberChoice[] = [];
-  const number = (value: string, path: string): number | undefined => {
+  // `path` is where the number sits in the value, the path the server's errors use too;
+  // `draftPath` where it sits in the draft, when the two differ.
+  const number = (value: string, path: string, draftPath = path): number | undefined => {
     if (value.trim() === '') return undefined;
     const reading = readNumber(value);
     if (reading.ok) return reading.value;
     if (reading.reason === 'two_readings') {
-      choices.push({ path, typed: reading.typed, readings: reading.readings });
+      choices.push({ path, draftPath, typed: reading.typed, readings: reading.readings });
     } else {
       unreadable.push(path);
     }
     return undefined;
   };
-  const amount = (money: MoneyDraft, path: string) => {
-    const value = number(money.amount, path);
+  const amount = (money: MoneyDraft, path: string, draftPath = path) => {
+    const value = number(money.amount, path, draftPath);
     return value !== undefined && centimes && money.currency === 'DZD' ? value / 100 : value;
   };
   const optional = (value: string) => (value.trim() === '' ? undefined : value);
@@ -357,7 +381,14 @@ export function fromDraft(field: Field, draft: Draft, centimes = false): Convers
           name: item.name,
           price: item.unknown
             ? null
-            : { amount: amount(item, `items.${String(index)}.amount`), currency: item.currency },
+            : {
+                amount: amount(
+                  item,
+                  `items.${String(index)}.price.amount`,
+                  `items.${String(index)}.amount`,
+                ),
+                currency: item.currency,
+              },
         })),
       };
       break;
@@ -408,7 +439,11 @@ export function fromDraft(field: Field, draft: Draft, centimes = false): Convers
         items: (draft as DraftByKind['staff_plan']).items.map((item, index) => ({
           role: item.role,
           monthlyCost: {
-            amount: amount(item, `items.${String(index)}.amount`),
+            amount: amount(
+              item,
+              `items.${String(index)}.monthlyCost.amount`,
+              `items.${String(index)}.amount`,
+            ),
             currency: item.currency,
           },
           startMonth: number(item.startMonth, `items.${String(index)}.startMonth`),
