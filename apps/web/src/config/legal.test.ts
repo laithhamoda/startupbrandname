@@ -12,7 +12,7 @@ import { CROSSBORDER_VERSION } from './legal';
  * then count only if the earlier version stays listed, which needs the same processing.
  */
 const WORDING_HASHES: Readonly<Record<string, string>> = {
-  '2026-10-draft-2': 'f3cb9193b75ad82f05b169128c09f4d4340c74d8c5e7fabe963f0c1c039838c2',
+  '2026-10-draft-2': 'b04efc2219ae47ae46e7a52d7ebc626f6763a1245ea4f0d86521db9f8524fd01',
 };
 
 function consentWording(): string {

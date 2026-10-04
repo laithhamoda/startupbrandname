@@ -59,9 +59,12 @@ export function PrivacyAr() {
           <li>Google: فقط إذا اخترت الدخول بحساب Google، في الولايات المتحدة.</li>
           <li>
             Anthropic: فقط بموافقتك الاختيارية، في الولايات المتحدة، لمراجعة إجاباتك المكتوبة وإعادة
-            صياغتها، ولاحقًا لتشغيل المرشد الذكي. نحذف قبل الإرسال عناوين البريد الإلكتروني وأرقام
-            الهاتف وروابط الحسابات والمحادثات وأرقام الحسابات المصرفية (IBAN) وأرقام الهوية، واسمك
-            في حساب Google. أما الأسماء التي تكتبها بنفسك فتُرسَل كما هي.
+            صياغتها، ولاحقًا لتشغيل المرشد الذكي. نحذف قبل الإرسال اسمك في حساب Google وعناوين
+            البريد الإلكتروني، وما نتعرّف عليه من بيانات التواصل والأرقام: أرقام الهاتف التي تبدأ
+            برمز دولي أو بصفر، والأرقام المكتوبة بصيغة دولية بعد كلمة مثل «هاتف» أو «واتساب»، وروابط
+            الصفحات كروابط الحسابات والمحادثات، وأرقام الحسابات المصرفية (IBAN)، وأرقام الهوية بعد
+            كلمة مثل «الرقم الوطني» أو «جواز السفر». أما بقية الأرقام والأسماء التي تكتبها بنفسك
+            فتُرسَل كما هي.
           </li>
         </ul>
       </section>
@@ -179,9 +182,13 @@ export function PrivacyEn() {
           <li>Google: only if you choose to sign in with Google, in the United States.</li>
           <li>
             Anthropic: only with your optional consent, in the United States, to check and rewrite
-            your typed answers and, later, to run the AI mentor. Before sending, we remove email
-            addresses, phone numbers, profile and chat links, bank account (IBAN) and ID numbers,
-            and the name on your Google account. Names you type yourself are sent as written.
+            your typed answers and, later, to run the AI mentor. Before sending, we remove the name
+            on your Google account, email addresses, and the contact details and numbers we
+            recognise: phone numbers that start with an international prefix or a 0, and numbers in
+            international form after a word such as “phone” or “WhatsApp”; links to a page, such as
+            a profile or a chat; bank account numbers in IBAN form; and ID numbers after a word such
+            as “national number” or “passport”. Other numbers, and names you type yourself, are sent
+            as written.
           </li>
         </ul>
       </section>
