@@ -1,10 +1,10 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useEffect, useRef, useState } from 'react';
+import { type RefObject, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
-import { leavesPage } from '@/lib/diagnostic/leave';
+import { canTakeFocus, firstTabbable, leavesPage, TABBABLE } from '@/lib/diagnostic/leave';
 
 /**
  * While `active` (an answer is typed but not saved), leaving the page asks first (UX-6). A link
@@ -12,7 +12,14 @@ import { leavesPage } from '@/lib/diagnostic/leave';
  * switch, opens a dialog; closing or reloading the tab gets the browser's own prompt. Leaving
  * anyway follows the same link, so it behaves exactly as without the guard.
  */
-export function LeaveGuard({ active }: { active: boolean }) {
+export function LeaveGuard({
+  active,
+  form,
+}: {
+  active: boolean;
+  /** The answer form, which takes focus back when the clicked link can no longer take it. */
+  form: RefObject<HTMLFormElement | null>;
+}) {
   const t = useTranslations('diagnostic.leave');
   const [open, setOpen] = useState(false);
   // The link the founder clicked, followed if they choose to leave.
@@ -52,6 +59,13 @@ export function LeaveGuard({ active }: { active: boolean }) {
     };
   }, [active]);
 
+  // Staying returns focus to the clicked link, as for any dialog. A header link below 1280px
+  // sat in the menu panel, which closed with the dialog, so focus goes to the answer instead.
+  function returnFocus(): HTMLElement | null {
+    if (canTakeFocus(link.current)) return link.current;
+    return firstTabbable(form.current?.querySelectorAll<HTMLElement>(TABBABLE) ?? []);
+  }
+
   function leave() {
     setOpen(false);
     const anchor = link.current;
@@ -72,7 +86,7 @@ export function LeaveGuard({ active }: { active: boolean }) {
     <Dialog
       open={open}
       onOpenChange={setOpen}
-      returnFocus={() => link.current}
+      returnFocus={returnFocus}
       title={t('title')}
       description={t('body')}
     >

@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { type LinkClick, type LinkTarget, leavesPage, sameDraft } from './leave';
+import {
+  canTakeFocus,
+  firstTabbable,
+  type FocusCandidate,
+  type LinkClick,
+  type LinkTarget,
+  leavesPage,
+  sameDraft,
+} from './leave';
 
 describe('sameDraft', () => {
   it('compares text, choices and lists by value', () => {
@@ -68,5 +76,48 @@ describe('leavesPage', () => {
 
   it('leaves another site to the browser prompt', () => {
     expect(leavesPage(click, link('https://example.com/ar'), here)).toBe(false);
+  });
+});
+
+/** An element as the focus helpers see it. */
+function element(
+  name: string,
+  { shown = true, connected = true, tabIndex = 0 } = {},
+): FocusCandidate & { name: string } {
+  return {
+    name,
+    isConnected: connected,
+    tabIndex,
+    getClientRects: () => ({ length: shown ? 1 : 0 }),
+  };
+}
+
+describe('canTakeFocus', () => {
+  it('accepts a link that is still shown', () => {
+    expect(canTakeFocus(element('Previous'))).toBe(true);
+  });
+
+  it('refuses a link in a menu panel that closed, or one that left the page', () => {
+    expect(canTakeFocus(element('My projects', { shown: false }))).toBe(false);
+    expect(canTakeFocus(element('English', { connected: false }))).toBe(false);
+    expect(canTakeFocus(null)).toBe(false);
+  });
+});
+
+describe('firstTabbable', () => {
+  it('finds the field the Tab key reaches first', () => {
+    // A radio group: only the chosen option is a tab stop; Radix hides a native input beside it.
+    const elements = [
+      element('hidden input', { shown: false, tabIndex: -1 }),
+      element('first option', { tabIndex: -1 }),
+      element('chosen option'),
+      element('Next'),
+    ];
+    expect(firstTabbable(elements)?.name).toBe('chosen option');
+  });
+
+  it('finds nothing when no element can take focus', () => {
+    expect(firstTabbable([element('closed menu link', { shown: false })])).toBeNull();
+    expect(firstTabbable([])).toBeNull();
   });
 });

@@ -57,3 +57,35 @@ export function leavesPage(click: LinkClick, link: LinkTarget, here: string): bo
   if (to.origin !== from.origin) return false;
   return to.pathname !== from.pathname || to.search !== from.search;
 }
+
+/** The parts of an element that decide whether focus can go to it. */
+export interface FocusCandidate {
+  isConnected: boolean;
+  tabIndex: number;
+  /** Empty for an element that is not laid out, such as one inside a closed menu panel. */
+  getClientRects(): { length: number };
+}
+
+/** Elements that may take focus; `firstTabbable` drops the ones that cannot right now. */
+export const TABBABLE =
+  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]';
+
+/**
+ * Whether focus can go back to `element` when the dialog closes. Below 1280px the header links
+ * sit in a menu panel that closes on any click or Escape outside it, so the clicked link may be
+ * hidden by then, and focusing it would drop focus to the page itself.
+ */
+export function canTakeFocus(element: FocusCandidate | null): boolean {
+  return element !== null && element.isConnected && element.getClientRects().length > 0;
+}
+
+/**
+ * The first of `elements` (in page order) that the Tab key would reach: for the answer form,
+ * the answer's own field, or the chosen option of a radio group (the others have tabIndex -1).
+ */
+export function firstTabbable<T extends FocusCandidate>(elements: Iterable<T>): T | null {
+  for (const element of elements) {
+    if (element.tabIndex >= 0 && canTakeFocus(element)) return element;
+  }
+  return null;
+}

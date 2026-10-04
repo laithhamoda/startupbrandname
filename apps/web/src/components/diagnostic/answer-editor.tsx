@@ -63,6 +63,7 @@ export function AnswerEditor(props: AnswerEditorProps) {
   const [result, setResult] = useState<SaveResult | null>(null);
   const [pending, startTransition] = useTransition();
   const feedback = useRef<HTMLDivElement>(null);
+  const form = useRef<HTMLFormElement>(null);
   // The value behind a pending AI confirmation, resent unchanged when the founder agrees (D-119).
   const lastValue = useRef<unknown>(null);
 
@@ -131,6 +132,7 @@ export function AnswerEditor(props: AnswerEditorProps) {
 
   return (
     <form
+      ref={form}
       noValidate
       onSubmit={(event) => {
         event.preventDefault();
@@ -293,7 +295,7 @@ export function AnswerEditor(props: AnswerEditorProps) {
           </Button>
         ) : null}
       </div>
-      <LeaveGuard active={unsaved} />
+      <LeaveGuard active={unsaved} form={form} />
     </form>
   );
 }
