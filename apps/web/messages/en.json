@@ -216,6 +216,7 @@
       "label": "Item",
       "add": "Add",
       "remove": "Remove {item}",
+      "removed": "Item removed.",
       "noItems": "Nothing yet.",
       "competitor": "Competitor {number}",
       "name": "Name",

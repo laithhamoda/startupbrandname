@@ -15,7 +15,7 @@ import {
 } from '@sbn/question-bank';
 import { Plus, X } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
-import type { ReactNode } from 'react';
+import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { controlClass } from '@/components/ui/text-input';
 import { cn } from '@/lib/cn';
 import type { CurrencyOptions } from '@/lib/diagnostic/currencies';
@@ -333,9 +333,14 @@ function MoneyBoxes({
   );
 }
 
+/** Where focus goes once a list has changed (Rows). */
+type RowFocus = { row: number; on: 'title' | 'control' } | 'add';
+
 /**
  * A list of rows the founder can add to and remove from, each a group named by its title.
- * "Add" disappears at the list's limit, which the bank's schema applies too (ARCH-M2).
+ * "Add" disappears at the list's limit, which the bank's schema applies too (ARCH-M2). Focus is
+ * never lost with a button that goes (UX-8): a new row takes it in its first box; after a removal
+ * the row before takes it, else "Add", and the removal is announced.
  */
 function Rows<T>({
   id,
@@ -358,6 +363,26 @@ function Rows<T>({
 }) {
   const t = useTranslations('diagnostic');
   const full = maxItems !== null && items.length >= maxItems;
+  const addButton = useRef<HTMLButtonElement>(null);
+  const focusNext = useRef<RowFocus | null>(null);
+  const [removals, setRemovals] = useState(0);
+
+  // Runs once the parent has rendered the changed list.
+  useEffect(() => {
+    const target = focusNext.current;
+    focusNext.current = null;
+    if (target === null) return;
+    if (target === 'add') {
+      addButton.current?.focus();
+      return;
+    }
+    const rowId = `${id}-${String(target.row)}`;
+    (target.on === 'title'
+      ? document.getElementById(`${rowId}-title`)
+      : document.getElementById(rowId)?.querySelector<HTMLElement>('input, select, textarea')
+    )?.focus();
+  }, [items, id]);
+
   return (
     <div className="grid gap-4">
       {items.length === 0 ? <p className="text-small text-muted">{t('widgets.noItems')}</p> : null}
@@ -366,18 +391,25 @@ function Rows<T>({
         return (
           <div
             key={rowId}
+            id={rowId}
             role="group"
             aria-labelledby={`${rowId}-title`}
             className="grid gap-3 border-t border-hairline pt-3"
           >
             <div className="flex items-center justify-between gap-3">
-              <p id={`${rowId}-title`} className="font-display text-small font-bold">
+              <p
+                id={`${rowId}-title`}
+                tabIndex={-1}
+                className="font-display text-small font-bold focus:outline-none"
+              >
                 {title(index)}
               </p>
               {items.length > minItems ? (
                 <button
                   type="button"
                   onClick={() => {
+                    focusNext.current = index > 0 ? { row: index - 1, on: 'title' } : 'add';
+                    setRemovals((count) => count + 1);
                     onChange(items.filter((_, other) => other !== index));
                   }}
                   aria-label={t('widgets.remove', { item: title(index) })}
@@ -405,8 +437,10 @@ function Rows<T>({
           </p>
         ) : (
           <button
+            ref={addButton}
             type="button"
             onClick={() => {
+              focusNext.current = { row: items.length, on: 'control' };
               onChange([...items, empty()]);
             }}
             className="inline-flex items-center gap-1.5 rounded-control border border-control px-3 py-1.5 text-small hover:bg-sunken"
@@ -416,6 +450,10 @@ function Rows<T>({
           </button>
         )}
       </div>
+      {/* A new node per removal, so the same words are announced again. */}
+      <p role="status" className="sr-only">
+        {removals > 0 ? <span key={removals}>{t('widgets.removed')}</span> : null}
+      </p>
     </div>
   );
 }

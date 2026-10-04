@@ -216,6 +216,7 @@
       "label": "البند",
       "add": "أضف",
       "remove": "احذف {item}",
+      "removed": "حُذف البند.",
       "noItems": "لا شيء بعد.",
       "competitor": "المنافس {number}",
       "name": "الاسم",
