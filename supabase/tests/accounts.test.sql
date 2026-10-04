@@ -1,9 +1,10 @@
--- Accounts (M2): onboarding, consent history, deletion and the purge of incomplete accounts.
+-- Accounts (M2): onboarding, consent history and its text versions (D-147), deletion and the
+-- purge of incomplete accounts.
 begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(29);
+select plan(43);
 
 -- Test users. The email lives in auth.users only.
 insert into auth.users (id, email, created_at) values
@@ -41,10 +42,17 @@ select throws_ok(
 );
 
 select throws_ok(
-  $$select public.complete_onboarding('JO', 'ar', true, '2026-09-draft-1', false, '2026-09-draft-1')$$,
+  $$select public.complete_onboarding('JO', 'ar', true, '2026-10-draft-2', false, '2026-10-draft-2')$$,
   '42501',
   null,
   'anon cannot complete onboarding'
+);
+
+select throws_ok(
+  $$select public.crossborder_consent_state()$$,
+  '42501',
+  null,
+  'anon cannot read a consent state'
 );
 
 reset role;
@@ -57,7 +65,7 @@ select pg_temp.act_as('b0000000-0000-4000-8000-000000000002');
 set local role authenticated;
 
 select is(
-  public.complete_onboarding('DZ', 'en', false, '2026-09-draft-1', false, '2026-09-draft-1'),
+  public.complete_onboarding('DZ', 'en', false, '2026-10-draft-2', false, '2026-10-draft-2'),
   'completed',
   'someone without a project yet completes onboarding without cross-border consent'
 );
@@ -65,7 +73,7 @@ select is(
 select pg_temp.act_as('a0000000-0000-4000-8000-000000000001');
 
 select throws_ok(
-  $$select public.complete_onboarding('JO', 'ar', null, '2026-09-draft-1', false, '2026-09-draft-1')$$,
+  $$select public.complete_onboarding('JO', 'ar', null, '2026-10-draft-2', false, '2026-10-draft-2')$$,
   '22023',
   null,
   'a missing answer is an error'
@@ -78,7 +86,7 @@ select is(
 );
 
 select is(
-  public.complete_onboarding('JO', 'ar', true, '2026-09-draft-1', true, '2026-09-draft-1'),
+  public.complete_onboarding('JO', 'ar', true, '2026-10-draft-2', true, '2026-10-draft-2'),
   'completed',
   'someone with a project completes onboarding'
 );
@@ -98,7 +106,13 @@ select results_eq(
 select ok(public.has_crossborder_consent(), 'cross-border consent is on');
 
 select is(
-  public.complete_onboarding('JO', 'ar', false, '2026-09-draft-1', false, '2026-09-draft-1'),
+  public.crossborder_consent_state(),
+  'current',
+  'it was given to the current text'
+);
+
+select is(
+  public.complete_onboarding('JO', 'ar', false, '2026-10-draft-2', false, '2026-10-draft-2'),
   'already_complete',
   'completing twice changes nothing'
 );
@@ -158,14 +172,16 @@ select throws_ok(
 -- ---------------------------------------------------------------------------------------------
 
 select lives_ok(
-  $$select public.set_crossborder_consent(false, '2026-09-draft-1')$$,
+  $$select public.set_crossborder_consent(false, '2026-10-draft-2')$$,
   'the user can withdraw cross-border consent'
 );
 
 select ok(not public.has_crossborder_consent(), 'cross-border consent is off');
 
+select is(public.crossborder_consent_state(), 'none', 'a withdrawn consent counts as none');
+
 select lives_ok(
-  $$select public.set_crossborder_consent(false, '2026-09-draft-1')$$,
+  $$select public.set_crossborder_consent(false, '2026-10-draft-2')$$,
   'withdrawing again is accepted'
 );
 
@@ -178,10 +194,85 @@ select is(
 select pg_temp.act_as('c0000000-0000-4000-8000-000000000003');
 
 select throws_ok(
-  $$select public.set_crossborder_consent(true, '2026-09-draft-1')$$,
+  $$select public.set_crossborder_consent(true, '2026-10-draft-2')$$,
   '42501',
   null,
   'consent settings need a completed onboarding'
+);
+
+-- ---------------------------------------------------------------------------------------------
+-- A consent given to an earlier version of the text (D-147)
+-- ---------------------------------------------------------------------------------------------
+
+reset role;
+insert into public.consent_events (user_id, kind, action, text_version, locale)
+values ('b0000000-0000-4000-8000-000000000002', 'crossborder', 'given', '2026-09-draft-1', 'en');
+
+select pg_temp.act_as('b0000000-0000-4000-8000-000000000002');
+set local role authenticated;
+
+select is(
+  public.crossborder_consent_state(),
+  'outdated',
+  'a consent given to the earlier text is outdated'
+);
+
+select ok(not public.has_crossborder_consent(), 'an outdated consent does not let AI run');
+
+select lives_ok(
+  $$select public.set_crossborder_consent(true, '2026-09-draft-1')$$,
+  'giving it again to the same text is accepted'
+);
+
+select is(
+  (select count(*)::int from public.consent_events where kind = 'crossborder'),
+  1,
+  'giving it again to the same text records nothing new'
+);
+
+select lives_ok(
+  $$select public.set_crossborder_consent(true, '2026-10-draft-2')$$,
+  'the user renews the consent for the current text'
+);
+
+select results_eq(
+  $$select action, text_version from public.consent_events where kind = 'crossborder' order by id$$,
+  $$values ('given'::text, '2026-09-draft-1'::text), ('given'::text, '2026-10-draft-2'::text)$$,
+  'the renewal is recorded after the earlier consent'
+);
+
+select is(public.crossborder_consent_state(), 'current', 'the renewed consent is current');
+
+select lives_ok(
+  $$select public.set_crossborder_consent(true, '2026-10-draft-2')$$,
+  'renewing twice is accepted'
+);
+
+select is(
+  (select count(*)::int from public.consent_events where kind = 'crossborder'),
+  2,
+  'renewing twice records nothing new'
+);
+
+reset role;
+update public.settings set value = '["2026-11-draft-3"]'
+where key = 'consent.crossborder.accepted_versions';
+set local role authenticated;
+
+select is(
+  public.crossborder_consent_state(),
+  'outdated',
+  'a text version taken off the list makes the consent outdated again'
+);
+
+reset role;
+delete from public.settings where key = 'consent.crossborder.accepted_versions';
+set local role authenticated;
+
+select is(
+  public.crossborder_consent_state(),
+  'outdated',
+  'without a list of accepted versions, no consent counts'
 );
 
 -- ---------------------------------------------------------------------------------------------

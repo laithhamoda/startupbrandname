@@ -263,6 +263,7 @@ export type Database = {
         };
         Returns: string;
       };
+      crossborder_consent_state: { Args: never; Returns: string };
       delete_my_account: { Args: never; Returns: undefined };
       has_crossborder_consent: { Args: never; Returns: boolean };
       record_ai_run: {
