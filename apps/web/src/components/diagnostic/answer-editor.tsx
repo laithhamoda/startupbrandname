@@ -123,7 +123,12 @@ export function AnswerEditor(props: AnswerEditorProps) {
           }),
         SAVE_FAILED,
       );
-      if (outcome.status === 'saved') setSavedDraft(sent);
+      if (outcome.status === 'saved') {
+        setSavedDraft(sent);
+        // A picked range is saved: its question and the box's mark have done their work.
+        setClientErrors([]);
+        setLocal({ kind: 'none' });
+      }
       if (outcome.status === 'saved' && outcome.notes.length === 0) {
         router.push(outcome.next ?? props.overviewHref);
         return;
@@ -171,7 +176,7 @@ export function AnswerEditor(props: AnswerEditorProps) {
 
   /** The founder picked one reading of "1.500": the box now says only that, and is sent. */
   function pick(choice: NumberChoice, reading: NumberAlternative) {
-    const next = withText(draft, choice.path, reading.text);
+    const next = withText(draft, choice.draftPath, reading.text);
     setDraft(next);
     submit(lastCentimes.current, next);
   }
