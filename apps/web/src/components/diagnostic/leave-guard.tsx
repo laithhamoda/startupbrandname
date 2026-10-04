@@ -26,6 +26,20 @@ export function LeaveGuard({
   const link = useRef<HTMLAnchorElement | null>(null);
   // Set while that link is clicked again, so the guard lets the click through.
   const leaving = useRef(false);
+  // The control of the answer the founder used last, where focus goes back after Stay.
+  const lastControl = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    const element = form.current;
+    if (!element) return;
+    function onFocusIn(event: FocusEvent) {
+      if (event.target instanceof HTMLElement) lastControl.current = event.target;
+    }
+    element.addEventListener('focusin', onFocusIn);
+    return () => {
+      element.removeEventListener('focusin', onFocusIn);
+    };
+  }, [form]);
 
   useEffect(() => {
     if (!active) return;
@@ -60,9 +74,11 @@ export function LeaveGuard({
   }, [active]);
 
   // Staying returns focus to the clicked link, as for any dialog. A header link below 1280px
-  // sat in the menu panel, which closed with the dialog, so focus goes to the answer instead.
+  // sat in the menu panel, which closed with the dialog, so focus goes back to the answer: to the
+  // control the founder used last (the city, not the country before it), else the first one.
   function returnFocus(): HTMLElement | null {
     if (canTakeFocus(link.current)) return link.current;
+    if (canTakeFocus(lastControl.current)) return lastControl.current;
     return firstTabbable(form.current?.querySelectorAll<HTMLElement>(TABBABLE) ?? []);
   }
 
