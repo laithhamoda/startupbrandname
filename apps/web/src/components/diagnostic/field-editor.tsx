@@ -8,6 +8,7 @@ import {
   type Language,
   MONTHS,
   type Option,
+  profilePartsFor,
   readNumber,
   SECTORS,
 } from '@sbn/question-bank';
@@ -944,8 +945,10 @@ export function FieldEditor({
       const set = (part: keyof DraftByKind['customer_profile']) => (value: string) => {
         onChange({ ...profile, [part]: value });
       };
-      const individual = options.payer !== 'b2b' && options.payer !== 'b2g';
-      const organisation = options.payer !== 'b2c';
+      // The parts that fit the payer in C1, the same ones the C2 check asks for (ARCH-7).
+      const parts = profilePartsFor(options.payer);
+      const individual = parts.individual.length > 0;
+      const organisation = parts.organisation.length > 0;
       return (
         <div className="grid gap-6">
           {individual ? (

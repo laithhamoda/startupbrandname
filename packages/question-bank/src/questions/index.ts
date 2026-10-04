@@ -32,6 +32,16 @@ export function getQuestion(id: QuestionId): Question {
   return question;
 }
 
+/**
+ * The question whose answer is the project's idea statement (B1). The AI review checks it as a
+ * coherent idea first, and reviews no other answer until it passes (D-072).
+ */
+export function ideaQuestion(): Question {
+  const idea = QUESTIONS.find((question) => question.ideaCheck);
+  if (!idea) throw new Error('No question holds the idea statement');
+  return idea;
+}
+
 /** The questions of a diagnostic mode: the 20 ★ questions for quick, all 64 for full. */
 export function questionsFor(mode: 'quick' | 'full'): readonly Question[] {
   return mode === 'quick' ? QUESTIONS.filter((question) => question.star) : QUESTIONS;

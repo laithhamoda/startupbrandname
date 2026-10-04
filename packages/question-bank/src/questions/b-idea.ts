@@ -7,6 +7,7 @@ export const AXIS_B = [
     id: 'B1',
     star: true,
     allowUnknown: false,
+    ideaCheck: true,
     field: { kind: 'short_text', maxWords: 40, singleSentence: true },
     label: t(
       'صف فكرتك في جملة واحدة: ماذا تقدّم، ولمن، ولماذا؟',

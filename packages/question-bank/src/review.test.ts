@@ -2,10 +2,12 @@ import { describe, expect, it } from 'vitest';
 import type { Answer } from './fields';
 import {
   missingProfileParts,
+  profilePartsFor,
   reviewAmountText,
   reviewAnswer,
   reviewNumberText,
   reviewProject,
+  ruleFinding,
 } from './review';
 import { sampleAnswers } from './testing';
 import type { QuestionId } from './types';
@@ -52,6 +54,21 @@ describe('R2: "no competitors"', () => {
   it('rejects "no solution today" on B4, but accepts "they put up with it"', () => {
     expect(codes('B4', 'لا يوجد حل')).toContain('R2_no_alternative');
     expect(codes('B4', 'يتحمّلون العطل ويطلبون فنّيًا من معارفهم عند الحاجة')).toEqual([]);
+  });
+});
+
+describe('ruleFinding: one message per rule, whichever check found it', () => {
+  it('names the rule’s message, with the alternative variant of R2 on B4', () => {
+    expect(ruleFinding('B3', 'R1')).toEqual({
+      code: 'R1_everyone',
+      severity: 'reject',
+      questionId: 'B3',
+    });
+    expect(ruleFinding('D3', 'R2').code).toBe('R2_no_competitors');
+    expect(ruleFinding('B4', 'R2').code).toBe('R2_no_alternative');
+    expect(ruleFinding('D5', 'R5').code).toBe('R5_vague');
+    expect(ruleFinding('B2', 'R7').code).toBe('R7_too_short');
+    expect(ruleFinding('B2', 'R8').code).toBe('R8_solution');
   });
 });
 
@@ -195,6 +212,18 @@ describe('question-specific checks (SPEC §1, Logic column)', () => {
     expect(codes('C2', organisation, withPayer('b2g'))).toEqual([]);
     expect(codes('C2', individual, withPayer('mixed'))).toEqual([]);
     expect(codes('C2', individual, {})).toEqual([]);
+  });
+
+  it('C2: shows and asks for the parts that fit the payer (one split for the editor and the check)', () => {
+    const individual = ['ageBand', 'city', 'incomeBand', 'occupation'];
+    const organisation = ['sector', 'size', 'decisionMaker'];
+    expect(profilePartsFor('b2c')).toEqual({ individual, organisation: [] });
+    expect(profilePartsFor('b2b')).toEqual({ individual: [], organisation });
+    expect(profilePartsFor('b2g')).toEqual({ individual: [], organisation });
+    expect(profilePartsFor('mixed')).toEqual({ individual, organisation });
+    expect(profilePartsFor(undefined)).toEqual({ individual, organisation });
+    expect(missingProfileParts({}, undefined)).toEqual([]);
+    expect(missingProfileParts({ sector: 'I' }, 'b2b')).toEqual(['size', 'decisionMaker']);
   });
 
   it('C2 (mixed payer): asks for the kind that is closer to complete', () => {

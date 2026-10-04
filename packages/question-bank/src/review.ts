@@ -73,35 +73,65 @@ export const PROFILE_PARTS: Readonly<Record<ProfilePart, Text>> = {
 const INDIVIDUAL: readonly ProfilePart[] = ['ageBand', 'city', 'incomeBand', 'occupation'];
 const ORGANISATION: readonly ProfilePart[] = ['sector', 'size', 'decisionMaker'];
 
-/** The parts still missing for the kind of payer in C1; mixed needs one complete kind. */
+/**
+ * The parts of the customer profile (C2) that fit the payer in C1: a person's for b2c, an
+ * organisation's for b2b and b2g, both kinds for a mix or while C1 has no answer. The editor shows
+ * these and missingProfileParts asks for them, so the two cannot disagree (ARCH-7).
+ */
+export function profilePartsFor(payer: string | undefined): {
+  individual: readonly ProfilePart[];
+  organisation: readonly ProfilePart[];
+} {
+  return {
+    individual: payer === 'b2b' || payer === 'b2g' ? [] : INDIVIDUAL,
+    organisation: payer === 'b2c' ? [] : ORGANISATION,
+  };
+}
+
+/** The parts still missing for the kind of payer in C1; a mix needs one complete kind. */
 export function missingProfileParts(
   profile: ValueByKind['customer_profile'],
   payer: string | undefined,
 ): ProfilePart[] {
-  const missing = (parts: readonly ProfilePart[]) =>
-    parts.filter((part) => (profile[part] ?? '') === '');
-  switch (payer) {
-    case 'b2c':
-      return missing(INDIVIDUAL);
-    case 'b2b':
-    case 'b2g':
-      return missing(ORGANISATION);
-    case 'mixed': {
-      const individual = missing(INDIVIDUAL);
-      const organisation = missing(ORGANISATION);
-      if (individual.length === 0 || organisation.length === 0) return [];
-      return individual.length / INDIVIDUAL.length <= organisation.length / ORGANISATION.length
-        ? individual
-        : organisation;
-    }
-    default:
-      return [];
-  }
+  // Nothing is asked for until C1 says who pays.
+  if (payer === undefined) return [];
+  const kinds = Object.values(profilePartsFor(payer))
+    .filter((parts) => parts.length > 0)
+    .map((parts) => ({ parts, missing: parts.filter((part) => (profile[part] ?? '') === '') }));
+  if (kinds.some((kind) => kind.missing.length === 0)) return [];
+  // A mix: ask for the kind closer to complete, the person's on a tie.
+  const share = (kind: (typeof kinds)[number]) => kind.missing.length / kind.parts.length;
+  const [closest] = kinds.sort((a, b) => share(a) - share(b));
+  return closest?.missing ?? [];
 }
 
 // ---------------------------------------------------------------------------------------------
 // One answer
 // ---------------------------------------------------------------------------------------------
+
+/** A rule a question can list for its free text (R3, R4 and R6 apply wherever they can). */
+export type TextRule = Question['rules'][number];
+
+const RULE_CODES: Readonly<Record<TextRule, FindingCode>> = {
+  R1: 'R1_everyone',
+  R2: 'R2_no_competitors',
+  R5: 'R5_vague',
+  R7: 'R7_too_short',
+  R8: 'R8_solution',
+};
+
+/** B4 asks how people cope today: there R2 is about that alternative, not about competitors. */
+const R2_ALTERNATIVE: QuestionId = 'B4';
+
+/**
+ * The rejection a text rule gives on a question: the same message whichever check found it, the
+ * fixed phrases here or the AI review (SPEC §2, ARCH-7).
+ */
+export function ruleFinding(questionId: QuestionId, rule: TextRule): Finding {
+  const code =
+    rule === 'R2' && questionId === R2_ALTERNATIVE ? 'R2_no_alternative' : RULE_CODES[rule];
+  return { code, severity: 'reject', questionId };
+}
 
 /** The free text inside an answer, where the text rules look. */
 function textsOf(question: Question, value: unknown): string[] {
@@ -125,33 +155,31 @@ function textsOf(question: Question, value: unknown): string[] {
 function textRules(question: Question, texts: readonly string[]): Finding[] {
   const findings: Finding[] = [];
   const id = question.id;
-  const add = (code: FindingCode, severity: Severity = 'reject') => {
-    findings.push({ code, severity, questionId: id });
+  const reject = (rule: TextRule) => {
+    findings.push(ruleFinding(id, rule));
   };
   const nonEmpty = texts.filter((text) => text.trim() !== '');
 
   if (question.allowUnknown && nonEmpty.some((text) => isShortMatch(text, DONT_KNOW))) {
-    add('R4_unknown_text', 'ask');
+    findings.push({ code: 'R4_unknown_text', severity: 'ask', questionId: id });
     return findings;
   }
   if (question.rules.includes('R1') && nonEmpty.some((text) => isShortMatch(text, EVERYONE))) {
-    add('R1_everyone');
+    reject('R1');
   }
   if (question.rules.includes('R2')) {
-    const phrases = question.id === 'B4' ? NO_ALTERNATIVE : NO_COMPETITORS;
-    if (nonEmpty.some((text) => isShortMatch(text, phrases))) {
-      add(question.id === 'B4' ? 'R2_no_alternative' : 'R2_no_competitors');
-    }
+    const phrases = id === R2_ALTERNATIVE ? NO_ALTERNATIVE : NO_COMPETITORS;
+    if (nonEmpty.some((text) => isShortMatch(text, phrases))) reject('R2');
   }
   if (
     question.rules.includes('R5') &&
     nonEmpty.some((text) => containsPhrase(text, VAGUE) && !hasDigit(text))
   ) {
-    add('R5_vague');
+    reject('R5');
   }
   if (question.rules.includes('R7') && question.field.kind === 'long_text') {
     const { minWords } = question.field;
-    if (nonEmpty.some((text) => wordCount(text) < minWords)) add('R7_too_short');
+    if (nonEmpty.some((text) => wordCount(text) < minWords)) reject('R7');
   }
   if (
     question.rules.includes('R8') &&
@@ -159,7 +187,7 @@ function textRules(question: Question, texts: readonly string[]): Finding[] {
       (text) => opensWith(text, SOLUTION_OPENINGS) && !containsPhrase(text, PROBLEM_WORDS),
     )
   ) {
-    add('R8_solution');
+    reject('R8');
   }
   return findings;
 }

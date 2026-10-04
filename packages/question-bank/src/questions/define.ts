@@ -10,6 +10,7 @@ interface Definition {
   optional?: boolean;
   /** Defaults to true: «لا أعرف» is accepted unless the question is structural (D-104). */
   allowUnknown?: boolean;
+  ideaCheck?: boolean;
   field: Field;
   label: Text;
   help: Text;
@@ -23,6 +24,7 @@ export function define(definition: Definition): Question {
     star: definition.star ?? false,
     optional: definition.optional ?? false,
     allowUnknown: definition.allowUnknown ?? true,
+    ideaCheck: definition.ideaCheck ?? false,
     rules: definition.rules ?? [],
   };
 }

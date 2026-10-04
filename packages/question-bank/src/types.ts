@@ -66,6 +66,11 @@ export interface Question {
   optional: boolean;
   /** Accepts «لا أعرف», stored as a low-confidence assumption (R4, D-104). */
   allowUnknown: boolean;
+  /**
+   * The idea statement (B1): the AI review also checks it is a coherent business idea, and no
+   * other answer is reviewed before it passes (D-072).
+   */
+  ideaCheck: boolean;
   field: Field;
   label: Text;
   /** A short example or hint shown under the question. */

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { answerSchema, valueSchema } from './fields';
 import { FOLLOW_UPS, getFollowUp } from './follow-ups';
 import { rangeValue } from './numbers';
-import { getQuestion, isQuestionId, QUESTIONS, questionsFor } from './questions';
+import { getQuestion, ideaQuestion, isQuestionId, QUESTIONS, questionsFor } from './questions';
 import { sampleAnswers, sampleValue } from './testing';
 import { AXES } from './types';
 import { totalIn, valueOf } from './values';
@@ -74,6 +74,13 @@ describe('the question bank (M3 definition of done: all 64 questions)', () => {
     expect(
       QUESTIONS.filter((question) => !question.allowUnknown).map((question) => question.id),
     ).toEqual(['A1', 'B1', 'B7', 'C1', 'D2', 'F2', 'F8', 'G1', 'H8']);
+  });
+
+  it('marks B1 alone as the idea statement the AI review checks first (D-072)', () => {
+    expect(
+      QUESTIONS.filter((question) => question.ideaCheck).map((question) => question.id),
+    ).toEqual(['B1']);
+    expect(ideaQuestion().id).toBe('B1');
   });
 
   it('marks B6 as the one optional question', () => {
