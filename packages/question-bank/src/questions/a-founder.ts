@@ -70,7 +70,11 @@ export const AXIS_A = [
     field: {
       kind: 'people',
       minItems: 0,
-      labels: { name: t('الاسم أو الصفة', 'Name or title'), detail: t('الدور', 'Role') },
+      // No name is asked for: names a founder types reach the AI review as written (D-148).
+      labels: {
+        name: t('الدور أو الصفة (لا حاجة إلى الاسم)', 'Role or title (no name needed)'),
+        detail: t('الدور', 'Role'),
+      },
     },
     label: t(
       'هل لديك فريق أو شركاء؟ اذكر أدوارهم',
