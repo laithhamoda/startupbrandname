@@ -160,7 +160,14 @@ describe('readNumber', () => {
   });
 
   it('stores the middle of a picked range, or its floor when open-ended', () => {
-    expect(rangeValue({ min: 10, max: 20 })).toBe(15);
-    expect(rangeValue({ min: 40 })).toBe(40);
+    expect(rangeValue({ min: 10, max: 20 }, false)).toBe(15);
+    expect(rangeValue({ min: 40 }, false)).toBe(40);
+    expect(rangeValue({ min: 1, max: 2 }, false)).toBe(1.5);
+  });
+
+  it('stores a whole number for a whole-number question (UX-1)', () => {
+    expect(rangeValue({ min: 1, max: 2 }, true)).toBe(2);
+    expect(rangeValue({ min: 21, max: 50 }, true)).toBe(36);
+    expect(rangeValue({ min: 0, max: 0 }, true)).toBe(0);
   });
 });

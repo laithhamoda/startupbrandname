@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { answerSchema, valueSchema } from './fields';
 import { FOLLOW_UPS, getFollowUp } from './follow-ups';
+import { rangeValue } from './numbers';
 import { getQuestion, isQuestionId, QUESTIONS, questionsFor } from './questions';
 import { sampleAnswers, sampleValue } from './testing';
 import { AXES } from './types';
@@ -96,6 +97,18 @@ describe('the question bank (M3 definition of done: all 64 questions)', () => {
       ).toBe(true);
     }
     expect(Object.keys(sampleAnswers())).toHaveLength(64);
+  });
+
+  it('stores a value its own question accepts for every suggested range (UX-1)', () => {
+    for (const { id, field } of [...QUESTIONS, ...FOLLOW_UPS]) {
+      if (field.kind !== 'number') continue;
+      for (const range of field.ranges) {
+        const value = rangeValue(range, field.integer);
+        expect(valueSchema(field).safeParse(value).success, `${id} ${JSON.stringify(range)}`).toBe(
+          true,
+        );
+      }
+    }
   });
 
   it('finds questions and follow-ups by ID', () => {

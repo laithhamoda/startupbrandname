@@ -101,6 +101,42 @@ describe('saveAnswer', () => {
     expect(log.error).not.toHaveBeenCalled();
   });
 
+  it('stores a whole number when a range is picked on a whole-number question (UX-1)', async () => {
+    const { client, writes } = fakeClient();
+    signedIn(client);
+
+    const result = await saveAnswer({
+      locale: 'ar',
+      projectId,
+      step: 'C8',
+      submission: { kind: 'range', min: 11, max: 50 },
+    });
+
+    expect(result.status).toBe('saved');
+    expect(writes.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        question_id: 'C8',
+        normalized_value: { status: 'answered', value: 31 },
+        source: 'assumption',
+      }),
+    );
+  });
+
+  it('says what is wrong with a number instead of asking to complete the fields', async () => {
+    const { client, writes } = fakeClient();
+    signedIn(client);
+
+    expect(await saveAnswer(numberOfPartners(2.5))).toEqual({
+      status: 'invalid',
+      messages: ['wholeNumber'],
+    });
+    expect(await saveAnswer(numberOfPartners(70))).toEqual({
+      status: 'invalid',
+      messages: ['outOfRange'],
+    });
+    expect(writes.upsert).not.toHaveBeenCalled();
+  });
+
   it('says "gone" when the project was deleted', async () => {
     const { client, writes } = fakeClient();
     signedIn(client);

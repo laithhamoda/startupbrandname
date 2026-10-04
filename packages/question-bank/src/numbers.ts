@@ -192,7 +192,12 @@ export function readNumber(input: string): NumberReading {
   };
 }
 
-/** The representative value stored when a founder picks a suggested range (R3). */
-export function rangeValue(range: NumberRange): number {
-  return range.max === undefined ? range.min : (range.min + range.max) / 2;
+/**
+ * The value stored when a founder picks a suggested range (R3): its middle, or its floor when
+ * open-ended. A whole-number question stores a whole number ("1–2" gives 2), which its own
+ * schema then accepts (UX-1).
+ */
+export function rangeValue(range: NumberRange, integer: boolean): number {
+  const value = range.max === undefined ? range.min : (range.min + range.max) / 2;
+  return integer ? Math.round(value) : value;
 }

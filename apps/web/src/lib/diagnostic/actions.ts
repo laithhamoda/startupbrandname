@@ -6,7 +6,6 @@ import {
   activeFollowUps,
   type Finding,
   type QuestionId,
-  answerSchema,
   diagnosticSequence,
   FOLLOW_UPS,
   getQuestion,
@@ -19,6 +18,7 @@ import {
   reviewProject,
   type StepId,
   VALUE_ISSUES,
+  valueSchema,
 } from '@sbn/question-bank';
 import { needsConfirmation } from '@sbn/ai';
 import { getTranslations } from 'next-intl/server';
@@ -172,6 +172,7 @@ async function issueMessages(
     if (issue.code === 'custom' && (VALUE_ISSUES as readonly string[]).includes(issue.message)) {
       return t(issue.message as (typeof VALUE_ISSUES)[number]);
     }
+    if (issue.code === 'invalid_type' && issue.expected === 'int') return t('wholeNumber');
     if (issue.code === 'too_small' && issue.origin === 'array') {
       return t('minItems', { count: Number(issue.minimum) });
     }
@@ -274,23 +275,27 @@ async function save(
   if (!field) return STALE;
   const allowUnknown = coreId ? getQuestion(coreId).allowUnknown : false;
 
-  let candidate: unknown;
+  trace.stage = 'review';
+  let answer: Answer;
   if (submission.kind === 'unknown') {
     if (!allowUnknown) return FAILED;
-    candidate = { status: 'unknown' };
-  } else if (submission.kind === 'range') {
-    if (field.kind !== 'number') return FAILED;
-    candidate = { status: 'answered', value: rangeValue(submission) };
+    answer = { status: 'unknown' };
   } else {
-    candidate = { status: 'answered', value: submission.value };
+    let value: unknown;
+    if (submission.kind === 'range') {
+      if (field.kind !== 'number') return FAILED;
+      value = rangeValue(submission, field.integer);
+    } else {
+      value = submission.value;
+    }
+    // The value on its own, so each issue keeps its code: inside answerSchema's union with
+    // «لا أعرف», zod reports every issue as invalid_union, read as "complete the fields" (UX-1).
+    const parsed = valueSchema(field).safeParse(value);
+    if (!parsed.success) {
+      return { status: 'invalid', messages: await issueMessages(parsed.error.issues, locale) };
+    }
+    answer = { status: 'answered', value: parsed.data };
   }
-
-  trace.stage = 'review';
-  const parsed = answerSchema(field, allowUnknown).safeParse(candidate);
-  if (!parsed.success) {
-    return { status: 'invalid', messages: await issueMessages(parsed.error.issues, locale) };
-  }
-  let answer: Answer = parsed.data;
   let updated: Answers = { ...answers, [step]: answer };
   const typed =
     (submission.kind === 'value' || submission.kind === 'confirmed') &&
@@ -333,12 +338,9 @@ async function save(
       if (needsConfirmation(ai, answer.value as string)) {
         if (submission.kind !== 'confirmed') return { status: 'confirm', text: ai.confirmation };
         // The confirmed reading comes from the stored review, never from the browser.
-        const confirmed = answerSchema(field, allowUnknown).safeParse({
-          status: 'answered',
-          value: ai.msa,
-        });
+        const confirmed = valueSchema(field).safeParse(ai.msa);
         if (confirmed.success) {
-          answer = confirmed.data;
+          answer = { status: 'answered', value: confirmed.data };
           updated = { ...answers, [step]: answer };
           const blocking = blockingFindings(coreId, answer, updated);
           if (blocking.length > 0) {

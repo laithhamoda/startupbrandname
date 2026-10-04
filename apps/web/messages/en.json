@@ -179,6 +179,7 @@
       "required": "Complete the required fields.",
       "minItems": "{count, plural, one {Add at least one item.} other {Add at least # items.}}",
       "outOfRange": "The number is outside the accepted range.",
+      "wholeNumber": "Enter a whole number, such as 3.",
       "tooLong": "The text is too long.",
       "url": "The link is not valid. Write it in full, such as https://example.com",
       "currency": "Choose the currency.",
