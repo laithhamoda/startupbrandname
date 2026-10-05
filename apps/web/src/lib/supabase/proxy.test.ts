@@ -58,6 +58,18 @@ function request(): NextRequest {
   });
 }
 
+/** A Server Action posted from a step page, as the browser sends it. */
+function actionRequest(): NextRequest {
+  return new NextRequest('http://localhost:3000/ar/projects/p/q/A1', {
+    method: 'POST',
+    headers: {
+      cookie: 'sb-test-auth-token=old; NEXT_LOCALE=ar',
+      'next-action': 'a1b2c3',
+      'x-vercel-id': 'fra1::abc',
+    },
+  });
+}
+
 /** Never settles: Supabase does not answer. */
 const never = () => new Promise<never>(() => undefined);
 
@@ -124,7 +136,29 @@ describe('refreshSession', () => {
     expect(refreshed).toEqual({ cookies: [], headers: {} });
     expect(incoming.cookies.has('sb-test-auth-token')).toBe(false);
     expect(incoming.cookies.get('NEXT_LOCALE')?.value).toBe('ar');
-    expect(log.warn).toHaveBeenCalledWith('proxy.refresh_timeout', { requestId: 'fra1::abc' });
+    expect(log.warn).toHaveBeenCalledWith('proxy.refresh_timeout', {
+      stage: 'page',
+      requestId: 'fra1::abc',
+    });
+  });
+
+  it('lets a Server Action past the deadline with its session, to check it itself', async () => {
+    fakeClient(never);
+    const incoming = actionRequest();
+
+    const pending = refreshSession(incoming);
+    await vi.advanceTimersByTimeAsync(REFRESH_DEADLINE_MS);
+    const refreshed = await pending;
+    cookieWriter()(FRESH, {});
+
+    // Signed out, a save would send the founder to sign in and lose the typed answer. A refresh
+    // that completes late is left to the action's own client, as for a page.
+    expect(refreshed).toEqual({ cookies: [], headers: {} });
+    expect(incoming.cookies.get('sb-test-auth-token')?.value).toBe('old');
+    expect(log.warn).toHaveBeenCalledWith('proxy.refresh_timeout', {
+      stage: 'action',
+      requestId: 'fra1::abc',
+    });
   });
 
   it('waits the whole deadline before giving up', async () => {

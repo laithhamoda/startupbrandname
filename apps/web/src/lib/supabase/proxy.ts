@@ -23,6 +23,14 @@ export function hasSessionCookie(request: NextRequest): boolean {
   return request.cookies.getAll().some((cookie) => cookie.name.startsWith('sb-'));
 }
 
+/**
+ * True for a Server Action: pages answer only GET, so a POST that reaches the proxy is one (sent
+ * with a Next-Action header, or as a form without JavaScript).
+ */
+function isServerAction(request: NextRequest): boolean {
+  return request.method === 'POST';
+}
+
 /** True when `work` settles within `ms`, false when the deadline comes first. */
 async function settlesWithin(work: Promise<unknown>, ms: number): Promise<boolean> {
   let timer: ReturnType<typeof setTimeout> | undefined;
@@ -50,6 +58,10 @@ async function settlesWithin(work: Promise<unknown>, ms: number): Promise<boolea
  * page), so the page does not wait for Supabase in turn. A refresh that completes after that
  * changes nothing here; if Supabase rotated the refresh token meanwhile, the browser's old one may
  * later be refused, which signs the visitor out (accepted, D-168).
+ *
+ * A Server Action keeps its session cookies instead: signed out, a save would send the founder to
+ * sign in and lose the typed answer. The action checks the session itself, each Supabase request
+ * bounded by SERVER_FETCH_TIMEOUT_MS, so a refresh Supabase answers late still lets it through.
  */
 export async function refreshSession(request: NextRequest): Promise<RefreshedSession> {
   const env = getClientEnv();
@@ -79,10 +91,14 @@ export async function refreshSession(request: NextRequest): Promise<RefreshedSes
     return refreshed;
   }
   abandoned = true;
-  for (const cookie of request.cookies.getAll()) {
-    if (cookie.name.startsWith('sb-')) request.cookies.delete(cookie.name);
+  const action = isServerAction(request);
+  if (!action) {
+    for (const cookie of request.cookies.getAll()) {
+      if (cookie.name.startsWith('sb-')) request.cookies.delete(cookie.name);
+    }
   }
   await log.warn('proxy.refresh_timeout', {
+    stage: action ? 'action' : 'page',
     requestId: request.headers.get('x-vercel-id') ?? undefined,
   });
   return refreshed;
