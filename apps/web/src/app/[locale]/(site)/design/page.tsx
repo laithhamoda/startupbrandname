@@ -64,7 +64,7 @@ export default async function DesignGalleryPage() {
             {c.type.lead} <Money value="4.200" currency="JOD" />.
           </p>
           <p>{c.type.body}</p>
-          <p className="text-small font-medium">{c.type.small}</p>
+          <p className="text-small">{c.type.small}</p>
           <p className="text-caption text-muted">{c.type.caption}</p>
         </div>
       </Section>
