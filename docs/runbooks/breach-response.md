@@ -19,8 +19,9 @@ Under the GDPR, the 72 hours for telling the supervisory authority start when we
 personal data was affected (Art. 33(1)), not when the investigation ends.
 
 Where alerts come from: the `secret-scan` CI job (gitleaks), GitHub secret scanning, the Supabase
-security advisor, an unexpected rise in AI spend (`tool_runs.cost_usd`, the daily cap being hit),
-Vercel and Supabase logs, a processor's notice, or a user's report.
+security advisor, an unexpected rise in AI spend (`private.ai_spend_daily`, which no deletion
+lowers, D-146; the daily cap being hit, logged as `ai.skipped` with reason `global_cap`), Vercel
+and Supabase logs, a processor's notice, or a user's report.
 
 ## 2. Contain
 
