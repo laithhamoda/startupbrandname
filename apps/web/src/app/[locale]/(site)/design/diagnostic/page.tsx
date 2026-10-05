@@ -10,6 +10,7 @@ import {
 import { sampleAnswers, sampleValue } from '@sbn/question-bank/testing';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { ClientMessages } from '@/components/client-messages';
 import { FieldPreview } from '@/components/diagnostic/field-preview';
 import { FindingList } from '@/components/diagnostic/finding-list';
 import { AxisProgress, CompletenessPanel } from '@/components/diagnostic/progress';
@@ -75,57 +76,60 @@ export default async function DiagnosticGalleryPage() {
   };
 
   return (
-    <div className="mx-auto grid max-w-[75rem] gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(0,1fr)_18rem] lg:gap-16">
-      <div className="grid content-start gap-8">
-        <header className="grid gap-3">
-          <h1 className="text-h1 font-extrabold">{TITLE[locale]}</h1>
-          <p className="reading text-muted">{LEAD[locale]}</p>
-          <AxisProgress byAxis={completeness(quick).byAxis} current="F" language={locale} />
-        </header>
+    // The answer controls are client components that read the diagnostic messages (PERF-8).
+    <ClientMessages namespaces={['diagnostic']}>
+      <div className="mx-auto grid max-w-[75rem] gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(0,1fr)_18rem] lg:gap-16">
+        <div className="grid content-start gap-8">
+          <header className="grid gap-3">
+            <h1 className="text-h1 font-extrabold">{TITLE[locale]}</h1>
+            <p className="reading text-muted">{LEAD[locale]}</p>
+            <AxisProgress byAxis={completeness(quick).byAxis} current="F" language={locale} />
+          </header>
 
-        {SHOWCASE.map((id) => {
-          const question = getQuestion(id);
-          return (
-            <section
-              key={id}
-              aria-labelledby={`${id}-heading`}
-              className="grid gap-4 border-t border-hairline pt-6"
-            >
-              <h2 id={`${id}-heading`} className="reading text-h3 font-bold">
-                {question.label[locale]}
-              </h2>
-              <p id={`${id}-help`} className="reading text-small text-ink-2">
-                {question.help[locale]}
-              </p>
-              <FieldPreview
-                id={`preview-${id}`}
-                labelledBy={`${id}-heading`}
-                describedBy={`${id}-help`}
-                field={question.field}
-                initialDraft={toDraft(
-                  question.field,
-                  id === 'F1' ? undefined : sampleValue(question.field),
-                  context,
-                )}
-                options={options}
-              />
-            </section>
-          );
-        })}
+          {SHOWCASE.map((id) => {
+            const question = getQuestion(id);
+            return (
+              <section
+                key={id}
+                aria-labelledby={`${id}-heading`}
+                className="grid gap-4 border-t border-hairline pt-6"
+              >
+                <h2 id={`${id}-heading`} className="reading text-h3 font-bold">
+                  {question.label[locale]}
+                </h2>
+                <p id={`${id}-help`} className="reading text-small text-ink-2">
+                  {question.help[locale]}
+                </p>
+                <FieldPreview
+                  id={`preview-${id}`}
+                  labelledBy={`${id}-heading`}
+                  describedBy={`${id}-help`}
+                  field={question.field}
+                  initialDraft={toDraft(
+                    question.field,
+                    id === 'F1' ? undefined : sampleValue(question.field),
+                    context,
+                  )}
+                  options={options}
+                />
+              </section>
+            );
+          })}
 
-        <section
-          aria-labelledby="findings-heading"
-          className="grid gap-4 border-t border-hairline pt-6"
-        >
-          <h2 id="findings-heading" className="text-h3 font-bold">
-            {locale === 'ar' ? 'رسائل القواعد' : 'Rule messages'}
-          </h2>
-          <FindingList findings={findings} />
-        </section>
+          <section
+            aria-labelledby="findings-heading"
+            className="grid gap-4 border-t border-hairline pt-6"
+          >
+            <h2 id="findings-heading" className="text-h3 font-bold">
+              {locale === 'ar' ? 'رسائل القواعد' : 'Rule messages'}
+            </h2>
+            <FindingList findings={findings} />
+          </section>
+        </div>
+        <aside>
+          <CompletenessPanel result={completeness(quick)} language={locale} />
+        </aside>
       </div>
-      <aside>
-        <CompletenessPanel result={completeness(quick)} language={locale} />
-      </aside>
-    </div>
+    </ClientMessages>
   );
 }

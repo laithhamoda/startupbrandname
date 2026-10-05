@@ -1,12 +1,13 @@
 import type { Metadata, Viewport } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
-import { getTranslations } from 'next-intl/server';
+import { getMessages, getTranslations } from 'next-intl/server';
 import type { ReactNode } from 'react';
 import { Providers } from '@/components/providers';
 import { SiteAnalytics } from '@/components/site-analytics';
 import { themeScript } from '@/components/theme-script';
 import { site } from '@/config/site';
 import { getServerEnv } from '@/env/server';
+import { ROOT_NAMESPACES, pickMessages } from '@/i18n/client-messages';
 import { currentLocale } from '@/i18n/locale';
 import { DIRECTION, routing } from '@/i18n/routing';
 import { isIndexable } from '@/seo/indexing';
@@ -59,7 +60,8 @@ export default async function LocaleLayout({ children }: Readonly<{ children: Re
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body className="flex min-h-dvh flex-col">
-        <NextIntlClientProvider>
+        {/* Only what every page's client components read; pages add theirs (ClientMessages). */}
+        <NextIntlClientProvider messages={pickMessages(await getMessages(), ROOT_NAMESPACES)}>
           <Providers dir={DIRECTION[locale]}>
             <a href="#main" className="skip-link">
               {t('skipToContent')}
