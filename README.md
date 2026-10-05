@@ -43,25 +43,26 @@ Chromium: `pnpm --filter @sbn/web exec playwright install chromium`.
 
 ## Scripts
 
-| Command                             | What it does                                                                                          |
-| ----------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| `pnpm dev`                          | The web app in development mode, port 3000                                                            |
-| `pnpm verify`                       | What the `checks` and `db` CI jobs run, in order; needs the local stack and wipes its data (reset)    |
-| `pnpm format` / `format:check`      | Prettier: write, or check only                                                                        |
-| `pnpm lint`                         | ESLint with zero warnings, and the check that rejects `left`/`right` styling                          |
-| `pnpm typecheck`                    | TypeScript in every package                                                                           |
-| `pnpm test`                         | Unit tests in every package; engine, question bank and AI fail below 95% line coverage                |
-| `pnpm build`                        | Production build of the web app                                                                       |
-| `pnpm check:bundle`                 | After a build: fails if secret key material appears in client-reachable output                        |
-| `pnpm test:e2e`                     | Builds, then runs the Playwright **site** project: pages, accessibility, RTL and LTR (no database)    |
-| `pnpm test:e2e:auth`                | Builds, then runs the **auth** project against the local stack, with the settings of the e2e-auth job |
-| `pnpm db:start` / `db:stop`         | Local Supabase in Docker                                                                              |
-| `pnpm db:reset`                     | Recreate the local database from `supabase/migrations`                                                |
-| `pnpm db:test`                      | pgTAP tests in `supabase/tests` (includes the RLS guard)                                              |
-| `pnpm db:lint`                      | Lint database functions                                                                               |
-| `pnpm db:types`                     | Regenerate `apps/web/src/lib/supabase/database.types.ts` from the local database                      |
-| `pnpm --filter @sbn/web og:images`  | After a build: rewrite the share images in `apps/web/public/og`                                       |
-| `pnpm --filter @sbn/web lighthouse` | After an indexable production build: Lighthouse on every public page ([TESTING.md](docs/TESTING.md))  |
+| Command                                | What it does                                                                                           |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `pnpm dev`                             | The web app in development mode, port 3000                                                             |
+| `pnpm verify`                          | The main steps of the `checks` and `db` CI jobs, in order; needs the local stack, wipes its data       |
+| `pnpm format` / `format:check`         | Prettier: write, or check only                                                                         |
+| `pnpm lint`                            | ESLint with zero warnings, and the check that rejects `left`/`right` styling                           |
+| `pnpm typecheck`                       | TypeScript in every package                                                                            |
+| `pnpm test`                            | Unit tests in all packages; line coverage gates in engine, question bank, AI (95%) and web app (D-164) |
+| `pnpm build`                           | Production build of the web app                                                                        |
+| `pnpm check:bundle`                    | After a build: fails if secret key material appears in client-reachable output                         |
+| `node scripts/check-bundle-budget.mjs` | After a build: fails a route that sends more JavaScript than its budget (D-171)                        |
+| `pnpm test:e2e`                        | Builds, then runs the Playwright **site** project: pages, accessibility, RTL and LTR (no database)     |
+| `pnpm test:e2e:auth`                   | Builds, then runs the **auth** project against the local stack, with the settings of the e2e-auth job  |
+| `pnpm db:start` / `db:stop`            | Local Supabase in Docker                                                                               |
+| `pnpm db:reset`                        | Recreate the local database from `supabase/migrations`                                                 |
+| `pnpm db:test`                         | pgTAP tests in `supabase/tests` (includes the RLS guard)                                               |
+| `pnpm db:lint`                         | Lint database functions                                                                                |
+| `pnpm db:types`                        | Regenerate `apps/web/src/lib/supabase/database.types.ts` from the local database                       |
+| `pnpm --filter @sbn/web og:images`     | After a build: rewrite the share images in `apps/web/public/og`                                        |
+| `pnpm --filter @sbn/web lighthouse`    | After an indexable production build: Lighthouse on every public page ([TESTING.md](docs/TESTING.md))   |
 
 ## Debugging
 
@@ -142,12 +143,19 @@ Chromium: `pnpm --filter @sbn/web exec playwright install chromium`.
 
 ## AI in the diagnostic (M3c)
 
-- `packages/ai`: the Anthropic client, the review prompt, de-identification (`deidentify.ts`),
-  cost and input hashing. Server-only; the client bundle scan fails the build if it leaks.
-- Typed answers are reviewed by Claude Haiku only for users who gave cross-border consent (D-103),
-  within 40 calls per user per day and 5 USD per day overall (D-120, in `settings`). Dialect or
-  mixed answers ask the founder to confirm «فهمت أن…» before the MSA version is saved; the typed
-  text stays in `raw_text` (D-119). Every call is logged in `tool_runs` with its tokens and cost.
+- `packages/ai`: the Anthropic client, the review prompt, de-identification with numbered
+  placeholders (`deidentify.ts`, D-148, D-149), the price schema and input hashing. Server-only;
+  the client bundle scan fails the build if it leaks.
+- Typed answers are reviewed by Claude Haiku only for users whose cross-border consent is current,
+  that is, given to a text version listed in `consent.crossborder.accepted_versions` (D-103,
+  D-147), within 40 calls per user per day and 5 USD per day overall (D-120, in `settings`).
+  Dialect or mixed answers ask the founder to confirm «فهمت أن…» before the MSA version is saved;
+  the typed text stays in `raw_text` (D-119).
+- Each call is reserved with `reserve_ai_run()` and, when it returns, recorded in `tool_runs` with
+  `record_ai_run()`, which computes its cost in the database. The day's spend, calls cut off or
+  not recorded included, is in `private.ai_spend_daily` (D-146). One save spends at most 8 seconds
+  on AI review; when they run out, the answer gets the fixed checks only (D-150). The whole path
+  is in [architecture](docs/architecture.md#4-runtime-view-saving-an-answer).
 - `ANTHROPIC_API_KEY` goes in Vercel as a Sensitive variable (Production and Preview). Without it,
   or with `AI_PROVIDER=off`, the diagnostic uses the fixed checks only. Locally and in CI,
   `AI_PROVIDER=fake` stands in for the model (D-123). The model and its price live in `settings`
@@ -163,7 +171,8 @@ Chromium: `pnpm --filter @sbn/web exec playwright install chromium`.
 
 Variables per environment and the settings keys: [operations](docs/runbooks/operations.md#variables).
 
-`GET /api/health` returns `{ status, region, supabase: { reachable, latency_ms, reason } }`.
+`GET /api/health` returns `{ status, region, ai, supabase: { reachable, latency_ms, reason } }`;
+`ai` is `on` or `off`, never why (D-152).
 When Supabase is unreachable, `reason` is `http_<status>` (for example `http_401`: the key does not
 belong to the project at `NEXT_PUBLIC_SUPABASE_URL`), `timeout` or `network`.
 In production `region` must be `fra1`.

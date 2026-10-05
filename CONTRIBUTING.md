@@ -23,8 +23,9 @@ How changes reach `main`, and short checklists for the changes that touch many f
 - Small commits in Conventional Commits form (`feat`, `fix`, `refactor`, `test`, `docs`, `chore`,
   `ci`, `perf`, optional scope), checked by commitlint: lower-case subject, body lines of at most
   100 characters, explaining why. Hooks format, lint and test; never skip them with `--no-verify`.
-- Fill in the pull request template. `pnpm verify` runs the `checks` and `db` jobs locally; like
-  the `db` job it starts from a fresh database, so it wipes the local data (`pnpm db:reset`).
+- Fill in the pull request template. `pnpm verify` runs the main steps of the `checks` and `db`
+  jobs locally ([TESTING.md](docs/TESTING.md) lists what it leaves out); like the `db` job it
+  starts from a fresh database, so it wipes the local data (`pnpm db:reset`).
 
 ## Releases and migrations
 
@@ -133,6 +134,9 @@ The full order, rollback and kill switches: [docs/runbooks/operations.md](docs/r
       in `en.json`, with the same `{placeholders}`. A technical term gets its English in
       parentheses on first occurrence only (CLAUDE.md §3).
 - [ ] No text hard-coded in components. Public page bodies live in `apps/web/src/content` (D-095).
+- [ ] A client component that reads a namespace gets it from the root namespaces or from the
+      `ClientMessages` of the route that renders it (D-169); `client-messages.test.ts` fails
+      otherwise, and the page would show message keys.
 - [ ] `pnpm --filter @sbn/web test` (`messages.test.ts`) and `pnpm typecheck`.
 
 ### A visual change
@@ -147,6 +151,9 @@ The full order, rollback and kill switches: [docs/runbooks/operations.md](docs/r
 - [ ] New decisions go at the end of `docs/DECISIONS.md` with the next free ID, the date, the
       decision and the reason. Merged rows are never reworded or reordered: a new entry amends or
       supersedes them.
+- [ ] From M4 on, a decision is a heading and a list (Decision, Reason, Status), as shown at the
+      top of `docs/DECISIONS.md`, added to its topic index; one that amends or supersedes an
+      earlier decision also updates that decision's Status (D-172, D-173).
 - [ ] A resolved open question is marked in `docs/OPEN-QUESTIONS.md` with its decision ID;
       numbers never change.
 - [ ] `CLAUDE.md` and `docs/SPEC.md` change only with the owner's explicit approval. Where a
@@ -155,5 +162,7 @@ The full order, rollback and kill switches: [docs/runbooks/operations.md](docs/r
 ### A dependency
 
 - [ ] Exact version (`.npmrc` has `save-exact`); dev tools go in the root `package.json` (D-024).
+- [ ] Code that reaches the browser stays within the route budgets: `pnpm build`, then
+      `node scripts/check-bundle-budget.mjs` (D-171).
 - [ ] No install scripts (D-033).
 - [ ] A new tool or major version: a decision with the reason.

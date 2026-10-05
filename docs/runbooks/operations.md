@@ -115,16 +115,16 @@ to the production deployment whose commit is the tag's also works, within the li
 
 ## Kill switches
 
-| Switch                         | What stops                                                       | How                                                                                                       | Takes effect                                                        | Undo                                              |
-| ------------------------------ | ---------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------- |
-| AI, at once                    | Every model call; the fixed checks carry on                      | Production SQL editor: `update public.settings set value = '0' where key = 'ai.limit.global_daily_usd';`  | Next call: `reserve_ai_call()` reads the limit every time (seconds) | Set it back to `5` (D-120)                        |
-| AI, by release                 | Every model call                                                 | Vercel Production: `AI_PROVIDER=off`, then redeploy                                                       | Next deployment (minutes)                                           | Remove the variable, redeploy                     |
-| Anthropic key                  | Every model call; a leaked key can no longer be used             | Anthropic Console: revoke the key                                                                         | At once; calls fail and fall back to the fixed checks (D-124)       | New key in Vercel (Sensitive), redeploy           |
-| Algeria (locked, CLAUDE.md §3) | New signups from Algeria; existing accounts keep working         | Vercel Production: `MARKET_DZ_ENABLED=false`, then redeploy                                               | Next deployment                                                     | `true`, redeploy                                  |
-| Google sign-in                 | The "Continue with Google" button                                | Supabase → Authentication → Sign In / Providers → Google off; or `AUTH_GOOGLE_ENABLED=false` and redeploy | Within a minute: the app caches the provider check for 60 s (D-089) | Provider on; or `true` and redeploy               |
-| New accounts                   | Every new signup; existing users still sign in. Emergencies only | Supabase → Authentication → Sign In / Providers → Allow new users to sign up off                          | At once                                                             | Switch it on again                                |
-| Search indexing                | Indexing of the public pages                                     | Vercel Production: `SITE_INDEXABLE=false`, then redeploy                                                  | Next deployment                                                     | `true`, redeploy ([launch-seo.md](launch-seo.md)) |
-| The whole release              | The current app version                                          | Instant Rollback to the previous deployment, or a revert pull request ([above](#rolling-back))            | Seconds; a revert once merged and built                             | Undo Rollback; revert the revert                  |
+| Switch                         | What stops                                                       | How                                                                                                       | Takes effect                                                                                     | Undo                                              |
+| ------------------------------ | ---------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------- |
+| AI, at once                    | Every model call; the fixed checks carry on                      | Production SQL editor: `update public.settings set value = '0' where key = 'ai.limit.global_daily_usd';`  | Next call: `reserve_ai_run()` reads the limit every time and answers `disabled` (seconds, D-146) | Set it back to `5` (D-120)                        |
+| AI, by release                 | Every model call                                                 | Vercel Production: `AI_PROVIDER=off`, then redeploy                                                       | Next deployment (minutes)                                                                        | Remove the variable, redeploy                     |
+| Anthropic key                  | Every model call; a leaked key can no longer be used             | Anthropic Console: revoke the key                                                                         | At once; calls fail and fall back to the fixed checks (D-124, D-151)                             | New key in Vercel (Sensitive), redeploy           |
+| Algeria (locked, CLAUDE.md §3) | New signups from Algeria; existing accounts keep working         | Vercel Production: `MARKET_DZ_ENABLED=false`, then redeploy                                               | Next deployment                                                                                  | `true`, redeploy                                  |
+| Google sign-in                 | The "Continue with Google" button                                | Supabase → Authentication → Sign In / Providers → Google off; or `AUTH_GOOGLE_ENABLED=false` and redeploy | Within a minute: the app caches the provider check for 60 s (D-089)                              | Provider on; or `true` and redeploy               |
+| New accounts                   | Every new signup; existing users still sign in. Emergencies only | Supabase → Authentication → Sign In / Providers → Allow new users to sign up off                          | At once                                                                                          | Switch it on again                                |
+| Search indexing                | Indexing of the public pages                                     | Vercel Production: `SITE_INDEXABLE=false`, then redeploy                                                  | Next deployment                                                                                  | `true`, redeploy ([launch-seo.md](launch-seo.md)) |
+| The whole release              | The current app version                                          | Instant Rollback to the previous deployment, or a revert pull request ([above](#rolling-back))            | Seconds; a revert once merged and built                                                          | Undo Rollback; revert the revert                  |
 
 A rollback brings back the variables of the deployment it restores, which can undo the switches
 held in variables: see **Old variables** under [Rolling back](#rolling-back).
@@ -152,18 +152,94 @@ release order:
    update public.settings set value = '"<model ID>"' where key = 'ai.model.fast';
    ```
 
-   The four prices are USD per million tokens; `cost_usd` is computed from them. A placeholder
-   left in is not valid JSON, so the migration fails to apply. Each price must be greater than 0:
-   the app accepts 0, which would count every call as free, and the daily USD limit would never
-   stop AI.
+   The four prices are USD per million tokens: `record_ai_run()` computes each run's `cost_usd`
+   from them, and `reserve_ai_run()` the most a call can cost. A price without all four answers
+   `disabled`, and a placeholder left in is not valid JSON, so the migration fails to apply. Each
+   price must be greater than 0: the app and the database accept 0, which would count every call
+   as free, and the daily USD limit would never stop AI.
 
 3. Update the assertions in `supabase/tests/ai_usage.test.sql`, including one that each price of
    the new model is greater than 0, and add a decision.
 4. Release it as above. The input hash includes the model, so no review from the old model is
    reused for the new one. A model without a price turns AI off instead of being counted as free.
+   Each server instance reads the model and its price again within a minute (`SETTINGS_TTL_MS`,
+   D-167).
 
 If the model stops working before the migration reaches production, calls fail and the diagnostic
-falls back to the fixed checks (D-124); the first kill switch stops the failing calls from counting.
+falls back to the fixed checks (D-124). A failed input is not tried again for 10 minutes on that
+instance (D-151), but every call that was reserved still counts against the user's day and holds
+the most it could cost in the day's spend (D-146): the first kill switch stops new ones.
+
+## AI after the audit fixes
+
+Pull request B counts AI calls against one-time reservations and counts a consent only for a listed
+text version (D-146, D-147). Its two migrations, `20261004053500_ai_reservations_and_ledger.sql` and
+`20261004053600_consent_versions.sql`, follow the release order above, while the app on `main`
+already expects them (D-155):
+
+| Production database   | The app on `main`                                                                                                                                                                                                                                                                                                                           |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Neither migration yet | AI stays off: a typed answer to B1, or any typed answer once B1 is saved, logs `ai.skipped` with reason `previous_schema`, at warn level. The account page compares the latest consent with `CROSSBORDER_VERSION` itself, so a consent to the earlier text shows as outdated; a renewal is recorded only once the second migration has run. |
+| Only `20261004053500` | The same: `crossborder_consent_state()` comes with the second migration.                                                                                                                                                                                                                                                                    |
+| Both                  | AI runs for founders whose consent is `current`; the others are asked on `/account` to renew it.                                                                                                                                                                                                                                            |
+
+In every state, `GET /api/health` shows `"ai": "on"` once a model provider is configured: it does
+not show whether the review can run. An app from before pull request B keeps to the fixed checks
+on the migrated database, since `reserve_ai_call()` is closed to signed-in users: rolling back to
+it is safe, with AI off.
+
+After `DB deploy` has migrated production:
+
+1. The run's log lists both versions as applied.
+2. The production SQL editor returns two rows for:
+
+   ```sql
+   select key, value
+   from public.settings
+   where key in ('ai.limit.tokens_in_per_call', 'consent.crossborder.accepted_versions');
+   ```
+
+3. On `/account`, renew your own consent if it shows as outdated, as a consent to the earlier text
+   now does. Then save a typed answer to B1 that you have not saved before, in one of your projects.
+   Vercel → Logs shows no new `ai.skipped` line with `previous_schema`, and the production SQL
+   editor returns at least 1 for:
+
+   ```sql
+   select count(*)
+   from private.ai_reservations
+   where created_at > now() - interval '10 minutes';
+   ```
+
+   Use B1: any other answer skips with `no_idea` until B1 is saved, before the consent is read, and
+   an answer typed before reuses its stored review without a reservation. Neither `GET /api/health`
+   nor a quiet log proves on its own that the review runs.
+
+Later, the contract pull request ([OPEN-QUESTIONS #89](../OPEN-QUESTIONS.md)): once production has
+both migrations and no deployment that could be served, a rollback target included, calls the old
+functions, a migration with a `-- contract:` line (D-141) drops `reserve_ai_call()`, the old
+`record_tool_run()` and `has_crossborder_consent()`, and the app drops its previous-schema paths
+(the account page's own comparison in `accountConsentState` and the `previous_schema` skip). It
+follows the release order like any other.
+
+## Budgets
+
+Limits that fail a check or end a wait, each set from a measurement. Raise one only with its reason
+in a new decision in the same pull request; lower a size budget whenever a change makes the route
+or page smaller (D-171).
+
+| Budget                                  | Value                                                                               | Where                                                                                                                                | Decision |
+| --------------------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | -------- |
+| JavaScript a route loads first, gzipped | Home 192,500 B; signup 211,400 B; onboarding 209,300 B; a diagnostic step 347,800 B | `BUDGETS` in `scripts/check-bundle-budget.mjs`, run by the `checks` job after the build                                              | D-171    |
+| Script and font bytes of a public page  | 213,000 B of script, 116,500 B of fonts                                             | `BYTE_BUDGETS` in `apps/web/scripts/lighthouse.mjs` (`lighthouse` job)                                                               | D-171    |
+| Layout shift                            | Below 0.1                                                                           | `MAX_LAYOUT_SHIFT` in `lighthouse.mjs`; `expectNoLayoutShift` in `apps/web/e2e/layout-shift.ts` (`/ar`, `/en` and a diagnostic step) | D-171    |
+| AI review of one save                   | 8 s in all; each request 8 s with at most one retry                                 | `AI_BUDGET_MS` in `apps/web/src/lib/ai/service.ts`; `REQUEST_TIMEOUT_MS`, `MAX_RETRIES` in `packages/ai/src/client.ts`               | D-150    |
+| A Supabase request                      | 8 s from pages, actions and route handlers; 3 s from the proxy                      | `apps/web/src/lib/supabase/timed-fetch.ts`                                                                                           | D-168    |
+| The proxy's session refresh             | 4 s                                                                                 | `REFRESH_DEADLINE_MS` in `apps/web/src/lib/supabase/proxy.ts`                                                                        | D-168    |
+| A diagnostic step, a save included      | 30 s                                                                                | `maxDuration` in `apps/web/src/app/[locale]/(app)/projects/[id]/q/[step]/page.tsx`                                                   | D-150    |
+
+The time budgets were set together: the Supabase deadlines keep a typed answer's save, with its
+8-second AI review, inside the step page's 30 seconds (D-168). Raising one means checking the
+others, and `maxDuration` with them.
 
 ## Supabase outage
 
@@ -177,8 +253,10 @@ falls back to the fixed checks (D-124); the first kill switch stops the failing 
 
 During an outage the public pages keep working for visitors who are not signed in: they are
 prerendered, and the proxy calls Supabase only when a session cookie is present. For signed-in
-visitors, pages may be slow while the proxy tries to refresh an expiring session; sign-in, the
-account and the diagnostic fail, and no answer can be saved. There is nothing to switch in the app, and a
+visitors, the proxy gives up on refreshing an expiring session after 4 seconds and renders the page
+signed out, logging `proxy.refresh_timeout`; every other Supabase request gives up after 8 seconds
+(D-168). Sign-in, the account and the diagnostic fail within that time, and no answer can be saved;
+the editor keeps what was typed for a retry (D-129). There is nothing to switch in the app, and a
 backup restore is not a remedy for an outage. Afterwards: check that `purge-incomplete-accounts`
 ran again (Supabase → Integrations → Cron), and re-run any `DB deploy` that failed meanwhile.
 
@@ -196,7 +274,7 @@ Vercel applies a variable change to the next deployment only: redeploy after cha
 | `SITE_INDEXABLE`                        | `false`                               | Ignored outside production                 | `false` until public launch                 |
 | `AUTH_GOOGLE_ENABLED`                   | `false` (`test:e2e:auth` sets `true`) | `true` once Google is set up for staging   | `true` once Google is set up for production |
 | `AUTH_GOOGLE_VERIFY_PROVIDER`           | Unset; tests only                     | Never set                                  | Never set                                   |
-| `AI_PROVIDER`                           | `fake`                                | Unset (`anthropic`)                        | Unset (`anthropic`); `fake` is refused here |
+| `AI_PROVIDER`                           | `fake`                                | Unset (`anthropic`)                        | Unset (`anthropic`); `fake` turns AI off    |
 | `ANTHROPIC_API_KEY`                     | Unset                                 | Sensitive                                  | Sensitive                                   |
 | `VERCEL`, `VERCEL_ENV`, `VERCEL_REGION` | Unset                                 | Set by Vercel                              | Set by Vercel                               |
 
@@ -216,10 +294,15 @@ Outside Vercel:
 Values the app reads from `public.settings`, changed by migration until the admin area exists (M7).
 Add a row here with every new key.
 
-| Key                         | Value now                                                                  | Meaning                                                     | Read by                                                     | Decision |
-| --------------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------------- | ----------------------------------------------------------- | -------- |
-| `entitlement.free.projects` | `1`                                                                        | Projects per account until paid plans exist                 | `create_project()`; must equal `plans.ts` (`plans.test.ts`) | D-109    |
-| `ai.model.fast`             | `"claude-haiku-4-5-20251001"`                                              | The model that reviews answers                              | `readSettings` in `apps/web/src/lib/ai/service.ts`          | D-122    |
-| `ai.prices`                 | USD per million tokens, keyed by model ID, with `source_url`, `checked_at` | The cost of each call; a model without a price turns AI off | `readSettings`                                              | D-122    |
-| `ai.limit.user_daily_calls` | `40`                                                                       | Model calls per user per UTC day; `0` stops AI              | `reserve_ai_call()`                                         | D-120    |
-| `ai.limit.global_daily_usd` | `5`                                                                        | Total model spend per UTC day; `0` stops AI                 | `reserve_ai_call()`                                         | D-120    |
+| Key                                     | Value now                                                                  | Meaning                                                                                            | Read by                                                                                                    | Decision     |
+| --------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ------------ |
+| `entitlement.free.projects`             | `1`                                                                        | Projects per account until paid plans exist                                                        | `create_project()`; must equal `plans.ts` (`plans.test.ts`)                                                | D-109, D-174 |
+| `ai.model.fast`                         | `"claude-haiku-4-5-20251001"`                                              | The model that reviews answers                                                                     | `readSettings` in `apps/web/src/lib/ai/service.ts`, at most once a minute per instance; `reserve_ai_run()` | D-122, D-167 |
+| `ai.prices`                             | USD per million tokens, keyed by model ID, with `source_url`, `checked_at` | The cost of each call; a model without all four prices turns AI off                                | `readSettings`; `reserve_ai_run()` for the hold; `record_ai_run()` for the cost                            | D-122, D-146 |
+| `ai.limit.user_daily_calls`             | `40`                                                                       | Model calls per user per UTC day; `0` stops AI                                                     | `reserve_ai_run()`                                                                                         | D-120        |
+| `ai.limit.global_daily_usd`             | `5`                                                                        | Total model spend per UTC day, held costs included; `0` stops AI                                   | `reserve_ai_run()`                                                                                         | D-120, D-146 |
+| `ai.limit.tokens_in_per_call`           | `8000`                                                                     | Input tokens one call may count, cache tokens included; sets each reservation's hold; `0` stops AI | `reserve_ai_run()`, `record_ai_run()`                                                                      | D-146        |
+| `consent.crossborder.accepted_versions` | `["2026-10-draft-2"]`                                                      | The consent text versions that count; must list `CROSSBORDER_VERSION` (`legal.test.ts`)            | `crossborder_consent_state()`                                                                              | D-147        |
+
+Until the contract migration (#89), the old `reserve_ai_call()` still reads the two `ai.limit` keys
+of D-120, though no signed-in user may run it any more.

@@ -8,10 +8,10 @@ whose six CI jobs are green (`.github/workflows/ci.yml`); every row below names 
 | Risk                                                                | Level                                            | CI job (name in GitHub)                            | Local command                                                                            |
 | ------------------------------------------------------------------- | ------------------------------------------------ | -------------------------------------------------- | ---------------------------------------------------------------------------------------- |
 | A formula gives a wrong number (rule 1)                             | Unit, line coverage ≥ 95%                        | `checks` (Lint, typecheck, unit tests, build)      | `pnpm --filter @sbn/engine test`                                                         |
-| A question, rule R1–R8, follow-up or completeness score is wrong    | Unit, line coverage ≥ 95%                        | `checks`                                           | `pnpm --filter @sbn/question-bank test`                                                  |
+| A question, rule, follow-up, completeness or stored shape is wrong  | Unit, line coverage ≥ 95%, contract test (D-165) | `checks`                                           | `pnpm --filter @sbn/question-bank test`                                                  |
 | Personal data reaches the model; a cost or input hash is wrong      | Unit, line coverage ≥ 95%                        | `checks`                                           | `pnpm --filter @sbn/ai test`                                                             |
 | App logic: env parsing, plans pinned to CLAUDE.md §3, SEO, contrast | Unit, coverage at the measured level (D-164)     | `checks`                                           | `pnpm --filter @sbn/web test`                                                            |
-| A message key is missing in one language, or placeholders differ    | Unit (`src/i18n/messages.test.ts`) and typecheck | `checks`                                           | `pnpm --filter @sbn/web test`, `pnpm typecheck`                                          |
+| A message key is missing or not sent, or placeholders differ        | Unit (`src/i18n/*messages.test.ts`), typecheck   | `checks`                                           | `pnpm --filter @sbn/web test`, `pnpm typecheck`                                          |
 | Type errors                                                         | Static                                           | `checks`                                           | `pnpm typecheck`                                                                         |
 | Lint, accessibility lint, physical `left`/`right` styling (D-056)   | Static                                           | `checks`                                           | `pnpm lint`                                                                              |
 | Unformatted files                                                   | Static                                           | `checks`                                           | `pnpm format:check`                                                                      |
@@ -29,10 +29,14 @@ whose six CI jobs are green (`.github/workflows/ci.yml`); every row below names 
 | A secret is committed                                               | gitleaks over the full history (D-040)           | `secret-scan`                                      | none (CI only)                                                                           |
 | A commit message is not conventional                                | commitlint                                       | none (local `commit-msg` hook)                     | runs on every commit                                                                     |
 
-`pnpm verify` runs what the `checks` and `db` jobs run, in order. Like the `db` job, it lints and
-tests a database built from every migration: `pnpm db:reset` comes first, which wipes the local
-data. It needs the local stack (`pnpm db:start`) for those last three steps. The end-to-end,
-Lighthouse and secret-scan jobs are separate.
+`pnpm verify` runs the main steps of the `checks` and `db` jobs, in order. Like the `db` job, it
+lints and tests a database built from every migration: `pnpm db:reset` comes first, which wipes
+the local data. It needs the local stack (`pnpm db:start`) for those last three steps. It leaves
+out four steps those jobs also run: `node scripts/check-playwright-version.mjs`,
+`pnpm exec vitest run --dir scripts` (the tests of the CI scripts),
+`node scripts/check-bundle-budget.mjs` after the build, and
+`node scripts/check-migrations.mjs origin/main`. The end-to-end, Lighthouse and secret-scan jobs
+are separate.
 
 ## Git hooks (lefthook)
 
@@ -43,7 +47,9 @@ Lighthouse and secret-scan jobs are separate.
 ## Unit tests
 
 `pnpm test` runs Vitest in every package. `packages/engine`, `packages/question-bank` and
-`packages/ai` fail below 95% line coverage (their `vitest.config.ts`). Engine formulas are written
+`packages/ai` fail below 95% line coverage (their `vitest.config.ts`); `apps/web` fails below the
+coverage measured when its gate was added, raised as tests are added (`apps/web/vitest.config.ts`,
+D-164). Engine formulas are written
 test-first from the SPEC formulas (CLAUDE.md §8.3). Unit tests never call the real model:
 `anthropicClient()` accepts a `fetch` for tests, and `fakeClient()` stands in elsewhere.
 
@@ -81,7 +87,9 @@ Download Playwright's Chromium once: `pnpm --filter @sbn/web exec playwright ins
 - The **og** project writes the share images: `pnpm --filter @sbn/web og:images` after a build.
   It overwrites `apps/web/public/og`; commit only images you meant to change.
 
-Failed tests keep a trace (`trace: 'retain-on-failure'`): open it with
+In CI each test gets one retry, and a test that passes only on its retry fails the run
+(`failOnFlakyTests`, D-166): an absence is proven with a barrier, never with a fixed wait. Failed
+tests keep a trace (`trace: 'retain-on-failure'`): open it with
 `pnpm --filter @sbn/web exec playwright show-trace <path from the output>`. In CI, download the
 `playwright-report` or `playwright-report-auth` artifact.
 
