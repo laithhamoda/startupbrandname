@@ -166,9 +166,13 @@ try {
         ...(typeof shift === 'number' && shift < MAX_LAYOUT_SHIFT
           ? []
           : [`layout shift ${String(shift)}, the limit is under ${String(MAX_LAYOUT_SHIFT)}`]),
-        ...Object.entries(BYTE_BUDGETS)
-          .filter(([type, budget]) => (bytes[type] ?? 0) > budget)
-          .map(([type, budget]) => `${type} ${String(bytes[type])} B, over ${String(budget)} B`),
+        // A size Lighthouse did not report fails too, so an upgrade that renames the audit cannot
+        // turn the budget off unnoticed.
+        ...Object.entries(BYTE_BUDGETS).flatMap(([type, budget]) => {
+          const size = bytes[type];
+          if (typeof size !== 'number') return [`${type} bytes not measured (resource-summary)`];
+          return size > budget ? [`${type} ${String(size)} B, over ${String(budget)} B`] : [];
+        }),
       ];
       if (overBudget.length > 0) {
         failed = true;
