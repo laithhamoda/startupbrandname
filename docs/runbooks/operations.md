@@ -177,14 +177,16 @@ text version (D-146, D-147). Its two migrations, `20261004053500_ai_reservations
 `20261004053600_consent_versions.sql`, follow the release order above, while the app on `main`
 already expects them (D-155):
 
-| Production database   | The app on `main`                                                                                                                                                                                                                                                                                 |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Neither migration yet | AI stays off: each typed answer logs `ai.skipped` with reason `previous_schema`, at warn level. The account page compares the latest consent with `CROSSBORDER_VERSION` itself, so a consent to the earlier text shows as outdated; a renewal is recorded only once the second migration has run. |
-| Only `20261004053500` | The same: `crossborder_consent_state()` comes with the second migration.                                                                                                                                                                                                                          |
-| Both                  | AI runs for founders whose consent is `current`; the others are asked on `/account` to renew it.                                                                                                                                                                                                  |
+| Production database   | The app on `main`                                                                                                                                                                                                                                                                                                                           |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Neither migration yet | AI stays off: a typed answer to B1, or any typed answer once B1 is saved, logs `ai.skipped` with reason `previous_schema`, at warn level. The account page compares the latest consent with `CROSSBORDER_VERSION` itself, so a consent to the earlier text shows as outdated; a renewal is recorded only once the second migration has run. |
+| Only `20261004053500` | The same: `crossborder_consent_state()` comes with the second migration.                                                                                                                                                                                                                                                                    |
+| Both                  | AI runs for founders whose consent is `current`; the others are asked on `/account` to renew it.                                                                                                                                                                                                                                            |
 
-An app from before pull request B keeps to the fixed checks on the migrated database, since
-`reserve_ai_call()` is closed to signed-in users: rolling back to it is safe, with AI off.
+In every state, `GET /api/health` shows `"ai": "on"` once a model provider is configured: it does
+not show whether the review can run. An app from before pull request B keeps to the fixed checks
+on the migrated database, since `reserve_ai_call()` is closed to signed-in users: rolling back to
+it is safe, with AI off.
 
 After `DB deploy` has migrated production:
 
@@ -197,8 +199,20 @@ After `DB deploy` has migrated production:
    where key in ('ai.limit.tokens_in_per_call', 'consent.crossborder.accepted_versions');
    ```
 
-3. After the next typed answer with a current consent, Vercel → Logs shows no new `ai.skipped` line
-   with `previous_schema`.
+3. On `/account`, renew your own consent if it shows as outdated, as a consent to the earlier text
+   now does. Then save a typed answer to B1 that you have not saved before, in one of your projects.
+   Vercel → Logs shows no new `ai.skipped` line with `previous_schema`, and the production SQL
+   editor returns at least 1 for:
+
+   ```sql
+   select count(*)
+   from private.ai_reservations
+   where created_at > now() - interval '10 minutes';
+   ```
+
+   Use B1: any other answer skips with `no_idea` until B1 is saved, before the consent is read, and
+   an answer typed before reuses its stored review without a reservation. Neither `GET /api/health`
+   nor a quiet log proves on its own that the review runs.
 
 Later, the contract pull request ([OPEN-QUESTIONS #89](../OPEN-QUESTIONS.md)): once production has
 both migrations and no deployment that could be served, a rollback target included, calls the old
