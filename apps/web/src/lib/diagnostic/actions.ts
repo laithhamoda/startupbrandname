@@ -403,7 +403,7 @@ async function save(
     // What the founder typed, kept as written (CLAUDE.md §3).
     raw_text: typed,
     // Validated JSON by construction: the question bank schema accepted it just above.
-    normalized_value: answer as Json,
+    normalized_value: answer as NonNullable<Json>,
     ...provenance,
   });
   if (error) {

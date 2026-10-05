@@ -9,7 +9,7 @@ export type Database = {
       answers: {
         Row: {
           confidence: string;
-          normalized_value: Json;
+          normalized_value: NonNullable<Json>;
           project_id: string;
           question_id: string;
           raw_text: string | null;
@@ -19,7 +19,7 @@ export type Database = {
         };
         Insert: {
           confidence: string;
-          normalized_value: Json;
+          normalized_value: NonNullable<Json>;
           project_id: string;
           question_id: string;
           raw_text?: string | null;
@@ -29,7 +29,7 @@ export type Database = {
         };
         Update: {
           confidence?: string;
-          normalized_value?: Json;
+          normalized_value?: NonNullable<Json>;
           project_id?: string;
           question_id?: string;
           raw_text?: string | null;
@@ -141,17 +141,17 @@ export type Database = {
         Row: {
           key: string;
           updated_at: string;
-          value: Json;
+          value: NonNullable<Json>;
         };
         Insert: {
           key: string;
           updated_at?: string;
-          value: Json;
+          value: NonNullable<Json>;
         };
         Update: {
           key?: string;
           updated_at?: string;
-          value?: Json;
+          value?: NonNullable<Json>;
         };
         Relationships: [];
       };
@@ -165,7 +165,7 @@ export type Database = {
           id: number;
           input_hash: string;
           model: string | null;
-          output: Json;
+          output: NonNullable<Json>;
           project_id: string;
           prompt_version: string | null;
           search_calls: number;
@@ -182,7 +182,7 @@ export type Database = {
           id?: never;
           input_hash: string;
           model?: string | null;
-          output: Json;
+          output: NonNullable<Json>;
           project_id: string;
           prompt_version?: string | null;
           search_calls?: number;
@@ -199,7 +199,7 @@ export type Database = {
           id?: never;
           input_hash?: string;
           model?: string | null;
-          output?: Json;
+          output?: NonNullable<Json>;
           project_id?: string;
           prompt_version?: string | null;
           search_calls?: number;
@@ -255,17 +255,12 @@ export type Database = {
         Returns: string;
       };
       create_project: {
-        Args: {
-          p_country_code: string;
-          p_currency: string;
-          p_mode: string;
-          p_title: string;
-        };
+        Args: { p_country_code: string; p_currency: string; p_mode: string; p_title: string };
         Returns: string;
       };
-      crossborder_consent_state: { Args: never; Returns: string };
-      delete_my_account: { Args: never; Returns: undefined };
-      has_crossborder_consent: { Args: never; Returns: boolean };
+      crossborder_consent_state: { Args: Record<PropertyKey, never>; Returns: string };
+      delete_my_account: { Args: Record<PropertyKey, never>; Returns: undefined };
+      has_crossborder_consent: { Args: Record<PropertyKey, never>; Returns: boolean };
       record_ai_run: {
         Args: {
           p_cache_read_tokens: number;
@@ -298,8 +293,8 @@ export type Database = {
         };
         Returns: number;
       };
-      reserve_ai_call: { Args: never; Returns: boolean };
-      reserve_ai_run: { Args: never; Returns: Json };
+      reserve_ai_call: { Args: Record<PropertyKey, never>; Returns: boolean };
+      reserve_ai_run: { Args: Record<PropertyKey, never>; Returns: Json };
       set_crossborder_consent: {
         Args: { p_given: boolean; p_text_version: string };
         Returns: undefined;
@@ -328,9 +323,7 @@ export type Tables<
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])
     : never) = never,
-> = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
-}
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
   ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
       DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
       Row: infer R;
@@ -353,9 +346,7 @@ export type TablesInsert<
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
     : never) = never,
-> = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
-}
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
       Insert: infer I;
     }
@@ -377,9 +368,7 @@ export type TablesUpdate<
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
     : never) = never,
-> = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
-}
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
       Update: infer U;
     }
@@ -401,9 +390,7 @@ export type Enums<
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
     : never) = never,
-> = DefaultSchemaEnumNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
-}
+> = DefaultSchemaEnumNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
   ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema['Enums']
     ? DefaultSchema['Enums'][DefaultSchemaEnumNameOrOptions]
@@ -417,9 +404,7 @@ export type CompositeTypes<
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
     : never) = never,
-> = PublicCompositeTypeNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals;
-}
+> = PublicCompositeTypeNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
   ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema['CompositeTypes']
     ? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
