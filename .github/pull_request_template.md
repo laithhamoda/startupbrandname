@@ -6,11 +6,12 @@ Decisions: <!-- D-IDs added or applied; open questions resolved (#NN) -->
 
 ## Checks
 
-- [ ] The six CI jobs are green (`pnpm verify` runs the `checks` and `db` jobs locally; it resets
-      the local database).
+- [ ] The six CI jobs are green (`pnpm verify` runs the main steps of the `checks` and `db` jobs
+      locally; it resets the local database).
 - [ ] Tests added or updated for every change in behaviour (docs/TESTING.md).
 - [ ] Accessibility and RTL checked where the interface changed (CLAUDE.md rule 11).
-- [ ] New decisions appended to `docs/DECISIONS.md`; merged rows untouched.
+- [ ] New decisions appended to `docs/DECISIONS.md` and its topic index; merged rows untouched,
+      except the Status of a decision the new one amends or supersedes (D-172).
 
 ## Only when the pull request touches these (CONTRIBUTING.md)
 
@@ -25,7 +26,8 @@ Decisions: <!-- D-IDs added or applied; open questions resolved (#NN) -->
       committed; no merged migration edited. Production follows `docs/runbooks/operations.md`.
       New user data cascades from `auth.users` or `projects` (`on delete cascade`) and is added to
       the export (`docs/runbooks/data-requests.md`) and the processing register.
-- [ ] UI string: `ar.json` and `en.json`, same keys and placeholders.
+- [ ] UI string: `ar.json` and `en.json`, same keys and placeholders; a client component gets
+      its namespace from its route's `ClientMessages` (`client-messages.test.ts`).
 - [ ] Visual change: snapshots from the "Update RTL snapshots" workflow, reviewed.
 - [ ] `CLAUDE.md` or `docs/SPEC.md` changed: the owner approved it (link), and
       `docs/SPEC-CHANGES.md` is updated.
