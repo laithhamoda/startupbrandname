@@ -42,8 +42,9 @@ A decision may sit under several topics. A new decision joins its topics in the 
   D-129, D-149, D-156 to D-161, D-163, D-165, D-167.
 - **AI and cost:** D-062, D-071, D-072, D-073, D-082, D-103, D-107, D-119 to D-124, D-143, D-146 to
   D-152, D-155.
-- **Privacy, consent and security:** D-013, D-061, D-062, D-077, D-082, D-085, D-092, D-098, D-103,
-  D-107, D-126, D-130, D-137, D-138, D-144, D-145, D-147, D-148, D-149, D-153, D-154, D-175.
+- **Privacy, consent and security:** D-013, D-016, D-040, D-041, D-061, D-062, D-074, D-077,
+  D-082, D-085, D-092, D-098, D-103, D-107, D-126, D-130, D-137, D-138, D-142, D-144 to D-149,
+  D-153, D-154, D-175.
 - **Legal:** D-059, D-066, D-068, D-082, D-086, D-137, D-145, D-147, D-154.
 - **Design and accessibility:** D-007, D-008, D-049 to D-053, D-055 to D-058, D-099, D-118, D-128,
   D-131, D-158, D-159, D-161, D-162, D-170.
