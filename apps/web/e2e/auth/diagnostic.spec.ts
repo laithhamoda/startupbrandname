@@ -345,7 +345,7 @@ test('the free plan allows one project, and deleting it frees the place', async 
 test('answers survive signing out, and the diagnostic resumes where it stopped', async ({
   page,
 }) => {
-  // Supabase sends one code per address per minute, so this test waits out that minute.
+  // Supabase sends one code per address per minute (D-084), so this test waits out that minute.
   test.setTimeout(150_000);
   const email = uniqueEmail('resume');
   await signUpByEmail(page, email);
