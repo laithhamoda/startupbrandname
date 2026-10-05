@@ -20,11 +20,11 @@ import { controlClass } from '@/components/ui/text-input';
 import { cn } from '@/lib/cn';
 import type { CurrencyOptions } from '@/lib/diagnostic/currencies';
 import type { Draft, DraftByKind, FieldError, MoneyDraft } from '@/lib/diagnostic/draft';
+import type { EditorLists } from '@/lib/diagnostic/editor-lists';
 import { CheckboxGroup, ChoiceGroup } from './choices';
 
-export interface EditorOptions {
-  countries: readonly { value: string; label: string }[];
-  currencies: CurrencyOptions;
+/** The country and currency lists come only with the kinds that offer them (PERF-7). */
+export interface EditorOptions extends EditorLists {
   /** The project's currency, the default for new amount rows (chosen by the founder, D-111). */
   currency: string;
   /** C1's answer: which parts of the customer profile (C2) apply. */
@@ -461,6 +461,8 @@ function Rows<T>({
 const localized = (options: readonly Option[], language: Language) =>
   options.map((option) => ({ value: option.value, label: option.label[language] }));
 
+const NO_CURRENCIES: CurrencyOptions = { common: [], others: [] };
+
 /** The answer controls for one field kind. Holds no state: the answer editor owns the draft. */
 export function FieldEditor({
   id,
@@ -480,6 +482,9 @@ export function FieldEditor({
   ];
   const toChoice = (value: boolean | null) => (value === null ? '' : value ? 'yes' : 'no');
   const errorAt = (path: string) => errors.find((error) => error.path === path);
+  // Sent only for the kinds below that offer them (editorLists).
+  const countries = options.countries ?? [];
+  const currencies = options.currencies ?? NO_CURRENCIES;
   const newMoney = (): MoneyDraft => ({ amount: '', currency: options.currency });
   const moneyErrors = (path: string) => ({
     amount: errorAt(`${path}.amount`),
@@ -583,7 +588,7 @@ export function FieldEditor({
           money={draft as MoneyDraft}
           onChange={onChange}
           errors={{ amount: errorAt('amount'), currency: errorAt('currency') }}
-          currencies={options.currencies}
+          currencies={currencies}
           amountLabel={t('amount')}
         />
       );
@@ -618,7 +623,7 @@ export function FieldEditor({
               <CurrencySelect
                 {...control}
                 value={range.currency}
-                currencies={options.currencies}
+                currencies={currencies}
                 onChange={(currency) => {
                   onChange({ ...range, currency });
                 }}
@@ -633,7 +638,7 @@ export function FieldEditor({
         <CurrencySelect
           id={id}
           value={draft as string}
-          currencies={options.currencies}
+          currencies={currencies}
           onChange={onChange}
           {...aria}
         />
@@ -647,7 +652,7 @@ export function FieldEditor({
               <OptionSelect
                 {...control}
                 value={place.country}
-                options={options.countries}
+                options={countries}
                 placeholder={t('choose')}
                 onChange={(country) => {
                   onChange({ ...place, country });
@@ -702,7 +707,7 @@ export function FieldEditor({
               <MoneyBoxes
                 id={rowId}
                 money={item}
-                currencies={options.currencies}
+                currencies={currencies}
                 amountLabel={t('amount')}
                 errors={moneyErrors(`items.${String(index)}`)}
                 onChange={(money) => {
@@ -869,7 +874,7 @@ export function FieldEditor({
                 <MoneyBoxes
                   id={rowId}
                   money={item}
-                  currencies={options.currencies}
+                  currencies={currencies}
                   amountLabel={t('price')}
                   errors={moneyErrors(`items.${String(index)}.price`)}
                   onChange={(money) => {
@@ -1157,7 +1162,7 @@ export function FieldEditor({
               <MoneyBoxes
                 id={rowId}
                 money={item}
-                currencies={options.currencies}
+                currencies={currencies}
                 amountLabel={t('monthlyCost')}
                 errors={moneyErrors(`items.${String(index)}.monthlyCost`)}
                 onChange={(money) => {

@@ -22,9 +22,8 @@ import type { Locale } from '@/i18n/routing';
 import { consentStateOrNull } from '@/lib/ai/consent';
 import { activeProvider } from '@/lib/ai/provider';
 import { requireAccount } from '@/lib/auth/session';
-import { countryOptions } from '@/lib/countries';
-import { currencyOptions } from '@/lib/diagnostic/currencies';
 import { toDraft } from '@/lib/diagnostic/draft';
+import { editorLists } from '@/lib/diagnostic/editor-lists';
 import { viewFinding } from '@/lib/diagnostic/findings';
 import { loadProject } from '@/lib/diagnostic/project';
 import { projectPath, stepFromSlug, stepPath } from '@/lib/diagnostic/steps';
@@ -175,8 +174,8 @@ export default async function StepPage({ params }: PageProps<'/[locale]/projects
           )}
           initialNotes={notes.map((finding) => viewFinding(finding, locale))}
           options={{
-            countries: countryOptions(locale),
-            currencies: currencyOptions(locale),
+            // Only the lists this question's kind offers (PERF-7).
+            ...editorLists(question.field.kind, locale),
             currency: project.currency,
             ...(valueOf(answers, 'C1', 'single')
               ? { payer: valueOf(answers, 'C1', 'single') }
