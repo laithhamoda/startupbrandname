@@ -1,0 +1,198 @@
+# Data requests
+
+How to answer a user who asks for a copy of their data, a correction or a deletion (GDPR Art.
+15-20). Until the self-service export arrives in M9 ([M9 checklist](../security/m9-checklist.md)),
+a copy is prepared by hand with the SQL below. **[LEGAL REVIEW REQUIRED]** for the rules outside
+the EU (#73).
+
+## What users can already do themselves
+
+On `/account`: see and change their country and language, give, renew or withdraw the
+cross-border consent (D-147), and delete the account (`delete_my_account()`). That empties every
+table in `public` and the AI reservations in `private` at once, since each cascades from
+`auth.users`; Supabase's auth audit log does not ([Deletion](#deletion)). Answers are corrected in
+the diagnostic itself. The email address cannot be changed by the user yet.
+
+## Receiving a request
+
+1. **Identity.** Act only on a request sent from the account's email address, or confirmed by a
+   reply from it. Never send data to any other address, and never ask for an identity document.
+2. **Deadline.** Answer within one month of receiving the request. For a complex request or many
+   requests it can be extended by two more months, if the user is told why within the first month
+   (GDPR Art. 12(3)). It is free (Art. 12(5)).
+3. **Record** the date received, the right asked for, how identity was confirmed and the date
+   answered, in a private log outside this public repository.
+
+## A copy of the data (access and portability)
+
+Run in the **production** project: Supabase → SQL editor. The editor runs as the database owner,
+so row level security does not apply: check the user ID twice.
+
+Find the account:
+
+```sql
+select id, email, created_at, last_sign_in_at
+from auth.users
+where lower(email) = lower('<email address>');
+```
+
+Everything the database holds about it, except the AI reservations and the auth audit log (both
+below), as one JSON document:
+
+```sql
+with target as (select '<user id>'::uuid as id)
+select jsonb_pretty(jsonb_build_object(
+  'exported_at', now(),
+  'account', (
+    select jsonb_build_object(
+      'email', u.email,
+      'created_at', u.created_at,
+      'last_sign_in_at', u.last_sign_in_at,
+      -- The interface language the app saves, and for Google the name and photo it sent.
+      'metadata', u.raw_user_meta_data,
+      -- How the user signs in; for Google, the name, email and photo Google sent.
+      'identities', coalesce((
+        select jsonb_agg(jsonb_build_object(
+          'provider', i.provider,
+          'identity_data', i.identity_data,
+          'created_at', i.created_at
+        ) order by i.created_at)
+        from auth.identities i
+        where i.user_id = u.id
+      ), '[]'::jsonb),
+      -- Each signed-in device, with its IP address and browser.
+      'sessions', coalesce((
+        select jsonb_agg(jsonb_build_object(
+          'created_at', s.created_at,
+          'refreshed_at', s.refreshed_at,
+          'ip', s.ip,
+          'user_agent', s.user_agent
+        ) order by s.created_at)
+        from auth.sessions s
+        where s.user_id = u.id
+      ), '[]'::jsonb)
+    )
+    from auth.users u join target t on u.id = t.id
+  ),
+  'profile', (
+    select to_jsonb(p) - 'user_id'
+    from public.profiles p join target t on p.user_id = t.id
+  ),
+  'consent_events', coalesce((
+    select jsonb_agg(to_jsonb(c) - 'user_id' - 'id' order by c.created_at, c.id)
+    from public.consent_events c join target t on c.user_id = t.id
+  ), '[]'::jsonb),
+  'projects', coalesce((
+    select jsonb_agg(
+      (to_jsonb(pr) - 'user_id') || jsonb_build_object(
+        -- Includes raw_text, what the user typed, next to the saved value.
+        'answers', coalesce((
+          select jsonb_agg(to_jsonb(a) - 'project_id' order by a.question_id)
+          from public.answers a
+          where a.project_id = pr.id
+        ), '[]'::jsonb),
+        -- The de-identified review of each typed answer, with what the call used and cost.
+        'ai_reviews', coalesce((
+          select jsonb_agg(jsonb_build_object(
+            'tool_id', r.tool_id,
+            'model', r.model,
+            'prompt_version', r.prompt_version,
+            'output', r.output,
+            'tokens_in', r.tokens_in,
+            'tokens_out', r.tokens_out,
+            'cost_usd', r.cost_usd,
+            'created_at', r.created_at
+          ) order by r.created_at)
+          from public.tool_runs r
+          where r.project_id = pr.id
+        ), '[]'::jsonb)
+      )
+      order by pr.created_at
+    )
+    from public.projects pr join target t on pr.user_id = t.id
+  ), '[]'::jsonb),
+  'usage_counters', coalesce((
+    select jsonb_agg(to_jsonb(uc) - 'user_id' order by uc.period_start, uc.key)
+    from public.usage_counters uc join target t on uc.user_id = t.id
+  ), '[]'::jsonb)
+)) as export;
+```
+
+Consents are exported with the text version each was given to; which versions count today is the
+settings key `consent.crossborder.accepted_versions` (D-147).
+
+Then the AI reservations: one row per AI call the account reserved, with the most that call could
+cost (D-146). A reservation older than a day is removed at the account's next one. On a database
+without migration `20261004053500` the table does not exist yet, and there is nothing to add:
+
+```sql
+select model, held_usd, created_at, used_at
+from private.ai_reservations
+where user_id = '<user id>'
+order by created_at;
+```
+
+The daily AI spend ledger, `private.ai_spend_daily`, holds no user or project key, so it has
+nothing to export (D-175).
+
+While Supabase stores the auth audit log in the database (PRIV-15, #87), it also holds the user's
+sign-in events with an IP address; add them to the reply:
+
+```sql
+select created_at, ip_address, payload ->> 'action' as action
+from auth.audit_log_entries
+where payload ->> 'actor_id' = '<user id>'
+order by created_at;
+```
+
+Copy the results into one file named `startupbrandname-data-<YYYY-MM-DD>.json`, send it as a reply
+from the platform's address (#78) to the verified address, then delete every local copy.
+
+When a migration adds a table or column that holds a user's data, add it to these queries in the
+same pull request ([CONTRIBUTING.md](../../CONTRIBUTING.md)).
+
+## Correction
+
+Country, language and answers: the user can change them. Anything else, such as the email address:
+correct it by hand after confirming identity, and record it.
+
+## Deletion
+
+The user deletes the account on `/account`. If they cannot, after confirming identity, run this in
+the production SQL editor.
+
+**This cannot be undone**, and a backup restore is no remedy (it loses everyone's writes since the
+backup). The statement deletes only when the ID and the verified email address belong to the same
+account: check that it returns exactly one row.
+
+```sql
+delete from auth.users
+where id = '<user id>' and lower(email) = lower('<verified email address>')
+returning id, email;
+```
+
+This is what `delete_my_account()` does: profiles, consents, projects, answers, AI reviews, usage
+counters and AI reservations cascade from `auth.users`, and so do Supabase's sessions and
+identities. The daily AI spend ledger keeps its totals: they name no account or project (D-146).
+Copies in Supabase's daily backups remain until those backups expire; if a backup is ever
+restored, the deletion must be run again ([operations.md](operations.md#rolling-back)).
+
+**The auth audit log does not cascade.** Its sign-in events, with the email address and an IP
+address, stay after the account is deleted. Whether its storage is turned off or it is purged after
+a period is still open ([OPEN-QUESTIONS #87](../OPEN-QUESTIONS.md), PRIV-15,
+[M9 checklist](../security/m9-checklist.md)). Until that is done, tell the user in the reply that
+these security records remain (the privacy draft says they may), and note it in the private log. If
+the owner decides to erase them for this request:
+
+```sql
+delete from auth.audit_log_entries
+where payload ->> 'actor_id' = '<user id>'
+returning id;
+```
+
+## Withdrawing consent or objecting
+
+The cross-border consent is withdrawn on `/account`; AI review then stops for that user (D-062). A
+consent given to an earlier text no longer counts either, until the user renews it there (D-147).
+Any other objection or restriction request goes to the owner for a decision, recorded in the
+private log.

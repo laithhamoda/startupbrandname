@@ -10,14 +10,19 @@ import { FormError, submitTo, useFocusFirstInvalid } from './form-helpers';
 
 const IDLE: AuthFormState = { status: 'idle' };
 
-/** Last step of sign-in and sign-up: the 8-digit code from the email (D-087). */
+/**
+ * Last step of sign-in and sign-up: the 8-digit code from the email (D-087). `next` is the page
+ * sign-in goes to afterwards; the action checks it again.
+ */
 export function CodeStep({
   email,
   mode,
+  next,
   onChangeEmail,
 }: {
   email: string;
   mode: 'signup' | 'login';
+  next?: string;
   onChangeEmail: () => void;
 }) {
   const locale = useLocale();
@@ -35,6 +40,7 @@ export function CodeStep({
         })}
       </p>
       <input type="hidden" name="email" value={email} />
+      {next ? <input type="hidden" name="next" value={next} /> : null}
       <Field
         id="code"
         label={t('code')}

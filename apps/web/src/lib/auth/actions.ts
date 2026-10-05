@@ -1,26 +1,35 @@
 'use server';
 
-import type { AuthError } from '@supabase/supabase-js';
+import { westernDigits } from '@sbn/question-bank';
 import { revalidatePath } from 'next/cache';
 import { cookies, headers } from 'next/headers';
-import { redirect } from 'next/navigation';
+import { redirect, unstable_rethrow } from 'next/navigation';
 import { z } from 'zod';
 import { CROSSBORDER_VERSION } from '@/config/legal';
 import { getServerEnv } from '@/env/server';
 import { type Locale, routing } from '@/i18n/routing';
 import { COUNTRY_CODES } from '@/lib/countries';
+import { errorFields, log } from '@/lib/log';
 import { closedCountries } from '@/lib/markets';
-import { createSupabaseServerClient, type SupabaseServerClient } from '@/lib/supabase/server';
-import { projectsPath } from './next-path';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { type AuthErrorCode, errorCodeOf } from './errors';
+import { googleSignInAvailable } from './google';
+import { projectsPath, safeNextPath } from './next-path';
 import { type OnboardingField, parseOnboarding } from './onboarding';
-import { completeOnboarding, finishSignIn, getSessionUser, saveSignupIntent } from './session';
+import {
+  completeOnboarding,
+  deleteSignedInAccount,
+  finishSignIn,
+  getSessionUser,
+  notAvailablePath,
+  saveSignupIntent,
+} from './session';
 import { SIGNUP_INTENT_COOKIE } from './signup-intent';
 
 // Every action receives the page locale explicitly: Server Actions cannot read the [locale]
 // segment. Results carry codes, never text; the forms translate them.
 
-export type AuthErrorCode =
-  'invalidEmail' | 'invalidCode' | 'rateLimited' | 'failed' | 'signupExpired' | 'answers';
+export type { AuthErrorCode } from './errors';
 
 export type AuthFormState =
   | { status: 'idle' }
@@ -31,24 +40,21 @@ export type AuthFormState =
 const localeSchema = z.enum(routing.locales);
 const emailSchema = z.string().trim().toLowerCase().max(254).pipe(z.email());
 // The product uses 8-digit codes (Supabase "Email OTP length" = 8, D-087). Any length Supabase
-// allows (6 to 10) is accepted, so a changed dashboard setting never locks people out.
+// allows (6 to 10) is accepted, so a changed dashboard setting never locks people out. Arabic
+// keypads type Arabic-Indic or Persian digits, and people copy codes with spaces or dashes: the
+// digits are read as Western ones and everything else is dropped before the check.
 const codeSchema = z
   .string()
-  .transform((value) => value.replace(/\s/g, ''))
+  .transform((value) => westernDigits(value).replace(/\D/g, ''))
   .pipe(z.string().regex(/^\d{6,10}$/));
 
 function parseLocale(value: unknown): Locale {
   return localeSchema.parse(value);
 }
 
-function errorCodeOf(error: AuthError): AuthErrorCode {
-  if (error.status === 429 || error.code === 'over_email_send_rate_limit') return 'rateLimited';
-  // Supabase uses otp_expired for a wrong code too ("Token has expired or is invalid").
-  if (error.code === 'otp_expired') return 'invalidCode';
-  if (error.code === 'validation_failed' || error.code === 'email_address_invalid') {
-    return 'invalidEmail';
-  }
-  return 'failed';
+/** Where to go after sign-in: `value` when it is a page of this site, else the projects. */
+function nextPathOf(locale: Locale, value: unknown): string {
+  return safeNextPath(typeof value === 'string' ? value : null, projectsPath(locale));
 }
 
 async function siteOrigin(): Promise<string> {
@@ -86,19 +92,6 @@ async function forgetSignupAnswers(): Promise<void> {
   (await cookies()).delete(SIGNUP_INTENT_COOKIE);
 }
 
-/**
- * Ends the session of an account that was just deleted. signOut() can fail for a user who no
- * longer exists, and a leftover token would still verify until it expires, so the session
- * cookies are removed here whatever signOut() answers.
- */
-async function endDeletedSession(supabase: SupabaseServerClient): Promise<void> {
-  await supabase.auth.signOut({ scope: 'local' });
-  const cookieStore = await cookies();
-  for (const { name } of cookieStore.getAll()) {
-    if (name.startsWith('sb-')) cookieStore.delete(name);
-  }
-}
-
 // -----------------------------------------------------------------------------------------------
 // Email code
 // -----------------------------------------------------------------------------------------------
@@ -122,7 +115,10 @@ export async function requestSignupCode(
     // The locale picks the language of the email (supabase/templates/code.html).
     options: { shouldCreateUser: true, data: { locale } },
   });
-  if (error) return { status: 'error', error: errorCodeOf(error) };
+  if (error) {
+    await log.warn('auth.code_request_failed', { ...errorFields(error), stage: 'signup' });
+    return { status: 'error', error: errorCodeOf(error) };
+  }
   return { status: 'sent', email: email.data };
 }
 
@@ -144,13 +140,17 @@ export async function requestLoginCode(
   });
   // An unknown email fails with "signups not allowed"; answering "sent" either way stops anyone
   // from checking which addresses have an account.
+  if (error) await log.info('auth.code_request_failed', { ...errorFields(error), stage: 'login' });
   if (error && errorCodeOf(error) === 'rateLimited') {
     return { status: 'error', error: 'rateLimited' };
   }
   return { status: 'sent', email: email.data };
 }
 
-/** Last step for both: checks the code, finishes onboarding if answered, then goes on. */
+/**
+ * Last step for both: checks the code, finishes onboarding if answered, then goes on to `next`
+ * (the page that asked for sign-in) or the projects.
+ */
 export async function verifyEmailCode(
   localeInput: Locale,
   _previous: AuthFormState,
@@ -169,30 +169,37 @@ export async function verifyEmailCode(
     type: 'email',
   });
   if (error) {
+    await log.info('auth.code_rejected', errorFields(error));
     const reason = errorCodeOf(error);
     return { status: 'error', error: reason === 'failed' ? 'invalidCode' : reason };
   }
-  redirect(await finishSignIn(supabase, locale));
+  redirect(await finishSignIn(supabase, locale, nextPathOf(locale, formData.get('next'))));
 }
 
 // -----------------------------------------------------------------------------------------------
 // Google
 // -----------------------------------------------------------------------------------------------
 
-async function redirectToGoogle(locale: Locale): Promise<AuthFormState> {
+/** `next` is already checked by safeNextPath; the callback checks it again. */
+async function redirectToGoogle(
+  locale: Locale,
+  next: string = projectsPath(locale),
+): Promise<AuthFormState> {
   // The button is hidden when Google is off; a crafted request gets an error, not Supabase's page.
-  if (!getServerEnv().AUTH_GOOGLE_ENABLED) return { status: 'error', error: 'failed' };
+  if (!(await googleSignInAvailable())) return { status: 'error', error: 'failed' };
   const supabase = await createSupabaseServerClient();
-  const next = encodeURIComponent(projectsPath(locale));
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: `${await siteOrigin()}/auth/callback?next=${next}`,
+      redirectTo: `${await siteOrigin()}/auth/callback?next=${encodeURIComponent(next)}`,
       // Basic profile only (D-065): openid, email and profile are Supabase's defaults.
       queryParams: { prompt: 'select_account' },
     },
   });
-  if (error) return { status: 'error', error: 'failed' };
+  if (error) {
+    await log.warn('auth.google_start_failed', errorFields(error));
+    return { status: 'error', error: 'failed' };
+  }
   redirect(data.url);
 }
 
@@ -208,11 +215,17 @@ export async function startGoogleSignup(
   return redirectToGoogle(locale);
 }
 
-/** Sign-in with Google. A new Google account lands on the onboarding gate (D-065). */
-export async function startGoogleLogin(localeInput: Locale): Promise<AuthFormState> {
+/**
+ * Sign-in with Google, then on to `nextInput` (the page that asked for sign-in) or the projects.
+ * A new Google account lands on the onboarding gate (D-065).
+ */
+export async function startGoogleLogin(
+  localeInput: Locale,
+  nextInput?: string,
+): Promise<AuthFormState> {
   const locale = parseLocale(localeInput);
   await forgetSignupAnswers();
-  return redirectToGoogle(locale);
+  return redirectToGoogle(locale, nextPathOf(locale, nextInput));
 }
 
 // -----------------------------------------------------------------------------------------------
@@ -232,26 +245,31 @@ export async function submitOnboarding(
   const parsed = parseOnboarding(formData);
   if (!parsed.ok) return { status: 'error', error: 'answers', invalid: parsed.invalid };
 
-  const supabase = await createSupabaseServerClient();
-  if (!(await getSessionUser(supabase))) redirect(`/${locale}/login`);
-
   const { answers } = parsed;
-  if (closedCountries(getServerEnv()).includes(answers.country)) {
-    const { error } = await supabase.rpc('delete_my_account');
-    if (error) throw error;
-    await endDeletedSession(supabase);
-    // Shown on its own page: after the cookies change the gate re-renders, and it would send the
-    // now signed-out visitor to sign-in.
-    redirect(`/${locale}/not-available`);
+  let closed = false;
+  try {
+    const supabase = await createSupabaseServerClient();
+    if (!(await getSessionUser(supabase))) redirect(`/${locale}/login`);
+    const result = await completeOnboarding(supabase, {
+      country: answers.country,
+      locale,
+      hasProject: answers.project === 'yes',
+      crossborder: answers.crossborder === 'on',
+    });
+    if (result === 'closed') {
+      if (!(await deleteSignedInAccount(supabase, 'closed_market'))) {
+        return { status: 'error', error: 'failed' };
+      }
+      closed = true;
+    }
+  } catch (error) {
+    unstable_rethrow(error);
+    await log.error('auth.onboarding_failed', { ...errorFields(error), stage: 'gate' });
+    return { status: 'error', error: 'failed' };
   }
-
-  await completeOnboarding(supabase, {
-    country: answers.country,
-    locale,
-    hasProject: answers.project === 'yes',
-    crossborder: answers.crossborder === 'on',
-  });
-  redirect(projectsPath(locale));
+  // A closed country is explained on its own page: after the cookies change the gate re-renders,
+  // and it would send the now signed-out visitor to sign-in.
+  redirect(closed ? notAvailablePath(locale) : projectsPath(locale));
 }
 
 // -----------------------------------------------------------------------------------------------
@@ -285,38 +303,61 @@ export async function updatePreferences(
     .from('profiles')
     .update({ country_code: parsed.data.country, locale: parsed.data.language })
     .eq('user_id', user.id);
-  if (error) return { status: 'error' };
-  // Sign-in emails read the language from the auth user's metadata.
-  await supabase.auth.updateUser({ data: { locale: parsed.data.language } });
+  if (error) {
+    await log.error('account.preferences_failed', { ...errorFields(error), stage: 'profile' });
+    return { status: 'error' };
+  }
+  // Sign-in emails read the language from the auth user's metadata. Saving again repeats both
+  // writes, so reporting the failure lets the founder finish the change.
+  const { error: metadataError } = await supabase.auth.updateUser({
+    data: { locale: parsed.data.language },
+  });
+  if (metadataError) {
+    await log.error('account.preferences_failed', {
+      ...errorFields(metadataError),
+      stage: 'auth_metadata',
+    });
+    return { status: 'error' };
+  }
 
   if (parsed.data.language !== locale) redirect(`/${parsed.data.language}/account`);
   revalidatePath(`/${locale}/account`);
   return { status: 'saved' };
 }
 
-export async function setCrossborderConsent(localeInput: Locale, given: boolean): Promise<void> {
+/** Gives or withdraws the cross-border consent; `error` leaves it as it was. */
+export async function setCrossborderConsent(
+  localeInput: Locale,
+  given: boolean,
+): Promise<AccountFormState> {
   const locale = parseLocale(localeInput);
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.rpc('set_crossborder_consent', {
     p_given: z.boolean().parse(given),
     p_text_version: CROSSBORDER_VERSION,
   });
-  if (error) throw error;
+  if (error) {
+    await log.error('account.consent_failed', errorFields(error));
+    return { status: 'error' };
+  }
   revalidatePath(`/${locale}/account`);
+  return { status: 'saved' };
 }
 
 export async function signOut(localeInput: Locale): Promise<void> {
   const locale = parseLocale(localeInput);
   const supabase = await createSupabaseServerClient();
-  await supabase.auth.signOut();
+  // The session cookies are cleared either way; a failure only leaves the refresh token to expire.
+  const { error } = await supabase.auth.signOut();
+  if (error) await log.warn('auth.sign_out_failed', errorFields(error));
   redirect(`/${locale}`);
 }
 
-export async function deleteAccount(localeInput: Locale): Promise<void> {
+/** Deletes the account and signs out. On `error` nothing was deleted, and the dialog stays open. */
+export async function deleteAccount(localeInput: Locale): Promise<AccountFormState> {
   const locale = parseLocale(localeInput);
   const supabase = await createSupabaseServerClient();
-  const { error } = await supabase.rpc('delete_my_account');
-  if (error) throw error;
-  await endDeletedSession(supabase);
+  // deleteSignedInAccount logs the reason.
+  if (!(await deleteSignedInAccount(supabase, 'requested'))) return { status: 'error' };
   redirect(`/${locale}/goodbye`);
 }

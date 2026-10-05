@@ -10,12 +10,21 @@ export const serverEnvSchema = z.object({
   // Kill switch for Algeria, open since 2026-09-26 by the owner's decision (D-068). "false"
   // closes signup for Algerian users without touching existing accounts.
   MARKET_DZ_ENABLED: booleanFlag.default(true),
-  // Shows "Continue with Google". Turn on only after Google is enabled in that environment's
-  // Supabase project; otherwise the button leads to Supabase's raw "provider is not enabled" error.
+  // Shows "Continue with Google" when the environment's Supabase project also has Google enabled
+  // (checked at runtime, D-089), so a mismatch never leads to Supabase's raw error page.
   AUTH_GOOGLE_ENABLED: booleanFlag.default(false),
+  // Tests only: "false" skips asking Supabase whether Google is enabled, so the end-to-end tests can
+  // press the button against a local stack that has no Google credentials.
+  AUTH_GOOGLE_VERIFY_PROVIDER: booleanFlag.default(true),
+  // AI features (M3c). Without a key, or with "off", the diagnostic uses its fixed checks only.
+  // "fake" is a deterministic stand-in for tests and CI that makes no network call (D-123).
+  ANTHROPIC_API_KEY: z.string().min(1).optional(),
+  AI_PROVIDER: z.enum(['anthropic', 'fake', 'off']).default('anthropic'),
   // Search indexing stays off until public launch, and always off outside production (D-027, D-054).
   SITE_INDEXABLE: booleanFlag.default(false),
-  // Set by Vercel at runtime.
+  // Set by Vercel at build and run time. VERCEL is "1" on Vercel only; tests that imitate
+  // production set VERCEL_ENV alone, so they never load Vercel-only scripts.
+  VERCEL: z.literal('1').optional(),
   VERCEL_ENV: z.enum(['production', 'preview', 'development']).optional(),
   VERCEL_REGION: z.string().min(1).optional(),
 });

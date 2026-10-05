@@ -1,14 +1,19 @@
 import type { Metadata, Viewport } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
-import { getTranslations } from 'next-intl/server';
+import { getMessages, getTranslations } from 'next-intl/server';
 import type { ReactNode } from 'react';
 import { Providers } from '@/components/providers';
+import { SiteAnalytics } from '@/components/site-analytics';
 import { themeScript } from '@/components/theme-script';
 import { site } from '@/config/site';
+import { getServerEnv } from '@/env/server';
+import { ROOT_NAMESPACES, pickMessages } from '@/i18n/client-messages';
 import { currentLocale } from '@/i18n/locale';
-import { DIRECTION, OG_LOCALE, routing } from '@/i18n/routing';
+import { DIRECTION, routing } from '@/i18n/routing';
 import { isIndexable } from '@/seo/indexing';
 import { JsonLd, organizationJsonLd, websiteJsonLd } from '@/seo/json-ld';
+import { openGraphBase } from '@/seo/page-metadata';
+import { countVisits } from '@/lib/analytics';
 import { cairo, tajawal } from '../fonts';
 import '../globals.css';
 
@@ -24,16 +29,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: { default: title, template: `%s | ${site.name}` },
     description: t('description'),
     applicationName: site.name,
-    openGraph: {
-      type: 'website',
-      siteName: site.name,
-      locale: OG_LOCALE[locale],
-      alternateLocale: routing.locales
-        .filter((other) => other !== locale)
-        .map((other) => OG_LOCALE[other]),
-      title,
-      description: t('description'),
-    },
+    openGraph: { ...openGraphBase(locale), title, description: t('description') },
     robots: isIndexable() ? { index: true, follow: true } : { index: false, follow: false },
   };
 }
@@ -64,7 +60,8 @@ export default async function LocaleLayout({ children }: Readonly<{ children: Re
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body className="flex min-h-dvh flex-col">
-        <NextIntlClientProvider>
+        {/* Only what every page's client components read; pages add theirs (ClientMessages). */}
+        <NextIntlClientProvider messages={pickMessages(await getMessages(), ROOT_NAMESPACES)}>
           <Providers dir={DIRECTION[locale]}>
             <a href="#main" className="skip-link">
               {t('skipToContent')}
@@ -74,6 +71,7 @@ export default async function LocaleLayout({ children }: Readonly<{ children: Re
         </NextIntlClientProvider>
         <JsonLd data={organizationJsonLd(meta('descriptor'))} />
         <JsonLd data={websiteJsonLd(meta('descriptor'))} />
+        {countVisits(getServerEnv()) ? <SiteAnalytics /> : null}
       </body>
     </html>
   );

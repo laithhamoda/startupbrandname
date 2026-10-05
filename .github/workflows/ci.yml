@@ -8,9 +8,12 @@ on:
 permissions:
   contents: read
 
+# A new push to a pull request cancels its older run. Runs on main always finish, so every merged
+# commit keeps a complete result: each gets its own group, because GitHub also cancels a run that
+# is still pending in a group when a newer one is queued, whatever cancel-in-progress says.
 concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  group: ci-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   NEXT_TELEMETRY_DISABLED: '1'
@@ -30,21 +33,29 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: pnpm
+      - name: Playwright image matches @playwright/test
+        run: node scripts/check-playwright-version.mjs
       - run: pnpm install --frozen-lockfile
       - run: pnpm format:check
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test
+      - name: Test the CI scripts
+        run: pnpm exec vitest run --dir scripts
       - run: pnpm build
       - name: Scan client bundle for secrets
         run: pnpm check:bundle
+      # Gzipped JavaScript of the home page, signup, onboarding and a diagnostic step (D-171).
+      - name: JavaScript per route within its budget
+        run: node scripts/check-bundle-budget.mjs
 
   e2e-smoke:
     name: E2E, accessibility and RTL snapshots (Chromium)
     runs-on: ubuntu-latest
     timeout-minutes: 20
     # Pinned Playwright image (Ubuntu 26.04, same as the WSL dev environment) so snapshots are
-    # rendered identically on every run (D-055). Keep the tag in step with @playwright/test.
+    # rendered identically on every run (D-055). The tag must match @playwright/test: the checks
+    # job fails otherwise (scripts/check-playwright-version.mjs).
     container:
       image: mcr.microsoft.com/playwright:v1.63.0-resolute@sha256:b022639ae9197f864040f92eef7b57c6d4b47db2190f77c909d8a5d902dd4b7e
       options: --user 1001
@@ -63,6 +74,32 @@ jobs:
         with:
           name: playwright-report
           path: apps/web/playwright-report
+          retention-days: 7
+
+  lighthouse:
+    name: Lighthouse, public pages (SEO and accessibility 100)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # Built as the production site with indexing on, so robots rules and meta tags are the ones
+    # served at launch. The runner's Chrome and openssl serve the pages over local HTTPS only.
+    env:
+      VERCEL_ENV: production
+      SITE_INDEXABLE: 'true'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @sbn/web run build
+      - run: pnpm --filter @sbn/web run lighthouse
+      - if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: lighthouse-report
+          path: apps/web/lighthouse-report
           retention-days: 7
 
   e2e-auth:
@@ -108,9 +145,13 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ steps.local.outputs.api-url }}
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ steps.local.outputs.publishable-key }}
           MAILPIT_URL: ${{ steps.local.outputs.mailpit-url }}
-          # Shows the Google button so the hand-over test can press it; the local stack has
-          # Google off, and the test only checks the request sent to Supabase.
+          # Shows the Google button so the hand-over test can press it. The local stack has no
+          # Google credentials, so the runtime provider check (D-089) is skipped here; the test only
+          # checks the request sent to Supabase.
           AUTH_GOOGLE_ENABLED: 'true'
+          AUTH_GOOGLE_VERIFY_PROVIDER: 'false'
+          # A deterministic stand-in for the model: no key, no network call, no cost (D-123).
+          AI_PROVIDER: 'fake'
       - if: failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
@@ -124,6 +165,20 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # The migration check compares the commit with its base.
+          fetch-depth: 0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+      # Merged migrations never change, new ones sort last, and drops, renames and type changes
+      # wait for a contract migration (D-141). On main it runs again against the commit before the
+      # merge, so a migration merged out of order (two pull requests tested against the same older
+      # main) fails here too, next to the staging push that refuses it.
+      - name: Check migration changes against the base branch
+        run: node scripts/check-migrations.mjs "$BASE"
+        env:
+          BASE: ${{ github.event_name == 'pull_request' && format('origin/{0}', github.base_ref) || github.event.before }}
       # CLI version is read from the root lockfile.
       - uses: supabase/setup-cli@45a513f8c64c0bc8e0e3dfe572b5c95be85f6359 # v3.0.1
       - run: supabase db start

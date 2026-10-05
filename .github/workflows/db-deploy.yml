@@ -1,7 +1,8 @@
 name: DB deploy
 
 # Staging: automatic when migrations change on main.
-# Production: manual run only, with the typed confirmation "migrate production" (D-047).
+# Production: manual run only. The db-production environment deploys only from main and waits for
+# the owner's approval; the typed confirmation "migrate production" is a second factor (D-140).
 # The `db-` prefix keeps these apart from the `Production`/`Preview` environments Vercel creates.
 on:
   push:
@@ -38,8 +39,8 @@ jobs:
       SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
       SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
     steps:
-      # Required reviewers are unavailable for private repos below GitHub Enterprise (D-047),
-      # so production needs a typed confirmation instead.
+      # A second factor on top of the environment's required reviewer: a production run started
+      # by mistake stops here even after it is approved (D-140).
       - name: Require typed confirmation for production
         if: inputs.target == 'production' && inputs.confirm != 'migrate production'
         run: |
@@ -49,9 +50,10 @@ jobs:
       - uses: supabase/setup-cli@45a513f8c64c0bc8e0e3dfe572b5c95be85f6359 # v3.0.1
       - run: supabase link --project-ref "$SUPABASE_PROJECT_REF"
       # The Supavisor pooler sometimes rejects the correct password (SQLSTATE 28P01) and a re-run
-      # succeeds (D-088). Retry only a failure to connect, and only if the CLI never reached the
+      # succeeds (D-177). Retry only a failure to connect, and only if the CLI never reached the
       # push prompt: it writes nothing to the database before that line.
-      - name: Push migrations (retry if the connection fails)
+      - id: push
+        name: Push migrations (retry if the connection fails)
         shell: bash # adds -o pipefail; the default shell would let `tee` hide a failed push
         env:
           ATTEMPTS: 3
@@ -77,3 +79,9 @@ jobs:
           done
           echo "::error::Could not connect to the database after $ATTEMPTS attempts."
           exit 1
+      # Read-only: shows which versions the database has recorded next to the files, so a gap
+      # or a mismatch is visible in the run log. It also runs when the push failed, since a gap
+      # or a mismatch is what makes a push fail.
+      - name: List applied migrations
+        if: ${{ !cancelled() && (steps.push.outcome == 'success' || steps.push.outcome == 'failure') }}
+        run: supabase migration list --linked

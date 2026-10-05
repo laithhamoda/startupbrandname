@@ -72,4 +72,11 @@ describe('serverEnvSchema', () => {
   it('drops variables it does not declare', () => {
     expect(serverEnvSchema.parse({ SOME_SECRET: 'value' })).not.toHaveProperty('SOME_SECRET');
   });
+
+  it('uses Anthropic by default and accepts only the known AI providers (D-123)', () => {
+    expect(serverEnvSchema.parse({}).AI_PROVIDER).toBe('anthropic');
+    expect(serverEnvSchema.parse({ AI_PROVIDER: 'fake' }).AI_PROVIDER).toBe('fake');
+    expect(() => serverEnvSchema.parse({ AI_PROVIDER: 'openai' })).toThrow();
+    expect(serverEnvSchema.parse({}).ANTHROPIC_API_KEY).toBeUndefined();
+  });
 });

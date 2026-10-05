@@ -27,6 +27,23 @@ test.describe('design system snapshots', () => {
             fullPage: true,
           });
         });
+
+        // The diagnostic question components with sample answers (M3b).
+        test(`${locale} diagnostic gallery at ${viewport.name} width in ${scheme} theme`, async ({
+          page,
+        }) => {
+          await page.setViewportSize({ width: viewport.width, height: viewport.height });
+          await page.emulateMedia({ colorScheme: scheme, reducedMotion: 'reduce' });
+          await page.goto(`/${locale}/design/diagnostic`);
+          await page.evaluate(() => document.fonts.ready);
+
+          await expect(page).toHaveScreenshot(
+            `diagnostic-${locale}-${viewport.name}-${scheme}.png`,
+            {
+              fullPage: true,
+            },
+          );
+        });
       }
     }
   }

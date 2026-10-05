@@ -1,5 +1,6 @@
 import { getClientEnv } from '@/env/client';
 import { getServerEnv } from '@/env/server';
+import { activeProvider } from '@/lib/ai/provider';
 
 const SUPABASE_TIMEOUT_MS = 3000;
 
@@ -31,18 +32,21 @@ async function probeSupabase(url: string, publishableKey: string): Promise<Supab
 
 /**
  * Liveness and co-location check. In production `region` must be "fra1" and the round trip
- * to Supabase (Frankfurt) should stay low. Returns no configuration values.
+ * to Supabase (Frankfurt) should stay low. `ai` says whether a model provider is configured,
+ * never why not (D-152); AI being off is a setting, not a fault. Returns no configuration values.
  */
 export async function GET(): Promise<Response> {
   const { NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY } = getClientEnv();
-  const region = getServerEnv().VERCEL_REGION ?? 'local';
+  const env = getServerEnv();
+  const region = env.VERCEL_REGION ?? 'local';
+  const ai = activeProvider(env) ? 'on' : 'off';
   const supabase = await probeSupabase(
     NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
   );
 
   return Response.json(
-    { status: supabase.reachable ? 'ok' : 'degraded', region, supabase },
+    { status: supabase.reachable ? 'ok' : 'degraded', region, ai, supabase },
     { status: supabase.reachable ? 200 : 503, headers: { 'cache-control': 'no-store' } },
   );
 }

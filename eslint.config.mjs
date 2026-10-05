@@ -53,6 +53,14 @@ export default defineConfig([
     },
   },
 
+  // Server logs go through apps/web/src/lib/log.ts: allowlisted fields only, never personal data
+  // (Vercel logs leave the EU, docs/OPEN-QUESTIONS.md #34).
+  {
+    files: ['apps/web/src/**/*.{ts,tsx}', 'packages/ai/src/**/*.ts'],
+    ignores: ['apps/web/src/lib/log.ts'],
+    rules: { 'no-console': 'error' },
+  },
+
   // Engine: pure, deterministic calculations only (CLAUDE.md rule 1).
   {
     files: ['packages/engine/src/**/*.ts'],
