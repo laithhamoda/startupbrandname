@@ -17,6 +17,7 @@ whose six CI jobs are green (`.github/workflows/ci.yml`); every row below names 
 | Unformatted files                                                   | Static                                           | `checks`                                           | `pnpm format:check`                                                                      |
 | The production build fails                                          | Build                                            | `checks`                                           | `pnpm build`                                                                             |
 | A secret reaches the browser (rule 7)                               | Build output scan                                | `checks`                                           | `pnpm check:bundle` (after `pnpm build`)                                                 |
+| A route ships more JavaScript than its budget (D-171)               | Build output, gzipped per route                  | `checks`                                           | `node scripts/check-bundle-budget.mjs` (after `pnpm build`)                              |
 | A table without RLS, a wrong policy, a database function misbehaves | pgTAP (`supabase/tests`)                         | `db` (Migrations and RLS checks)                   | `pnpm db:test`                                                                           |
 | An unsafe or broken database function                               | Database lint                                    | `db`                                               | `pnpm db:lint`                                                                           |
 | A page breaks, loses RTL/LTR, keyboard access or WCAG 2.2 AA (axe)  | End to end, site project                         | `e2e-smoke` (E2E, accessibility and RTL snapshots) | `pnpm test:e2e`                                                                          |
@@ -24,6 +25,7 @@ whose six CI jobs are green (`.github/workflows/ci.yml`); every row below names 
 | Sign-up, the onboarding gate, the diagnostic or the account breaks  | End to end, auth project, local Supabase         | `e2e-auth` (E2E sign-in flows)                     | `pnpm test:e2e:auth`                                                                     |
 | `database.types.ts` no longer matches the migrations                | Generated-file diff                              | `e2e-auth`                                         | `pnpm db:types`, then `git diff --exit-code apps/web/src/lib/supabase/database.types.ts` |
 | A public page drops below SEO or accessibility 100 (D-097)          | Lighthouse                                       | `lighthouse`                                       | see [Lighthouse](#lighthouse)                                                            |
+| A public page shifts on load, or exceeds its script or font bytes   | Lighthouse budget (D-171)                        | `lighthouse`                                       | see [Lighthouse](#lighthouse)                                                            |
 | A secret is committed                                               | gitleaks over the full history (D-040)           | `secret-scan`                                      | none (CI only)                                                                           |
 | A commit message is not conventional                                | commitlint                                       | none (local `commit-msg` hook)                     | runs on every commit                                                                     |
 
@@ -103,6 +105,8 @@ VERCEL_ENV=production SITE_INDEXABLE=true pnpm --filter @sbn/web build
 pnpm --filter @sbn/web lighthouse
 ```
 
-Needs Chrome (or `CHROME_PATH`) and openssl. That build is indexable, and `VERCEL_ENV=production`
-makes `/design` return 404 (D-058), so the end-to-end tests would fail against it; `pnpm test:e2e`
-and `pnpm test:e2e:auth` rebuild first.
+It also fails a page whose layout shift reaches 0.1, or that loads more script or font bytes than
+`BYTE_BUDGETS` in `apps/web/scripts/lighthouse.mjs` (D-171). Needs Chrome (or `CHROME_PATH`) and
+openssl. That build is indexable, and `VERCEL_ENV=production` makes `/design` return 404 (D-058),
+so the end-to-end tests would fail against it; `pnpm test:e2e` and `pnpm test:e2e:auth` rebuild
+first.
