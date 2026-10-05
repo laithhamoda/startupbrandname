@@ -1,5 +1,7 @@
 import type { ReviewOutput } from '@sbn/ai';
-import type { Answers } from '@sbn/question-bank';
+import { type Answers, getQuestion } from '@sbn/question-bank';
+import { sampleValue } from '@sbn/question-bank/testing';
+import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { reviewWithAi } from '@/lib/ai/service';
@@ -75,6 +77,17 @@ const numberOfPartners = (value: number): SaveInput => ({
   submission: { kind: 'value', value },
 });
 
+/** The target of a redirect() thrown by `action`, read from its digest; '' when none. */
+async function redirectTarget(action: Promise<unknown>): Promise<string> {
+  const error: unknown = await action.then(
+    () => null,
+    (thrown: unknown) => thrown,
+  );
+  return ((error as { digest?: string } | null)?.digest ?? '').split(';')[2] ?? '';
+}
+
+const stepUrl = (step: string) => `/ar/projects/${projectId}/q/${step}`;
+
 beforeEach(() => {
   vi.mocked(reviewWithAi).mockResolvedValue(null);
 });
@@ -88,9 +101,7 @@ describe('saveAnswer', () => {
     const { client, writes } = fakeClient();
     signedIn(client);
 
-    const result = await saveAnswer(numberOfPartners(3));
-
-    expect(result.status).toBe('saved');
+    expect(await redirectTarget(saveAnswer(numberOfPartners(3)))).toBe(stepUrl('A3'));
     expect(writes.upsert).toHaveBeenCalledWith(
       expect.objectContaining({
         question_id: 'A2',
@@ -109,14 +120,14 @@ describe('saveAnswer', () => {
     const { client, writes } = fakeClient();
     signedIn(client);
 
-    const result = await saveAnswer({
+    const save = saveAnswer({
       locale: 'ar',
       projectId,
       step: 'C8',
       submission: { kind: 'range', min: 11, max: 50 },
     });
 
-    expect(result.status).toBe('saved');
+    expect(await redirectTarget(save)).toBe(stepUrl('D1'));
     expect(writes.upsert).toHaveBeenCalledWith(
       expect.objectContaining({
         question_id: 'C8',
@@ -207,10 +218,35 @@ describe('saveAnswer', () => {
       submission: { kind: 'value', value: false },
     });
 
+    // A warning to read first: the editor shows it with "Continue" instead of moving on.
     expect(result).toMatchObject({
       status: 'saved',
       notes: [{ code: 'G4_no_agreement', severity: 'warn' }],
     });
+  });
+
+  it('renders the next step in the same response when there is nothing to say (PERF-3)', async () => {
+    const { client } = fakeClient();
+    signedIn(client);
+
+    expect(await redirectTarget(saveAnswer(numberOfPartners(3)))).toBe(stepUrl('A3'));
+    // Revalidated first, so the step and the overview read the new answer.
+    expect(revalidatePath).toHaveBeenCalledWith(`/ar/projects/${projectId}`, 'layout');
+  });
+
+  it('opens the overview after the last step', async () => {
+    const { client } = fakeClient();
+    const last = getQuestion('H8');
+    signedIn(client);
+
+    const save = saveAnswer({
+      locale: 'ar',
+      projectId,
+      step: last.id,
+      submission: { kind: 'value', value: sampleValue(last.field) },
+    });
+
+    expect(await redirectTarget(save)).toBe(`/ar/projects/${projectId}`);
   });
 
   it('says "stale" for a follow-up that no longer applies', async () => {
@@ -261,7 +297,7 @@ describe('saveAnswer', () => {
     const { client } = fakeClient({ delete: { error: { code: '57014' } } });
     signedIn(client);
 
-    expect((await saveAnswer(numberOfPartners(3))).status).toBe('saved');
+    expect(await redirectTarget(saveAnswer(numberOfPartners(3)))).toBe(stepUrl('A3'));
     expect(log.warn).toHaveBeenCalledWith('diagnostic.follow_up_cleanup_failed', {
       code: '57014',
       projectId,
@@ -301,14 +337,14 @@ describe('saveAnswer', () => {
     signedIn(client);
     const typed = 'أصحاب المطاعم الصغيرة في وسط إربد';
 
-    const result = await saveAnswer({
+    const save = saveAnswer({
       locale: 'ar',
       projectId,
       step: 'B3',
       submission: { kind: 'value', value: typed },
     });
 
-    expect(result.status).toBe('saved');
+    expect(await redirectTarget(save)).toBe(stepUrl('B4'));
     expect(reviewWithAi).toHaveBeenCalledWith(
       expect.objectContaining({
         identity: { email: 'founder@example.com', names: ['Laith Ahmad', 'Laith'] },
@@ -332,14 +368,14 @@ describe('saveAnswer', () => {
     };
     vi.mocked(reviewWithAi).mockResolvedValue(review);
 
-    const result = await saveAnswer({
+    const save = saveAnswer({
       locale: 'ar',
       projectId,
       step: 'B3',
       submission: { kind: 'confirmed', value: typed },
     });
 
-    expect(result.status).toBe('saved');
+    expect(await redirectTarget(save)).toBe(stepUrl('B4'));
     expect(writes.upsert).toHaveBeenCalledWith(
       expect.objectContaining({
         raw_text: typed,
@@ -395,15 +431,6 @@ describe('project settings', () => {
     const client = { from: () => ({ update, delete: () => ({ eq }) }) };
     signedIn(client);
     return { update, eq };
-  }
-
-  /** The target of a redirect() thrown by `action`, read from its digest. */
-  async function redirectTarget(action: Promise<unknown>): Promise<string> {
-    const error: unknown = await action.then(
-      () => null,
-      (thrown: unknown) => thrown,
-    );
-    return ((error as { digest?: string } | null)?.digest ?? '').split(';')[2] ?? '';
   }
 
   it('switches the mode and re-renders the project', async () => {

@@ -45,6 +45,9 @@ jobs:
       - run: pnpm build
       - name: Scan client bundle for secrets
         run: pnpm check:bundle
+      # Gzipped JavaScript of the home page, signup, onboarding and a diagnostic step (D-171).
+      - name: JavaScript per route within its budget
+        run: node scripts/check-bundle-budget.mjs
 
   e2e-smoke:
     name: E2E, accessibility and RTL snapshots (Chromium)

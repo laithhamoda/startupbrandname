@@ -4,7 +4,8 @@ import { useLocale, useTranslations } from 'next-intl';
 import { type SubmitEvent, startTransition, useActionState, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { type AuthFormState, submitOnboarding } from '@/lib/auth/actions';
-import { type OnboardingField, parseOnboarding } from '@/lib/auth/onboarding';
+import type { OnboardingField } from '@/lib/auth/onboarding';
+import { checkOnboarding } from '@/lib/auth/onboarding-check';
 import type { CountryOption } from '@/lib/countries';
 import { FormError, useFocusFirstInvalid } from './form-helpers';
 import { OnboardingFields } from './onboarding-fields';
@@ -27,7 +28,7 @@ export function OnboardingForm({ countries }: { countries: readonly CountryOptio
   function submit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    const parsed = parseOnboarding(formData);
+    const parsed = checkOnboarding(formData);
     setInvalid(parsed.ok ? [] : parsed.invalid);
     if (!parsed.ok) return;
     startTransition(() => {

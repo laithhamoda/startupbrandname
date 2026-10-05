@@ -83,6 +83,9 @@ The full order, rollback and kill switches: [docs/runbooks/operations.md](docs/r
       without a message. Renaming an option `value` or changing a field kind needs either a
       read-time mapping in the question bank or a migration that rewrites
       `answers.normalized_value`, plus a test with an answer in the old shape.
+- [ ] `contract.test.ts` fails when that stored shape changes: update its snapshot
+      (`__contract__/answers.json`) only together with that mapping or migration and a decision
+      (D-165).
 - [ ] Labels change without a data migration, but the Arabic label and the question's rules are
       part of the AI review's input hash (`apps/web/src/lib/ai/service.ts`). Changing them makes
       the stored reviews of that question stale, so the next saves pay for new model calls within

@@ -3,6 +3,7 @@ import { getTranslations } from 'next-intl/server';
 import { redirect } from 'next/navigation';
 import { AuthShell } from '@/components/auth/auth-shell';
 import { OnboardingForm } from '@/components/auth/onboarding-form';
+import { ClientMessages } from '@/components/client-messages';
 import { Button } from '@/components/ui/button';
 import { currentLocale } from '@/i18n/locale';
 import { signOut } from '@/lib/auth/actions';
@@ -26,7 +27,9 @@ export default async function OnboardingPage() {
 
   return (
     <AuthShell title={t('title')} lead={t('lead')}>
-      <OnboardingForm countries={countryOptions(locale)} />
+      <ClientMessages namespaces={['onboarding', 'aboutYou', 'auth.errors']}>
+        <OnboardingForm countries={countryOptions(locale)} />
+      </ClientMessages>
       <form action={signOut.bind(null, locale)}>
         <Button type="submit" variant="quiet">
           {t('signOut')}

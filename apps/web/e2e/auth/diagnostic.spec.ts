@@ -277,6 +277,40 @@ test('each step has its own title, and moving on puts focus on the question (UX-
   ).toHaveAttribute('dir', 'auto');
 });
 
+test('a saved answer brings the next step back in the same response (PERF-3)', async ({ page }) => {
+  await signUpByEmail(page, uniqueEmail('one-trip'));
+  const id = await createProject(page, 'quick');
+  await page.getByLabel('المدينة').fill('إربد');
+
+  // Every request from "Next" on. Link prefetches are marked: the new page makes them anyway.
+  const requests: { path: string; method: string; action: boolean; prefetch: boolean }[] = [];
+  const documents: string[] = [];
+  page.on('request', (request) => {
+    const headers = request.headers();
+    const path = new URL(request.url()).pathname;
+    requests.push({
+      path,
+      method: request.method(),
+      action: 'next-action' in headers,
+      prefetch: 'next-router-prefetch' in headers || 'next-router-segment-prefetch' in headers,
+    });
+    if (request.resourceType() === 'document') documents.push(path);
+  });
+  await next(page, 'A8');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText(getQuestion('A8').label.ar);
+
+  // One action call saved A1 and brought A8 back: no second request for A8's data, and no full
+  // page load, which Next.js falls back to when it cannot render the redirect target itself.
+  expect(requests.filter((request) => request.action)).toHaveLength(1);
+  expect(
+    requests.filter(
+      (request) =>
+        request.path === `/ar/projects/${id}/q/A8` && request.method === 'GET' && !request.prefetch,
+    ),
+  ).toEqual([]);
+  expect(documents).toEqual([]);
+});
+
 test('a follow-up keeps its warning when the founder comes back to it (ARCH-6)', async ({
   page,
 }) => {
@@ -345,7 +379,7 @@ test('the free plan allows one project, and deleting it frees the place', async 
 test('answers survive signing out, and the diagnostic resumes where it stopped', async ({
   page,
 }) => {
-  // Supabase sends one code per address per minute, so this test waits out that minute.
+  // Supabase sends one code per address per minute (D-084), so this test waits out that minute.
   test.setTimeout(150_000);
   const email = uniqueEmail('resume');
   await signUpByEmail(page, email);

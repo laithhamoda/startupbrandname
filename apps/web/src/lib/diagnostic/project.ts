@@ -9,6 +9,7 @@ import {
   type Mode,
   modeSchema,
 } from '@sbn/question-bank';
+import { cache } from 'react';
 import { z } from 'zod';
 import { log } from '@/lib/log';
 import type { SupabaseServerClient } from '@/lib/supabase/server';
@@ -139,27 +140,31 @@ export async function listProjects(
 
 const idSchema = z.uuid();
 
-/** One project and its answers, or null if it does not exist or is not the account's (RLS). */
-export async function loadProject(
-  supabase: SupabaseServerClient,
-  id: string,
-): Promise<{ project: Project; answers: Answers } | null> {
-  if (!idSchema.safeParse(id).success) return null;
-  const { data: row, error } = await supabase
-    .from('projects')
-    .select(PROJECT_COLUMNS)
-    .eq('id', id)
-    .maybeSingle();
-  if (error) throw error;
-  if (!row) return null;
-
-  const { data: rows, error: answersError } = await supabase
-    .from('answers')
-    .select('question_id, normalized_value')
-    .eq('project_id', id);
-  if (answersError) throw answersError;
-  return { project: toProject(row), answers: await answersOf(id, rows) };
-}
+/**
+ * One project and its answers, or null if it does not exist or is not the account's (RLS). Both
+ * are read at once: RLS returns no answers for a project that is not the account's (PERF-4).
+ * Read once per request for a client and ID, so a page and its title share one load; fetch
+ * deduplication no longer does that, since every Supabase call carries a timeout (REL-4).
+ */
+export const loadProject = cache(
+  async (
+    supabase: SupabaseServerClient,
+    id: string,
+  ): Promise<{ project: Project; answers: Answers } | null> => {
+    if (!idSchema.safeParse(id).success) return null;
+    const [projectResult, answersResult] = await Promise.all([
+      supabase.from('projects').select(PROJECT_COLUMNS).eq('id', id).maybeSingle(),
+      supabase.from('answers').select('question_id, normalized_value').eq('project_id', id),
+    ]);
+    if (projectResult.error) throw projectResult.error;
+    if (!projectResult.data) return null;
+    if (answersResult.error) throw answersResult.error;
+    return {
+      project: toProject(projectResult.data),
+      answers: await answersOf(id, answersResult.data),
+    };
+  },
+);
 
 /** Provenance stored with an answer (CLAUDE.md rule 2, D-104, D-114). */
 export function provenanceOf(answer: Answer, fromRange: boolean) {

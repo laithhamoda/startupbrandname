@@ -1,7 +1,8 @@
 import { z } from 'zod';
 import { isCurrencyCode } from './currency';
 import { AGE_BANDS, COMPANY_SIZES, INCOME_BANDS, SECTORS } from './options';
-import type { Field, FieldKind, Option } from './types';
+import type { Field, FieldKind, FieldOf, Option } from './types';
+import type { ValueByKind } from './values';
 
 const MAX_AMOUNT = 1_000_000_000_000;
 
@@ -63,167 +64,171 @@ export function maxItemsFor(field: Field): number | null {
 }
 
 /**
- * The exact shape of a real answer for a field. «لا أعرف» is not a value: it is stored as an
- * unknown answer instead (see `answerSchema`).
+ * The schema of each kind's value, typed against ValueByKind (values.ts): a schema whose values
+ * lack a part declared there, or give it another type, fails the typecheck (ARCH-4). Each one
+ * receives only its own kind of field. The stored shape itself is pinned by contract.test.ts.
  */
-export function valueSchema(field: Field): z.ZodType {
-  switch (field.kind) {
-    case 'short_text':
-      return text(600);
-    case 'long_text':
-      return text(4000);
-    case 'number': {
-      const base = z.number().min(field.min).max(field.max);
-      return field.integer ? base.int() : base;
-    }
-    case 'boolean':
-      return z.boolean();
-    case 'single':
-      return optionValue(field.options);
-    case 'multi':
-      return z
-        .object({
-          values: z.array(optionValue(field.options)).max(field.options.length),
-          other: field.other ? optionalText(200) : z.undefined().optional(),
-        })
-        .strict()
-        .refine((value) => value.values.length > 0 || (value.other ?? '') !== '', 'choose_option')
-        .refine((value) => new Set(value.values).size === value.values.length, 'duplicate');
-    case 'money':
-      return money;
-    case 'money_range':
-      return z
-        .object({ min: amount, max: amount, currency: currencyCode })
-        .strict()
-        .refine((value) => value.min <= value.max, 'min_above_max');
-    case 'currency':
-      return currencyCode;
-    case 'country_city':
-      return z.object({ country: z.string().regex(/^[A-Z]{2}$/), city: text(80) }).strict();
-    case 'cost_items':
-      return z
-        .object({
-          items: z
-            .array(z.object({ label: text(80), amount, currency: currencyCode }).strict())
-            .min(field.minItems)
-            .max(MAX_ITEMS.cost_items),
-        })
-        .strict();
-    case 'people':
-      return z
-        .object({
-          items: z
-            .array(z.object({ name: text(80), detail: optionalText(200) }).strict())
-            .min(field.minItems)
-            .max(MAX_ITEMS.people),
-        })
-        .strict();
-    case 'competitors':
-      return z
-        .object({
-          items: z
-            .array(
-              z
-                .object({
-                  name: text(80),
-                  // Reports will render these answers as links (M5).
-                  url: website.optional(),
-                  strength: text(200),
-                  weakness: text(200),
-                })
-                .strict(),
-            )
-            .min(field.minItems)
-            .max(MAX_ITEMS.competitors),
-        })
-        .strict();
-    case 'competitor_prices':
-      return z
-        .object({
-          items: z
-            .array(z.object({ name: text(80), price: money.nullable() }).strict())
-            .min(1)
-            .max(MAX_ITEMS.competitor_prices),
-        })
-        .strict();
-    case 'percent_split':
-      return z
-        .object({
-          items: z
-            .array(z.object({ label: text(80), percent: z.number().gt(0).max(100) }).strict())
-            .min(1)
-            .max(MAX_ITEMS.percent_split),
-        })
-        .strict()
-        .refine(
-          (value) =>
-            Math.abs(value.items.reduce((sum, item) => sum + item.percent, 0) - 100) <=
-            PERCENT_TOLERANCE,
-          'percent_total',
-        );
-    case 'yes_no_detail':
-      return z
-        .object({ answer: z.boolean(), detail: optionalText(400) })
-        .strict()
-        .refine(
-          (value) => value.answer !== (field.detailWhen === 'yes') || (value.detail ?? '') !== '',
-          'detail_required',
-        );
-    case 'yes_no_percent':
-      return z
-        .object({ answer: z.boolean(), percent: z.number().min(0).max(100).optional() })
-        .strict()
-        .refine((value) => !value.answer || value.percent !== undefined, 'percent_required');
-    case 'seasonality':
-      return z
-        .object({
-          seasonal: z.boolean(),
-          peakMonths: z.array(z.number().int().min(1).max(12)).max(12),
-        })
-        .strict()
-        .refine((value) => !value.seasonal || value.peakMonths.length > 0, 'peak_months')
-        .refine((value) => new Set(value.peakMonths).size === value.peakMonths.length, 'duplicate');
-    case 'sales_forecast': {
-      const units = z.number().nonnegative().max(MAX_AMOUNT);
-      return z.object({ month1: units, month6: units, month12: units }).strict();
-    }
-    case 'three_texts':
-      return z.object({ items: z.tuple([text(120), text(120), text(120)]) }).strict();
-    case 'staff_plan':
-      return z
-        .object({
-          items: z
-            .array(
-              z
-                .object({
-                  role: text(80),
-                  monthlyCost: money,
-                  startMonth: z.number().int().min(1).max(36),
-                })
-                .strict(),
-            )
-            .max(MAX_ITEMS.staff_plan),
-        })
-        .strict();
-    case 'customer_profile':
-      // Which parts are required depends on C1 (who pays); checked in review.ts.
-      return z
-        .object({
-          ageBand: optionValue(AGE_BANDS).optional(),
-          city: optionalText(80),
-          incomeBand: optionValue(INCOME_BANDS).optional(),
-          occupation: optionalText(120),
-          sector: optionValue(SECTORS).optional(),
-          size: optionValue(COMPANY_SIZES).optional(),
-          decisionMaker: optionalText(120),
-        })
-        .strict()
-        .refine(
-          (value) =>
-            Object.values(value).some((part) => typeof part === 'string' && part.trim() !== ''),
-          'describe_customer',
-        );
-  }
+const VALUE_SCHEMAS: { [K in FieldKind]: (field: FieldOf<K>) => z.ZodType<ValueByKind[K]> } = {
+  short_text: () => text(600),
+  long_text: () => text(4000),
+  number: (field) => {
+    const base = z.number().min(field.min).max(field.max);
+    return field.integer ? base.int() : base;
+  },
+  boolean: () => z.boolean(),
+  single: (field) => optionValue(field.options),
+  multi: (field) =>
+    z
+      .object({
+        values: z.array(optionValue(field.options)).max(field.options.length),
+        other: field.other ? optionalText(200) : z.undefined().optional(),
+      })
+      .strict()
+      .refine((value) => value.values.length > 0 || (value.other ?? '') !== '', 'choose_option')
+      .refine((value) => new Set(value.values).size === value.values.length, 'duplicate'),
+  money: () => money,
+  money_range: () =>
+    z
+      .object({ min: amount, max: amount, currency: currencyCode })
+      .strict()
+      .refine((value) => value.min <= value.max, 'min_above_max'),
+  currency: () => currencyCode,
+  country_city: () =>
+    z.object({ country: z.string().regex(/^[A-Z]{2}$/), city: text(80) }).strict(),
+  cost_items: (field) =>
+    z
+      .object({
+        items: z
+          .array(z.object({ label: text(80), amount, currency: currencyCode }).strict())
+          .min(field.minItems)
+          .max(MAX_ITEMS.cost_items),
+      })
+      .strict(),
+  people: (field) =>
+    z
+      .object({
+        items: z
+          .array(z.object({ name: text(80), detail: optionalText(200) }).strict())
+          .min(field.minItems)
+          .max(MAX_ITEMS.people),
+      })
+      .strict(),
+  competitors: (field) =>
+    z
+      .object({
+        items: z
+          .array(
+            z
+              .object({
+                name: text(80),
+                // Reports will render these answers as links (M5).
+                url: website.optional(),
+                strength: text(200),
+                weakness: text(200),
+              })
+              .strict(),
+          )
+          .min(field.minItems)
+          .max(MAX_ITEMS.competitors),
+      })
+      .strict(),
+  competitor_prices: () =>
+    z
+      .object({
+        items: z
+          .array(z.object({ name: text(80), price: money.nullable() }).strict())
+          .min(1)
+          .max(MAX_ITEMS.competitor_prices),
+      })
+      .strict(),
+  percent_split: () =>
+    z
+      .object({
+        items: z
+          .array(z.object({ label: text(80), percent: z.number().gt(0).max(100) }).strict())
+          .min(1)
+          .max(MAX_ITEMS.percent_split),
+      })
+      .strict()
+      .refine(
+        (value) =>
+          Math.abs(value.items.reduce((sum, item) => sum + item.percent, 0) - 100) <=
+          PERCENT_TOLERANCE,
+        'percent_total',
+      ),
+  yes_no_detail: (field) =>
+    z
+      .object({ answer: z.boolean(), detail: optionalText(400) })
+      .strict()
+      .refine(
+        (value) => value.answer !== (field.detailWhen === 'yes') || (value.detail ?? '') !== '',
+        'detail_required',
+      ),
+  yes_no_percent: () =>
+    z
+      .object({ answer: z.boolean(), percent: z.number().min(0).max(100).optional() })
+      .strict()
+      .refine((value) => !value.answer || value.percent !== undefined, 'percent_required'),
+  seasonality: () =>
+    z
+      .object({
+        seasonal: z.boolean(),
+        peakMonths: z.array(z.number().int().min(1).max(12)).max(12),
+      })
+      .strict()
+      .refine((value) => !value.seasonal || value.peakMonths.length > 0, 'peak_months')
+      .refine((value) => new Set(value.peakMonths).size === value.peakMonths.length, 'duplicate'),
+  sales_forecast: () => {
+    const units = z.number().nonnegative().max(MAX_AMOUNT);
+    return z.object({ month1: units, month6: units, month12: units }).strict();
+  },
+  three_texts: () => z.object({ items: z.tuple([text(120), text(120), text(120)]) }).strict(),
+  staff_plan: () =>
+    z
+      .object({
+        items: z
+          .array(
+            z
+              .object({
+                role: text(80),
+                monthlyCost: money,
+                startMonth: z.number().int().min(1).max(36),
+              })
+              .strict(),
+          )
+          .max(MAX_ITEMS.staff_plan),
+      })
+      .strict(),
+  // Which parts are required depends on C1 (who pays); checked in review.ts.
+  customer_profile: () =>
+    z
+      .object({
+        ageBand: optionValue(AGE_BANDS).optional(),
+        city: optionalText(80),
+        incomeBand: optionValue(INCOME_BANDS).optional(),
+        occupation: optionalText(120),
+        sector: optionValue(SECTORS).optional(),
+        size: optionValue(COMPANY_SIZES).optional(),
+        decisionMaker: optionalText(120),
+      })
+      .strict()
+      .refine(
+        (value) =>
+          Object.values(value).some((part) => typeof part === 'string' && part.trim() !== ''),
+        'describe_customer',
+      ),
+};
+
+/**
+ * The exact shape of a real answer for a field. «لا أعرف» is not a value: it is stored as an
+ * unknown answer instead (see `answerSchema`). The kind is the type parameter, read from the
+ * field, so the entry picked is the one typed for that kind and needs no cast: a plain `Field`
+ * gives a schema of any value, a field of one kind the schema of that kind's value.
+ */
+export function valueSchema<K extends FieldKind>(
+  field: FieldOf<K> & { kind: K },
+): z.ZodType<ValueByKind[K]> {
+  return VALUE_SCHEMAS[field.kind](field);
 }
 
 /** A schema without the optional or nullable wrapper around it. */

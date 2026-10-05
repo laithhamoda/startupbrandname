@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { AuthShell } from '@/components/auth/auth-shell';
 import { LoginFlow } from '@/components/auth/login-flow';
+import { ClientMessages } from '@/components/client-messages';
 import { TextLink } from '@/components/ui/text-link';
 import { currentLocale } from '@/i18n/locale';
 import { googleSignInAvailable } from '@/lib/auth/google';
@@ -28,11 +29,13 @@ export default async function LoginPage({ searchParams }: PageProps<'/[locale]/l
 
   return (
     <AuthShell title={t('loginTitle')} lead={t('loginLead')}>
-      <LoginFlow
-        googleEnabled={await googleSignInAvailable()}
-        googleFailed={error === 'google'}
-        next={destination}
-      />
+      <ClientMessages namespaces={['auth']}>
+        <LoginFlow
+          googleEnabled={await googleSignInAvailable()}
+          googleFailed={error === 'google'}
+          next={destination}
+        />
+      </ClientMessages>
       <p className="text-small">
         {t('noAccount')} <TextLink href="/signup">{t('signupTitle')}</TextLink>
       </p>

@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { delayFonts, expectNoLayoutShift } from './layout-shift';
 
 const SKIP_LINK = { ar: 'تخطَّ إلى المحتوى', en: 'Skip to content' } as const;
 
@@ -17,30 +18,16 @@ for (const [locale, name] of Object.entries(SKIP_LINK)) {
   });
 }
 
-test('fonts load without layout shift', async ({ page }) => {
-  await page.goto('/ar');
+// The fonts arrive after the first paint, as on a slow connection, so the swap is measured
+// (PERF-5). A diagnostic step is measured in e2e/auth/layout-shift.spec.ts.
+for (const locale of ['ar', 'en'] as const) {
+  test(`fonts swap in without layout shift (${locale})`, async ({ page }) => {
+    await delayFonts(page);
+    await page.goto(`/${locale}`);
 
-  const shift = await page.evaluate(async () => {
-    await document.fonts.ready;
-    return new Promise<number>((resolve) => {
-      let total = 0;
-      new PerformanceObserver((list) => {
-        for (const entry of list.getEntries()) {
-          const layoutShift = entry as PerformanceEntry & {
-            value: number;
-            hadRecentInput: boolean;
-          };
-          if (!layoutShift.hadRecentInput) total += layoutShift.value;
-        }
-      }).observe({ type: 'layout-shift', buffered: true });
-      setTimeout(() => {
-        resolve(total);
-      }, 500);
-    });
+    await expectNoLayoutShift(page);
   });
-
-  expect(shift).toBeLessThan(0.1);
-});
+}
 
 test('the theme toggle cycles automatic, light and dark', async ({ page }) => {
   await page.goto('/ar');

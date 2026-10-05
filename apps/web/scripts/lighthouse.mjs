@@ -1,5 +1,7 @@
 // Lighthouse on every public page, in both languages (M2b definition of done: SEO and
-// accessibility score 100). Run after a production build with indexing on:
+// accessibility score 100), with the performance budget of D-054 (PERF-5): a layout shift under
+// 0.1 and at most BYTE_BUDGETS of script and font per page. Run after a production build with
+// indexing on:
 //
 //   VERCEL_ENV=production SITE_INDEXABLE=true pnpm build && pnpm lighthouse
 //
@@ -21,8 +23,15 @@ import { PUBLIC_PAGES } from '../src/config/public-pages.ts';
 const PORT = 3100;
 const TLS_PORT = 3443;
 const REQUIRED = { seo: 1, accessibility: 1 };
-// Shared CI runners make timing scores noisy: reported, not enforced.
+// Shared CI runners make timing scores noisy: reported, not enforced. The performance category
+// also runs the layout-shift and resource-summary audits that the budget below reads.
 const REPORTED = ['performance', 'best-practices'];
+// Layout shift is not a timing: a page at 0.1 or above fails (Core Web Vitals "good" is < 0.1).
+const MAX_LAYOUT_SHIFT = 0.1;
+// Bytes over the network per page (scripts gzipped by the server, fonts as stored), the largest
+// measured on 2026-10-05 plus about 10%: script 193,669 B (/pricing; 182,702 B elsewhere), font
+// 105,897 B (D-171). Raise one only with a reason in docs/DECISIONS.md.
+const BYTE_BUDGETS = { script: 213_000, font: 116_500 };
 const REPORT_DIR = new URL('../lighthouse-report/', import.meta.url);
 
 async function waitForServer() {
@@ -138,7 +147,37 @@ try {
       const scores = Object.fromEntries(
         Object.entries(lhr.categories).map(([key, category]) => [key, category.score]),
       );
-      rows.push({ page: `/${locale}${path}`, ...scores });
+      const shift = lhr.audits['cumulative-layout-shift']?.numericValue;
+      const bytes = Object.fromEntries(
+        (lhr.audits['resource-summary']?.details?.items ?? []).map((item) => [
+          item.resourceType,
+          item.transferSize,
+        ]),
+      );
+      rows.push({
+        page: `/${locale}${path}`,
+        ...scores,
+        cls: shift,
+        script: bytes.script,
+        font: bytes.font,
+      });
+
+      const overBudget = [
+        ...(typeof shift === 'number' && shift < MAX_LAYOUT_SHIFT
+          ? []
+          : [`layout shift ${String(shift)}, the limit is under ${String(MAX_LAYOUT_SHIFT)}`]),
+        // A size Lighthouse did not report fails too, so an upgrade that renames the audit cannot
+        // turn the budget off unnoticed.
+        ...Object.entries(BYTE_BUDGETS).flatMap(([type, budget]) => {
+          const size = bytes[type];
+          if (typeof size !== 'number') return [`${type} bytes not measured (resource-summary)`];
+          return size > budget ? [`${type} ${String(size)} B, over ${String(budget)} B`] : [];
+        }),
+      ];
+      if (overBudget.length > 0) {
+        failed = true;
+        console.error(`✗ ${url} performance budget (D-171)\n  ${overBudget.join('\n  ')}`);
+      }
 
       for (const [category, minimum] of Object.entries(REQUIRED)) {
         if ((scores[category] ?? 0) >= minimum) continue;

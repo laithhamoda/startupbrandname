@@ -4,7 +4,14 @@ import type { Answers } from '@sbn/question-bank';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { log } from '@/lib/log';
 import type { SupabaseServerClient } from '@/lib/supabase/server';
-import { AI_BUDGET_MS, type AiContext, RETRY_AFTER_FAILURE_MS, reviewWithAi } from './service';
+import {
+  AI_BUDGET_MS,
+  type AiContext,
+  forgetAiSettings,
+  RETRY_AFTER_FAILURE_MS,
+  reviewWithAi,
+  SETTINGS_TTL_MS,
+} from './service';
 
 // The promises of the AI review (ARCH-9): the stand-in never answers on production, nothing that
 // identifies the founder leaves (rule 5), a stored result is reused (rule 4), every call is
@@ -81,25 +88,31 @@ function database(overrides: Partial<Omit<Db, 'runs'>> = {}) {
     if (table === 'settings') {
       return { select: () => ({ in: () => Promise.resolve({ error: null, ...db.settings }) }) };
     }
-    const filters = new Map<string, unknown>();
+    let hashes: unknown[] = [];
+    // The stored runs of the hashes asked for, newest first, as the query orders them.
+    const answer = () => ({
+      data: db.lookupError
+        ? null
+        : db.runs
+            .filter((row) => hashes.includes(row.p_input_hash))
+            .reverse()
+            .map((row) => ({ input_hash: row.p_input_hash, output: row.p_output })),
+      error: db.lookupError,
+    });
     const query = {
-      eq: (column: string, value: unknown) => {
-        filters.set(column, value);
+      eq: () => query,
+      in: vi.fn((_column: string, values: unknown[]) => {
+        hashes = values;
         return query;
-      },
+      }),
       order: () => query,
-      limit: () => query,
-      maybeSingle: () => {
-        const run = db.runs.findLast((row) => row.p_input_hash === filters.get('input_hash'));
-        return Promise.resolve({
-          data: run ? { output: run.p_output } : null,
-          error: db.lookupError,
-        });
-      },
+      then: (resolve: (value: unknown) => unknown) => Promise.resolve(answer()).then(resolve),
     };
+    lookups.push(query.in);
     return { select: () => query };
   });
-  return { db, rpc, from, supabase: { rpc, from } as unknown as SupabaseServerClient };
+  const lookups: ReturnType<typeof vi.fn>[] = [];
+  return { db, rpc, from, lookups, supabase: { rpc, from } as unknown as SupabaseServerClient };
 }
 
 function context(supabase: SupabaseServerClient, answers: Answers = {}): AiContext {
@@ -134,6 +147,8 @@ beforeEach(() => {
   vi.stubEnv('AI_PROVIDER', 'fake');
   vi.stubEnv('VERCEL_ENV', undefined);
   reviewText.mockReset();
+  // Each case reads its own settings.
+  forgetAiSettings();
 });
 
 afterEach(() => {
@@ -170,9 +185,35 @@ describe('consent (D-147)', () => {
 
     expect(await reviewWithAi(context(supabase), 'B1', IDEA)).toBeNull();
     expect(reviewText).not.toHaveBeenCalled();
-    expect(from).not.toHaveBeenCalled();
+    // The settings are read alongside the consent; no stored review is looked up.
+    expect(from).not.toHaveBeenCalledWith('tool_runs');
     expect(reserveCalls(rpc)).toBe(0);
     expect(log.debug).toHaveBeenCalledWith('ai.skipped', { reason, questionId: 'B1' });
+  });
+
+  it('reads the consent and the settings at once (PERF-4)', async () => {
+    const { supabase, rpc, from } = database();
+    reviewText.mockResolvedValue(review({ coherent: true }));
+
+    const pending = reviewWithAi(context(supabase), 'B1', IDEA);
+    // Both requests leave before either answer is awaited.
+    expect(rpc).toHaveBeenCalledWith('crossborder_consent_state');
+    expect(from).toHaveBeenCalledWith('settings');
+    expect(await pending).toMatchObject({ coherent: true });
+  });
+
+  it('reports a consent it cannot read before a settings error', async () => {
+    const { supabase } = database({
+      rpc: { crossborder_consent_state: { data: null, error: { code: '08006' } } },
+      settings: { data: null, error: { code: '57014' } },
+    });
+
+    expect(await reviewWithAi(context(supabase), 'B1', IDEA)).toBeNull();
+    expect(log.error).toHaveBeenCalledExactlyOnceWith('ai.error', {
+      code: '08006',
+      stage: 'consent',
+      questionId: 'B1',
+    });
   });
 
   it('keeps to the fixed checks when the consent cannot be read', async () => {
@@ -237,6 +278,31 @@ describe('settings', () => {
       stage: 'settings',
       questionId: 'B1',
     });
+  });
+
+  it('reads them once a minute per server instance (PERF-4)', async () => {
+    const { supabase, from } = database();
+    reviewText.mockResolvedValue(review({ coherent: true }));
+    const settingsReads = () => from.mock.calls.filter(([table]) => table === 'settings').length;
+
+    await reviewWithAi(context(supabase), 'B1', IDEA);
+    await reviewWithAi(context(supabase), 'B1', IDEA);
+    expect(settingsReads()).toBe(1);
+
+    vi.spyOn(Date, 'now').mockReturnValue(Date.now() + SETTINGS_TTL_MS + 1);
+    await reviewWithAi(context(supabase), 'B1', IDEA);
+    expect(SETTINGS_TTL_MS).toBe(60_000);
+    expect(settingsReads()).toBe(2);
+  });
+
+  it('reads them again after a failed read, which is not kept', async () => {
+    const failing = database({ settings: { data: null, error: { code: '08006' } } });
+    expect(await reviewWithAi(context(failing.supabase), 'B1', IDEA)).toBeNull();
+
+    const { supabase, from } = database();
+    reviewText.mockResolvedValue(review({ coherent: true }));
+    expect(await reviewWithAi(context(supabase), 'B1', IDEA)).toMatchObject({ coherent: true });
+    expect(from).toHaveBeenCalledWith('settings');
   });
 });
 
@@ -352,6 +418,33 @@ describe('reuse (rule 4, D-151)', () => {
 
     expect(reviewText).toHaveBeenCalledTimes(1);
     expect(reserveCalls(rpc)).toBe(1);
+  });
+
+  it('skips another answer without asking the database while there is no idea (D-072)', async () => {
+    const { supabase, rpc, from } = database();
+
+    expect(await reviewWithAi(context(supabase), 'B2', 'المطاعم تعاني')).toBeNull();
+    expect(rpc).not.toHaveBeenCalled();
+    expect(from).not.toHaveBeenCalled();
+    expect(log.debug).toHaveBeenCalledWith('ai.skipped', { reason: 'no_idea', questionId: 'B2' });
+  });
+
+  it('looks up the idea and the answer in one query, then reviews each (PERF-4)', async () => {
+    const { supabase, db, lookups } = database();
+    reviewText.mockResolvedValue(review({ coherent: true }));
+    const founder = context(supabase, withIdea);
+
+    expect(await reviewWithAi(founder, 'B2', 'المطاعم تعاني')).toMatchObject({ language: 'msa' });
+    expect(lookups).toHaveLength(1);
+    // B1's hash, then the answer's: both reviews ran and were recorded under them.
+    const hashes = db.runs.map((run) => run.p_input_hash);
+    expect(hashes).toHaveLength(2);
+    expect(lookups[0]).toHaveBeenCalledExactlyOnceWith('input_hash', hashes);
+
+    // The next save finds both reviews stored, again with one query and no model call.
+    expect(await reviewWithAi(founder, 'B2', 'المطاعم تعاني')).toMatchObject({ language: 'msa' });
+    expect(lookups).toHaveLength(2);
+    expect(reviewText).toHaveBeenCalledTimes(2);
   });
 
   it('checks the idea first, and reviews another answer only for a coherent idea (D-072)', async () => {

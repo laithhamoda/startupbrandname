@@ -54,6 +54,9 @@ export type Field =
 
 export type FieldKind = Field['kind'];
 
+/** The field of one kind, with the settings only that kind has: `FieldOf<'number'>` has `max`. */
+export type FieldOf<K extends FieldKind> = Extract<Field, { kind: K }>;
+
 /** The answer rules of SPEC §2. Which ones a question uses is part of its definition (#38). */
 export type RuleId = 'R1' | 'R2' | 'R3' | 'R4' | 'R5' | 'R6' | 'R7' | 'R8';
 

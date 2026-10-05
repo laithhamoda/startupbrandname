@@ -1,8 +1,15 @@
 import { expect, test } from '@playwright/test';
-import { countEmails, signInByEmail, signUpByEmail, uniqueEmail } from './helpers';
+import {
+  answerAboutYou,
+  countEmails,
+  readCode,
+  signInByEmail,
+  signUpByEmail,
+  uniqueEmail,
+} from './helpers';
 
 test('a returning user signs in with a new code', async ({ page }) => {
-  // Supabase sends one code per address per minute, so this test waits out that minute.
+  // Supabase sends one code per address per minute (D-084), so this test waits out that minute.
   test.setTimeout(150_000);
   const email = uniqueEmail('returning');
   await signUpByEmail(page, email);
@@ -61,6 +68,15 @@ test('a user withdraws consent, switches language and deletes the account', asyn
   await page.getByLabel('Email').fill(email);
   await page.getByRole('button', { name: 'Send the code' }).click();
   await expect(page.getByText(/has an account with us/)).toBeVisible();
-  await page.waitForTimeout(3_000);
+
+  // A barrier instead of a fixed wait (CICD-8): a code requested afterwards for a new address
+  // goes through the same mail server, so once it arrives, a code sent for the deleted address
+  // would have arrived before it.
+  const control = uniqueEmail('control');
+  await page.goto('/ar/signup');
+  await answerAboutYou(page);
+  await page.getByLabel('البريد الإلكتروني').fill(control);
+  await page.getByRole('button', { name: 'أرسل الرمز' }).click();
+  await readCode(page, control);
   expect(await countEmails(page, email)).toBe(before);
 });

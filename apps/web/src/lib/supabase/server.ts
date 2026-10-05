@@ -4,10 +4,12 @@ import { cookies } from 'next/headers';
 import { getClientEnv } from '@/env/client';
 import { hardenAuthCookie } from './cookies';
 import type { Database } from './database.types';
+import { SERVER_FETCH_TIMEOUT_MS, timedFetch } from './timed-fetch';
 
 /**
  * Supabase client acting as the signed-in user (publishable key + the user's session), so row
  * level security applies to every query. For Server Components, Server Actions and Route Handlers.
+ * Each request it makes gives up after 8 seconds (REL-4).
  */
 export async function createSupabaseServerClient() {
   const cookieStore = await cookies();
@@ -29,6 +31,7 @@ export async function createSupabaseServerClient() {
           }
         },
       },
+      global: { fetch: timedFetch(SERVER_FETCH_TIMEOUT_MS) },
     },
   );
 }

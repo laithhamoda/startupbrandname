@@ -7,7 +7,11 @@ export interface Money {
   currency: string;
 }
 
-/** The value of a real answer, per field kind. `fields.ts` validates exactly these shapes. */
+/**
+ * The value of a real answer, per field kind. `fields.ts` validates these shapes, and each of its
+ * schemas is typed against its entry here: a value without a part declared below, or with a part
+ * of another type, fails the typecheck (ARCH-4).
+ */
 export interface ValueByKind {
   short_text: string;
   long_text: string;
