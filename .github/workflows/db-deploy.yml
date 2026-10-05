@@ -49,8 +49,36 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: supabase/setup-cli@45a513f8c64c0bc8e0e3dfe572b5c95be85f6359 # v3.0.1
       - run: supabase link --project-ref "$SUPABASE_PROJECT_REF"
+      # The Supavisor pooler sometimes rejects the correct password (SQLSTATE 28P01) and a re-run
+      # succeeds (D-177). Retry only a failure to connect, and only if the CLI never reached the
+      # push prompt: it writes nothing to the database before that line.
       - id: push
-        run: supabase db push --yes
+        name: Push migrations (retry if the connection fails)
+        shell: bash # adds -o pipefail; the default shell would let `tee` hide a failed push
+        env:
+          ATTEMPTS: 3
+          RETRY_DELAY_SECONDS: 30
+        run: |
+          log="$(mktemp)"
+          for attempt in $(seq 1 "$ATTEMPTS"); do
+            if supabase db push --yes 2>&1 | tee "$log"; then
+              exit 0
+            fi
+            if grep -Fq -e 'Do you want to push these migrations' -e 'Applying migration' "$log"; then
+              echo '::error::db push failed after reaching the migrations; not retrying.'
+              exit 1
+            fi
+            if ! grep -Fq -e 'SQLSTATE 28P01' -e 'failed to connect' "$log"; then
+              echo '::error::db push failed for a reason other than connecting; not retrying.'
+              exit 1
+            fi
+            if [ "$attempt" -lt "$ATTEMPTS" ]; then
+              echo "::warning::Could not connect to the database (attempt $attempt of $ATTEMPTS); retrying in ${RETRY_DELAY_SECONDS}s."
+              sleep "$RETRY_DELAY_SECONDS"
+            fi
+          done
+          echo "::error::Could not connect to the database after $ATTEMPTS attempts."
+          exit 1
       # Read-only: shows which versions the database has recorded next to the files, so a gap
       # or a mismatch is visible in the run log. It also runs when the push failed, since a gap
       # or a mismatch is what makes a push fail.
