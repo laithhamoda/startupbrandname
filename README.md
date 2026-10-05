@@ -50,7 +50,7 @@ Chromium: `pnpm --filter @sbn/web exec playwright install chromium`.
 | `pnpm format` / `format:check`         | Prettier: write, or check only                                                                         |
 | `pnpm lint`                            | ESLint with zero warnings, and the check that rejects `left`/`right` styling                           |
 | `pnpm typecheck`                       | TypeScript in every package                                                                            |
-| `pnpm test`                            | Unit tests in every package; packages fail below 95% line coverage, the web app below its gate (D-164) |
+| `pnpm test`                            | Unit tests in all packages; line coverage gates in engine, question bank, AI (95%) and web app (D-164) |
 | `pnpm build`                           | Production build of the web app                                                                        |
 | `pnpm check:bundle`                    | After a build: fails if secret key material appears in client-reachable output                         |
 | `node scripts/check-bundle-budget.mjs` | After a build: fails a route that sends more JavaScript than its budget (D-171)                        |
