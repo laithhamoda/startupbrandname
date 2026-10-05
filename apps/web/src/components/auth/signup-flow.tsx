@@ -9,11 +9,8 @@ import {
   requestSignupCode,
   startGoogleSignup,
 } from '@/lib/auth/actions';
-import {
-  type OnboardingAnswers,
-  type OnboardingField,
-  parseOnboarding,
-} from '@/lib/auth/onboarding';
+import type { OnboardingAnswers, OnboardingField } from '@/lib/auth/onboarding';
+import { checkOnboarding } from '@/lib/auth/onboarding-check';
 import type { CountryCode, CountryOption } from '@/lib/countries';
 import { ClosedNotice } from './closed-notice';
 import { CodeStep } from './code-step';
@@ -94,7 +91,7 @@ export function SignupFlow({
   function checkAnswers(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     setNotice(null);
-    const parsed = parseOnboarding(new FormData(event.currentTarget));
+    const parsed = checkOnboarding(new FormData(event.currentTarget));
     if (!parsed.ok) {
       setInvalid(parsed.invalid);
       return;
