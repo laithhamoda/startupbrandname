@@ -121,7 +121,7 @@ export function SignupFlow({
   return (
     <div className="grid gap-6">
       <StepHeading key={step} focus={moved}>
-        {/* Progress, so teal (functional), bold at the same size: no weight 500 (D-170). */}
+        {/* Progress, so teal (functional), bold at the same size (owner sign-off, D-170). */}
         <span className="block text-small font-bold text-teal-ink">
           {t('step', { current: STEP_NUMBER[step], total: 3 })}
         </span>

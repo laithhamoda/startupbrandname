@@ -9,8 +9,8 @@ export const cairo = Cairo({
   variable: '--font-cairo',
 });
 
-// Regular and bold only: weight 500 cost two preloaded files on every page for one label, now
-// bold (owner sign-off, PERF-6).
+// Regular and bold only: weight 500 put two preloaded files on every page, and only a sample in
+// the internal design gallery used it (owner sign-off, PERF-6).
 export const tajawal = Tajawal({
   subsets: ['arabic', 'latin'],
   weight: ['400', '700'],
