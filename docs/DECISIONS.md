@@ -3,6 +3,56 @@
 Every decision not covered by `CLAUDE.md`, with date and reason (CLAUDE.md §7, §8.4).
 Unresolved items live in [OPEN-QUESTIONS.md](OPEN-QUESTIONS.md).
 
+## How to read this log
+
+Each row is one decision, with the date it was made and why. Rows are added at the end and never
+reworded: a later decision amends or supersedes an earlier one, and the earlier row's Status says
+which (D-172). `Active`: in force as written. `Amended by D-xxx`: in force, except for what the
+later decision changes; read both. `Superseded by D-xxx`: no longer in force; read the later one
+instead. `Done`: a one-time step that was carried out, kept as history. `Open`: decided, but
+waiting for a step nobody has taken yet, such as an owner's action. Where a row and the code on
+`main` disagree, the code wins and a new entry says so (D-174). The SPEC sections that decisions
+changed are listed in [SPEC-CHANGES.md](SPEC-CHANGES.md).
+
+From M4 on, a new decision is written as a heading and a short list rather than a table row
+(D-173), so that adding one no longer re-pads a whole table. When it amends or supersedes an
+earlier decision, that decision's Status changes in the same pull request:
+
+```markdown
+### D-NNN (YYYY-MM-DD): Short title
+
+- **Decision:** what was decided, naming the files, settings or tables it concerns.
+- **Reason:** why, with the rule, finding or owner decision behind it.
+- **Status:** Active
+```
+
+## Topic index
+
+A decision may sit under several topics. A new decision joins its topics in the same pull request.
+
+- **Product, plans and vouchers:** D-022, D-035, D-037, D-038, D-050, D-060, D-071, D-094, D-109,
+  D-174.
+- **Auth and accounts:** D-018, D-034, D-059, D-061, D-065, D-074, D-077, D-078, D-079, D-084,
+  D-085, D-086, D-087, D-089, D-129, D-131, D-163, D-168, D-174.
+- **Markets, countries and languages:** D-026, D-063, D-066, D-067, D-068, D-069, D-070, D-075,
+  D-080, D-081, D-088, D-129.
+- **Diagnostic and question bank:** D-072, D-102, D-104, D-105, D-106, D-108, D-110 to D-119,
+  D-129, D-149, D-156 to D-161, D-163, D-165, D-167.
+- **AI and cost:** D-062, D-071, D-072, D-073, D-082, D-103, D-107, D-119 to D-124, D-143, D-146 to
+  D-152, D-155.
+- **Privacy, consent and security:** D-013, D-061, D-062, D-077, D-082, D-085, D-092, D-098, D-103,
+  D-107, D-126, D-130, D-137, D-138, D-144, D-145, D-147, D-148, D-149, D-153, D-154.
+- **Legal:** D-059, D-066, D-068, D-082, D-086, D-137, D-145, D-147, D-154.
+- **Design and accessibility:** D-007, D-008, D-049 to D-053, D-055 to D-058, D-099, D-118, D-128,
+  D-131, D-158, D-159, D-161, D-162, D-170.
+- **Public site and SEO:** D-027, D-054, D-076, D-090 to D-098, D-100, D-101, D-153.
+- **Performance:** D-054, D-150, D-151, D-167 to D-171.
+- **CI and repository:** D-001 to D-007, D-012 to D-016, D-020, D-023 to D-025, D-028, D-030 to
+  D-033, D-039 to D-041, D-048, D-055, D-083, D-097, D-125, D-127, D-134, D-136, D-139 to D-142,
+  D-144, D-164 to D-166, D-171 to D-174.
+- **Release and operations:** D-009 to D-012, D-017, D-019, D-021, D-022, D-029, D-036, D-042 to
+  D-047, D-064, D-123, D-126, D-132, D-133, D-135, D-138, D-140, D-141, D-143, D-152, D-155.
+
 ## M0: repo, tooling, CI, environments
 
 Approved by the owner on 2026-09-24 (D-001 to D-019 as proposed in the M0 plan).
@@ -307,7 +357,8 @@ The owner approved all recommendations offered before the M2 plan.
 
 ## Audit fixes, docs sync (2026-10-05)
 
-| ID    | Date       | Decision                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Reason                                                                                                                                                                                            | Status |
-| ----- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
-| D-172 | 2026-10-05 | Every decision table has a Status column. `Active`: in force as written. `Amended by D-xxx`: in force, except for what the later decision changes; read both. `Superseded by D-xxx`: no longer in force; the later decision replaces it. `Done`: a one-time step that was carried out, kept as history. `Open`: decided, but waiting for a step nobody has taken yet, such as an owner's action. The column was filled on 2026-10-05 from the later decisions that name a row and from the code on `main`; a row that is in force and also mentions a later step is `Active`. A merged row's ID, date, decision and reason never change; its Status changes in the pull request whose decision amends or supersedes it. | Several rows read as current but were not, among them D-001, D-018, D-026, D-059, D-078, D-084 and D-109 (DX-5). An architecture decision record carries a status and points to what replaced it. | Active |
-| D-174 | 2026-10-05 | Corrections where a row and the code on `main` disagree and no later decision said so; the code wins. D-084: the page that tells a visitor from a closed country why is `/not-available` (`notAvailablePath` in `apps/web/src/lib/auth/session.ts`), not `/not-eligible`. D-109: `create_project()` enforces the project limit from the settings row `entitlement.free.projects` (`1`); `plans.test.ts` checks that the migration's value equals `PLANS.free.entitlements.projects` in `apps/web/src/config/plans.ts`, which the projects page reads to show the limit.                                                                                                                                                 | The audit found both rows describing code that had changed (DX-5); a merged row is never reworded, so a new entry corrects it.                                                                    | Active |
+| ID    | Date       | Decision                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Reason                                                                                                                                                                                                                                                                                                                     | Status |
+| ----- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| D-172 | 2026-10-05 | Every decision table has a Status column. `Active`: in force as written. `Amended by D-xxx`: in force, except for what the later decision changes; read both. `Superseded by D-xxx`: no longer in force; the later decision replaces it. `Done`: a one-time step that was carried out, kept as history. `Open`: decided, but waiting for a step nobody has taken yet, such as an owner's action. The column was filled on 2026-10-05 from the later decisions that name a row and from the code on `main`; a row that is in force and also mentions a later step is `Active`. A merged row's ID, date, decision and reason never change; its Status changes in the pull request whose decision amends or supersedes it. | Several rows read as current but were not, among them D-001, D-018, D-026, D-059, D-078, D-084 and D-109 (DX-5). An architecture decision record carries a status and points to what replaced it.                                                                                                                          | Active |
+| D-173 | 2026-10-05 | The log opens with "How to read this log" and a topic index of twelve topics: product, plans and vouchers; auth and accounts; markets, countries and languages; diagnostic and question bank; AI and cost; privacy, consent and security; legal; design and accessibility; public site and SEO; performance; CI and repository; release and operations. Every decision is listed under at least one, and a new one joins its topics in the pull request that adds it. From M4 on, a new decision is a `### D-NNN (YYYY-MM-DD): title` heading followed by a list of Decision, Reason and Status; the tables up to D-175 stay as they are. `CONTRIBUTING.md` says the same.                                              | The ten topics the audit proposed left the public site, the plans and the security headers without a home. 171 rows sorted only by date had to be read in full to find every decision on consent or on CI, and Prettier re-pads a whole table whenever one row grows (57f8ad7), which hides the change in the diff (DX-5). | Active |
+| D-174 | 2026-10-05 | Corrections where a row and the code on `main` disagree and no later decision said so; the code wins. D-084: the page that tells a visitor from a closed country why is `/not-available` (`notAvailablePath` in `apps/web/src/lib/auth/session.ts`), not `/not-eligible`. D-109: `create_project()` enforces the project limit from the settings row `entitlement.free.projects` (`1`); `plans.test.ts` checks that the migration's value equals `PLANS.free.entitlements.projects` in `apps/web/src/config/plans.ts`, which the projects page reads to show the limit.                                                                                                                                                 | The audit found both rows describing code that had changed (DX-5); a merged row is never reworded, so a new entry corrects it.                                                                                                                                                                                             | Active |

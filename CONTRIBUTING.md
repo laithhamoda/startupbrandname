@@ -147,6 +147,9 @@ The full order, rollback and kill switches: [docs/runbooks/operations.md](docs/r
 - [ ] New decisions go at the end of `docs/DECISIONS.md` with the next free ID, the date, the
       decision and the reason. Merged rows are never reworded or reordered: a new entry amends or
       supersedes them.
+- [ ] From M4 on, a decision is a heading and a list (Decision, Reason, Status), as shown at the
+      top of `docs/DECISIONS.md`, added to its topic index; one that amends or supersedes an
+      earlier decision also updates that decision's Status (D-172, D-173).
 - [ ] A resolved open question is marked in `docs/OPEN-QUESTIONS.md` with its decision ID;
       numbers never change.
 - [ ] `CLAUDE.md` and `docs/SPEC.md` change only with the owner's explicit approval. Where a
