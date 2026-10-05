@@ -26,9 +26,10 @@ export default defineConfig({
         'src/lib/**/actions.ts',
       ],
       reporter: ['text', 'lcov'],
-      // The coverage measured when the gate was added, rounded down (D-164). Raise it as tests are
-      // added; never lower it to make a change pass.
-      thresholds: { lines: 89, statements: 88, functions: 85, branches: 81 },
+      // The coverage measured, rounded down (D-164): 89/88/85/81 when the gate was added, raised
+      // with the tests of the same pull request. Raise it as tests are added; never lower it to
+      // make a change pass.
+      thresholds: { lines: 90, statements: 90, functions: 87, branches: 83 },
     },
   },
 });
