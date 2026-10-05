@@ -14,14 +14,14 @@ export default defineConfig({
     include: ['src/**/*.test.ts'],
     coverage: {
       provider: 'v8',
-      // The app's own logic (CICD-7). Left out: the Supabase client factories and the generated
+      // The app's own logic (CICD-7). Left out: the server client factory and the generated
       // database types, which only wire a library, and the Server Action files, which the
-      // end-to-end tests drive through the pages.
+      // end-to-end tests drive through the pages. The proxy's session refresh has its own deadline
+      // (D-168) and is measured.
       include: ['src/lib/**/*.ts', 'src/config/**/*.ts', 'src/seo/**/*.{ts,tsx}'],
       exclude: [
         'src/**/*.test.ts',
         'src/lib/supabase/server.ts',
-        'src/lib/supabase/proxy.ts',
         'src/lib/supabase/database.types.ts',
         'src/lib/**/actions.ts',
       ],
