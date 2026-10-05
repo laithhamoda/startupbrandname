@@ -7,11 +7,11 @@ the EU (#73).
 
 ## What users can already do themselves
 
-On `/account`: see and change their country and language, give or withdraw the cross-border
-consent, and delete the account (`delete_my_account()`). That empties every table in `public` at
-once, since each cascades from `auth.users`; Supabase's auth audit log does not
-([Deletion](#deletion)). Answers are corrected in the diagnostic itself. The email address cannot
-be changed by the user yet.
+On `/account`: see and change their country and language, give, renew or withdraw the
+cross-border consent (D-147), and delete the account (`delete_my_account()`). That empties every
+table in `public` and the AI reservations in `private` at once, since each cascades from
+`auth.users`; Supabase's auth audit log does not ([Deletion](#deletion)). Answers are corrected in
+the diagnostic itself. The email address cannot be changed by the user yet.
 
 ## Receiving a request
 
@@ -36,7 +36,8 @@ from auth.users
 where lower(email) = lower('<email address>');
 ```
 
-Everything the database holds about it, except the auth audit log (below), as one JSON document:
+Everything the database holds about it, except the AI reservations and the auth audit log (both
+below), as one JSON document:
 
 ```sql
 with target as (select '<user id>'::uuid as id)
@@ -90,11 +91,16 @@ select jsonb_pretty(jsonb_build_object(
           from public.answers a
           where a.project_id = pr.id
         ), '[]'::jsonb),
+        -- The de-identified review of each typed answer, with what the call used and cost.
         'ai_reviews', coalesce((
           select jsonb_agg(jsonb_build_object(
             'tool_id', r.tool_id,
             'model', r.model,
+            'prompt_version', r.prompt_version,
             'output', r.output,
+            'tokens_in', r.tokens_in,
+            'tokens_out', r.tokens_out,
+            'cost_usd', r.cost_usd,
             'created_at', r.created_at
           ) order by r.created_at)
           from public.tool_runs r
@@ -112,7 +118,24 @@ select jsonb_pretty(jsonb_build_object(
 )) as export;
 ```
 
-While Supabase stores the auth audit log in the database (PRIV-15), it also holds the user's
+Consents are exported with the text version each was given to; which versions count today is the
+settings key `consent.crossborder.accepted_versions` (D-147).
+
+Then the AI reservations: one row per AI call the account reserved, with the most that call could
+cost (D-146). A reservation older than a day is removed at the account's next one. On a database
+without migration `20261004053500` the table does not exist yet, and there is nothing to add:
+
+```sql
+select model, held_usd, created_at, used_at
+from private.ai_reservations
+where user_id = '<user id>'
+order by created_at;
+```
+
+The daily AI spend ledger, `private.ai_spend_daily`, holds no user or project key, so it has
+nothing to export (D-175).
+
+While Supabase stores the auth audit log in the database (PRIV-15, #87), it also holds the user's
 sign-in events with an IP address; add them to the reply:
 
 ```sql
@@ -122,11 +145,11 @@ where payload ->> 'actor_id' = '<user id>'
 order by created_at;
 ```
 
-Copy the result into a file named `startupbrandname-data-<YYYY-MM-DD>.json`, send it as a reply
+Copy the results into one file named `startupbrandname-data-<YYYY-MM-DD>.json`, send it as a reply
 from the platform's address (#78) to the verified address, then delete every local copy.
 
-When a migration adds a table or column that holds a user's data, add it to this query in the same
-pull request ([CONTRIBUTING.md](../../CONTRIBUTING.md)).
+When a migration adds a table or column that holds a user's data, add it to these queries in the
+same pull request ([CONTRIBUTING.md](../../CONTRIBUTING.md)).
 
 ## Correction
 
@@ -148,17 +171,18 @@ where id = '<user id>' and lower(email) = lower('<verified email address>')
 returning id, email;
 ```
 
-This is what `delete_my_account()` does: profiles, consents, projects, answers, AI reviews and
-usage counters cascade from `auth.users`, and so do Supabase's sessions and identities. Copies in
-Supabase's daily backups remain until those backups expire; if a backup is ever restored, the
-deletion must be run again ([operations.md](operations.md#rolling-back)).
+This is what `delete_my_account()` does: profiles, consents, projects, answers, AI reviews, usage
+counters and AI reservations cascade from `auth.users`, and so do Supabase's sessions and
+identities. The daily AI spend ledger keeps its totals: they name no account or project (D-146).
+Copies in Supabase's daily backups remain until those backups expire; if a backup is ever
+restored, the deletion must be run again ([operations.md](operations.md#rolling-back)).
 
 **The auth audit log does not cascade.** Its sign-in events, with the email address and an IP
-address, stay after the account is deleted. Whether they are deleted on request, purged after a
-period or no longer stored is still open (PRIV-15 and #31,
-[M9 checklist](../security/m9-checklist.md)). Until that is decided, tell the user in the reply
-that these security records remain, and note it in the private log. If the owner decides to erase
-them for this request:
+address, stay after the account is deleted. Whether its storage is turned off or it is purged after
+a period is still open ([OPEN-QUESTIONS #87](../OPEN-QUESTIONS.md), PRIV-15,
+[M9 checklist](../security/m9-checklist.md)). Until that is done, tell the user in the reply that
+these security records remain (the privacy draft says they may), and note it in the private log. If
+the owner decides to erase them for this request:
 
 ```sql
 delete from auth.audit_log_entries
@@ -168,6 +192,7 @@ returning id;
 
 ## Withdrawing consent or objecting
 
-The cross-border consent is withdrawn on `/account`; AI review then stops for that user (D-062).
+The cross-border consent is withdrawn on `/account`; AI review then stops for that user (D-062). A
+consent given to an earlier text no longer counts either, until the user renews it there (D-147).
 Any other objection or restriction request goes to the owner for a decision, recorded in the
 private log.
