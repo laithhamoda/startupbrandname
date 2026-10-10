@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  MAX_POWER_DIGITS,
   ONE_RATE,
   ZERO_RATE,
   addRates,
@@ -127,10 +128,33 @@ describe('arithmetic', () => {
       expect.objectContaining({ code: 'invalid_rate' }) as Error,
     );
     expect(() => powRate(ONE_RATE, 10_001)).toThrow();
+    expect(() => powRate(ONE_RATE, -10_001)).toThrow();
     expect(() => powRate(ONE_RATE, Number.NaN)).toThrow();
     expect(() => powRate(ZERO_RATE, -1)).toThrow(
       expect.objectContaining({ code: 'division_by_zero' }) as Error,
     );
+  });
+});
+
+describe('the size of a power is bounded by the base as well as the exponent', () => {
+  it('refuses a large base to a large power before computing it', () => {
+    const wide = parseRate('1.' + '1'.repeat(390));
+    expect(() => powRate(wide, 10_000)).toThrow(
+      expect.objectContaining({ code: 'invalid_rate' }) as Error,
+    );
+    expect(() => powRate(wide, -10_000)).toThrow(
+      expect.objectContaining({ code: 'invalid_rate' }) as Error,
+    );
+    // A tiny binary-exact number has a long fraction too.
+    expect(() => powRate(rateFromNumber(Number('1.2345678901234567e-300')), 10_000)).toThrow();
+  });
+
+  it('allows the powers the engine uses, and any power up to the limit', () => {
+    expect(powRate(parseRate('1.02'), 36).den).toBe(50n ** 36n);
+    const atLimit = Math.floor(MAX_POWER_DIGITS / 3);
+    expect(powRate(makeRate(1n, 100n), 0)).toEqual(ONE_RATE);
+    expect(() => powRate(makeRate(1n, 100n), atLimit)).not.toThrow();
+    expect(() => powRate(makeRate(1n, 100n), atLimit + 1)).toThrow();
   });
 });
 

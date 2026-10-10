@@ -1,5 +1,15 @@
 import { EngineError } from './errors';
-import { divRoundHalfAwayFromZero, formatScaled, gcdBigInt, parseDecimal, pow10 } from './integer';
+import {
+  absBigInt,
+  divRoundHalfAwayFromZero,
+  formatScaled,
+  gcdBigInt,
+  parseDecimal,
+  pow10,
+} from './integer';
+
+/** Most digits `powRate` will let the numerator or denominator of its result reach. */
+export const MAX_POWER_DIGITS = 20_000;
 
 /**
  * An exact ratio: growth, a seasonal factor, a tax rate, a multiplier or CM% (D-179, D-193). It is
@@ -26,10 +36,10 @@ export function makeRate(num: bigint, den: bigint): Rate {
 }
 
 /** The rate 0. */
-export const ZERO_RATE: Rate = { num: 0n, den: 1n };
+export const ZERO_RATE: Rate = Object.freeze({ num: 0n, den: 1n });
 
 /** The rate 1 (100%). */
-export const ONE_RATE: Rate = { num: 1n, den: 1n };
+export const ONE_RATE: Rate = Object.freeze({ num: 1n, den: 1n });
 
 /**
  * Reads a decimal string as an exact rate: "0.25" is 1/4, "1.5" is 3/2, "1e-3" is 1/1000. The
@@ -97,12 +107,18 @@ export function negateRate(a: Rate): Rate {
 /**
  * `base` raised to an integer power, exact: `powRate(1.02, 12)` is the year's compound growth of a
  * 2% monthly rate. A negative power is the reciprocal, so a zero base then throws
- * `division_by_zero`. Throws `invalid_rate` when the exponent is not a safe integer, or is so large
- * that the result could not be held.
+ * `division_by_zero`. Throws `invalid_rate` when the exponent is not a safe integer, is above
+ * 10000, or when the result would run past `MAX_POWER_DIGITS` digits (the digits of the larger of
+ * the base's numerator and denominator times the exponent), so the cost is bounded by the size of
+ * the base as well as the exponent.
  */
 export function powRate(base: Rate, exponent: number): Rate {
   if (!Number.isSafeInteger(exponent) || Math.abs(exponent) > 10_000) {
     throw new EngineError('invalid_rate', 'The exponent of a rate must be an integer up to 10000.');
+  }
+  const baseDigits = Math.max(absBigInt(base.num).toString().length, base.den.toString().length);
+  if (baseDigits * Math.abs(exponent) > MAX_POWER_DIGITS) {
+    throw new EngineError('invalid_rate', 'The power of this rate is too large to compute.');
   }
   const magnitude = BigInt(Math.abs(exponent));
   const raised = makeRate(base.num ** magnitude, base.den ** magnitude);

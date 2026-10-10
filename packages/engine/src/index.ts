@@ -14,6 +14,7 @@ export {
   type CurrencyCode,
 } from './currency';
 export {
+  MAX_POWER_DIGITS,
   ONE_RATE,
   ZERO_RATE,
   addRates,
