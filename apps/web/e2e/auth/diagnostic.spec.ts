@@ -485,6 +485,8 @@ test('the diagnostic pages have no WCAG 2.2 AA violations', async ({ page }) => 
   await signUpByEmail(page, uniqueEmail('a11y-diagnostic'));
   const id = await createProject(page, 'full');
   const check = async () => {
+    // The title of a page reached by client navigation can arrive after the URL changes.
+    await expect(page).toHaveTitle(/\S/);
     await page.evaluate(() => document.fonts.ready);
     const results = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
