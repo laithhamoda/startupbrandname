@@ -4,7 +4,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(43);
+select plan(41);
 
 -- Test users. The email lives in auth.users only.
 insert into auth.users (id, email, created_at) values
@@ -103,7 +103,7 @@ select results_eq(
   'terms and cross-border consent are recorded'
 );
 
-select ok(public.has_crossborder_consent(), 'cross-border consent is on');
+select hasnt_function('public', 'has_crossborder_consent', 'the earlier consent function is gone (D-191)');
 
 select is(
   public.crossborder_consent_state(),
@@ -176,8 +176,6 @@ select lives_ok(
   'the user can withdraw cross-border consent'
 );
 
-select ok(not public.has_crossborder_consent(), 'cross-border consent is off');
-
 select is(public.crossborder_consent_state(), 'none', 'a withdrawn consent counts as none');
 
 select lives_ok(
@@ -216,8 +214,6 @@ select is(
   'outdated',
   'a consent given to the earlier text is outdated'
 );
-
-select ok(not public.has_crossborder_consent(), 'an outdated consent does not let AI run');
 
 select lives_ok(
   $$select public.set_crossborder_consent(true, '2026-09-draft-1')$$,

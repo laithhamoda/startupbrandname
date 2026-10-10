@@ -260,7 +260,6 @@ export type Database = {
       };
       crossborder_consent_state: { Args: Record<PropertyKey, never>; Returns: string };
       delete_my_account: { Args: Record<PropertyKey, never>; Returns: undefined };
-      has_crossborder_consent: { Args: Record<PropertyKey, never>; Returns: boolean };
       record_ai_run: {
         Args: {
           p_cache_read_tokens: number;
@@ -277,23 +276,6 @@ export type Database = {
         };
         Returns: number;
       };
-      record_tool_run: {
-        Args: {
-          p_cache_read_tokens: number;
-          p_cache_write_tokens: number;
-          p_cost_usd: number;
-          p_input_hash: string;
-          p_model: string;
-          p_output: Json;
-          p_project_id: string;
-          p_prompt_version: string;
-          p_tokens_in: number;
-          p_tokens_out: number;
-          p_tool_id: string;
-        };
-        Returns: number;
-      };
-      reserve_ai_call: { Args: Record<PropertyKey, never>; Returns: boolean };
       reserve_ai_run: { Args: Record<PropertyKey, never>; Returns: Json };
       set_crossborder_consent: {
         Args: { p_given: boolean; p_text_version: string };

@@ -5,6 +5,8 @@ import { signUpByEmail, uniqueEmail } from './helpers';
 const WCAG_TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
 
 async function expectNoViolations(page: Page) {
+  // The title of a page reached by client navigation can arrive after the URL changes.
+  await expect(page).toHaveTitle(/\S/);
   await page.evaluate(() => document.fonts.ready);
   const results = await new AxeBuilder({ page }).withTags(WCAG_TAGS).analyze();
   expect(results.violations.map((violation) => `${violation.id}: ${violation.help}`)).toEqual([]);
