@@ -52,8 +52,6 @@ type SkipReason =
   | 'off'
   | 'no_consent'
   | 'consent_outdated'
-  /** The database does not count consents by text version yet (D-155). */
-  | 'previous_schema'
   | 'no_settings'
   | 'no_idea'
   | 'idea_unclear'
@@ -77,8 +75,8 @@ const EXPECTED: ReadonlySet<SkipReason> = new Set([
   'idea_unclear',
 ]);
 
-/** The reasons that need someone to act: the API is slow, or a migration is waiting. */
-const NOTABLE: ReadonlySet<SkipReason> = new Set(['timeout', 'previous_schema']);
+/** The reasons that need someone to act: the API is slow. */
+const NOTABLE: ReadonlySet<SkipReason> = new Set(['timeout']);
 
 async function skipped(reason: SkipReason, questionId: QuestionId): Promise<null> {
   const write = EXPECTED.has(reason) ? log.debug : NOTABLE.has(reason) ? log.warn : log.info;
@@ -314,9 +312,8 @@ async function review(
     : skipped('unusable_output', questionId);
 }
 
-/** Why a consent state that is not `current` keeps the review off (D-147, D-155). */
-function consentSkip(consent: Exclude<ConsentState, 'current'> | null): SkipReason {
-  if (consent === null) return 'previous_schema';
+/** Why a consent state that is not `current` keeps the review off (D-147). */
+function consentSkip(consent: Exclude<ConsentState, 'current'>): SkipReason {
   return consent === 'outdated' ? 'consent_outdated' : 'no_consent';
 }
 
@@ -349,7 +346,8 @@ export async function reviewWithAi(
   const trace: Run['trace'] = { stage: 'consent', questionId };
   try {
     // Both at once (PERF-4); the consent is judged first, as before. Only the database's own
-    // count of the text versions lets a review run, never a fallback.
+    // count of the text versions lets a review run; an error, a missing function included, is
+    // thrown below and fails closed (D-191).
     const [consent, settings] = await Promise.allSettled([
       crossborderConsentState(context.supabase),
       aiSettings(context.supabase),
