@@ -26,6 +26,9 @@ import {
   ZERO_RATE,
 } from './rate';
 
+// Each run explores new random cases. A failure prints its seed and path: replay it with
+// fc.assert(property, { seed, path }) (add them as the second argument), then keep the case as an
+// example test beside the property.
 const currencies = [...CURRENCY_EXPONENTS.keys()];
 const currency = fc.constantFrom(...currencies);
 const bigInts = fc.bigInt({ min: -(10n ** 15n), max: 10n ** 15n });

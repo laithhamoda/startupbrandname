@@ -25,7 +25,12 @@ function icuDigits(code: string): number {
 describe('currency exponent table', () => {
   it('knows the exponent of every currency the app offers', () => {
     const missing = OFFERED.filter((code) => !CURRENCY_EXPONENTS.has(code));
-    expect(missing).toEqual([]);
+    // A newer Node/ICU can offer a code with no change here. The fix: add each code listed below
+    // with its ISO 4217 exponent to src/currency.ts (and to ISO_AND_ICU_DIFFER if ICU disagrees).
+    expect(
+      missing,
+      `The runtime offers currencies the engine has no exponent for. Add ${missing.join(', ')} with its ISO 4217 exponent to packages/engine/src/currency.ts.`,
+    ).toEqual([]);
   });
 
   it('has no malformed code', () => {
@@ -54,7 +59,22 @@ describe('currency exponent table', () => {
       .filter(([code, exponent]) => OFFERED.includes(code) && icuDigits(code) !== exponent)
       .map(([code]) => code)
       .sort();
-    for (const code of disagreeing) expect(ISO_AND_ICU_DIFFER).toContain(code);
+    for (const code of disagreeing) {
+      expect(
+        ISO_AND_ICU_DIFFER,
+        `${code} differs from ICU: add it to ISO_AND_ICU_DIFFER in src/currency.ts.`,
+      ).toContain(code);
+    }
+  });
+
+  it('lists only codes whose exponent really differs from ICU in this runtime', () => {
+    // A code the runtime has dropped cannot be compared and is skipped.
+    for (const code of ISO_AND_ICU_DIFFER.filter((entry) => OFFERED.includes(entry))) {
+      expect(
+        icuDigits(code),
+        `${code} now agrees with ICU: remove it from ISO_AND_ICU_DIFFER in src/currency.ts.`,
+      ).not.toBe(currencyExponent(code));
+    }
   });
 
   it('lists differences that are real ISO choices, in a table that holds them', () => {

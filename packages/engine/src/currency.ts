@@ -1,6 +1,12 @@
 import { EngineError } from './errors';
 
-/** An ISO 4217 alphabetic currency code in upper case, such as "JOD" or "DZD". */
+/**
+ * An ISO 4217 alphabetic currency code in upper case, such as "JOD" or "DZD". This is a plain
+ * string: the type does not stop "dinar" at compile time. A `Money` must be made with `makeMoney`,
+ * `moneyFromMajor`, `moneyFromMajorString` or the engine's own functions, which check the code
+ * against the exponent table (`currencyExponent` raises `unknown_currency`); never fill in a
+ * `Money` object literal by hand.
+ */
 export type CurrencyCode = string;
 
 const codes = (list: string): string[] => list.trim().split(/\s+/);
