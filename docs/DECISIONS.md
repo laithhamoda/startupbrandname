@@ -40,7 +40,7 @@ A decision may sit under several topics. A new decision joins its topics in the 
   D-080, D-081, D-088, D-129, D-180, D-186.
 - **Diagnostic and question bank:** D-072, D-102, D-104, D-105, D-106, D-108, D-110 to D-119, D-129,
   D-149, D-156 to D-161, D-163, D-165, D-167, D-182, D-183, D-197 to D-199.
-- **Calculation engine:** D-178 to D-190.
+- **Calculation engine:** D-178 to D-190, D-193 to D-196.
 - **AI and cost:** D-062, D-071, D-072, D-073, D-082, D-103, D-107, D-119 to D-124, D-143, D-146 to
   D-152, D-155, D-183, D-191.
 - **Privacy, consent and security:** D-013, D-016, D-040, D-041, D-061, D-062, D-074, D-077,
@@ -567,6 +567,83 @@ The owner approved all recommendations offered before the M2 plan.
   bundle budget and `check-migrations`.
 - **Reason:** #92 (amends D-134): a contributor who runs `verify` should not meet a failure that only
   CI shows.
+- **Status:** Active
+
+### D-193 (2026-10-10): Rates are exact fractions
+
+- **Decision:** A rate (growth, a seasonal factor, a tax rate, a multiplier, CM%) is a `Rate` in
+  `packages/engine/src/rate.ts`: a fraction of two `bigint`s in lowest terms with a positive
+  denominator, so equal values are structurally equal. It is read from a decimal string or from a
+  stored number's shortest decimal form (`parseRate`, `rateFromNumber`: 0.1 is 1/10, not the nearest
+  binary fraction). Adding, subtracting, multiplying, dividing and raising to an integer power are
+  exact. A rate is rounded only for display (`rateToDecimalString`, half away from zero) and when it
+  multiplies an amount (D-179). Text over 400 characters, exponents beyond 400, powers beyond
+  10000 and any power whose result would pass 20000 digits (`MAX_POWER_DIGITS`, counted from the
+  larger of the base's numerator and denominator times the exponent) are refused, so the cost of an
+  input is bounded by its size and not only by its exponent.
+- **Reason:** D-179 asks for exact rates. A fraction needs no choice of scale, and later pull
+  requests divide (the seasonal factor that keeps a year's total unchanged, D-184; ARPU over churn,
+  D-183) where a scaled integer would have to round. The cost is that denominators grow when rates
+  compound, to about 150 digits over 36 months, which is negligible.
+- **Status:** Active
+
+### D-194 (2026-10-10): Currency exponents and the reading of a stored amount
+
+- **Decision:** `packages/engine/src/currency.ts` holds an explicit ISO 4217 exponent for each of
+  the 162 codes of `Intl.supportedValuesOf('currency')`, the list that `currencyOptions` in the app
+  and `isCurrencyCode` in the question bank offer. The engine cannot import from `apps/` (D-005), so
+  the codes are copied, and a test fails when the runtime offers a code the table lacks; pull request
+  3 adds a test that imports both packages. The table follows ISO 4217, not ICU: 17 codes differ
+  (IQD has 3 where ICU says 0; AFN, ALL, COP, HUF, IDR, IRR, KPW, LAK, LBP, MGA, MMK, PKR, SLL, SOS,
+  SYP and YER have 2 where ICU says 0), listed in `ISO_AND_ICU_DIFFER` and checked by a test against
+  `Intl.NumberFormat`. XDR and XSU have no ISO exponent and take 2. An unknown code raises
+  `unknown_currency`; nothing defaults. A stored major-unit number is converted through its shortest
+  decimal text, once, rounding half away from zero when it has more decimals than the currency, so
+  0.1 + 0.2 is 0.3 and 1.005 is 1.01 in a two-decimal currency. NaN and the infinities are refused.
+  `moneyToSafeMinor` raises `unsafe_integer` beyond `Number.MAX_SAFE_INTEGER` in either direction.
+- **Reason:** D-179 and CLAUDE.md §3 (a currency is never inferred). ICU follows everyday cash
+  practice, which would drop the fils of an Iraqi dinar price; ISO is the standard the payment and
+  tax records use. Reading the typed decimal, not the binary neighbour, gives the amount the founder
+  meant.
+- **Status:** Active
+
+### D-195 (2026-10-10): Figures and engine parameters
+
+- **Decision:** A `Figure<T>` is a value with `source`, `confidence`, `validated` and `inputs` (a
+  list of references of kind `answer`, `default`, `rule` or `country_pack_item`, without repeats).
+  Combining figures takes the weakest source, ranked assumption over external over user (D-181),
+  the lowest confidence, validated only when every input is, and the union of the inputs; combining
+  none raises `empty_input`. A stored answer maps with `figureFromAnswer`: a real answer keeps its
+  stored provenance, a picked range is an assumption (D-157), «لا أعرف» is an unvalidated
+  low-confidence assumption with no value (D-104). `EngineParams` holds every default of D-183,
+  D-184, D-185, D-187, D-188 and D-189 as a figure with source `assumption`, confidence `medium`,
+  not validated, and a stable key in `PARAM_KEYS`. A payment timing is a list of parts (months
+  after the sale, exact share) whose shares add up to 1. Inflation is `null` by default (D-185).
+  `createEngineParams` replaces whole figures, so an override carries its own provenance, and
+  raises `invalid_param` naming the key when a value is out of range, when a rate was not built
+  with `makeRate` (not in lowest terms, or a non-positive denominator), or when an override key is
+  not a known parameter (a misspelt key is an error, not a silent default). `DEFAULT_ENGINE_PARAMS`,
+  `ZERO_RATE` and `ONE_RATE` are frozen.
+- **Reason:** D-181. Medium confidence follows D-114: a documented default is a considered estimate,
+  not evidence, and low would highlight every number in every report. The report lists the defaults
+  from `listEngineParams`.
+- **Status:** Active
+
+### D-196 (2026-10-10): The projection calendar and the engine's quality gates
+
+- **Decision:** `buildProjectionCalendar(referenceDate, horizonMonths)` takes the reference date as
+  a `YYYY-MM-DD` string (no clock, no time zone, D-005). Month 1 is the calendar month after it,
+  months 1 to 12 are monthly columns and each later year is four quarterly ones, so the 36-month
+  default gives 20 columns. The horizon is a multiple of 12 from 12 to 120. Month 0, where set-up
+  costs fall (D-187), is not in the calendar. `sumByPeriod` sums rounded monthly lines into the
+  columns. The engine's `vitest.config.ts` fails below 95% of statements, lines and branches and
+  below 100% of functions. Property tests (fast-check 4.10.2, a dev dependency) check that rounding
+  is symmetric around zero, that rounded monthly lines add up to the total at every level, that
+  major to minor to major is exact, and that rate arithmetic is exact. Every export is named and
+  documented with its units, currency handling and rounding. `ENGINE_VERSION` stays at 0.1.0 until
+  pull request 6.
+- **Reason:** CICD-14 and DX-14. CLAUDE.md §5 gates only lines, and a branch or a function no test
+  reaches is how a wrong formula ships. D-178 and D-184 for the calendar.
 - **Status:** Active
 
 ### D-197 (2026-10-10): The growth follow-up is F6.2

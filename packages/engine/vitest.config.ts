@@ -8,8 +8,9 @@ export default defineConfig({
       include: ['src/**/*.ts'],
       exclude: ['src/**/*.test.ts'],
       reporter: ['text', 'lcov'],
-      // CLAUDE.md §5: engine line coverage must stay at or above 95%.
-      thresholds: { lines: 95 },
+      // CLAUDE.md §5 asks for 95% of lines; D-196 extends the gate to statements and branches and
+      // asks for every function to be called: a formula nobody tests cannot ship (CICD-14).
+      thresholds: { statements: 95, lines: 95, branches: 95, functions: 100 },
     },
   },
 });
