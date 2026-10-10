@@ -8,7 +8,7 @@ item is resolved, record the decision in [DECISIONS.md](DECISIONS.md) and mark i
 **Resolve early (may force redesign):** #15 (PayPal receiving in Jordan), before the M7 plan. #35
 and #61 are resolved (D-102, D-036).
 
-**Blocking for M4 (the engine plan answers these first):** #5, #22, #41, #43 to #52 and #54.
+**Blocking for M4: answered by the M4 plan (D-178 to D-190):** #5, #22, #41, #43 to #52 and #54.
 Mixed currencies stay uncompared until #21 is answered (D-113).
 
 ## A. Files and milestone order
@@ -17,7 +17,7 @@ Mixed currencies stay uncompared until #21 is answered (D-113).
 2. `M3` **Resolved (D-107): `packages/ai/src/deidentify.ts`.** Rule 5 names `lib/ai/deidentify.ts`; CLAUDE.md §7 has no `lib/` and puts AI code in `packages/ai/`. Which path?
 3. `M3` **Resolved (D-107): de-identification ships in M3c.** First LLM calls happen in M3 (dialect normalization, R-rule classification), but de-identification tests are only in M6's definition of done and cost logging and consent come later. Rule 5 means de-identification must ship in M3.
 4. `M5` T6 (basic competitor matrix) is marked MVP but appears in no milestone; its report section is not marked ●.
-5. `M4` The M4 golden file for the Algerian auto-entrepreneur needs tax rules that are only verified from official sources in M5.
+5. `M4` **Resolved (D-186): tests and golden files use fixture rules marked unverified, checked again when M5 verifies the rules.** Original note: The M4 golden file for the Algerian auto-entrepreneur needs tax rules that are only verified from official sources in M5.
 
 ## B. Access, entitlements and vouchers
 
@@ -43,7 +43,7 @@ Mixed currencies stay uncompared until #21 is answered (D-113).
 19. `launch` **Partly resolved (D-106): Claude drafted the text; the owner's review continues in #86.** Original note: Arabic text for follow-ups and the R3, R4, R6, R7 responses is missing. Draft for approval?
 20. `M3` **Resolved (D-108): the platform asks dinars or centimes.** Algerian amounts are often spoken in centimes ("مليون" commonly = 1,000,000 centimes = 10,000 DZD). Needs a clarification rule like "دينار" to avoid 100× errors.
 21. `M4` **Until answered, amounts in different currencies are not compared (D-113).** Conversion rule, rate source and date for mixed currencies inside one project.
-22. `M4` Algeria: "all calculations in DZD" vs F8 letting the user choose the report currency.
+22. `M4` **Resolved (D-180): the engine calculates in the project currency; a different report currency waits for a dated rate (#16, #21).** Original note: Algeria: "all calculations in DZD" vs F8 letting the user choose the report currency.
 23. `launch` **Changed by D-163; open for the owner. Every amount's currency is chosen from a list and never read from the typed text, so no currency word in an amount is asked about, and the app no longer uses `AMBIGUOUS` in `packages/question-bank/src/currency.ts`. This meets the locked rule in CLAUDE.md §3 (currency always explicit, never inferred) through the mandatory list rather than the clarification question that rule names. Still open: the owner confirms that reading of §3, or asks for the question back.** Earlier note (M3a): «ليرة» and «مصاري» were clarified like the words in CLAUDE.md §3, and the owner was to review that list with #86. Original note: Other ambiguous currency words needing a question ("ريال", "ليرة", "دولار")?
 
 ## E. Eligibility, consent, privacy and markets
@@ -68,23 +68,23 @@ Mixed currencies stay uncompared until #21 is answered (D-113).
 38. `M3` **Resolved (D-112).** Do R1 and R5 apply to every text field or only the questions named in the Logic column?
 39. `M5` **Contradiction:** T17 JO checks `B7 ∈ {food, cosmetics}`, but B7 options are product / service / digital / hybrid; food and cosmetics are D2 sectors.
 40. `M5` T17 DZ needs an ANAE activity code (no question collects it) and a "goods import" signal (D6 mixes imports and FX exposure).
-41. `M4` Cross-type comparisons: F5 (amount) vs A5 (range + currency); A7 and H5 buckets vs BE_month. Which bound, which currency?
+41. `M4` **Resolved (D-190): amounts are compared in one currency only, and buckets by their upper bound.** Original note: Cross-type comparisons: F5 (amount) vs A5 (range + currency); A7 and H5 buckets vs BE_month. Which bound, which currency?
 42. `M5` The full-report gate requires F1, F3, F4, F5 but not F6 (sales) or F8 (currency), which T9 needs.
 
 ## G. Engine formulas
 
-43. `M4` **Inconsistency:** T8 break-even uses FC = ΣF4 only; T9 opex = F4 + E8 payroll + marketing. BE_units and BE_month will disagree.
-44. `M4` No question collects a marketing budget (T9, CAC), churn or ARPU (subscription LTV).
-45. `M4` Sales curve between months 1, 6 and 12 (linear, geometric?). No input covers growth in years 2 and 3.
-46. `M4` How D7 peak months become seasonal multipliers, and how they are normalized.
-47. `M4` Only COGS escalates with inflation, not prices or fixed costs. Intended?
-48. `M4` Flat-rate tax model cannot express progressive brackets (to verify with Jordan's Income and Sales Tax Department), pass-through sales tax, or CASNOS contributions. Which month does annual tax hit the cash flow?
-49. `M4` Payment delays for credit, instalments and deposit (F7).
-50. `M4` Payback: pre- or post-tax profit, horizon, output when never profitable.
-51. `M4` T7 "average expected monthly units": over which months?
-52. `M4` T10 launch delay: do fixed costs still start in month 0?
+43. `M4` **Resolved (D-182): break-even fixed costs include payroll and marketing, and BE_month comes from operating profit.** Original note: **Inconsistency:** T8 break-even uses FC = ΣF4 only; T9 opex = F4 + E8 payroll + marketing. BE_units and BE_month will disagree.
+44. `M4` **Resolved (D-183): follow-ups F4.1 (marketing budget) and F2.1 (subscription cancellations); ARPU is F1.** Original note: No question collects a marketing budget (T9, CAC), churn or ARPU (subscription LTV).
+45. `M4` **Resolved (D-183, D-184): constant growth between F6's points; follow-up F6.1 for years 2 and 3, estimated by code when unknown.** Original note: Sales curve between months 1, 6 and 12 (linear, geometric?). No input covers growth in years 2 and 3.
+46. `M4` **Resolved (D-184): peak months ×1.5 (a setting), normalised so the year's total is unchanged.** Original note: How D7 peak months become seasonal multipliers, and how they are normalized.
+47. `M4` **Resolved (D-185): costs rise with verified inflation from year 2; prices do not.** Original note: Only COGS escalates with inflation, not prices or fixed costs. Intended?
+48. `M4` **Resolved (D-186): rules with brackets, minimums, contributions and a payment month; sales tax and VAT raise an alert only.** Original note: Flat-rate tax model cannot express progressive brackets (to verify with Jordan's Income and Sales Tax Department), pass-through sales tax, or CASNOS contributions. Which month does annual tax hit the cash flow?
+49. `M4` **Resolved (D-187): credit the month after, instalments over three months, a deposit half and half.** Original note: Payment delays for credit, instalments and deposit (F7).
+50. `M4` **Resolved (D-188): months until cumulative cash after tax is back at zero, or "not within 3 years".** Original note: Payback: pre- or post-tax profit, horizon, output when never profitable.
+51. `M4` **Resolved (D-189): the year 1 averages of the base projection.** Original note: T7 "average expected monthly units": over which months?
+52. `M4` **Resolved (D-189): sales shift three months; costs start as planned.** Original note: T10 launch delay: do fixed costs still start in month 0?
 53. `M5` T18 `(4 − confidence) × sensitivity rank`: confidence has no numeric mapping, and if rank 1 is most sensitive the formula favours the least sensitive variable.
-54. `M4` Money precision and rounding (JOD has 3 decimals): integer minor units or a decimal library; display vs calculation rounding.
+54. `M4` **Resolved (D-179): integer minor units, exact rates, rounded half away from zero on each monthly line.** Original note: Money precision and rounding (JOD has 3 decimals): integer minor units or a decimal library; display vs calculation rounding.
 55. `M5` Is the verdict decided by fixed thresholds or by the LLM? Which "3 numbers" go in the executive summary? How is "overall confidence" computed?
 
 ## H. Report, design and AI
@@ -134,7 +134,7 @@ Mixed currencies stay uncompared until #21 is answered (D-113).
 
 87. `launch` Auth audit log after a deletion (D-154, PRIV-15). Supabase's auth audit log (`auth.audit_log_entries`) does not cascade from `auth.users`, so its sign-in events, with the email address and an IP address, stay after the account is deleted. Owner's choice: turn off its storage in the database in the staging and production dashboards, then record it in [auth-setup.md](runbooks/auth-setup.md). Fallback if it cannot be turned off: a migration that purges the entries after a set period with pg_cron and deletes the user's entries in `delete_my_account()`, with a pgTAP test. Until then, a deletion request is answered as in [data-requests.md](runbooks/data-requests.md#deletion).
 88. `launch` The scale word "mn" (PR C, D-156). `readNumber` reads "mn" after a number as a million (`SCALES` in `packages/question-bank/src/numbers.ts`), so "20 mn", which in French usage means 20 minutes, becomes 20,000,000. A bare "m" is asked about instead (`SHORT_SCALE`). Product call: which words stay in the scale list ("mn", "bn", "k" and the rest), and which are asked about like "m"?
-89. `M4` Contract migration for the old AI functions (D-155). Once production has applied `20261004053500` and `20261004053600` and no deployment that could be served still calls them, a later pull request drops `reserve_ai_call()`, the old `record_tool_run()` and `has_crossborder_consent()`, and the app drops its previous-schema paths: the account page's own consent comparison (`accountConsentState` in `apps/web/src/lib/ai/consent.ts`) and the `previous_schema` skip. When, and who confirms that production is migrated ([operations.md](runbooks/operations.md#ai-after-the-audit-fixes))?
+89. `M4` **Resolved (D-191): the contract migration ships in M4's first pull request.** Original note: Contract migration for the old AI functions (D-155). Once production has applied `20261004053500` and `20261004053600` and no deployment that could be served still calls them, a later pull request drops `reserve_ai_call()`, the old `record_tool_run()` and `has_crossborder_consent()`, and the app drops its previous-schema paths: the account page's own consent comparison (`accountConsentState` in `apps/web/src/lib/ai/consent.ts`) and the `previous_schema` skip. When, and who confirms that production is migrated ([operations.md](runbooks/operations.md#ai-after-the-audit-fixes))?
 90. `launch` Screen-reader check in Arabic (D-158, D-159, D-162). The field errors (`aria-invalid`, `aria-describedby`, the feedback group named by its first message) and the focus moves after "Next", "Add" and "Remove" are checked by axe and Playwright only. A manual pass with NVDA and VoiceOver, in Arabic and in English, should confirm that each message is read once, in order, with its box. Who runs it, and before which release?
 91. `launch` Signup step counter (PR D observation). The message `auth.step` ("الخطوة {current} من {total}" / "Step {current} of {total}") is rendered in `apps/web/src/components/auth/signup-flow.tsx` without isolating its digits in `<bdi>` (CLAUDE.md §6), unlike the diagnostic's position lines.
-92. `M4` `pnpm verify` and the CI jobs (D-134, D-174). The root `verify` script leaves out four steps that the `checks` and `db` jobs run: `node scripts/check-playwright-version.mjs`, `pnpm exec vitest run --dir scripts`, `node scripts/check-bundle-budget.mjs` and `node scripts/check-migrations.mjs`. Either a code pull request adds them to the root `package.json`, so that `verify` matches the jobs again as D-134 intended, or a decision keeps it to the main steps. Which one, and in which pull request?
+92. `M4` **Resolved (D-192): `pnpm verify` runs every CI step that needs no Docker.** Original note: `pnpm verify` and the CI jobs (D-134, D-174). The root `verify` script leaves out four steps that the `checks` and `db` jobs run: `node scripts/check-playwright-version.mjs`, `pnpm exec vitest run --dir scripts`, `node scripts/check-bundle-budget.mjs` and `node scripts/check-migrations.mjs`. Either a code pull request adds them to the root `package.json`, so that `verify` matches the jobs again as D-134 intended, or a decision keeps it to the main steps. Which one, and in which pull request?
