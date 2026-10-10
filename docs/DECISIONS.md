@@ -381,17 +381,23 @@ The owner approved all recommendations offered before the M2 plan.
 ### D-178 (2026-10-05): The M4 plan and its order
 
 - **Decision:** The engine (T7, T8, T9, T10 and the tax engine) is built in `packages/engine` as pure
-  functions over typed inputs read from the answers with `valueOf`, in six pull requests:
-  (0) housekeeping (D-191, D-192) and these decisions; (1) money, provenance and the engine's
-  quality gates (branches 95%, functions 100%, property tests); (2) the adapter from answers to
-  engine inputs and the follow-ups of D-183; (3) T7 and T8 with their alerts; (4) T9 and the tax
-  engine; (5) T10, the run function, the three golden projects (a Jordanian service, a Jordanian
-  home e-commerce shop, an Algerian auto-entrepreneur) with hand-checked headline numbers, and a
-  review page for the owner. Founders see no engine figure before M5. Each pull request merges after
-  an independent review and the six checks. The topic index gains "Calculation engine" (amends
-  D-173).
+  functions over typed inputs read from the answers with `valueOf`, in seven pull requests:
+  (0) housekeeping (D-191, D-192) and these decisions; (1) money, provenance, the engine's parameters
+  and its quality gates (branches 95%, functions 100%, property tests); (2) the three follow-ups of
+  D-183 and F4's hint, in the question bank and the app; (3) the adapter from answers to engine
+  inputs and the operating lines of the projection: the sales curve, revenue, COGS, operating costs
+  and operating profit before tax (T9 without tax and cash); (4) T8 and T7 with their alerts, which
+  read that projection (D-182, D-189); (5) tax, cash flow, funding need and payback (the rest of
+  T9); (6) T10, the run function, the three golden projects (a Jordanian service, a Jordanian home
+  e-commerce shop, an Algerian auto-entrepreneur) with hand-checked headline numbers, and a review
+  page for the owner. Pull requests 0, 1 and 2 touch different files and can be built at the same
+  time; the others follow in order, each on the one before. Founders see no engine figure before
+  M5. Each pull request merges after an independent review and the six checks. The topic index
+  gains "Calculation engine" (amends D-173).
 - **Reason:** Owner approval of the M4 plan on 2026-10-05, including merging each pull request after
-  review and green checks. CLAUDE.md §8.1 and the M4 definition of done (CLAUDE.md §9).
+  review and green checks. The approved plan had six pull requests, with T7 and T8 before T9. But
+  BE_month and T7's floor read the projection (D-182, D-189), so T9 is split in two: an ordering
+  change, not a change of any formula. CLAUDE.md §8.1 and the M4 definition of done (CLAUDE.md §9).
 - **Status:** Active
 
 ### D-179 (2026-10-05): Money precision and rounding
