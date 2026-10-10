@@ -43,26 +43,26 @@ Chromium: `pnpm --filter @sbn/web exec playwright install chromium`.
 
 ## Scripts
 
-| Command                                | What it does                                                                                           |
-| -------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| `pnpm dev`                             | The web app in development mode, port 3000                                                             |
-| `pnpm verify`                          | The main steps of the `checks` and `db` CI jobs, in order; needs the local stack, wipes its data       |
-| `pnpm format` / `format:check`         | Prettier: write, or check only                                                                         |
-| `pnpm lint`                            | ESLint with zero warnings, and the check that rejects `left`/`right` styling                           |
-| `pnpm typecheck`                       | TypeScript in every package                                                                            |
-| `pnpm test`                            | Unit tests in all packages; line coverage gates in engine, question bank, AI (95%) and web app (D-164) |
-| `pnpm build`                           | Production build of the web app                                                                        |
-| `pnpm check:bundle`                    | After a build: fails if secret key material appears in client-reachable output                         |
-| `node scripts/check-bundle-budget.mjs` | After a build: fails a route that sends more JavaScript than its budget (D-171)                        |
-| `pnpm test:e2e`                        | Builds, then runs the Playwright **site** project: pages, accessibility, RTL and LTR (no database)     |
-| `pnpm test:e2e:auth`                   | Builds, then runs the **auth** project against the local stack, with the settings of the e2e-auth job  |
-| `pnpm db:start` / `db:stop`            | Local Supabase in Docker                                                                               |
-| `pnpm db:reset`                        | Recreate the local database from `supabase/migrations`                                                 |
-| `pnpm db:test`                         | pgTAP tests in `supabase/tests` (includes the RLS guard)                                               |
-| `pnpm db:lint`                         | Lint database functions                                                                                |
-| `pnpm db:types`                        | Regenerate `apps/web/src/lib/supabase/database.types.ts` from the local database                       |
-| `pnpm --filter @sbn/web og:images`     | After a build: rewrite the share images in `apps/web/public/og`                                        |
-| `pnpm --filter @sbn/web lighthouse`    | After an indexable production build: Lighthouse on every public page ([TESTING.md](docs/TESTING.md))   |
+| Command                                | What it does                                                                                                                    |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm dev`                             | The web app in development mode, port 3000                                                                                      |
+| `pnpm verify`                          | The `checks` and `db` CI jobs in order, with their build environment; the database steps need the local stack and wipe its data |
+| `pnpm format` / `format:check`         | Prettier: write, or check only                                                                                                  |
+| `pnpm lint`                            | ESLint with zero warnings, and the check that rejects `left`/`right` styling                                                    |
+| `pnpm typecheck`                       | TypeScript in every package                                                                                                     |
+| `pnpm test`                            | Unit tests in all packages; line coverage gates in engine, question bank, AI (95%) and web app (D-164)                          |
+| `pnpm build`                           | Production build of the web app                                                                                                 |
+| `pnpm check:bundle`                    | After a build: fails if secret key material appears in client-reachable output                                                  |
+| `node scripts/check-bundle-budget.mjs` | After a build: fails a route that sends more JavaScript than its budget (D-171)                                                 |
+| `pnpm test:e2e`                        | Builds, then runs the Playwright **site** project: pages, accessibility, RTL and LTR (no database)                              |
+| `pnpm test:e2e:auth`                   | Builds, then runs the **auth** project against the local stack, with the settings of the e2e-auth job                           |
+| `pnpm db:start` / `db:stop`            | Local Supabase in Docker                                                                                                        |
+| `pnpm db:reset`                        | Recreate the local database from `supabase/migrations`                                                                          |
+| `pnpm db:test`                         | pgTAP tests in `supabase/tests` (includes the RLS guard)                                                                        |
+| `pnpm db:lint`                         | Lint database functions                                                                                                         |
+| `pnpm db:types`                        | Regenerate `apps/web/src/lib/supabase/database.types.ts` from the local database                                                |
+| `pnpm --filter @sbn/web og:images`     | After a build: rewrite the share images in `apps/web/public/og`                                                                 |
+| `pnpm --filter @sbn/web lighthouse`    | After an indexable production build: Lighthouse on every public page ([TESTING.md](docs/TESTING.md))                            |
 
 ## Debugging
 
