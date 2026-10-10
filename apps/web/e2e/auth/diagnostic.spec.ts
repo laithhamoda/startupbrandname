@@ -311,6 +311,30 @@ test('a saved answer brings the next step back in the same response (PERF-3)', a
   expect(documents).toEqual([]);
 });
 
+test('F4 is followed by the marketing budget follow-up, which keeps its answer (D-183)', async ({
+  page,
+}) => {
+  await signUpByEmail(page, uniqueEmail('marketing'));
+  const id = await createProject(page, 'full');
+
+  // The hint of F4 leaves the salaries of E8 out (D-182).
+  await page.goto(`/ar/projects/${id}/q/F4`);
+  await expect(page.getByText(/سؤال الموظفين \(E8\)/)).toBeVisible();
+  await page.getByLabel('البند', { exact: true }).fill('إيجار المكتب');
+  await page.getByLabel('المبلغ').fill('300');
+  await next(page, 'F4-1');
+
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText(
+    'كم تنوي أن تنفق على التسويق كل شهر؟',
+  );
+  await expect(page.getByRole('button', { name: DONT_KNOW })).toBeVisible();
+  await page.getByLabel('المبلغ').fill('150');
+  await next(page, 'F5');
+
+  await page.goto(`/ar/projects/${id}/q/F4-1`);
+  await expect(page.getByLabel('المبلغ')).toHaveValue('150');
+});
+
 test('a follow-up keeps its warning when the founder comes back to it (ARCH-6)', async ({
   page,
 }) => {
