@@ -120,18 +120,15 @@ reset role;
 select pg_temp.act_as('a2000000-0000-4000-8000-000000000001');
 set local role authenticated;
 
-select throws_ok(
-  $$select public.reserve_ai_call()$$,
-  '42501',
-  null,
-  'the old reservation, which read a sum that deletions lower, is closed'
+select hasnt_function(
+  'public',
+  'reserve_ai_call',
+  'the old reservation, which read a sum that deletions lower, is dropped (D-191)'
 );
-select throws_ok(
-  $$select public.record_tool_run('a2100000-0000-4000-8000-000000000001', 'review_text',
-    repeat('a', 64), '{}', 'claude-haiku-4-5-20251001', 'review-text-1', 1, 1, 0, 0, 5)$$,
-  '42501',
-  null,
-  'nobody records a run with a cost of their choosing any more (SEC-1)'
+select hasnt_function(
+  'public',
+  'record_tool_run',
+  'the old run log, which took the cost from the caller, is dropped (SEC-1, D-191)'
 );
 
 -- ---------------------------------------------------------------------------------------------
