@@ -48,8 +48,8 @@ export const AXIS_F = [
     field: { kind: 'cost_items', minItems: 1 },
     label: t('التكاليف الثابتة الشهرية', 'Monthly fixed costs'),
     help: t(
-      'ما تدفعه كل شهر مهما بعت: إيجار، ورواتب، واشتراكات، واتصالات.',
-      'What you pay every month whatever you sell: rent, salaries, subscriptions, phone and internet.',
+      'ما تدفعه كل شهر مهما بعت: إيجار، واشتراكات، واتصالات. لا تُدخل هنا رواتب الموظفين المذكورين في سؤال الموظفين (E8)، فالرواتب تُحسب من هناك.',
+      'What you pay every month whatever you sell: rent, subscriptions, phone and internet. Leave out the salaries of the staff you list in the staffing question (E8): payroll is counted from there.',
     ),
   }),
   define({

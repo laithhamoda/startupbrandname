@@ -106,12 +106,23 @@ describe('follow-ups (never counted, D-105)', () => {
     activeFollowUps({ ...base, ...changes }).map((followUp) => followUp.id);
 
   it('appear only when their trigger holds', () => {
-    expect(active({})).toEqual([]);
-    expect(active({ A2: answered(0) })).toEqual(['A2.1']);
-    expect(active({ C8: answered(5000), C7: unknown })).toEqual(['C8.1']);
-    expect(active({ C8: answered(5000) })).toEqual([]);
-    expect(active({ F6: answered({ month1: 2, month6: 10, month12: 40 }) })).toEqual(['F6.1']);
-    expect(active({ F6: answered({ month1: 0, month6: 0, month12: 11 }) })).toEqual(['F6.1']);
+    // F4 and F6 are answered in the sample, so their follow-ups are already called for.
+    expect(active({})).toEqual(['F4.1', 'F6.2']);
+    expect(active({ F4: unknown, F6: unknown })).toEqual([]);
+    expect(active({ F2: answered('subscription') })).toEqual(['F2.1', 'F4.1', 'F6.2']);
+    expect(active({ A2: answered(0) })).toEqual(['A2.1', 'F4.1', 'F6.2']);
+    expect(active({ C8: answered(5000), C7: unknown })).toEqual(['C8.1', 'F4.1', 'F6.2']);
+    expect(active({ C8: answered(5000) })).toEqual(['F4.1', 'F6.2']);
+    expect(active({ F6: answered({ month1: 2, month6: 10, month12: 40 }) })).toEqual([
+      'F4.1',
+      'F6.1',
+      'F6.2',
+    ]);
+    expect(active({ F6: answered({ month1: 0, month6: 0, month12: 11 }) })).toEqual([
+      'F4.1',
+      'F6.1',
+      'F6.2',
+    ]);
     expect(
       active({
         G4: answered({
@@ -121,7 +132,19 @@ describe('follow-ups (never counted, D-105)', () => {
           ],
         }),
       }),
-    ).toEqual(['G4.1']);
+    ).toEqual(['F4.1', 'F6.2', 'G4.1']);
+  });
+
+  it('leave the score, the gates and the next questions as they are', () => {
+    const without = completeness(base);
+    const withFollowUps = completeness({
+      ...base,
+      'F2.1': answered(5),
+      'F4.1': answered({ amount: 300, currency: 'JOD' }),
+      'F6.2': unknown,
+    });
+    expect(withFollowUps).toEqual(without);
+    expect(without.next).toEqual([]);
   });
 });
 
@@ -139,6 +162,20 @@ describe('validation tasks', () => {
       { kind: 'research', questionId: 'D4' },
     ]);
     expect(validationTasks(sampleAnswers())).toEqual([]);
+  });
+
+  it('add a task for a follow-up answered «لا أعرف», after its question (D-199)', () => {
+    const answers: Answers = {
+      ...sampleAnswers(),
+      F2: answered('subscription'),
+      'F2.1': unknown,
+      'F4.1': unknown,
+      'F6.2': answered(10),
+    };
+    expect(validationTasks(answers)).toEqual([
+      { kind: 'assumption', questionId: 'F2.1' },
+      { kind: 'assumption', questionId: 'F4.1' },
+    ]);
   });
 });
 
