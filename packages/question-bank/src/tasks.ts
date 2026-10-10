@@ -22,7 +22,11 @@ export function validationTasks(answers: Answers): ValidationTask[] {
   for (const { id } of QUESTIONS) {
     if (answers[id]?.status === 'unknown') tasks.push({ kind: 'assumption', questionId: id });
     for (const followUp of FOLLOW_UPS) {
-      if (followUp.parent === id && answers[followUp.id]?.status === 'unknown') {
+      if (
+        followUp.parent === id &&
+        followUp.when(answers) &&
+        answers[followUp.id]?.status === 'unknown'
+      ) {
         tasks.push({ kind: 'assumption', questionId: followUp.id });
       }
     }

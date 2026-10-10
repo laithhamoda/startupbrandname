@@ -177,6 +177,11 @@ describe('validation tasks', () => {
       { kind: 'assumption', questionId: 'F4.1' },
     ]);
   });
+
+  it('skip a follow-up whose trigger no longer holds', () => {
+    const answers: Answers = { ...sampleAnswers(), F2: answered('fixed'), 'F2.1': unknown };
+    expect(validationTasks(answers)).toEqual([]);
+  });
 });
 
 describe('messages', () => {
