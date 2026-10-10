@@ -29,14 +29,13 @@ whose six CI jobs are green (`.github/workflows/ci.yml`); every row below names 
 | A secret is committed                                               | gitleaks over the full history (D-040)           | `secret-scan`                                      | none (CI only)                                                                           |
 | A commit message is not conventional                                | commitlint                                       | none (local `commit-msg` hook)                     | runs on every commit                                                                     |
 
-`pnpm verify` runs the main steps of the `checks` and `db` jobs, in order. Like the `db` job, it
-lints and tests a database built from every migration: `pnpm db:reset` comes first, which wipes
-the local data. It needs the local stack (`pnpm db:start`) for those last three steps. It leaves
-out four steps those jobs also run: `node scripts/check-playwright-version.mjs`,
-`pnpm exec vitest run --dir scripts` (the tests of the CI scripts),
-`node scripts/check-bundle-budget.mjs` after the build, and
-`node scripts/check-migrations.mjs origin/main`. The end-to-end, Lighthouse and secret-scan jobs
-are separate.
+`pnpm verify` runs every step of the `checks` and `db` jobs, in CI order and
+with the CI build environment (D-192): the Playwright version check, format, lint, typecheck, the
+unit tests, the tests of the CI scripts (`pnpm exec vitest run --dir scripts`), the build, the
+client bundle scan, the bundle budget, and `node scripts/check-migrations.mjs origin/main`. Like
+the `db` job, it then lints and tests a database built from every migration: `pnpm db:reset` comes
+first, which wipes the local data, and the last three steps need the local stack (`pnpm db:start`).
+The end-to-end, Lighthouse and secret-scan jobs are separate.
 
 ## Git hooks (lefthook)
 

@@ -47,7 +47,7 @@ did it.
       functions), never answer text or an email address (OBS-1, SEC-11).
 - [ ] **Monitoring and alerting.** `/api/health` uptime, error rate, AI spend close to
       `ai.limit.global_daily_usd` (the day's `cost_usd + held_usd` in `private.ai_spend_daily`,
-      D-146), `ai.skipped` with `timeout` or `previous_schema` and `proxy.refresh_timeout` in the
+      D-146), `ai.skipped` with `timeout`, `ai.error` and `proxy.refresh_timeout` in the
       logs (D-152, D-168), failed `DB deploy` runs and cron jobs, each alerting the owner (OBS-3).
       The audit proposed adding this to M9's definition of done in CLAUDE.md §9; that text changes
       only with the owner's approval.
