@@ -577,8 +577,10 @@ The owner approved all recommendations offered before the M2 plan.
   stored number's shortest decimal form (`parseRate`, `rateFromNumber`: 0.1 is 1/10, not the nearest
   binary fraction). Adding, subtracting, multiplying, dividing and raising to an integer power are
   exact. A rate is rounded only for display (`rateToDecimalString`, half away from zero) and when it
-  multiplies an amount (D-179). Text over 400 characters, exponents beyond 400 and powers beyond
-  10000 are refused, so no input can ask for an unbounded computation.
+  multiplies an amount (D-179). Text over 400 characters, exponents beyond 400, powers beyond
+  10000 and any power whose result would pass 20000 digits (`MAX_POWER_DIGITS`, counted from the
+  larger of the base's numerator and denominator times the exponent) are refused, so the cost of an
+  input is bounded by its size and not only by its exponent.
 - **Reason:** D-179 asks for exact rates. A fraction needs no choice of scale, and later pull
   requests divide (the seasonal factor that keeps a year's total unchanged, D-184; ARPU over churn,
   D-183) where a scaled integer would have to round. The cost is that denominators grow when rates
@@ -618,7 +620,10 @@ The owner approved all recommendations offered before the M2 plan.
   not validated, and a stable key in `PARAM_KEYS`. A payment timing is a list of parts (months
   after the sale, exact share) whose shares add up to 1. Inflation is `null` by default (D-185).
   `createEngineParams` replaces whole figures, so an override carries its own provenance, and
-  raises `invalid_param` naming the key when a value is out of range.
+  raises `invalid_param` naming the key when a value is out of range, when a rate was not built
+  with `makeRate` (not in lowest terms, or a non-positive denominator), or when an override key is
+  not a known parameter (a misspelt key is an error, not a silent default). `DEFAULT_ENGINE_PARAMS`,
+  `ZERO_RATE` and `ONE_RATE` are frozen.
 - **Reason:** D-181. Medium confidence follows D-114: a documented default is a considered estimate,
   not evidence, and low would highlight every number in every report. The report lists the defaults
   from `listEngineParams`.
