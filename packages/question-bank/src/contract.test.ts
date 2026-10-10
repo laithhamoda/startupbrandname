@@ -53,8 +53,12 @@ function shapeOf(schema: z.core.$ZodType): Shape {
 function contract() {
   const steps = [
     ...QUESTIONS.map(({ id, field, allowUnknown }) => ({ id, field, allowUnknown })),
-    // Follow-ups never accept «لا أعرف» (answerSchema(followUp.field, false) in apps/web).
-    ...FOLLOW_UPS.map(({ id, field }) => ({ id, field, allowUnknown: false })),
+    // A follow-up accepts «لا أعرف» only where it says so (D-199), as apps/web reads it.
+    ...FOLLOW_UPS.map(({ id, field, allowUnknown }) => ({
+      id,
+      field,
+      allowUnknown: allowUnknown ?? false,
+    })),
   ];
   return Object.fromEntries(
     steps.map(({ id, field, allowUnknown }) => [

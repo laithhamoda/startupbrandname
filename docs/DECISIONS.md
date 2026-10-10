@@ -39,7 +39,7 @@ A decision may sit under several topics. A new decision joins its topics in the 
 - **Markets, countries and languages:** D-026, D-063, D-066, D-067, D-068, D-069, D-070, D-075,
   D-080, D-081, D-088, D-129, D-180, D-186.
 - **Diagnostic and question bank:** D-072, D-102, D-104, D-105, D-106, D-108, D-110 to D-119, D-129,
-  D-149, D-156 to D-161, D-163, D-165, D-167, D-182, D-183.
+  D-149, D-156 to D-161, D-163, D-165, D-167, D-182, D-183, D-197 to D-199.
 - **Calculation engine:** D-178 to D-190.
 - **AI and cost:** D-062, D-071, D-072, D-073, D-082, D-103, D-107, D-119 to D-124, D-143, D-146 to
   D-152, D-155, D-183, D-191.
@@ -465,7 +465,7 @@ The owner approved all recommendations offered before the M2 plan.
   first asked for an AI estimate of the growth; CLAUDE.md rule 1 forbids a model to produce a number
   that appears in a report, and the owner then chose to ask the founder first, with an estimate
   computed by code as the fallback.
-- **Status:** Active
+- **Status:** Amended by D-197
 
 ### D-184 (2026-10-05): The sales curve and seasonality
 
@@ -567,4 +567,45 @@ The owner approved all recommendations offered before the M2 plan.
   bundle budget and `check-migrations`.
 - **Reason:** #92 (amends D-134): a contributor who runs `verify` should not meet a failure that only
   CI shows.
+- **Status:** Active
+
+### D-197 (2026-10-10): The growth follow-up is F6.2
+
+- **Decision:** The follow-up for the yearly growth of sales after year 1 (D-183) is F6.2, not F6.1.
+  F6.1, the justification for a more than tenfold growth, already exists, so after F6 the order is
+  F6.1 then F6.2. F6.2 is a number from 0 to 1000, decimals allowed; a decline is not modelled, so its
+  hint says to enter 0 for no growth. F4.1 (the monthly marketing budget, an amount with its currency)
+  and F2.1 (how many of every 100 subscribers cancel each month, a number from 0 to 100, decimals
+  allowed, only when F2 is "subscription") keep their names. Each of the three appears only when its
+  parent has a real answer (not «لا أعرف»), and is removed when that stops being true (D-116). F4's
+  help now asks to leave out the salaries of the staff listed in E8 (D-182). The texts are drafts for
+  the owner's review (#86).
+- **Reason:** D-183 named the growth question F6.1 by mistake; that ID is taken, and reusing it would
+  have changed what a stored F6.1 answer means (D-165).
+- **Status:** Active
+
+### D-198 (2026-10-10): The three follow-ups are asked in the full diagnostic only
+
+- **Decision:** F2.1, F4.1 and F6.2 are asked only in the full diagnostic, never in the quick one,
+  which keeps its 20 questions. `FollowUp` gains an optional `modes` (every mode when absent), and
+  `diagnosticSequence` respects it. A follow-up is still reachable by its URL and saves in a quick
+  project; moving on from it then follows the full order (D-117). When an answer is missing, the
+  engine uses its fallbacks with a visible note (D-183). The owner can reverse this by removing
+  `modes` from the three.
+- **Reason:** The quick diagnostic is promised as 20 questions (UX-14); marketing, churn and growth
+  are numbers a founder in a hurry may not have.
+- **Status:** Active
+
+### D-199 (2026-10-10): «لا أعرف» on a follow-up, and typed access to follow-up answers
+
+- **Decision:** `FollowUp` gains an optional `allowUnknown` (false when absent), which `resolveStep`
+  and the stored-answer reader use in place of the fixed false; only F2.1, F4.1 and F6.2 set it, so
+  every older follow-up is unchanged. An unknown answer is stored like any other (assumption, low
+  confidence, not validated, D-104) and creates a validation task: `validationTasks` now lists the
+  follow-up, so a task's `questionId` is a step ID. The stored-answer contract (D-165) gains the three
+  follow-ups; no stored answer changes. For the engine, `followUpValueOf` reads a follow-up's real
+  answer typed by its field (and throws on a wrong kind, like `valueOf`), and `answerState` tells a
+  real answer, «لا أعرف» and no answer apart. Completeness is unchanged: follow-ups never count (D-105).
+- **Reason:** D-183 asks for «لا أعرف» on these three; the engine must tell "the founder does not know"
+  from "not asked", since the first uses a fallback with a note and the second a missing input.
 - **Status:** Active

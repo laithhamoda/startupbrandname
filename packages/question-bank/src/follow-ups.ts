@@ -1,6 +1,8 @@
+import type { Answer } from './fields';
 import { t } from './questions/define';
-import type { FollowUp } from './types';
-import { type Answers, valueOf } from './values';
+import type { StepId } from './sequence';
+import type { FieldKind, FollowUp, FollowUpId } from './types';
+import { type Answers, type ValueByKind, valueOf } from './values';
 
 /** A follow-up, with the condition on the answers that calls for it. */
 export type FollowUpDefinition = FollowUp & { when: (answers: Answers) => boolean };
@@ -41,6 +43,38 @@ export const FOLLOW_UPS: readonly FollowUpDefinition[] = [
     },
   },
   {
+    id: 'F2.1',
+    parent: 'F2',
+    field: { kind: 'number', min: 0, max: 100, integer: false, ranges: [] },
+    modes: ['full'],
+    allowUnknown: true,
+    label: t(
+      'من كل 100 مشترك، كم يلغون اشتراكهم كل شهر؟',
+      'Out of every 100 subscribers, how many cancel each month?',
+    ),
+    help: t(
+      'اكتب رقمًا من 0 إلى 100، ويقبل الكسور مثل 2.5. نستخدمه لحساب قيمة العميل على مدى عمره.',
+      'Enter a number from 0 to 100; decimals such as 2.5 are fine. We use it to work out what a customer is worth over their lifetime.',
+    ),
+    when: (answers) => valueOf(answers, 'F2', 'single') === 'subscription',
+  },
+  {
+    id: 'F4.1',
+    parent: 'F4',
+    field: { kind: 'money' },
+    modes: ['full'],
+    allowUnknown: true,
+    label: t(
+      'كم تنوي أن تنفق على التسويق كل شهر؟',
+      'How much do you plan to spend on marketing each month?',
+    ),
+    help: t(
+      'مبلغ شهري للإعلانات والترويج، مع العملة. إن لم تعرفه نعدّ التسويق صفرًا ونذكر ذلك في النتائج.',
+      'A monthly amount for advertising and promotion, with the currency. If you do not know it, we count marketing as zero and say so in the results.',
+    ),
+    when: (answers) => answers.F4?.status === 'answered',
+  },
+  {
     id: 'F6.1',
     parent: 'F6',
     field: { kind: 'long_text', minWords: 3 },
@@ -56,6 +90,22 @@ export const FOLLOW_UPS: readonly FollowUpDefinition[] = [
       const sales = valueOf(answers, 'F6', 'sales_forecast');
       return sales !== undefined && sales.month12 > 10 * Math.max(sales.month1, 1);
     },
+  },
+  {
+    id: 'F6.2',
+    parent: 'F6',
+    field: { kind: 'number', min: 0, max: 1000, integer: false, ranges: [] },
+    modes: ['full'],
+    allowUnknown: true,
+    label: t(
+      'بكم تتوقع أن تنمو مبيعاتك كل سنة بعد السنة الأولى؟',
+      'By how much do you expect your sales to grow each year after the first year?',
+    ),
+    help: t(
+      'نسبة مئوية في السنة، مثل 20. اكتب 0 إن لم تتوقع نموًا، فالحساب لا يتناول تراجع المبيعات.',
+      'A percentage a year, such as 20. Enter 0 for no growth: the calculation does not model a decline in sales.',
+    ),
+    when: (answers) => answers.F6?.status === 'answered',
   },
   {
     id: 'G4.1',
@@ -81,4 +131,28 @@ export function activeFollowUps(answers: Answers): readonly FollowUp[] {
 /** The follow-up with this ID; undefined for any other string (a URL, a stored row). */
 export function findFollowUp(id: string): FollowUpDefinition | undefined {
   return FOLLOW_UPS.find((followUp) => followUp.id === id);
+}
+
+/**
+ * The value of a follow-up's real answer, typed by its field; undefined if none (no answer, or
+ * «لا أعرف»: tell them apart with `answerState`). Throws for an ID that is no follow-up, or when
+ * `kind` is not its field's kind, like `valueOf`.
+ */
+export function followUpValueOf<K extends FieldKind>(
+  answers: Answers,
+  id: FollowUpId,
+  kind: K,
+): ValueByKind[K] | undefined {
+  const followUp = findFollowUp(id);
+  if (!followUp) throw new Error(`${id} is no follow-up`);
+  if (followUp.field.kind !== kind) {
+    throw new Error(`${id} is a ${followUp.field.kind} field, not ${kind}`);
+  }
+  const answer: Answer | undefined = answers[id];
+  return answer?.status === 'answered' ? (answer.value as ValueByKind[K]) : undefined;
+}
+
+/** What the founder gave for a step: a real answer, «لا أعرف», or nothing (D-199). */
+export function answerState(answers: Answers, id: StepId): 'answered' | 'unknown' | 'none' {
+  return answers[id]?.status ?? 'none';
 }

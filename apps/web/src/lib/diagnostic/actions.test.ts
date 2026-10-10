@@ -192,6 +192,112 @@ describe('saveAnswer', () => {
     expect(writes.upsert).not.toHaveBeenCalled();
   });
 
+  describe('on the follow-ups the engine asks for (D-183, D-199)', () => {
+    const costs = { status: 'answered' as const, value: sampleValue(getQuestion('F4').field) };
+    const save = (step: string, submission: SaveInput['submission']) =>
+      saveAnswer({ locale: 'ar', projectId, step, submission });
+
+    it('saves an amount with its currency on F4.1 and moves on to F5', async () => {
+      const { client, writes } = fakeClient();
+      signedIn(client, { F4: costs });
+      const value = { amount: 300, currency: 'JOD' };
+
+      expect(await redirectTarget(save('F4-1', { kind: 'value', value }))).toBe(stepUrl('F5'));
+      expect(writes.upsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          question_id: 'F4.1',
+          normalized_value: { status: 'answered', value },
+          source: 'user',
+        }),
+      );
+      expect(log.error).not.toHaveBeenCalled();
+    });
+
+    it('saves a number with decimals on F2.1 for a subscription and moves on to F3', async () => {
+      const { client, writes } = fakeClient();
+      signedIn(client, { F2: { status: 'answered', value: 'subscription' } });
+
+      expect(await redirectTarget(save('F2-1', { kind: 'value', value: 2.5 }))).toBe(stepUrl('F3'));
+      expect(writes.upsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          question_id: 'F2.1',
+          normalized_value: { status: 'answered', value: 2.5 },
+        }),
+      );
+    });
+
+    it('saves the yearly growth on F6.2, 0 included, and moves on to F7', async () => {
+      const { client, writes } = fakeClient();
+      signedIn(client, { F6: { status: 'answered', value: sampleValue(getQuestion('F6').field) } });
+
+      expect(await redirectTarget(save('F6-2', { kind: 'value', value: 0 }))).toBe(stepUrl('F7'));
+      expect(writes.upsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          question_id: 'F6.2',
+          normalized_value: { status: 'answered', value: 0 },
+        }),
+      );
+    });
+
+    it('says which limit a number broke, under the box', async () => {
+      const { client, writes } = fakeClient();
+      signedIn(client, { F2: { status: 'answered', value: 'subscription' } });
+
+      expect(await save('F2-1', { kind: 'value', value: 101 })).toEqual({
+        status: 'invalid',
+        errors: [{ path: '', message: 'outOfRange {"min":"0","max":"100"}' }],
+      });
+      expect(writes.upsert).not.toHaveBeenCalled();
+    });
+
+    it('says what is wrong with an amount, under its own box', async () => {
+      const { client, writes } = fakeClient();
+      signedIn(client, { F4: costs });
+
+      expect(await save('F4-1', { kind: 'value', value: { amount: -5, currency: 'JOD' } })).toEqual(
+        expect.objectContaining({ status: 'invalid' }),
+      );
+      expect(writes.upsert).not.toHaveBeenCalled();
+    });
+
+    it('stores «لا أعرف» as a low-confidence assumption', async () => {
+      const { client, writes } = fakeClient();
+      signedIn(client, { F4: costs });
+
+      expect(await redirectTarget(save('F4-1', { kind: 'unknown' }))).toBe(stepUrl('F5'));
+      expect(writes.upsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          question_id: 'F4.1',
+          normalized_value: { status: 'unknown' },
+          source: 'assumption',
+          confidence: 'low',
+        }),
+      );
+    });
+
+    it('still refuses «لا أعرف» on an older follow-up', async () => {
+      const { client, writes } = fakeClient();
+      signedIn(client, { A2: { status: 'answered', value: 0 } });
+
+      expect(await save('A2-1', { kind: 'unknown' })).toEqual({
+        status: 'error',
+        reason: 'failed',
+      });
+      expect(writes.upsert).not.toHaveBeenCalled();
+    });
+
+    it('says "stale" once the parent no longer calls for the follow-up', async () => {
+      const { client, writes } = fakeClient();
+      signedIn(client, { F2: { status: 'answered', value: 'fixed' } });
+
+      expect(await save('F2-1', { kind: 'value', value: 5 })).toEqual({
+        status: 'error',
+        reason: 'stale',
+      });
+      expect(writes.upsert).not.toHaveBeenCalled();
+    });
+  });
+
   it('says "gone" when the project was deleted', async () => {
     const { client, writes } = fakeClient();
     signedIn(client);
