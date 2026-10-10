@@ -340,6 +340,13 @@
   },
   "A2.1": { "kind": "long_text", "allowUnknown": false, "value": "string" },
   "C8.1": { "kind": "long_text", "allowUnknown": false, "value": "string" },
+  "F2.1": { "kind": "number", "allowUnknown": true, "value": "number" },
+  "F4.1": {
+    "kind": "money",
+    "allowUnknown": true,
+    "value": { "amount": "number", "currency": "string" }
+  },
   "F6.1": { "kind": "long_text", "allowUnknown": false, "value": "string" },
+  "F6.2": { "kind": "number", "allowUnknown": true, "value": "number" },
   "G4.1": { "kind": "boolean", "allowUnknown": false, "value": "boolean" }
 }

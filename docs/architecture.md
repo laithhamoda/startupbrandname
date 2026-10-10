@@ -172,8 +172,9 @@ sequenceDiagram
 - **Logs (D-152).** Every case that ends in the fixed checks is logged as `ai.skipped` with its
   reason, every database or model error as `ai.error` with its stage. The founder is never blocked
   and is not told why.
-- **Previous schema (D-155).** On a database without `crossborder_consent_state()` the review stays
-  off and logs `ai.skipped` with reason `previous_schema` (see
+- **Fail closed (D-191).** A missing or failing `crossborder_consent_state()` or `reserve_ai_run()` is
+  an error, not a schema to fall back from: the review stays off, the fixed checks save the answer,
+  and `ai.error` is logged. The account page shows a consent it cannot read as not active (see
   [operations.md](runbooks/operations.md#ai-after-the-audit-fixes)).
 
 The step page uses the same question-bank functions as `saveAnswer` (D-160): `resolveStep` (an

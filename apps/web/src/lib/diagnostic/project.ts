@@ -76,7 +76,9 @@ function readAnswers(rows: readonly AnswerRow[]): { answers: Answers; unreadable
     }
     // Its trigger no longer holds, and the delete after the last save did not go through (D-116).
     if (!followUp.when(answers)) continue;
-    const parsed = answerSchema(followUp.field, false).safeParse(row.normalized_value);
+    const parsed = answerSchema(followUp.field, followUp.allowUnknown ?? false).safeParse(
+      row.normalized_value,
+    );
     if (parsed.success) answers[followUp.id] = parsed.data;
     else unreadable.push(followUp.id);
   }

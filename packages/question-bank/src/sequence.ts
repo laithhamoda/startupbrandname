@@ -35,7 +35,7 @@ export interface Step {
   label: Text;
   help: Text;
   axis: Axis;
-  /** «لا أعرف» is offered where the question allows it, never on a follow-up (D-104). */
+  /** «لا أعرف» is offered where the question or follow-up allows it (D-104, D-199). */
   allowUnknown: boolean;
 }
 
@@ -70,9 +70,16 @@ export function resolveStep(
       label,
       help,
       axis: getQuestion(parent).axis,
-      allowUnknown: false,
+      allowUnknown: followUp.allowUnknown ?? false,
     },
   };
+}
+
+/** The question or follow-up text of a step, in both languages. */
+export function stepLabel(id: StepId): Text {
+  const label = isQuestionId(id) ? getQuestion(id).label : findFollowUp(id)?.label;
+  if (!label) throw new Error(`${id} is no step`);
+  return label;
 }
 
 /**
@@ -85,7 +92,8 @@ export function diagnosticSequence(mode: Mode, answers: Answers): StepId[] {
   for (const question of questionsFor(mode)) {
     steps.push(question.id);
     for (const followUp of FOLLOW_UPS) {
-      if (followUp.parent === question.id && followUp.when(answers)) steps.push(followUp.id);
+      if (followUp.parent !== question.id || !(followUp.modes ?? MODES).includes(mode)) continue;
+      if (followUp.when(answers)) steps.push(followUp.id);
     }
   }
   return steps;

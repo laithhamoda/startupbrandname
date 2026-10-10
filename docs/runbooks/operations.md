@@ -174,19 +174,19 @@ the most it could cost in the day's spend (D-146): the first kill switch stops n
 
 Pull request B counts AI calls against one-time reservations and counts a consent only for a listed
 text version (D-146, D-147). Its two migrations, `20261004053500_ai_reservations_and_ledger.sql` and
-`20261004053600_consent_versions.sql`, follow the release order above, while the app on `main`
-already expects them (D-155):
+`20261004053600_consent_versions.sql`, were applied to production on 2026-10-05 and follow the
+release order above. A contract migration, `20261010202826_drop_old_ai_functions.sql`, then drops
+`reserve_ai_call()`, the old `record_tool_run()` and `has_crossborder_consent()` (D-191, #89), so
+the app on `main` has no fallback for a database without the new functions:
 
-| Production database   | The app on `main`                                                                                                                                                                                                                                                                                                                           |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Neither migration yet | AI stays off: a typed answer to B1, or any typed answer once B1 is saved, logs `ai.skipped` with reason `previous_schema`, at warn level. The account page compares the latest consent with `CROSSBORDER_VERSION` itself, so a consent to the earlier text shows as outdated; a renewal is recorded only once the second migration has run. |
-| Only `20261004053500` | The same: `crossborder_consent_state()` comes with the second migration.                                                                                                                                                                                                                                                                    |
-| Both                  | AI runs for founders whose consent is `current`; the others are asked on `/account` to renew it.                                                                                                                                                                                                                                            |
+| Production database                                         | The app on `main`                                                                                                                                                                                                                                                |
+| ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Without `crossborder_consent_state()` or `reserve_ai_run()` | AI stays off and the fixed checks save the answer: the missing function is an error, logged as `ai.error` (stage `consent` or `reserve`). The account page shows the consent as not active and logs `ai.consent_unreadable`. A failure is never read as consent. |
+| With both                                                   | AI runs for founders whose consent is `current`; the others are asked on `/account` to renew it.                                                                                                                                                                 |
 
 In every state, `GET /api/health` shows `"ai": "on"` once a model provider is configured: it does
-not show whether the review can run. An app from before pull request B keeps to the fixed checks
-on the migrated database, since `reserve_ai_call()` is closed to signed-in users: rolling back to
-it is safe, with AI off.
+not show whether the review can run. An app from before pull request B fails closed on the migrated
+database, since the old functions are gone: rolling back to it is safe, with AI off.
 
 After `DB deploy` has migrated production:
 
@@ -201,7 +201,7 @@ After `DB deploy` has migrated production:
 
 3. On `/account`, renew your own consent if it shows as outdated, as a consent to the earlier text
    now does. Then save a typed answer to B1 that you have not saved before, in one of your projects.
-   Vercel → Logs shows no new `ai.skipped` line with `previous_schema`, and the production SQL
+   Vercel → Logs shows no new `ai.error` line with stage `consent` or `reserve`, and the production SQL
    editor returns at least 1 for:
 
    ```sql
@@ -213,13 +213,6 @@ After `DB deploy` has migrated production:
    Use B1: any other answer skips with `no_idea` until B1 is saved, before the consent is read, and
    an answer typed before reuses its stored review without a reservation. Neither `GET /api/health`
    nor a quiet log proves on its own that the review runs.
-
-Later, the contract pull request ([OPEN-QUESTIONS #89](../OPEN-QUESTIONS.md)): once production has
-both migrations and no deployment that could be served, a rollback target included, calls the old
-functions, a migration with a `-- contract:` line (D-141) drops `reserve_ai_call()`, the old
-`record_tool_run()` and `has_crossborder_consent()`, and the app drops its previous-schema paths
-(the account page's own comparison in `accountConsentState` and the `previous_schema` skip). It
-follows the release order like any other.
 
 ## Budgets
 
@@ -304,5 +297,5 @@ Add a row here with every new key.
 | `ai.limit.tokens_in_per_call`           | `8000`                                                                     | Input tokens one call may count, cache tokens included; sets each reservation's hold; `0` stops AI | `reserve_ai_run()`, `record_ai_run()`                                                                      | D-146        |
 | `consent.crossborder.accepted_versions` | `["2026-10-draft-2"]`                                                      | The consent text versions that count; must list `CROSSBORDER_VERSION` (`legal.test.ts`)            | `crossborder_consent_state()`                                                                              | D-147        |
 
-Until the contract migration (#89), the old `reserve_ai_call()` still reads the two `ai.limit` keys
-of D-120, though no signed-in user may run it any more.
+The contract migration (D-191) dropped the old `reserve_ai_call()`, which also read the two
+`ai.limit` keys of D-120; every key above is read by a function that remains.

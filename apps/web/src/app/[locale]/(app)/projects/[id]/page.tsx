@@ -5,6 +5,7 @@ import {
   firstUnanswered,
   getQuestion,
   reviewProject,
+  stepLabel,
   validationTasks,
 } from '@sbn/question-bank';
 import type { Metadata } from 'next';
@@ -142,7 +143,7 @@ export default async function ProjectPage({ params }: PageProps<'/[locale]/proje
                 <li key={`${task.kind}-${task.questionId}`} className="grid gap-0.5">
                   <span className="text-caption text-muted">{t(`task.${task.kind}`)}</span>
                   <TextLink href={stepPath(project.id, task.questionId)}>
-                    {getQuestion(task.questionId).label[locale]}
+                    {stepLabel(task.questionId)[locale]}
                   </TextLink>
                 </li>
               ))}

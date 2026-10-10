@@ -83,6 +83,22 @@ describe('parseAnswers', () => {
     ],
     ['a follow-up without the answer that calls for it', [['A2.1', story]], []],
     [
+      '«لا أعرف» on a follow-up that accepts it (D-199)',
+      [
+        ['F4', answered({ items: [{ label: 'إيجار', amount: 300, currency: 'JOD' }] })],
+        ['F4.1', unknown],
+      ],
+      ['F4', 'F4.1'],
+    ],
+    [
+      'an amount on F4.1 in the shape of its field',
+      [
+        ['F4', answered({ items: [{ label: 'إيجار', amount: 300, currency: 'JOD' }] })],
+        ['F4.1', answered({ amount: 150, currency: 'JOD' })],
+      ],
+      ['F4', 'F4.1'],
+    ],
+    [
       'a follow-up saved as «لا أعرف»',
       [
         ['A2', answered(0)],

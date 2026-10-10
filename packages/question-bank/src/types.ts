@@ -1,3 +1,5 @@
+import type { Mode } from './sequence';
+
 /** The eight diagnostic axes (docs/SPEC.md §1). */
 export const AXES = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'] as const;
 export type Axis = (typeof AXES)[number];
@@ -88,4 +90,8 @@ export interface FollowUp {
   field: Field;
   label: Text;
   help: Text;
+  /** The diagnostic versions that ask it; every version when absent (D-198). */
+  modes?: readonly Mode[];
+  /** Accepts «لا أعرف», stored like any question's (D-104); false when absent (D-199). */
+  allowUnknown?: boolean;
 }
