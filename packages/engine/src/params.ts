@@ -1,4 +1,5 @@
 import { EngineError } from './errors';
+import { gcdBigInt } from './integer';
 import { defaultFigure, type Figure } from './figure';
 import {
   compareRates,
@@ -142,6 +143,21 @@ function requireMonths(key: string, months: number, min: number): void {
   );
 }
 
+/**
+ * A rate must come from `makeRate`: bigints in lowest terms with a positive denominator. A
+ * hand-built `{ num: 2n, den: -4n }` would order wrongly in `compareRates`.
+ */
+function requireRate(key: string, value: Rate): void {
+  ensure(
+    typeof value.num === 'bigint' &&
+      typeof value.den === 'bigint' &&
+      value.den > 0n &&
+      gcdBigInt(value.num, value.den) === 1n,
+    key,
+    'must be a rate built with makeRate (bigints in lowest terms, positive denominator)',
+  );
+}
+
 function requireShare(key: string, value: Rate): void {
   ensure(
     compareRates(value, ZERO_RATE) >= 0 && compareRates(value, ONE_RATE) <= 0,
@@ -156,6 +172,7 @@ function requirePositive(key: string, value: Rate): void {
 
 function requireTiming(key: string, parts: readonly PaymentPart[]): void {
   ensure(parts.length > 0, key, 'needs at least one part');
+  for (const part of parts) requireRate(key, part.share);
   ensure(
     parts.every(
       (part) =>
@@ -172,6 +189,21 @@ function requireTiming(key: string, parts: readonly PaymentPart[]): void {
 }
 
 function validate(params: EngineParams): void {
+  for (const [key, figure] of [
+    [PARAM_KEYS.growthUpperBound, params.growthUpperBound],
+    [PARAM_KEYS.growthFounderShare, params.growthFounderShare],
+    [PARAM_KEYS.growthYear3Share, params.growthYear3Share],
+    [PARAM_KEYS.seasonalPeakFactor, params.seasonalPeakFactor],
+    [PARAM_KEYS.conservativeSalesFactor, params.conservativeSalesFactor],
+    [PARAM_KEYS.optimisticSalesFactor, params.optimisticSalesFactor],
+    [PARAM_KEYS.conservativeVcFactor, params.conservativeVcFactor],
+    [PARAM_KEYS.optimisticVcFactor, params.optimisticVcFactor],
+  ] as const) {
+    requireRate(key, figure.value);
+  }
+  if (params.inflationRate.value !== null) {
+    requireRate(PARAM_KEYS.inflationRate, params.inflationRate.value);
+  }
   requireMonths(PARAM_KEYS.horizonMonths, params.horizonMonths.value, 12);
   ensure(
     params.horizonMonths.value % 12 === 0,
@@ -220,6 +252,8 @@ function validate(params: EngineParams): void {
 export function createEngineParams(overrides: EngineParamOverrides = {}): EngineParams {
   const defaults = defaultParams();
   const { paymentTiming, ...rest } = overrides;
+  requireKnownKeys(rest, Object.keys(defaults), 'override');
+  requireKnownKeys(paymentTiming ?? {}, PAYMENT_OPTIONS, 'paymentTiming override');
   const params: EngineParams = {
     ...defaults,
     ...stripUndefined(rest),
@@ -229,14 +263,33 @@ export function createEngineParams(overrides: EngineParamOverrides = {}): Engine
   return params;
 }
 
+/** Untyped input (JSON) can carry a misspelt key; a silent no-op would keep a default unnoticed. */
+function requireKnownKeys(given: object, known: readonly string[], what: string): void {
+  for (const key of Object.keys(given)) {
+    ensure(known.includes(key), key, `is not a known ${what}`);
+  }
+}
+
 function stripUndefined<T extends object>(value: T): Partial<T> {
   return Object.fromEntries(
     Object.entries(value).filter(([, entry]) => entry !== undefined),
   ) as Partial<T>;
 }
 
-/** The default parameters. Callers that need a change use `createEngineParams`. */
-export const DEFAULT_ENGINE_PARAMS: EngineParams = createEngineParams();
+/** Freezes an object and everything inside it, so a shared constant cannot be changed in place. */
+function deepFreeze<T>(value: T): T {
+  if (typeof value === 'object' && value !== null && !Object.isFrozen(value)) {
+    Object.freeze(value);
+    for (const entry of Object.values(value)) deepFreeze(entry);
+  }
+  return value;
+}
+
+/**
+ * The default parameters, deeply frozen so no caller can change the defaults every run shares.
+ * Callers that need a change use `createEngineParams`, which returns fresh objects.
+ */
+export const DEFAULT_ENGINE_PARAMS: EngineParams = deepFreeze(createEngineParams());
 
 /**
  * Every parameter as a figure, in a fixed order, for the report's list of assumptions and for the

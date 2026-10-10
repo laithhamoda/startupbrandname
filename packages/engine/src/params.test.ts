@@ -7,6 +7,7 @@ import {
   createEngineParams,
   listEngineParams,
   type EngineParamOverrides,
+  type PaymentPart,
 } from './params';
 import { addRates, makeRate, parseRate, ZERO_RATE, ONE_RATE } from './rate';
 
@@ -65,6 +66,27 @@ describe('documented defaults', () => {
       );
       expect(total).toEqual(ONE_RATE);
     }
+  });
+
+  it('cannot be changed in place, at any depth', () => {
+    expect(Object.isFrozen(DEFAULT_ENGINE_PARAMS)).toBe(true);
+    expect(Object.isFrozen(DEFAULT_ENGINE_PARAMS.horizonMonths)).toBe(true);
+    expect(Object.isFrozen(DEFAULT_ENGINE_PARAMS.horizonMonths.inputs)).toBe(true);
+    expect(Object.isFrozen(DEFAULT_ENGINE_PARAMS.growthUpperBound.value)).toBe(true);
+    expect(Object.isFrozen(DEFAULT_ENGINE_PARAMS.paymentTiming.deposit.value)).toBe(true);
+    expect(Object.isFrozen(DEFAULT_ENGINE_PARAMS.paymentTiming.deposit.value[0])).toBe(true);
+    expect(Object.isFrozen(ZERO_RATE)).toBe(true);
+    expect(Object.isFrozen(ONE_RATE)).toBe(true);
+    const mutate = DEFAULT_ENGINE_PARAMS.paymentTiming.cash.value as PaymentPart[];
+    expect(() => mutate.push({ delayMonths: 1, share: ONE_RATE })).toThrow(TypeError);
+    expect(() => {
+      (DEFAULT_ENGINE_PARAMS.horizonMonths as { value: number }).value = 12;
+    }).toThrow(TypeError);
+    expect(DEFAULT_ENGINE_PARAMS.horizonMonths.value).toBe(36);
+  });
+
+  it('gives each call its own, changeable objects', () => {
+    expect(Object.isFrozen(createEngineParams())).toBe(false);
   });
 
   it('gives each call its own objects', () => {
@@ -148,6 +170,38 @@ describe('overrides', () => {
     ['a negative share', { paymentTiming: { cash: timing([0, '2'], [1, '-1']) } }],
   ])('rejects %s', (_label, overrides) => {
     expect(() => createEngineParams(overrides)).toThrow(invalid);
+  });
+
+  it('rejects a rate that was not built with makeRate', () => {
+    const notLowest = { num: 2n, den: 4n };
+    const negativeDen = { num: -1n, den: -2n };
+    const zeroDen = { num: 1n, den: 0n };
+    const unsafe = { num: 1, den: 2 } as unknown as typeof ONE_RATE;
+    for (const bad of [notLowest, negativeDen, zeroDen, unsafe]) {
+      expect(() => createEngineParams({ growthUpperBound: defaultFigure('g', bad) })).toThrow(
+        invalid,
+      );
+      expect(() => createEngineParams({ inflationRate: defaultFigure('i', bad) })).toThrow(invalid);
+      expect(() =>
+        createEngineParams({
+          paymentTiming: { cash: defaultFigure('c', [{ delayMonths: 0, share: bad }]) },
+        }),
+      ).toThrow(invalid);
+    }
+    expect(() =>
+      createEngineParams({ optimisticVcFactor: defaultFigure('v', negativeDen) }),
+    ).toThrow(/optimistic\.vc_factor/);
+  });
+
+  it('rejects a key it does not know, so a misspelt override is not silently ignored', () => {
+    const untyped = (value: object) => value as EngineParamOverrides;
+    expect(() => createEngineParams(untyped({ horizonMonth: defaultFigure('h', 24) }))).toThrow(
+      /horizonMonth/,
+    );
+    expect(() =>
+      createEngineParams(untyped({ paymentTiming: { cheque: timing([0, '1']) } })),
+    ).toThrow(invalid);
+    expect(() => createEngineParams(untyped({ growthUpperBound: undefined }))).not.toThrow();
   });
 
   it('names the key of the parameter in the message', () => {
