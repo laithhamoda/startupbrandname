@@ -126,7 +126,7 @@ export interface EngineInput {
 /**
  * Why a project cannot be calculated: `invalid_project` (a currency the engine does not know, or a
  * reference date that is no date: `questionId` is null and `item` says which); `missing_answer` and
- * `unknown_answer` (F1, F3, F4 and F6 must be real answers, D-110); `currency_mismatch` (an amount
+ * `unknown_answer` (F1, F3, F4 and F6 must be real answers, D-110, D-200); `currency_mismatch` (an amount
  * in a currency other than the project's, D-180; `currency` is the one found); `invalid_value` (a
  * number the engine cannot read, or a negative one); `no_price` (F1 is «لا أعرف» and D4 holds no
  * known price).
@@ -167,7 +167,10 @@ function median(values: readonly bigint[]): bigint {
  * answers, provenance and project always give the same result.
  *
  * Every amount must be in the project currency, or the result is `not_calculable` and names the
- * question and the row (D-180). F3, F4 and F6 must be real answers (D-110). An unknown F1 takes
+ * question and the row (D-180). F3, F4 and F6 must be real answers: the projection cannot run
+ * without them (D-110 names F3 and F4; F6 is the sales forecast itself). F5 is not required here:
+ * the projection does not use it, and the run that needs set-up costs (payback, funding need, D-187
+ * and D-188) decides what an unknown F5 means. An unknown F1 takes
  * the median of D4's known prices as a low-confidence assumption (D-201). An unknown or missing
  * F4.1 counts as zero, F6.2 as the engine's estimate, E7 as no cap, E8 as no staff and D7 as no
  * season, each with a note (D-183, D-200). An answer given as a picked range, or without stored
@@ -301,7 +304,10 @@ export function engineInputFrom(
       item.price === null ? [] : [item.price.minor],
     );
     if (competitorPrices === null || known.length === 0) {
-      reasons.push({ code: 'no_price', questionId: 'F1' });
+      // A D4 price in another currency is already reported; it is not an absent price.
+      if (!reasons.some((reason) => reason.questionId === 'D4')) {
+        reasons.push({ code: 'no_price', questionId: 'F1' });
+      }
     } else {
       price = combineFigures(
         { minor: median(known), currency },

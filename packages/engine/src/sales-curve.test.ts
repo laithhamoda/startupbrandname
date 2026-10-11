@@ -192,7 +192,7 @@ describe('unitCurve', () => {
       yearlyGrowth: [],
       capacity: null,
     });
-    // Levels 10, 11.91, 14.19, 16.94, 20.2, 24 and then 24; times 3/2 in months 1 to 3 and 5/6 after.
+    // Levels 10, 11.91, 14.19, 16.91, 20.15, 24 and then 24; times 3/2 in months 1 to 3 and 5/6 after.
     expect(curve.units.slice(0, 6)).toEqual([15, 18, 21, 14, 17, 20].map(BigInt));
     expect(curve.units.slice(6)).toEqual(Array.from({ length: 6 }, () => 20n));
   });

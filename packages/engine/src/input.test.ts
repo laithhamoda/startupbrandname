@@ -151,7 +151,7 @@ describe('engineInputFrom: F3, F4 and F6 must be real answers (D-110)', () => {
     ]);
   });
 
-  it('reports every problem at once, in the order of the questions read', () => {
+  it('reports every problem at once, in the order the adapter reads them', () => {
     expect(reasonsOf({})).toEqual([
       { code: 'missing_answer', questionId: 'F1' },
       { code: 'missing_answer', questionId: 'F3' },
@@ -292,6 +292,14 @@ describe('engineInputFrom: an unknown F1 takes the median of the known D4 prices
   it('is not calculable without a known competitor price', () => {
     expect(reasonsOf(withD4(d4(null, null)))).toEqual([{ code: 'no_price', questionId: 'F1' }]);
     expect(reasonsOf(withD4(undefined))).toEqual([{ code: 'no_price', questionId: 'F1' }]);
+  });
+
+  it('reports only the currency when every known competitor price is in another currency', () => {
+    const usd = (amount: number) => ({ amount, currency: 'USD' });
+    const d4 = real({ items: [{ name: 'Rival', price: usd(30) }] });
+    expect(reasonsOf(withD4(d4))).toEqual([
+      { code: 'currency_mismatch', questionId: 'D4', item: 'Rival', currency: 'USD' },
+    ]);
   });
 
   it('leaves F1 alone when it has a real answer', () => {

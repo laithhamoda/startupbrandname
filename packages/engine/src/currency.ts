@@ -42,8 +42,8 @@ const TWO_DECIMALS = codes(`
  * The ISO 4217 minor-unit exponent of every currency the app offers: the number of decimals
  * between the major unit and the smallest one (D-194). The app offers the codes of
  * `Intl.supportedValuesOf('currency')` (apps/web `currencyOptions`, question-bank
- * `isCurrencyCode`); a test pins this table to that list, so a currency without a known exponent
- * fails the build instead of being priced with a guess.
+ * `isCurrencyCode`); tests pin this table to that list in this package and in apps/web, so a
+ * currency without a known exponent fails the build instead of being priced with a guess.
  */
 export const CURRENCY_EXPONENTS: ReadonlyMap<CurrencyCode, number> = new Map([
   ...ZERO_DECIMALS.map((code): [CurrencyCode, number] => [code, 0]),
