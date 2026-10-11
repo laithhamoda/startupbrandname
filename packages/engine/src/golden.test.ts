@@ -34,7 +34,13 @@ const REVIEW_PAGE = fileURLToPath(
 /** True when the run should rewrite the golden files instead of comparing with them. */
 const updating = (): boolean => {
   const flag = process.env.UPDATE_GOLDEN;
-  return flag !== undefined && flag !== '';
+  if (flag === undefined || flag === '') return false;
+  // A rewrite in CI would make a changed number pass unseen (D-222).
+  const ci = process.env.CI;
+  if (ci !== undefined && ci !== '' && ci !== 'false') {
+    throw new Error('UPDATE_GOLDEN must not be set in CI: it would hide a changed number.');
+  }
+  return true;
 };
 
 /** Compares `text` with the file, or writes the file when UPDATE_GOLDEN is set. */
@@ -285,7 +291,7 @@ describe('golden project 2: the Jordanian home e-commerce shop', () => {
 
 /*
  * Every F7 option on the e-commerce shop (D-187): the hand computations are in the rows of
- * golden-projects.ts. With cash the cumulative cash touches zero in month 27 and a tax pushes it
+ * golden-projects.ts. With cash the cumulative cash first reaches zero or more in month 27 (+90) and a tax pushes it
  * below again in month 28, so the payback is month 29 (D-215).
  */
 describe('the four payment options on the e-commerce shop', () => {
@@ -314,7 +320,7 @@ describe('the four payment options on the e-commerce shop', () => {
     expect(serialiseRun(runWithPayment(shop, 'instalments'))).toBe(serialiseRun(runGolden(shop)));
   });
 
-  it('touches zero in month 27 with cash, and falls below it again in month 28', () => {
+  it('first reaches zero or more in month 27 with cash, and falls below it again in month 28', () => {
     const run = runWithPayment(shop, 'cash');
     const flow = run.cash.cashFlow;
     expect(flow.status === 'ok' && flow.cumulative.value[27]?.minor).toBe(90_000n);

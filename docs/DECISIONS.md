@@ -1109,7 +1109,9 @@ The owner approved all recommendations offered before the M2 plan.
   warning, then note, each group by alert code in plain code-unit order, and alerts of the same
   code in the order they were raised (the sort is stable): the economics alerts first, then the tax
   alerts by year. `mergeAlerts` is exported for M5. The run is pure and deterministic: the same
-  arguments give a deeply equal result, and a test proves it.
+  arguments give a deeply equal result, and a test proves it. `cash.tax.alerts` is the tax view's
+  own copy of the tax alerts and appears in the serialised run; a reader takes the alerts from
+  `alerts` only and never merges `cash.tax.alerts` into it again.
 - **Reason:** D-216 asked the run function to merge the two lists once. A fixed order lets the report
   and the mentor branch on the list and keeps the golden files stable.
 - **Status:** Active
@@ -1150,7 +1152,9 @@ The owner approved all recommendations offered before the M2 plan.
   `EngineRun` serialised (D-219) is `packages/engine/golden/<name>.json`. The golden test compares
   the engine's text with the file; when the environment variable `UPDATE_GOLDEN` is set it rewrites
   the file instead (`UPDATE_GOLDEN=1 pnpm --filter @sbn/engine test`), so that a changed formula
-  shows as a diff to read and accept on purpose. The golden files and the review page are listed
+  shows as a diff to read and accept on purpose. The test throws when `UPDATE_GOLDEN` is set while
+  `CI` is set, so a rewrite can never hide a changed number in a workflow. The golden files and the
+  review page are listed
   in `.prettierignore`, and ESLint does not lint JSON or HTML.
 - **Reason:** CLAUDE.md §8.3 and §9 (M4: golden-file tests for three sample projects), D-178. A test
   that rewrites its own expectation by default would hide a change, so the rewrite is explicit.
@@ -1173,7 +1177,9 @@ The owner approved all recommendations offered before the M2 plan.
   reason and provenance, and what the engine read differently from the answers; it ends with the
   engine's assumptions and opens with a banner saying these are sample projects with unverified
   fixture tax rules and no advice. The golden test compares the file with the render, and
-  `UPDATE_GOLDEN` rewrites it, like the golden files.
+  `UPDATE_GOLDEN` rewrites it, like the golden files. A bracket without its partner inside a
+  number run stays outside the isolate, so a pair of brackets is never split between the left-to-right
+  isolate and the right-to-left text (a test checks every isolate on the page).
 - **Reason:** D-178: the owner reviews the engine's numbers and wording before M5 puts any of it in
   front of a founder.
 - **Status:** Active

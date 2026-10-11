@@ -40,7 +40,10 @@ export interface EngineRun {
   readonly projection: OperatingProjection;
   readonly unitEconomics: UnitEconomics;
   readonly pricing: Pricing;
-  /** The tax, the cash flow and the FX test. Its alerts are in `alerts`, once (D-216). */
+  /**
+   * The tax, the cash flow and the FX test. Its alerts are in `alerts`, once (D-216);
+   * `cash.tax.alerts` is the tax view's own copy and must not be merged again (D-220).
+   */
   readonly cash: Omit<CashAnalysis, 'alerts'>;
   readonly scenarios: Scenarios;
   readonly tornado: Tornado;
