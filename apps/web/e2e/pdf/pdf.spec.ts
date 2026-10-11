@@ -18,6 +18,9 @@ import { foldForMatch, inspectPdf } from '@sbn/report/testing';
 
 test.beforeAll(() => {
   process.env.PDF_CHROMIUM_PATH = chromium.executablePath();
+  // The pinned CI container runs as user 1001 without user namespaces, where Chromium cannot use
+  // its sandbox (Playwright's own launcher drops it; Puppeteer's does not). Never set on Vercel.
+  process.env.PDF_CHROMIUM_NO_SANDBOX = '1';
 });
 
 test.afterAll(async () => {
@@ -89,6 +92,12 @@ for (const locale of ['ar', 'en'] as const satisfies readonly PrintLocale[]) {
       const stored = pages.map((page) => page.storedText).join('\n');
       // Shaping happened: the file holds the joined (presentation) forms of the letters.
       expect(/[\uFE70-\uFEFC]/.test(stored)).toBe(true);
+      if (locale === 'ar') {
+        // The lam-alef words of the fixture are drawn as the lam-alef ligature glyph (U+FEFB or
+        // U+FEFC), and the tashkeel stays in the file as combining marks, not as lost text.
+        expect(/[\uFEF5-\uFEFC]/.test(stored)).toBe(true);
+        expect(/[\u064B-\u0652]/.test(stored) || /[\uFE70-\uFE7F]/.test(stored)).toBe(true);
+      }
     });
 
     test('shows the hostile text as text: nothing is fetched and nothing runs', async () => {

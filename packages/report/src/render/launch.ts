@@ -14,7 +14,8 @@ import { PdfRenderError } from './errors';
  * - Everywhere else it needs PDF_CHROMIUM_PATH, the path of a Chromium or chrome-headless-shell.
  *   For local convenience only (never relied on in CI), it falls back to the newest Chromium that
  *   Playwright installed in ~/.cache/ms-playwright, so `pnpm exec playwright install chromium` is
- *   enough on a laptop.
+ *   enough on a laptop. PDF_CHROMIUM_NO_SANDBOX=1 starts it without the sandbox, for a container
+ *   that forbids user namespaces (the pinned Playwright image of CI, D-240).
  */
 
 export interface LaunchOptions {
@@ -23,6 +24,16 @@ export interface LaunchOptions {
   /** Where Playwright keeps its browsers. Defaults to ~/.cache/ms-playwright. */
   playwrightCacheDirectory?: string;
 }
+
+/**
+ * Flags of @sparticuz/chromium that a renderer of static data: documents does not need and that
+ * switch off protections (the same-origin policy and the block on insecure content). The CSP tag
+ * and the request filter remain the main defence, but the browser keeps its own as well.
+ */
+export const UNNEEDED_INSECURE_FLAGS: readonly string[] = [
+  '--disable-web-security',
+  '--allow-running-insecure-content',
+];
 
 /** Playwright's layouts, newest browser first: the headless shell is lighter, then full Chromium. */
 const PLAYWRIGHT_BINARIES: readonly { directory: RegExp; binary: string[] }[] = [
@@ -89,31 +100,41 @@ function headlessModeFor(executable: string): 'shell' | true {
   return /headless[-_]shell/.test(basename(executable)) ? 'shell' : true;
 }
 
-/** Chromium refuses the sandbox as root, which is how the Playwright container runs. */
-function isRoot(): boolean {
+/**
+ * Chromium cannot use its sandbox as root, nor as a normal user in a container that forbids user
+ * namespaces, which is how the pinned Playwright image of CI runs (user 1001). So the sandbox is
+ * dropped for root and for PDF_CHROMIUM_NO_SANDBOX=1 (Playwright's own launcher drops it by
+ * default; Puppeteer's does not). Only on the local path: on Vercel the flags of
+ * @sparticuz/chromium already carry it.
+ */
+function noSandbox(env: Readonly<Record<string, string | undefined>>): boolean {
+  if (env.PDF_CHROMIUM_NO_SANDBOX === '1') return true;
   return typeof process.getuid === 'function' && process.getuid() === 0;
 }
 
 async function launchOnVercel(): Promise<Browser> {
   const { default: chromium } = await import('@sparticuz/chromium');
-  // The report uses no WebGL: skip unpacking the 6 MB software renderer.
+  // The report uses no WebGL: this only adds --disable-webgl. The package still unpacks its 6 MB
+  // software renderer into /tmp on a cold start, whatever the mode.
   chromium.setGraphicsMode = false;
   const executablePath = await chromium.executablePath();
+  const args = chromium.args.filter((flag) => !UNNEEDED_INSECURE_FLAGS.includes(flag));
   return puppeteer.launch({
-    args: await puppeteer.defaultArgs({ args: chromium.args, headless: 'shell' }),
+    args: await puppeteer.defaultArgs({ args, headless: 'shell' }),
     executablePath,
     headless: 'shell',
   });
 }
 
 async function launchLocal(options: LaunchOptions): Promise<Browser> {
+  const env = options.env ?? process.env;
   const executablePath = resolveLocalExecutable(options);
   const headless = headlessModeFor(executablePath);
   return puppeteer.launch({
     executablePath,
     headless,
     args: await puppeteer.defaultArgs({
-      args: isRoot() ? ['--no-sandbox'] : [],
+      args: noSandbox(env) ? ['--no-sandbox'] : [],
       headless,
     }),
   });
