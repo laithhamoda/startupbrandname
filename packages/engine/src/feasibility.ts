@@ -178,6 +178,15 @@ function ltvToCac(input: EngineInput, unit: UnitEconomics, params: EngineParams)
 }
 
 /**
+ * The months within which break-even must fall (D-227): the window `feasibility.window_months` or
+ * the projection's length, whichever is shorter. The one place the window is read, so the
+ * criterion `break_even_within_window` and the blocker `no_break_even_in_window` cannot drift apart.
+ */
+export function feasibilityWindow(params: EngineParams, projection: OperatingProjection): number {
+  return Math.min(params.feasibilityWindowMonths.value, projection.calendar.horizonMonths);
+}
+
+/**
  * The criteria of D-227 for one project, in order, derived from results the engine already has:
  * T8 (`unit`), T7 (`prices`), the cash flow, the scenarios of T10 and the adapter's input, so no
  * number is computed twice and the verdict cannot disagree with an alert. Months are read within
@@ -194,7 +203,7 @@ export function feasibilityCriteria(
   params: EngineParams,
 ): readonly Criterion[] {
   const horizon = projection.calendar.horizonMonths;
-  const window = Math.min(params.feasibilityWindowMonths.value, horizon);
+  const window = feasibilityWindow(params, projection);
   const baseMonth = unit.status === 'ok' ? unit.breakEvenMonth : null;
   const baseUsed: Provenance[] = [
     baseMonth ?? unit.contributionMargin,

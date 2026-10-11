@@ -1,6 +1,6 @@
 import type { CashFlow } from './cash-flow';
 import type { OverallConfidence } from './confidence';
-import type { Feasibility } from './feasibility';
+import { feasibilityWindow, type Feasibility } from './feasibility';
 import {
   combineFigures,
   combineProvenance,
@@ -37,9 +37,9 @@ export interface Blocker extends Provenance {
 }
 
 /**
- * Why a project that is not stopped is not `go` either: `score_below_line` (the score is under the
- * go line), `no_score` (nothing was evaluated) or `confidence_low` (overall confidence is low).
- * Empty for a project that meets every condition of `go`.
+ * Why a project is not `go`, listed even when a blocker also stops it: `score_below_line` (the
+ * score is under the go line), `no_score` (nothing was evaluated) or `confidence_low` (overall
+ * confidence is low). Empty for a project that meets every condition of `go` apart from blockers.
  */
 export type HoldBack = 'score_below_line' | 'no_score' | 'confidence_low';
 
@@ -72,10 +72,7 @@ export function blockersOf(
   if (unit.status === 'blocked') {
     found.push(blocker('margin_not_positive', [unit.contributionMargin]));
   } else {
-    const window = Math.min(
-      params.feasibilityWindowMonths.value,
-      projection.calendar.horizonMonths,
-    );
+    const window = feasibilityWindow(params, projection);
     const month = unit.breakEvenMonth.value;
     if (month === null || month > window) {
       found.push(

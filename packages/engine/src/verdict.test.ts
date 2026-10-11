@@ -105,6 +105,23 @@ describe('the blockers', () => {
     expect(tight.verdict.verdict.value).toBe('stop');
   });
 
+  it('holds the blocker exactly when the criterion fails, for any window and horizon', () => {
+    const ramp = { F6: real({ month1: 0, month6: 400, month12: 400 }) };
+    for (const window of [1, 3, 4, 36]) {
+      for (const horizon of [12, 36]) {
+        const run = withAnswers(
+          ramp,
+          { horizonMonths: defaultFigure('engine.horizon_months', horizon) },
+          { feasibilityWindowMonths: defaultFigure('feasibility.window_months', window) },
+        );
+        const criterion = run.feasibility.criteria.find(
+          (item) => item.id === 'break_even_within_window',
+        );
+        expect(codes(run).includes('no_break_even_in_window')).toBe(criterion?.status === 'fail');
+      }
+    }
+  });
+
   describe('a funding need above twice the largest capital, when H3 names only self and family', () => {
     // The profit is positive from month 1, so the lowest cash is minus the set-up costs at month 0.
     const need = (setup: number, h3: Answers['H3'] = real({ values: ['self'] })) =>
