@@ -25,7 +25,20 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   // Workspace packages ship TypeScript source (packages/*/src).
-  transpilePackages: ['@sbn/ai', '@sbn/question-bank'],
+  transpilePackages: ['@sbn/ai', '@sbn/question-bank', '@sbn/report'],
+  // The PDF renderer (D-239): Puppeteer and the 60 MB Chromium of @sparticuz/chromium stay outside
+  // the bundle, because the browser is unpacked from the package's own bin folder at run time.
+  serverExternalPackages: ['puppeteer-core', '@sparticuz/chromium'],
+  // What the tracer cannot see, because the code reads it by path: the browser's compressed files
+  // and the print fonts. Only the temporary measuring route needs them until step 6 (D-241).
+  outputFileTracingIncludes: {
+    '/api/internal/pdf-spike': [
+      './node_modules/@sparticuz/chromium/bin/**',
+      './node_modules/@fontsource/cairo/files/cairo-{arabic,latin}-{600,700}-normal.woff2',
+      './node_modules/@fontsource/tajawal/files/tajawal-{arabic,latin}-{400,500,700}-normal.woff2',
+      './node_modules/@fontsource/{cairo,tajawal}/package.json',
+    ],
+  },
   headers: () =>
     Promise.resolve([
       { source: '/:path*', headers: SECURITY_HEADERS },
