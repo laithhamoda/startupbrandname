@@ -82,6 +82,12 @@ describe('writing numbers', () => {
       '<bdi dir="ltr">(1,800 × 6 = 10,800)</bdi> و<bdi dir="ltr">20% × 8,400</bdi>',
     );
     expect(h('بلا أرقام')).toBe('بلا أرقام');
+    // A bracket without its partner inside the run stays in the surrounding text (balanced pairs).
+    expect(h('التعادل (6 أشهر)')).toBe('التعادل (<bdi dir="ltr">6</bdi> أشهر)');
+    expect(h('3 (7,126,000 DZD)')).toBe(
+      '<bdi dir="ltr">3</bdi> (<bdi dir="ltr">7,126,000</bdi> DZD)',
+    );
+    expect(h('(نمو 100%)')).toBe('(نمو <bdi dir="ltr">100%</bdi>)');
     expect(h('2026-10-05')).toBe('<bdi dir="ltr">2026-10-05</bdi>');
   });
 });
@@ -439,6 +445,16 @@ describe('the review page', () => {
       .replace(/<bdi dir="ltr">[^<]*<\/bdi>/g, '')
       .replace(/<[^>]*>/g, '');
     expect(text).not.toMatch(/\d/);
+  });
+
+  it('never splits a pair of brackets between an isolate and the text around it', () => {
+    const isolates = [...page.matchAll(/<bdi dir="ltr">([^<]*)<\/bdi>/g)].map(
+      (match) => match[1] ?? '',
+    );
+    expect(isolates.length).toBeGreaterThan(0);
+    for (const run of isolates) {
+      expect(run.split('(').length, run).toBe(run.split(')').length);
+    }
   });
 
   it('is deterministic and ends with one newline', () => {

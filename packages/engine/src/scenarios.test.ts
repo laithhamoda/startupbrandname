@@ -229,8 +229,8 @@ describe('the tornado of the flat vector', () => {
 
   // Each variable alone, 20% down and up, year 1 (12 months):
   // price 8 and 12: (3,200 - 1,600 - 1,000) x 12 = 7,200 and (4,800 - 1,600 - 1,000) x 12 = 26,400.
-  // sales 320 and 480 units: (3,200 - 1,280 - 1,000) x 12 = 11,040 and (4,800 - 1,920 - 1,000) x 12... no:
-  // revenue 3,200, COGS 1,280: 920 x 12 = 11,040; revenue 4,800, COGS 1,920: 1,880 x 12 = 22,560.
+  // sales 320 and 480 units: revenue 3,200, COGS 1,280: 920 x 12 = 11,040;
+  // revenue 4,800, COGS 1,920: 1,880 x 12 = 22,560.
   // VC 3.2 and 4.8: (4,000 - 1,280 - 1,000) x 12 = 20,640 and (4,000 - 1,920 - 1,000) x 12 = 12,960.
   // fixed 800 and 1,200: (2,400 - 800) x 12 = 19,200 and (2,400 - 1,200) x 12 = 14,400.
   it('has the year-1 profit at minus 20 and plus 20 percent of each variable', () => {

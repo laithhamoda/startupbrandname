@@ -78,9 +78,52 @@ export function esc(text: string): string {
 const ISOLATED =
   /(?<![A-Za-z\d.])[−+-]?\(*\d(?:[\d\s,.+−×÷=()%-]*[\d)%])?|(?<![A-Za-z\d.])[A-Z]+\d+(?:\.\d+)?(?![A-Za-z\d])/g;
 
+/** The positions of the brackets in `run` that have no partner inside it. */
+function unmatchedBrackets(run: string): Set<number> {
+  const open: number[] = [];
+  const lone = new Set<number>();
+  for (let index = 0; index < run.length; index += 1) {
+    const char = run.charAt(index);
+    if (char === '(') open.push(index);
+    else if (char === ')' && open.pop() === undefined) lone.add(index);
+  }
+  for (const index of open) lone.add(index);
+  return lone;
+}
+
+/**
+ * One isolated run. A bracket without its partner inside the run stays outside the isolate, in the
+ * right-to-left text, so that the pair is not split between the two directions: `3 (7,126,000 DZD)`
+ * isolates `3` and `7,126,000` and leaves both brackets to the surrounding text.
+ */
+function isolate(run: string): string {
+  const lone = unmatchedBrackets(run);
+  if (lone.size === 0) return `<bdi dir="ltr">${run}</bdi>`;
+  let out = '';
+  let piece = '';
+  const flush = (): void => {
+    const trimmed = piece.trim();
+    if (!/\d/.test(trimmed)) out += piece;
+    else {
+      const start = piece.indexOf(trimmed);
+      out += `${piece.slice(0, start)}<bdi dir="ltr">${trimmed}</bdi>${piece.slice(start + trimmed.length)}`;
+    }
+    piece = '';
+  };
+  for (let index = 0; index < run.length; index += 1) {
+    const char = run.charAt(index);
+    if (lone.has(index)) {
+      flush();
+      out += char;
+    } else piece += char;
+  }
+  flush();
+  return out;
+}
+
 /** Escaped text with its numbers and IDs isolated. */
 export function h(text: string): string {
-  return esc(text).replace(ISOLATED, (run) => `<bdi dir="ltr">${run}</bdi>`);
+  return esc(text).replace(ISOLATED, isolate);
 }
 
 function group(digits: string): string {
@@ -124,12 +167,23 @@ export function monthsPhrase(count: number): string {
 export interface Fmt {
   readonly currency: string;
   readonly label: string;
+  /** The run's horizon in months, for the sentences about "within the horizon"; 36 when absent. */
+  readonly horizon?: number;
 }
 
-const fmtOf = (project: GoldenProject): Fmt => ({
+const DEFAULT_HORIZON = 36;
+
+const fmtOf = (project: GoldenProject, horizon: number = DEFAULT_HORIZON): Fmt => ({
   currency: project.context.currency,
   label: project.currencyLabel,
+  horizon,
 });
+
+const horizonOf = (fmt: Fmt): number => fmt.horizon ?? DEFAULT_HORIZON;
+
+/** "Not within N months" for a payback or a break-even that never comes. */
+const withinHorizon = (fmt: Fmt, word: string): string =>
+  `${word} خلال ${String(horizonOf(fmt))} شهرًا`;
 
 const money = (minor: bigint, fmt: Fmt): string =>
   formatMoney({ minor, currency: fmt.currency }, fmt.label);
@@ -180,8 +234,8 @@ const NOTE_WORD: Readonly<Record<EngineNote['code'] | CashFlowNote['code'], stri
   legal_form_assumed_sole: 'الشكل القانوني (G1) غير محسوم فافترض المحرّك صاحب منشأة فردية.',
   foreign_exposure_unset:
     'حصة التكاليف المرتبطة بعملة أجنبية (D6) غير محددة فلا يُجرى اختبار العملة.',
-  receipts_after_horizon: 'جزء من النقد يصل بعد الشهر 36 فلم يدخل في الحساب.',
-  tax_after_horizon: 'ضريبة السنة الأخيرة تُدفع بعد الشهر 36 فلم تدخل في الحساب.',
+  receipts_after_horizon: 'جزء من النقد يصل بعد الشهر {horizon} فلم يدخل في الحساب.',
+  tax_after_horizon: 'ضريبة السنة الأخيرة تُدفع بعد الشهر {horizon} فلم تدخل في الحساب.',
   tax_not_calculated: 'لم تُحسب ضريبة، فالتدفق النقدي قبل الضريبة.',
   payment_assumed_cash: 'طريقة دفع العميل (F7) لم تُحدَّد فافتُرض الدفع نقدًا.',
 };
@@ -379,7 +433,7 @@ export function describeExpected(id: HeadlineId, value: Expected, fmt: Fmt): str
       return `${String(value.units)} وحدة`;
     case 'month':
       if (value.month === null) {
-        return id === 'payback' ? 'لا يُسترد خلال 36 شهرًا' : 'لا تعادل خلال 36 شهرًا';
+        return withinHorizon(fmt, id === 'payback' ? 'لا يُسترد' : 'لا تعادل');
       }
       if (id === 'payback')
         return value.month === 0 ? 'لم ينزل الرصيد تحت الصفر' : monthsPhrase(value.month);
@@ -486,7 +540,7 @@ function headlineTable(entry: ReviewEntry): string {
   const { project, run } = entry;
   const rows = project.rows.map((row) => {
     const actual = headlineValue(run, row.id);
-    return `<tr><th scope="row" data-label="الرقم">${h(row.label)}</th>${cell('الحساب اليدوي', h(row.hand))}${cell('ناتج المحرّك', key(describeExpected(row.id, actual, fmtOf(project))))}${cell('المطابقة', mark(sameValue(row.expected, actual)))}</tr>`;
+    return `<tr><th scope="row" data-label="الرقم">${h(row.label)}</th>${cell('الحساب اليدوي', h(row.hand))}${cell('ناتج المحرّك', key(describeExpected(row.id, actual, fmtOf(project, run.projection.calendar.horizonMonths))))}${cell('المطابقة', mark(sameValue(row.expected, actual)))}</tr>`;
   });
   return table(
     'الأرقام الرئيسية، كل رقم بجانب حسابه اليدوي',
@@ -507,7 +561,7 @@ function scenarioText(result: ScenarioResult): string {
 function scenarioTable(entry: ReviewEntry): string {
   const { project, run } = entry;
   const horizon = String(run.projection.calendar.horizonMonths);
-  const fmt = fmtOf(project);
+  const fmt = fmtOf(project, run.projection.calendar.horizonMonths);
   const rows = (['conservative', 'base', 'optimistic'] as const).map((kind) => {
     const result = run.scenarios[kind];
     const funding =
@@ -571,13 +625,13 @@ function fxTable(entry: ReviewEntry): string {
 function variantTable(entry: ReviewEntry): string {
   const { project, variants } = entry;
   if (variants.length === 0) return '';
-  const fmt = fmtOf(project);
+  const fmt = fmtOf(project, entry.run.projection.calendar.horizonMonths);
   const rows = variants.map((variant) => {
     const expectedNeed = variant.row.fundingNeed === variant.fundingNeed;
     const expectedMonth = variant.row.fundingMonth === variant.fundingMonth;
     const expectedPayback = variant.row.payback === variant.payback;
     const payback =
-      variant.payback === null ? 'لا يُسترد خلال 36 شهرًا' : monthsPhrase(variant.payback);
+      variant.payback === null ? withinHorizon(fmt, 'لا يُسترد') : monthsPhrase(variant.payback);
     return `<tr><th scope="row" data-label="طريقة الدفع">${h(OPTION_WORD[variant.row.option])}</th>${cell('احتياج التمويل', key(money(variant.fundingNeed, fmt)))}${cell('شهر أدنى رصيد', h(`الشهر ${String(variant.fundingMonth)}`))}${cell('الاسترداد', h(payback))}${cell('الحساب اليدوي', h(variant.row.hand))}${cell('المطابقة', mark(expectedNeed && expectedMonth && expectedPayback))}</tr>`;
   });
   return [
@@ -608,8 +662,9 @@ function noteList(entry: ReviewEntry): string {
     ...run.projection.notes.map((note) => note.code),
     ...(flow.status === 'ok' ? flow.notes.map((note) => note.code) : []),
   ];
+  const horizon = String(run.projection.calendar.horizonMonths);
   if (codes.length === 0) return '<p>لا ملاحظات.</p>';
-  return `<ul class="plain">${codes.map((code) => `<li>${h(NOTE_WORD[code])}</li>`).join('\n')}</ul>`;
+  return `<ul class="plain">${codes.map((code) => `<li>${h(NOTE_WORD[code].replace('{horizon}', horizon))}</li>`).join('\n')}</ul>`;
 }
 
 function inputList(entry: ReviewEntry): string {
