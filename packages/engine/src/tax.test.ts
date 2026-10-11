@@ -2,7 +2,12 @@ import type { Answers } from '@sbn/question-bank';
 import { describe, expect, it } from 'vitest';
 import { EngineError } from './errors';
 import { makeFigure } from './figure';
-import { engineInputFrom, type EngineInput, type ProjectContext } from './input';
+import {
+  engineInputFrom,
+  type EngineInput,
+  type ProjectContext,
+  type ProvenanceBySteps,
+} from './input';
 import { makeMoney, type Money } from './money';
 import { projectOperatingLines, type OperatingProjection } from './projection';
 import { makeRate } from './rate';
@@ -267,11 +272,15 @@ const answers = (more: Answers = {}): Answers => ({
   ...more,
 });
 
+/** G1 as the founder stated it: their own, confirmed answer. */
+const statedG1 = { G1: { source: 'user', confidence: 'high', validated: true } } as const;
+
 function build(
   more: Answers = {},
   context: ProjectContext = project,
+  provenance: ProvenanceBySteps = {},
 ): { input: EngineInput; projection: OperatingProjection } {
-  const result = engineInputFrom(answers(more), {}, context);
+  const result = engineInputFrom(answers(more), provenance, context);
   if (result.status !== 'ok') throw new Error(JSON.stringify(result.reasons));
   return { input: result.input, projection: projectOperatingLines(result.input) };
 }
@@ -280,8 +289,9 @@ function analyse(
   context: TaxContext,
   more: Answers = {},
   projectContext: ProjectContext = project,
+  provenance: ProvenanceBySteps = {},
 ): CalculatedTax {
-  const { input, projection } = build(more, projectContext);
+  const { input, projection } = build(more, projectContext, provenance);
   const result = taxAnalysis(input, projection, context);
   if (result.status !== 'calculated') throw new Error('expected a calculated tax');
   return result;
@@ -365,18 +375,38 @@ describe('taxAnalysis: provenance (D-181)', () => {
     jordan({ basis: 'fixed', rate: null, fixedAmount: jod(300), ...over });
 
   it('makes a figure from a fixture rule external, low confidence and unvalidated', () => {
-    const due = analyse({ rules: [fixed()] }).years[0]?.charges[0]?.due;
+    const due = analyse({ rules: [fixed()] }, { G1: real('sole') }, project, statedG1).years[0]
+      ?.charges[0]?.due;
     expect(due).toMatchObject({ source: 'external', confidence: 'low', validated: false });
     expect(due?.inputs).toEqual([
       { kind: 'country_pack_item', id: 'fixture.jo.sole.income' },
+      { kind: 'answer', id: 'G1' },
       { kind: 'rule', id: TAX_RULES.due },
     ]);
   });
 
   it('makes a figure from a verified rule external, high confidence and validated', () => {
     const verified = fixed({ status: 'verified', lastVerified: '2026-09-01' });
-    const due = analyse({ rules: [verified] }).years[0]?.charges[0]?.due;
+    const due = analyse({ rules: [verified] }, { G1: real('sole') }, project, statedG1).years[0]
+      ?.charges[0]?.due;
     expect(due).toMatchObject({ source: 'external', confidence: 'high', validated: true });
+  });
+
+  it('makes the tax an unvalidated assumption when G1 is "not sure yet" or missing (D-211)', () => {
+    const verified = fixed({ status: 'verified', lastVerified: '2026-09-01' });
+    for (const more of [{ G1: real('dont_know') }, {}]) {
+      const tax = analyse({ rules: [verified] }, more);
+      const charge = tax.years[0]?.charges[0]?.due;
+      expect(charge).toMatchObject({ source: 'assumption', confidence: 'low', validated: false });
+      expect(charge?.inputs).toContainEqual({ kind: 'answer', id: 'G1' });
+      expect(tax.years[0]?.total).toMatchObject({ source: 'assumption', validated: false });
+    }
+  });
+
+  it('lists the legal form among the inputs of the ceiling alert', () => {
+    const alert = analyse({ rules: [fixed({ turnoverCeiling: jod(20_000) })] }).alerts[0];
+    expect(alert).toMatchObject({ source: 'assumption', validated: false });
+    expect(alert?.inputs).toContainEqual({ kind: 'answer', id: 'G1' });
   });
 
   it('takes the weakest provenance of the rule and of the projection it is applied to', () => {
@@ -448,6 +478,24 @@ describe('taxAnalysis: the regime from the country and G1 (D-186)', () => {
       const tax = analyse({ rules });
       expect(tax.years[0]?.charges.map((charge) => charge.ruleId)).toEqual(['new']);
       expect(tax.years[0]?.total.value).toEqual(fils(278_500n));
+    }
+  });
+
+  it('lets a newer rule replace an older one of the same levy that renames the regime', () => {
+    const older = jordan({ id: 'old', regime: 'ae_2020', effectiveFrom: '2020-01-01' });
+    const newer = jordan({
+      id: 'new',
+      regime: 'ae_2025',
+      effectiveFrom: '2025-01-01',
+      rate: makeRate(1n, 100n),
+    });
+    for (const rules of [
+      [older, newer],
+      [newer, older],
+    ]) {
+      const tax = analyse({ rules });
+      expect(tax.regime).toBe('ae_2025');
+      expect(tax.years[0]?.charges.map((charge) => charge.ruleId)).toEqual(['new']);
     }
   });
 
@@ -607,6 +655,22 @@ describe('taxAnalysis: the alerts', () => {
       'turnover_above_vat_threshold',
       'turnover_above_vat_threshold',
     ]);
+  });
+
+  it('refuses a VAT threshold in another currency or below zero', () => {
+    const { input, projection } = build();
+    const threshold = (money: Money) =>
+      makeFigure(money, {
+        source: 'external',
+        confidence: 'high',
+        validated: true,
+        inputs: [{ kind: 'country_pack_item', id: 'fixture.jo.vat' }],
+      });
+    for (const vatThreshold of [threshold(makeMoney(1_000n, 'USD')), threshold(fils(-1n))]) {
+      expect(() => taxAnalysis(input, projection, { rules: [jordan()], vatThreshold })).toThrow(
+        expect.objectContaining({ code: 'invalid_param' }) as Error,
+      );
+    }
   });
 
   it('still raises the VAT alert when no regime could be calculated, after the regime alert', () => {

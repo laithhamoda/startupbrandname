@@ -345,21 +345,31 @@ function regimeRules(
   );
   candidates.forEach(validateTaxRule);
   const inForce = candidates.filter((candidate) => candidate.effectiveFrom <= input.referenceDate);
-  const regimes = [...new Set(inForce.map((candidate) => candidate.regime))].sort();
+
+  // A newer rule of the same levy replaces an older one, also when it renames the regime. Rules of
+  // one levy taking effect on the same day stay side by side: under two regimes they are an
+  // ambiguity (below); under one regime they are a data error.
+  const newest = new Map<string, string>();
+  for (const candidate of inForce) {
+    const date = newest.get(candidate.levy);
+    if (date === undefined || candidate.effectiveFrom > date) {
+      newest.set(candidate.levy, candidate.effectiveFrom);
+    }
+  }
+  const latest = new Map<string, TaxRule>();
+  for (const candidate of inForce) {
+    if (candidate.effectiveFrom !== newest.get(candidate.levy)) continue;
+    const key = `${candidate.regime}|${candidate.levy}`;
+    const current = latest.get(key);
+    if (current !== undefined) {
+      fail(candidate, `and ${current.id} take effect on the same day for ${candidate.levy}`);
+    }
+    latest.set(key, candidate);
+  }
+  const regimes = [...new Set([...latest.values()].map((candidate) => candidate.regime))].sort();
   if (regimes.length === 0) return { gap: { code: 'no_rule' } };
   if (regimes.length > 1) return { gap: { code: 'ambiguous_regime', regimes } };
 
-  // A newer rule of the same levy replaces an older one; two taking effect on one day is a data error.
-  const latest = new Map<string, TaxRule>();
-  for (const candidate of inForce) {
-    const current = latest.get(candidate.levy);
-    if (current?.effectiveFrom === candidate.effectiveFrom) {
-      fail(candidate, `and ${current.id} take effect on the same day for ${candidate.levy}`);
-    }
-    if (current === undefined || candidate.effectiveFrom > current.effectiveFrom) {
-      latest.set(candidate.levy, candidate);
-    }
-  }
   // Taxes before social contributions, then by levy: the result does not depend on the order passed in.
   const order = (candidate: TaxRule) => `${candidate.kind === 'tax' ? 'a' : 'b'}|${candidate.levy}`;
   const rules = [...latest.values()].sort((a, b) => (order(a) < order(b) ? -1 : 1));
@@ -385,8 +395,11 @@ function yearTotal(line: readonly Money[], year: number, currency: CurrencyCode)
  * raises `turnover_above_regime_ceiling` for that year, and above the caller's VAT threshold
  * `turnover_above_vat_threshold` (VAT itself is not calculated). Every figure carries the rule it
  * came from (`country_pack_item`), so a fixture or unverified rule shows (D-181).
- * Throws `invalid_param` for a malformed rule and `currency_mismatch` if the projection was made
- * in another currency than the input or the VAT threshold is in another currency.
+ * An assumed legal form (G1 not sure or missing) is an input of every tax figure and of the
+ * ceiling alert, so the tax and everything built on it is an unvalidated low-confidence assumption
+ * (D-211). Throws `invalid_param` for a malformed rule or a VAT threshold that is negative or in
+ * another currency than the input, and `currency_mismatch` if the projection was made in another
+ * currency than the input.
  */
 export function taxAnalysis(
   input: EngineInput,
@@ -408,6 +421,12 @@ export function taxAnalysis(
   );
 
   const vat = context.vatThreshold ?? null;
+  if (vat !== null && (vat.value.currency !== currency || vat.value.minor < 0n)) {
+    throw new EngineError(
+      'invalid_param',
+      `The VAT threshold must be in ${currency} and not negative.`,
+    );
+  }
   const vatAlerts = (): TaxAlert[] =>
     vat === null
       ? []
@@ -443,7 +462,7 @@ export function taxAnalysis(
     const profit = at(profits, index);
     const charges = selected.rules.map((taxRule): TaxCharge => {
       const result = taxDue(taxRule, turnover, profit);
-      const inputs: Provenance[] = [ruleProvenance(taxRule)];
+      const inputs: Provenance[] = [ruleProvenance(taxRule), input.legalForm];
       if (taxRule.basis === 'turnover') inputs.push(projection.revenue.provenance);
       if (taxRule.basis === 'profit') inputs.push(projection.operatingProfit.provenance);
       return {
@@ -488,7 +507,7 @@ export function taxAnalysis(
             ? [
                 alert(
                   'turnover_above_regime_ceiling',
-                  [projection.revenue.provenance, ruleProvenance(lowest.taxRule)],
+                  [projection.revenue.provenance, ruleProvenance(lowest.taxRule), input.legalForm],
                   {
                     year: index + 1,
                     regime,
