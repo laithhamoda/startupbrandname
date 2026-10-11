@@ -110,6 +110,16 @@ describe('the temporary PDF spike route', () => {
     expect(log.error).toHaveBeenCalledWith('pdf_spike.failed', { code: 'launch_failed' });
   });
 
+  it('adds the first 400 characters of the message only when ?detail=1 asks for it', async () => {
+    vi.stubEnv('VERCEL_ENV', 'preview');
+    report.getSharedBrowser.mockRejectedValue(new Error('x'.repeat(500)));
+
+    const response = await GET(request('?detail=1'));
+
+    expect(response.status).toBe(500);
+    expect(await response.json()).toEqual({ error: 'unknown', detail: 'x'.repeat(400) });
+  });
+
   it('answers 500 unknown for any other failure', async () => {
     vi.stubEnv('VERCEL_ENV', 'preview');
     report.renderPdf.mockRejectedValue(new Error('secret detail'));

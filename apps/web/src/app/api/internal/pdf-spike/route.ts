@@ -40,14 +40,15 @@ async function cgroupPeakMb(): Promise<string> {
  * the 1 to 3 seconds of a cold start), x-pdf-launch-ms, x-pdf-bytes, x-pdf-aborted (requests the
  * filter had to abort), x-pdf-node-rss-mb (the Node process only, without Chromium),
  * x-pdf-cgroup-peak-mb (the whole container, when it is shown), x-pdf-region and x-pdf-node. A
- * failure answers with its code and the first 400 characters of the message: this route only
- * exists on a protected preview, and the message is what tells packaging from a real limit.
+ * failure answers with its code only; with ?detail=1 it adds the first 400 characters of the
+ * message, which is what tells a packaging problem from a real limit on the protected preview.
  */
 export async function GET(request: Request): Promise<Response> {
   if (!isAvailable()) return new Response('Not found', { status: 404 });
 
-  const locale: PrintLocale =
-    new URL(request.url).searchParams.get('locale') === 'en' ? 'en' : 'ar';
+  const query = new URL(request.url).searchParams;
+  const locale: PrintLocale = query.get('locale') === 'en' ? 'en' : 'ar';
+  const wantsDetail = query.get('detail') === '1';
   try {
     const launchStartedAt = performance.now();
     const { browser, launched } = await getSharedBrowser();
@@ -82,7 +83,9 @@ export async function GET(request: Request): Promise<Response> {
     const code = error instanceof PdfRenderError ? error.code : 'unknown';
     await log.error('pdf_spike.failed', { code });
     return Response.json(
-      { error: code, detail: error instanceof Error ? error.message.slice(0, 400) : null },
+      wantsDetail && error instanceof Error
+        ? { error: code, detail: error.message.slice(0, 400) }
+        : { error: code },
       { status: 500, headers: { 'cache-control': 'no-store' } },
     );
   }
