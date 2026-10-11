@@ -48,6 +48,12 @@ export interface ProjectContext {
   readonly referenceDate: string;
 }
 
+/**
+ * The legal form of the business as far as the tax engine is concerned (G1, D-186): a sole
+ * proprietorship or a company. "Not sure yet" is not a third form: it takes the sole proprietor.
+ */
+export type LegalForm = 'sole' | 'company';
+
 /** A competitor's price (D4); `price` is null when the founder does not know it. */
 export interface CompetitorPrice {
   readonly name: string;
@@ -99,7 +105,9 @@ export interface EngineNote {
     | 'capital_unset'
     | 'capital_other_currency'
     | 'runway_unset'
-    | 'break_even_target_unset';
+    | 'break_even_target_unset'
+    | 'legal_form_assumed_sole'
+    | 'foreign_exposure_unset';
   readonly questionId?: StepId;
   readonly state?: 'missing' | 'unknown';
   /** For `capital_other_currency`, the currency A5 was given in. */
@@ -159,6 +167,18 @@ export interface EngineInput {
   readonly runway: Figure<MonthLimit>;
   /** H5: the longest wait for break-even the founder accepts, as a limit on the break-even month. */
   readonly breakEvenTarget: Figure<MonthLimit>;
+  /**
+   * G1: the legal form the tax regime is picked by, together with the country (D-186). "Not sure
+   * yet" and a missing G1 are the sole proprietor, an unvalidated low-confidence assumption with a
+   * note.
+   */
+  readonly legalForm: Figure<LegalForm>;
+  /**
+   * D6: the share of the costs that depends on imports or a foreign currency, an exact rate above
+   * 0 and up to 1. Null when D6 is "no", is 0 percent, is missing or is «لا أعرف» (a note says so
+   * for the last two): there is then no FX test (SPEC T9).
+   */
+  readonly foreignShare: Figure<Rate | null>;
   readonly notes: readonly EngineNote[];
 }
 
@@ -225,8 +245,11 @@ export const PRICE_FROM_D4_RULE = 'F1.d4_median';
  * season, each with a note (D-183, D-200). An unknown or missing F2.1 (asked only for a
  * subscription), A5, A7 or H5 is left unset with a note, and the alert that needs it is not
  * evaluated; an A5 in another currency is likewise left unset, never converted (D-190, D-206).
- * An answer given as a picked range, or without stored provenance, counts as an assumption. Money is converted from major to minor units here, once
- * (D-179). Every problem is reported, not only the first.
+ * G1 "not sure yet" (or missing) is the sole proprietor and an unknown or missing D6 means no FX
+ * test, each with a note (D-186, D-211); a G1 or D6 the question bank cannot produce stops the run.
+ * An answer given as a picked range, or without stored provenance, counts as an assumption. Money
+ * is converted from major to minor units here, once (D-179). Every problem is reported, not only
+ * the first.
  */
 export function engineInputFrom(
   answers: Answers,
@@ -509,6 +532,38 @@ export function engineInputFrom(
   const option = PAYMENT_OPTIONS.find((candidate) => candidate === way);
   const paymentOption = option === undefined ? null : answered('F7', option);
 
+  let legalForm = standIn<LegalForm>('G1', 'sole');
+  const g1 = valueOf(answers, 'G1', 'single');
+  if (g1 === undefined) {
+    note('legal_form_assumed_sole', 'G1');
+  } else if (g1 === 'dont_know') {
+    notes.push({ code: 'legal_form_assumed_sole', questionId: 'G1', state: 'unknown' });
+  } else if (g1 === 'sole' || g1 === 'company') {
+    legalForm = answered<LegalForm>('G1', g1);
+  } else {
+    unreadable('G1');
+  }
+
+  let foreignShare = standIn<Rate | null>('D6', null);
+  const d6 = valueOf(answers, 'D6', 'yes_no_percent');
+  if (d6 === undefined) {
+    note('foreign_exposure_unset', 'D6');
+  } else if (!d6.answer) {
+    foreignShare = answered<Rate | null>('D6', null);
+  } else if (
+    d6.percent === undefined ||
+    !Number.isFinite(d6.percent) ||
+    d6.percent < 0 ||
+    d6.percent > 100
+  ) {
+    unreadable('D6');
+  } else {
+    foreignShare = answered<Rate | null>(
+      'D6',
+      d6.percent === 0 ? null : rateFromPercent(d6.percent),
+    );
+  }
+
   if (reasons.length > 0 || !price || !variableCost || !fixedCosts || !sales) {
     return { status: 'not_calculable', reasons };
   }
@@ -536,6 +591,8 @@ export function engineInputFrom(
       capital,
       runway,
       breakEvenTarget,
+      legalForm,
+      foreignShare,
       notes,
     },
   };

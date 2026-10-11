@@ -425,6 +425,8 @@ describe('engineInputFrom: the optional answers and their fallbacks', () => {
       expect.objectContaining({ code: 'capital_unset' }),
       expect.objectContaining({ code: 'runway_unset' }),
       expect.objectContaining({ code: 'break_even_target_unset' }),
+      expect.objectContaining({ code: 'legal_form_assumed_sole' }),
+      expect.objectContaining({ code: 'foreign_exposure_unset' }),
     ]);
   });
 
@@ -627,6 +629,96 @@ describe('engineInputFrom: churn (F2.1), capital (A5), runway (A7) and break-eve
     expect(reasonsOf({ ...basic(), A7: real('forever'), H5: real('never') })).toEqual([
       { code: 'invalid_value', questionId: 'A7', item: undefined },
       { code: 'invalid_value', questionId: 'H5', item: undefined },
+    ]);
+  });
+});
+
+describe('engineInputFrom: the legal form (G1) and the foreign-currency share (D6)', () => {
+  it.each(['sole', 'company'] as const)('reads G1 = %s as the founder answered', (form) => {
+    const input = inputOf({ ...basic(), G1: real(form) }, allUser('G1'));
+    expect(input.legalForm.value).toBe(form);
+    expect(input.legalForm).toMatchObject({
+      source: 'user',
+      confidence: 'high',
+      validated: true,
+      inputs: [{ kind: 'answer', id: 'G1' }],
+    });
+    expect(input.notes.some((note) => note.code === 'legal_form_assumed_sole')).toBe(false);
+  });
+
+  it('takes the sole proprietor, with a note, for "not sure yet" and when G1 is missing', () => {
+    const unsure = inputOf({ ...basic(), G1: real('dont_know') }, allUser('G1'));
+    expect(unsure.legalForm.value).toBe('sole');
+    expect(unsure.legalForm).toMatchObject({
+      source: 'assumption',
+      confidence: 'low',
+      validated: false,
+      inputs: [{ kind: 'answer', id: 'G1' }],
+    });
+    expect(unsure.notes).toContainEqual({
+      code: 'legal_form_assumed_sole',
+      questionId: 'G1',
+      state: 'unknown',
+    });
+    const missing = inputOf(basic());
+    expect(missing.legalForm.value).toBe('sole');
+    expect(missing.notes).toContainEqual({
+      code: 'legal_form_assumed_sole',
+      questionId: 'G1',
+      state: 'missing',
+    });
+  });
+
+  it('refuses a legal form the question bank does not offer', () => {
+    expect(reasonsOf({ ...basic(), G1: real('partnership') })).toEqual([
+      { code: 'invalid_value', questionId: 'G1', item: undefined },
+    ]);
+  });
+
+  it('reads D6 = yes with a share as an exact rate', () => {
+    const input = inputOf({ ...basic(), D6: real({ answer: true, percent: 12.5 }) }, allUser('D6'));
+    expect(input.foreignShare.value).toEqual(makeRate(1n, 8n));
+    expect(input.foreignShare).toMatchObject({
+      source: 'user',
+      validated: true,
+      inputs: [{ kind: 'answer', id: 'D6' }],
+    });
+    expect(input.notes.some((note) => note.code === 'foreign_exposure_unset')).toBe(false);
+  });
+
+  it('has no foreign share for D6 = no, or yes with 0 percent, and no note', () => {
+    for (const value of [{ answer: false }, { answer: true, percent: 0 }]) {
+      const input = inputOf({ ...basic(), D6: real(value) }, allUser('D6'));
+      expect(input.foreignShare.value).toBeNull();
+      expect(input.foreignShare.source).toBe('user');
+      expect(input.notes.some((note) => note.code === 'foreign_exposure_unset')).toBe(false);
+    }
+  });
+
+  it('leaves the share out, with a note, when D6 is missing or unknown', () => {
+    const missing = inputOf(basic());
+    expect(missing.foreignShare.value).toBeNull();
+    expect(missing.foreignShare).toMatchObject({ source: 'assumption', confidence: 'low' });
+    expect(missing.notes).toContainEqual({
+      code: 'foreign_exposure_unset',
+      questionId: 'D6',
+      state: 'missing',
+    });
+    expect(inputOf({ ...basic(), D6: UNKNOWN }).notes).toContainEqual({
+      code: 'foreign_exposure_unset',
+      questionId: 'D6',
+      state: 'unknown',
+    });
+  });
+
+  it.each([
+    [{ answer: true }],
+    [{ answer: true, percent: -1 }],
+    [{ answer: true, percent: 101 }],
+    [{ answer: true, percent: Number.NaN }],
+  ])('refuses a D6 the question bank cannot produce: %j', (value) => {
+    expect(reasonsOf({ ...basic(), D6: real(value) })).toEqual([
+      { code: 'invalid_value', questionId: 'D6', item: undefined },
     ]);
   });
 });
