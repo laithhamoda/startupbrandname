@@ -9,8 +9,8 @@ import {
   type ProvenanceBySteps,
 } from './input';
 import { makeMoney, moneyToMajorString, type Money } from './money';
-import { createEngineParams, type EngineParams } from './params';
-import { parseRate } from './rate';
+import { createEngineParams, DEFAULT_ENGINE_PARAMS, type EngineParams } from './params';
+import { makeRate, ONE_RATE, parseRate, ZERO_RATE } from './rate';
 import { projectOperatingLines, T9_RULES, type ProjectionLine } from './projection';
 
 const project: ProjectContext = {
@@ -522,6 +522,86 @@ describe('inflation (D-185)', () => {
     expect(plain.fixedCosts.monthly[24]).toEqual(fils(320500n));
     expect(plain.cogs.monthly[12]).toEqual(fils(102n * 10500n));
     expect(plain.notes).toContainEqual({ code: 'inflation_not_applied' });
+  });
+});
+
+describe('the COGS multiplier (the FX test of T9 and the scenarios of T10)', () => {
+  const answers = answersFor(10, 40, 100, { 'F6.2': real(20) });
+  const input = inputOf(answers);
+  const plain = projectOperatingLines(input);
+  const inflation = createEngineParams({
+    inflationRate: makeFigure(parseRate('0.05'), {
+      source: 'external',
+      confidence: 'high',
+      validated: true,
+      inputs: [{ kind: 'country_pack_item', id: 'JO.inflation' }],
+    }),
+  });
+
+  it('gives exactly the same projection when it is left out, or is 1', () => {
+    expect(projectOperatingLines(input, DEFAULT_ENGINE_PARAMS, {})).toEqual(plain);
+    expect(
+      projectOperatingLines(input, DEFAULT_ENGINE_PARAMS, { cogsMultiplier: ONE_RATE }),
+    ).toEqual(plain);
+  });
+
+  it('scales COGS and the profits built on it, and nothing else', () => {
+    const dearer = projectOperatingLines(input, DEFAULT_ENGINE_PARAMS, {
+      cogsMultiplier: parseRate('1.1'),
+    });
+    // Month 1: 10 units * 10.500 = 105.000, times 1.1 = 115.500. Month 13: 102 units = 1071.000, times 1.1 = 1178.100.
+    expect(dearer.cogs.monthly[0]).toEqual(fils(115500n));
+    expect(dearer.cogs.monthly[11]).toEqual(fils(1155000n));
+    expect(dearer.cogs.monthly[12]).toEqual(fils(1178100n));
+    // Gross profit 250.000 - 115.500 = 134.500; operating profit 134.500 - 320.500 = -186.000.
+    expect(dearer.grossProfit.monthly[0]).toEqual(fils(134500n));
+    expect(dearer.operatingProfit.monthly[0]).toEqual(fils(-186000n));
+    expect(dearer.revenue).toEqual(plain.revenue);
+    expect(dearer.units).toEqual(plain.units);
+    expect(dearer.fixedCosts).toEqual(plain.fixedCosts);
+    expect(dearer.operatingCosts).toEqual(plain.operatingCosts);
+    // The quarterly columns are still sums of the months.
+    const total = (line: ProjectionLine<Money>) =>
+      line.monthly.reduce((sum, amount) => sum + amount.minor, 0n);
+    expect(dearer.cogs.byPeriod.reduce((sum, amount) => sum + amount.minor, 0n)).toBe(
+      total(dearer.cogs),
+    );
+  });
+
+  it('allows a multiplier of zero and below 1', () => {
+    const free = projectOperatingLines(input, DEFAULT_ENGINE_PARAMS, { cogsMultiplier: ZERO_RATE });
+    expect(free.cogs.monthly.every((amount) => amount.minor === 0n)).toBe(true);
+    const half = projectOperatingLines(input, DEFAULT_ENGINE_PARAMS, {
+      cogsMultiplier: makeRate(1n, 2n),
+    });
+    expect(half.cogs.monthly[0]).toEqual(fils(52500n));
+  });
+
+  it('rounds the line once together with the inflation, half away from zero', () => {
+    // Month 25: 122 units * 10.500 * 1.1025 * 1/2 = 706.15125 JOD, which is 706151.25 fils: 706.151.
+    // Rounding the inflated COGS (1412.303) first would give 706.1515, which rounds up to 706.152.
+    const projection = projectOperatingLines(input, inflation, {
+      cogsMultiplier: makeRate(1n, 2n),
+    });
+    expect(projection.cogs.monthly[24]).toEqual(fils(706151n));
+  });
+
+  it('lists the multiplier among the inputs of COGS and the lines built on it, only when it is used', () => {
+    const ref = { kind: 'rule', id: T9_RULES.cogsMultiplier };
+    const dearer = projectOperatingLines(input, DEFAULT_ENGINE_PARAMS, {
+      cogsMultiplier: parseRate('1.2'),
+    });
+    expect(dearer.cogs.provenance.inputs).toContainEqual(ref);
+    expect(dearer.grossProfit.provenance.inputs).toContainEqual(ref);
+    expect(dearer.operatingProfit.provenance.inputs).toContainEqual(ref);
+    expect(dearer.revenue.provenance.inputs).not.toContainEqual(ref);
+    expect(plain.cogs.provenance.inputs).not.toContainEqual(ref);
+  });
+
+  it('refuses a negative multiplier', () => {
+    expect(() =>
+      projectOperatingLines(input, DEFAULT_ENGINE_PARAMS, { cogsMultiplier: makeRate(-1n, 10n) }),
+    ).toThrow(expect.objectContaining({ code: 'invalid_param' }) as Error);
   });
 });
 

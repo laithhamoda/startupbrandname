@@ -104,6 +104,7 @@ export {
   type EngineInput,
   type EngineInputResult,
   type EngineNote,
+  type LegalForm,
   type MonthLimit,
   type NotCalculableReason,
   type ProjectContext,
@@ -116,6 +117,7 @@ export {
   projectOperatingLines,
   type OperatingProjection,
   type ProjectionLine,
+  type ProjectionOptions,
 } from './projection';
 export {
   ALERT_SEVERITY,

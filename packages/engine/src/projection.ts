@@ -12,7 +12,15 @@ import {
 import type { EngineInput, EngineNote } from './input';
 import { addMoney, makeMoney, mulMoneyByRate, subtractMoney, sumMoney, type Money } from './money';
 import { DEFAULT_ENGINE_PARAMS, type EngineParams } from './params';
-import { addRates, ONE_RATE, powRate, type Rate } from './rate';
+import {
+  addRates,
+  compareRates,
+  multiplyRates,
+  ONE_RATE,
+  powRate,
+  ZERO_RATE,
+  type Rate,
+} from './rate';
 import {
   deseasonalisedPoints,
   estimateYearlyGrowth,
@@ -28,10 +36,21 @@ export const T9_RULES = {
   growthEstimate: 'T9.growth_estimate',
   revenue: 'T9.revenue',
   cogs: 'T9.cogs',
+  cogsMultiplier: 'T9.cogs_multiplier',
   grossProfit: 'T9.gross_profit',
   operatingCosts: 'T9.operating_costs',
   operatingProfit: 'T9.operating_profit',
 } as const;
+
+/**
+ * What a caller can change in a run without changing the answers. `cogsMultiplier` scales COGS
+ * (units times the variable cost, with inflation) by an exact rate of 0 or more: the FX test of T9
+ * and the variable-cost scenarios of T10 use it. Without it, or at 1, the projection is exactly the
+ * plain one.
+ */
+export interface ProjectionOptions {
+  readonly cogsMultiplier?: Rate;
+}
 
 /**
  * One line of the projection: a value for each month, the same values summed into the calendar's
@@ -148,14 +167,22 @@ function growthPlan(
  * the price never rises, and without a rate nothing is inflated and a note says so (D-185).
  *
  * Each line's provenance is the weakest source and lowest confidence of the inputs it used, and
- * lists them: answer IDs, engine parameter keys and rule IDs (D-181). Throws `currency_mismatch` if
- * an amount of the input is not in the input's currency.
+ * lists them: answer IDs, engine parameter keys and rule IDs (D-181). The optional COGS multiplier
+ * (see `ProjectionOptions`) is the only change a caller can make to the formulas. Throws
+ * `currency_mismatch` if an amount of the input is not in the input's currency, and
+ * `invalid_param` for a negative multiplier.
  */
 export function projectOperatingLines(
   input: EngineInput,
   params: EngineParams = DEFAULT_ENGINE_PARAMS,
+  options: ProjectionOptions = {},
 ): OperatingProjection {
   assertProjectCurrency(input);
+  const cogsMultiplier = options.cogsMultiplier ?? ONE_RATE;
+  if (compareRates(cogsMultiplier, ZERO_RATE) < 0) {
+    throw new EngineError('invalid_param', 'The COGS multiplier cannot be negative.');
+  }
+  const multiplied = compareRates(cogsMultiplier, ONE_RATE) !== 0;
   const { currency } = input;
   const calendar = buildProjectionCalendar(input.referenceDate, params.horizonMonths.value);
   const years = calendar.horizonMonths / 12;
@@ -195,6 +222,8 @@ export function projectOperatingLines(
   const yearFactors = Array.from({ length: years }, (_, year) =>
     inflate ? powRate(addRates(ONE_RATE, inflationRate), year) : ONE_RATE,
   );
+  // COGS is rounded once, with the inflation and the multiplier together.
+  const cogsFactors = yearFactors.map((factor) => multiplyRates(factor, cogsMultiplier));
   const withInflation = (...provenances: Provenance[]): Provenance[] =>
     inflate ? [...provenances, inflation] : provenances;
 
@@ -212,6 +241,7 @@ export function projectOperatingLines(
   calendar.months.forEach((month, index) => {
     const units = at(curve.units, index);
     const factor = at(yearFactors, month.year - 1);
+    const cogsFactor = at(cogsFactors, month.year - 1);
     const staff = sumMoney(
       currency,
       input.staff.value
@@ -219,7 +249,7 @@ export function projectOperatingLines(
         .map((member) => member.monthlyCost),
     );
     const monthRevenue = makeMoney(units * price, currency);
-    const monthCogs = mulMoneyByRate(makeMoney(units * variableCost, currency), factor);
+    const monthCogs = mulMoneyByRate(makeMoney(units * variableCost, currency), cogsFactor);
     const monthFixed = mulMoneyByRate(input.fixedCosts.value, factor);
     const monthPayroll = mulMoneyByRate(staff, factor);
     const monthMarketing = mulMoneyByRate(input.marketing.value, factor);
@@ -240,9 +270,10 @@ export function projectOperatingLines(
     [unitsProvenance, input.price],
     [rule(T9_RULES.revenue)],
   );
-  const cogsProvenance = combineProvenance(withInflation(unitsProvenance, input.variableCost), [
-    rule(T9_RULES.cogs),
-  ]);
+  const cogsProvenance = combineProvenance(
+    withInflation(unitsProvenance, input.variableCost),
+    multiplied ? [rule(T9_RULES.cogs), rule(T9_RULES.cogsMultiplier)] : [rule(T9_RULES.cogs)],
+  );
   const grossProvenance = combineProvenance(
     [revenueProvenance, cogsProvenance],
     [rule(T9_RULES.grossProfit)],
