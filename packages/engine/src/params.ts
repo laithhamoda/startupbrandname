@@ -54,6 +54,7 @@ export const PARAM_KEYS = {
   penetrationFloorFactor: 'pricing.penetration_floor_factor',
   ltvCacMinimum: 'unit_economics.ltv_cac_minimum',
   fxShocks: 'fx.cogs_shocks',
+  tornadoSwing: 'scenario.tornado_swing',
 } as const;
 
 /**
@@ -98,6 +99,11 @@ export interface EngineParams {
    * -20%, -10%, +10% and +20% (SPEC T9, D-214). Each is at least -100%, at most ten of them.
    */
   readonly fxShocks: Figure<readonly Rate[]>;
+  /**
+   * How far T10's tornado moves each variable, up and down: 20% by default (SPEC §4, D-217). A
+   * rate above 0 and at most 1.
+   */
+  readonly tornadoSwing: Figure<Rate>;
 }
 
 /**
@@ -148,6 +154,7 @@ function defaultParams(): EngineParams {
       rate('0.1'),
       rate('0.2'),
     ]),
+    tornadoSwing: defaultFigure(PARAM_KEYS.tornadoSwing, rate('0.2')),
   };
 }
 
@@ -275,6 +282,13 @@ function validate(params: EngineParams): void {
   );
   requirePositive(PARAM_KEYS.ltvCacMinimum, params.ltvCacMinimum.value);
   requireShocks(PARAM_KEYS.fxShocks, params.fxShocks.value);
+  requireRate(PARAM_KEYS.tornadoSwing, params.tornadoSwing.value);
+  ensure(
+    compareRates(params.tornadoSwing.value, ZERO_RATE) > 0 &&
+      compareRates(params.tornadoSwing.value, ONE_RATE) <= 0,
+    PARAM_KEYS.tornadoSwing,
+    'must be greater than 0 and at most 1',
+  );
   requireMonths(
     PARAM_KEYS.conservativeLaunchDelayMonths,
     params.conservativeLaunchDelayMonths.value,
@@ -354,5 +368,6 @@ export function listEngineParams(params: EngineParams): readonly Figure<unknown>
     params.penetrationFloorFactor,
     params.ltvCacMinimum,
     params.fxShocks,
+    params.tornadoSwing,
   ];
 }

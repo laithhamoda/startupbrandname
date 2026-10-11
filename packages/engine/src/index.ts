@@ -117,6 +117,7 @@ export {
   firstProfitableMonth,
   projectOperatingLines,
   type OperatingProjection,
+  type ProjectionAdjustments,
   type ProjectionLine,
   type ProjectionOptions,
 } from './projection';
@@ -178,3 +179,15 @@ export {
 } from './cash-flow';
 export { FX_RULES, fxTest, type FxShockResult, type FxTest } from './fx-test';
 export { analyseCash, type CashAnalysis } from './cash';
+export {
+  T10_RULES,
+  scenarioAnalysis,
+  tornadoAnalysis,
+  type ScenarioFunding,
+  type ScenarioKind,
+  type ScenarioResult,
+  type Scenarios,
+  type Tornado,
+  type TornadoRow,
+  type TornadoVariable,
+} from './scenarios';

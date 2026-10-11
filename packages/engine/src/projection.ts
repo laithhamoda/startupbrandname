@@ -37,20 +37,40 @@ export const T9_RULES = {
   revenue: 'T9.revenue',
   cogs: 'T9.cogs',
   cogsMultiplier: 'T9.cogs_multiplier',
+  salesMultiplier: 'T9.sales_multiplier',
+  priceMultiplier: 'T9.price_multiplier',
+  fixedCostMultiplier: 'T9.fixed_cost_multiplier',
+  launchDelay: 'T9.launch_delay',
   grossProfit: 'T9.gross_profit',
   operatingCosts: 'T9.operating_costs',
   operatingProfit: 'T9.operating_profit',
 } as const;
 
 /**
- * What a caller can change in a run without changing the answers. `cogsMultiplier` scales COGS
- * (units times the variable cost, with inflation) by an exact rate of 0 or more: the FX test of T9
- * and the variable-cost scenarios of T10 use it. Without it, or at 1, the projection is exactly the
- * plain one.
+ * What a caller can change in a run without changing the answers (D-214, D-217); the FX test of
+ * T9 and the scenarios and the tornado of T10 use it. Every multiplier is an exact rate of 0 or
+ * more, and a missing option, or one at its identity (1, or 0 months), leaves every result and
+ * every provenance exactly as the plain projection has it.
+ * - `cogsMultiplier` scales COGS (units times the variable cost, with inflation).
+ * - `salesMultiplier` scales the units a month; the product is rounded once to whole units, half
+ *   away from zero, and E7's capacity still cuts it.
+ * - `priceMultiplier` scales the price of every unit; revenue is rounded once on each monthly line.
+ * - `fixedCostMultiplier` scales D-182's full fixed cost: F4, the payroll and the F4.1 marketing,
+ *   each rounded once on its monthly line together with the inflation.
+ * - `launchDelayMonths` shifts the whole units series, seasonality included, later by that many
+ *   whole months: the first months sell nothing and the last ones fall beyond the horizon. Fixed
+ *   costs, payroll and marketing start as planned, and set-up costs stay in month 0 (D-189).
  */
-export interface ProjectionOptions {
+export interface ProjectionAdjustments {
   readonly cogsMultiplier?: Rate;
+  readonly salesMultiplier?: Rate;
+  readonly priceMultiplier?: Rate;
+  readonly fixedCostMultiplier?: Rate;
+  readonly launchDelayMonths?: number;
 }
+
+/** The options of `projectOperatingLines`: the adjustments above, none of them required. */
+export type ProjectionOptions = ProjectionAdjustments;
 
 /**
  * One line of the projection: a value for each month, the same values summed into the calendar's
@@ -103,6 +123,19 @@ export interface OperatingProjection {
 }
 
 const rule = (id: string): InputRef => ({ kind: 'rule', id });
+
+function isIdentity(multiplier: Rate): boolean {
+  return compareRates(multiplier, ONE_RATE) === 0;
+}
+
+/** A multiplier of 0 or more; a missing one is 1. Throws `invalid_param` for a negative rate. */
+function multiplierOf(given: Rate | undefined, what: string): Rate {
+  const multiplier = given ?? ONE_RATE;
+  if (compareRates(multiplier, ZERO_RATE) < 0) {
+    throw new EngineError('invalid_param', `The ${what} multiplier cannot be negative.`);
+  }
+  return multiplier;
+}
 
 function assertProjectCurrency(input: EngineInput): void {
   const amounts = [
@@ -178,11 +211,19 @@ export function projectOperatingLines(
   options: ProjectionOptions = {},
 ): OperatingProjection {
   assertProjectCurrency(input);
-  const cogsMultiplier = options.cogsMultiplier ?? ONE_RATE;
-  if (compareRates(cogsMultiplier, ZERO_RATE) < 0) {
-    throw new EngineError('invalid_param', 'The COGS multiplier cannot be negative.');
+  const cogsMultiplier = multiplierOf(options.cogsMultiplier, 'COGS');
+  const salesMultiplier = multiplierOf(options.salesMultiplier, 'sales');
+  const priceMultiplier = multiplierOf(options.priceMultiplier, 'price');
+  const fixedCostMultiplier = multiplierOf(options.fixedCostMultiplier, 'fixed-cost');
+  const delay = options.launchDelayMonths ?? 0;
+  if (!Number.isSafeInteger(delay) || delay < 0) {
+    throw new EngineError('invalid_param', 'The launch delay must be a whole number of months.');
   }
-  const multiplied = compareRates(cogsMultiplier, ONE_RATE) !== 0;
+  const multiplied = !isIdentity(cogsMultiplier);
+  const salesScaled = !isIdentity(salesMultiplier);
+  const priceScaled = !isIdentity(priceMultiplier);
+  const fixedScaled = !isIdentity(fixedCostMultiplier);
+  const delayed = delay > 0;
   const { currency } = input;
   const calendar = buildProjectionCalendar(input.referenceDate, params.horizonMonths.value);
   const years = calendar.horizonMonths / 12;
@@ -198,11 +239,17 @@ export function projectOperatingLines(
     factors: seasonality.factors,
     yearlyGrowth: growth.rates,
     capacity: input.capacity.value,
+    multiplier: salesMultiplier,
   });
   if (seasonality.kind === 'too_many_peaks') {
     notes.push({ code: 'seasonality_ignored', questionId: 'D7' });
   }
   if (curve.capped.some(Boolean)) notes.push({ code: 'capacity_reached', questionId: 'E7' });
+  // A launch delay moves the whole series later (D-189, D-217); the months pushed past the horizon go.
+  const shifted = <T>(series: readonly T[], empty: T): T[] =>
+    series.map((_, index) => (index < delay ? empty : at(series, index - delay)));
+  const units = delayed ? shifted(curve.units, 0n) : curve.units;
+  const capped = delayed ? shifted(curve.capped, false) : curve.capped;
   const unitsProvenance = combineProvenance(
     [
       input.sales,
@@ -211,7 +258,11 @@ export function projectOperatingLines(
       ...(growth.provenance === null ? [] : [growth.provenance]),
       ...(seasonality.kind === 'applied' ? [params.seasonalPeakFactor] : []),
     ],
-    [rule(T9_RULES.units)],
+    [
+      rule(T9_RULES.units),
+      ...(salesScaled ? [rule(T9_RULES.salesMultiplier)] : []),
+      ...(delayed ? [rule(T9_RULES.launchDelay)] : []),
+    ],
   );
 
   // Inflation of COGS and operating costs from year 2 (D-185): a factor for each year.
@@ -224,6 +275,7 @@ export function projectOperatingLines(
   );
   // COGS is rounded once, with the inflation and the multiplier together.
   const cogsFactors = yearFactors.map((factor) => multiplyRates(factor, cogsMultiplier));
+  const costFactors = yearFactors.map((factor) => multiplyRates(factor, fixedCostMultiplier));
   const withInflation = (...provenances: Provenance[]): Provenance[] =>
     inflate ? [...provenances, inflation] : provenances;
 
@@ -239,8 +291,8 @@ export function projectOperatingLines(
   const operatingCosts: Money[] = [];
   const operatingProfit: Money[] = [];
   calendar.months.forEach((month, index) => {
-    const units = at(curve.units, index);
-    const factor = at(yearFactors, month.year - 1);
+    const monthUnits = at(units, index);
+    const factor = at(costFactors, month.year - 1);
     const cogsFactor = at(cogsFactors, month.year - 1);
     const staff = sumMoney(
       currency,
@@ -248,8 +300,8 @@ export function projectOperatingLines(
         .filter((member) => member.startMonth <= month.index)
         .map((member) => member.monthlyCost),
     );
-    const monthRevenue = makeMoney(units * price, currency);
-    const monthCogs = mulMoneyByRate(makeMoney(units * variableCost, currency), cogsFactor);
+    const monthRevenue = mulMoneyByRate(makeMoney(monthUnits * price, currency), priceMultiplier);
+    const monthCogs = mulMoneyByRate(makeMoney(monthUnits * variableCost, currency), cogsFactor);
     const monthFixed = mulMoneyByRate(input.fixedCosts.value, factor);
     const monthPayroll = mulMoneyByRate(staff, factor);
     const monthMarketing = mulMoneyByRate(input.marketing.value, factor);
@@ -268,7 +320,9 @@ export function projectOperatingLines(
   // Provenance of each line: the inputs it used (D-181).
   const revenueProvenance = combineProvenance(
     [unitsProvenance, input.price],
-    [rule(T9_RULES.revenue)],
+    priceScaled
+      ? [rule(T9_RULES.revenue), rule(T9_RULES.priceMultiplier)]
+      : [rule(T9_RULES.revenue)],
   );
   const cogsProvenance = combineProvenance(
     withInflation(unitsProvenance, input.variableCost),
@@ -278,9 +332,10 @@ export function projectOperatingLines(
     [revenueProvenance, cogsProvenance],
     [rule(T9_RULES.grossProfit)],
   );
-  const fixedProvenance = combineProvenance(withInflation(input.fixedCosts));
-  const payrollProvenance = combineProvenance(withInflation(input.staff));
-  const marketingProvenance = combineProvenance(withInflation(input.marketing));
+  const fixedRules = fixedScaled ? [rule(T9_RULES.fixedCostMultiplier)] : [];
+  const fixedProvenance = combineProvenance(withInflation(input.fixedCosts), fixedRules);
+  const payrollProvenance = combineProvenance(withInflation(input.staff), fixedRules);
+  const marketingProvenance = combineProvenance(withInflation(input.marketing), fixedRules);
   const costsProvenance = combineProvenance(
     [fixedProvenance, payrollProvenance, marketingProvenance],
     [rule(T9_RULES.operatingCosts)],
@@ -304,13 +359,13 @@ export function projectOperatingLines(
         ? null
         : makeFigure<readonly Rate[]>(growth.rates, growth.provenance),
     units: {
-      monthly: curve.units,
+      monthly: units,
       byPeriod: calendar.periods.map((period) =>
-        curve.units.slice(period.firstMonth - 1, period.lastMonth).reduce((a, b) => a + b, 0n),
+        units.slice(period.firstMonth - 1, period.lastMonth).reduce((a, b) => a + b, 0n),
       ),
       provenance: unitsProvenance,
     },
-    capped: curve.capped,
+    capped,
     revenue: line(revenue, revenueProvenance),
     cogs: line(cogs, cogsProvenance),
     grossProfit: line(grossProfit, grossProvenance),

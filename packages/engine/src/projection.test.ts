@@ -10,7 +10,7 @@ import {
 } from './input';
 import { makeMoney, moneyToMajorString, type Money } from './money';
 import { createEngineParams, DEFAULT_ENGINE_PARAMS, type EngineParams } from './params';
-import { makeRate, ONE_RATE, parseRate, ZERO_RATE } from './rate';
+import { makeRate, ONE_RATE, parseRate, ZERO_RATE, type Rate } from './rate';
 import { projectOperatingLines, T9_RULES, type ProjectionLine } from './projection';
 
 const project: ProjectContext = {
@@ -602,6 +602,237 @@ describe('the COGS multiplier (the FX test of T9 and the scenarios of T10)', () 
     expect(() =>
       projectOperatingLines(input, DEFAULT_ENGINE_PARAMS, { cogsMultiplier: makeRate(-1n, 10n) }),
     ).toThrow(expect.objectContaining({ code: 'invalid_param' }) as Error);
+  });
+});
+
+describe('the adjustments of T10 (D-217): sales, price, fixed costs and the launch delay', () => {
+  const rule = (id: string) => ({ kind: 'rule', id });
+  const flat5 = inputOf(answersFor(5, 5, 5));
+  const plain5 = projectOperatingLines(flat5);
+  const staffed = inputOf(
+    answersFor(10, 40, 100, {
+      'F6.2': real(20),
+      'F4.1': real(jod(50)),
+      E8: real({ items: [{ role: 'Technician', monthlyCost: jod(400), startMonth: 4 }] }),
+    }),
+  );
+  const plainStaffed = projectOperatingLines(staffed);
+  const inflation = createEngineParams({
+    inflationRate: makeFigure(parseRate('0.05'), {
+      source: 'external',
+      confidence: 'high',
+      validated: true,
+      inputs: [{ kind: 'country_pack_item', id: 'JO.inflation' }],
+    }),
+  });
+
+  it('changes nothing when every adjustment is at its identity', () => {
+    const identity = {
+      cogsMultiplier: ONE_RATE,
+      salesMultiplier: ONE_RATE,
+      priceMultiplier: ONE_RATE,
+      fixedCostMultiplier: ONE_RATE,
+      launchDelayMonths: 0,
+    };
+    expect(projectOperatingLines(staffed, DEFAULT_ENGINE_PARAMS, identity)).toEqual(plainStaffed);
+    expect(projectOperatingLines(staffed, inflation, identity)).toEqual(
+      projectOperatingLines(staffed, inflation),
+    );
+  });
+
+  describe('the sales multiplier', () => {
+    it('rounds the multiplied units once, half away from zero, to whole units', () => {
+      // 5 units a month. Times 1/2 is 2.5, which rounds to 3; times 3/10 is 1.5, which rounds to 2;
+      // times 9/10 is 4.5, which rounds to 5; times 1/10 is 0.5, which rounds to 1; times 1/20 is 0.25: 0.
+      const units = (multiplier: Rate) =>
+        asNumbers(
+          projectOperatingLines(flat5, DEFAULT_ENGINE_PARAMS, { salesMultiplier: multiplier }).units
+            .monthly,
+        );
+      expect(new Set(units(makeRate(1n, 2n)))).toEqual(new Set([3]));
+      expect(new Set(units(makeRate(3n, 10n)))).toEqual(new Set([2]));
+      expect(new Set(units(makeRate(9n, 10n)))).toEqual(new Set([5]));
+      expect(new Set(units(makeRate(1n, 10n)))).toEqual(new Set([1]));
+      expect(new Set(units(makeRate(1n, 20n)))).toEqual(new Set([0]));
+      expect(new Set(units(ZERO_RATE))).toEqual(new Set([0]));
+    });
+
+    it('scales the units of the whole horizon and the money built on them, and nothing else', () => {
+      const doubled = projectOperatingLines(flat5, DEFAULT_ENGINE_PARAMS, {
+        salesMultiplier: parseRate('2'),
+      });
+      expect(new Set(asNumbers(doubled.units.monthly))).toEqual(new Set([10]));
+      // 10 units * 25 = 250.000 of revenue; 10 * 10.5 = 105.000 of COGS; fixed costs stay 320.500.
+      expect(doubled.revenue.monthly[0]).toEqual(fils(250000n));
+      expect(doubled.cogs.monthly[0]).toEqual(fils(105000n));
+      expect(doubled.fixedCosts).toEqual(plain5.fixedCosts);
+      expect(doubled.units.byPeriod[0]).toBe(10n);
+      expect(doubled.units.byPeriod[12]).toBe(30n);
+    });
+
+    it('still cuts the units to the capacity E7 and flags the cut months', () => {
+      const capped = projectOperatingLines(
+        inputOf(answersFor(5, 5, 5, { E7: real(8) })),
+        DEFAULT_ENGINE_PARAMS,
+        { salesMultiplier: parseRate('2') },
+      );
+      expect(new Set(asNumbers(capped.units.monthly))).toEqual(new Set([8]));
+      expect(capped.capped.every(Boolean)).toBe(true);
+      expect(capped.notes).toContainEqual({ code: 'capacity_reached', questionId: 'E7' });
+    });
+  });
+
+  describe('the price multiplier', () => {
+    it('scales the revenue of each month, rounded once half away from zero, and nothing else', () => {
+      // 5 units * 25.000 = 125.000 JOD = 125000 fils; times 1/3 is 41666.67: 41667.
+      const cheaper = projectOperatingLines(flat5, DEFAULT_ENGINE_PARAMS, {
+        priceMultiplier: makeRate(1n, 3n),
+      });
+      expect(cheaper.revenue.monthly[0]).toEqual(fils(41667n));
+      expect(cheaper.units).toEqual(plain5.units);
+      expect(cheaper.cogs).toEqual(plain5.cogs);
+      expect(cheaper.grossProfit.monthly[0]).toEqual(fils(41667n - 52500n));
+      expect(cheaper.revenue.byPeriod.reduce((sum, amount) => sum + amount.minor, 0n)).toBe(
+        cheaper.revenue.monthly.reduce((sum, amount) => sum + amount.minor, 0n),
+      );
+    });
+  });
+
+  describe('the fixed-cost multiplier', () => {
+    it('scales the full fixed cost of D-182: F4, the payroll and the marketing', () => {
+      const doubled = projectOperatingLines(staffed, DEFAULT_ENGINE_PARAMS, {
+        fixedCostMultiplier: parseRate('2'),
+      });
+      // Month 1: F4 320.500 and marketing 50.000 doubled. Month 4: the technician's 400.000 as well.
+      expect(doubled.fixedCosts.monthly[0]).toEqual(fils(641000n));
+      expect(doubled.marketing.monthly[0]).toEqual(fils(100000n));
+      expect(doubled.payroll.monthly[2]).toEqual(fils(0n));
+      expect(doubled.payroll.monthly[3]).toEqual(fils(800000n));
+      expect(doubled.operatingCosts.monthly[3]).toEqual(fils(641000n + 800000n + 100000n));
+      expect(doubled.units).toEqual(plainStaffed.units);
+      expect(doubled.revenue).toEqual(plainStaffed.revenue);
+      expect(doubled.cogs).toEqual(plainStaffed.cogs);
+    });
+
+    it('rounds each line once together with the inflation, half away from zero', () => {
+      // Month 25: 320.500 * 1.05^2 = 353.35125 JOD, times 1/2 = 176.675625: 176.676 (176675.625 fils).
+      const half = projectOperatingLines(staffed, inflation, {
+        fixedCostMultiplier: makeRate(1n, 2n),
+      });
+      expect(half.fixedCosts.monthly[24]).toEqual(fils(176676n));
+    });
+  });
+
+  describe('the launch delay', () => {
+    const delayed = projectOperatingLines(staffed, DEFAULT_ENGINE_PARAMS, {
+      launchDelayMonths: 3,
+    });
+
+    it('shifts the whole units series later and drops the months beyond the horizon', () => {
+      const plain = plainStaffed.units.monthly;
+      expect(delayed.units.monthly.slice(0, 3)).toEqual([0n, 0n, 0n]);
+      expect(delayed.units.monthly.slice(3)).toEqual(plain.slice(0, 33));
+      expect(delayed.units.monthly).toHaveLength(36);
+      // The columns are sums of the months.
+      expect(delayed.units.byPeriod[11]).toBe(plain[8]);
+    });
+
+    it('keeps fixed costs, payroll and marketing as planned: they start on time', () => {
+      expect(delayed.fixedCosts).toEqual(plainStaffed.fixedCosts);
+      expect(delayed.payroll).toEqual(plainStaffed.payroll);
+      expect(delayed.marketing).toEqual(plainStaffed.marketing);
+      // Month 1 sells nothing and still pays 320.500 + 50.000.
+      expect(delayed.operatingProfit.monthly[0]).toEqual(fils(-370500n));
+    });
+
+    it('moves the seasons with the sales', () => {
+      const seasonal = inputOf(
+        answersFor(15, 20, 20, {
+          D7: real({ seasonal: true, peakMonths: [11, 12, 1] }),
+          'F6.2': real(0),
+        }),
+      );
+      const plain = projectOperatingLines(seasonal).units.monthly;
+      const moved = projectOperatingLines(seasonal, DEFAULT_ENGINE_PARAMS, {
+        launchDelayMonths: 3,
+      }).units.monthly;
+      expect(asNumbers(moved.slice(0, 6))).toEqual([0, 0, 0, 15, 18, 21]);
+      expect(moved.slice(3)).toEqual(plain.slice(0, 33));
+    });
+
+    it('moves the capacity flags with the units', () => {
+      const capped = projectOperatingLines(
+        inputOf(answersFor(5, 5, 5, { E7: real(4) })),
+        DEFAULT_ENGINE_PARAMS,
+        { launchDelayMonths: 2 },
+      );
+      expect(capped.capped.slice(0, 3)).toEqual([false, false, true]);
+    });
+
+    it('sells nothing when the delay is as long as the horizon or longer', () => {
+      const never = projectOperatingLines(staffed, DEFAULT_ENGINE_PARAMS, {
+        launchDelayMonths: 40,
+      });
+      expect(never.units.monthly.every((units) => units === 0n)).toBe(true);
+      expect(never.revenue.monthly.every((amount) => amount.minor === 0n)).toBe(true);
+    });
+  });
+
+  it('combines the adjustments in one projection', () => {
+    // 5 units times 2 = 10, delayed by 1: month 1 sells nothing, months 2 to 36 sell 10.
+    const combined = projectOperatingLines(flat5, DEFAULT_ENGINE_PARAMS, {
+      salesMultiplier: parseRate('2'),
+      priceMultiplier: parseRate('2'),
+      cogsMultiplier: parseRate('2'),
+      fixedCostMultiplier: parseRate('2'),
+      launchDelayMonths: 1,
+    });
+    expect(combined.units.monthly[0]).toBe(0n);
+    expect(combined.units.monthly[1]).toBe(10n);
+    // Revenue 10 * 25 * 2 = 500.000; COGS 10 * 10.5 * 2 = 210.000; fixed 641.000.
+    expect(combined.operatingProfit.monthly[1]).toEqual(fils(500000n - 210000n - 641000n));
+  });
+
+  it('lists each adjustment as a rule among the inputs of the lines it changes, only when used', () => {
+    const projection = projectOperatingLines(staffed, DEFAULT_ENGINE_PARAMS, {
+      salesMultiplier: parseRate('2'),
+      priceMultiplier: parseRate('2'),
+      fixedCostMultiplier: parseRate('2'),
+      launchDelayMonths: 2,
+    });
+    const has = (line: { provenance: { inputs: readonly unknown[] } }, id: string) =>
+      line.provenance.inputs.some((input) => JSON.stringify(input) === JSON.stringify(rule(id)));
+    expect(has(projection.units, T9_RULES.salesMultiplier)).toBe(true);
+    expect(has(projection.units, T9_RULES.launchDelay)).toBe(true);
+    expect(has(projection.revenue, T9_RULES.salesMultiplier)).toBe(true);
+    expect(has(projection.revenue, T9_RULES.priceMultiplier)).toBe(true);
+    expect(has(projection.cogs, T9_RULES.salesMultiplier)).toBe(true);
+    expect(has(projection.cogs, T9_RULES.priceMultiplier)).toBe(false);
+    for (const line of [
+      projection.fixedCosts,
+      projection.payroll,
+      projection.marketing,
+      projection.operatingCosts,
+      projection.operatingProfit,
+    ]) {
+      expect(has(line, T9_RULES.fixedCostMultiplier)).toBe(true);
+    }
+    expect(has(projection.revenue, T9_RULES.fixedCostMultiplier)).toBe(false);
+    expect(has(plainStaffed.units, T9_RULES.salesMultiplier)).toBe(false);
+    expect(has(plainStaffed.units, T9_RULES.launchDelay)).toBe(false);
+    expect(has(plainStaffed.fixedCosts, T9_RULES.fixedCostMultiplier)).toBe(false);
+  });
+
+  it.each([
+    ['a negative sales multiplier', { salesMultiplier: makeRate(-1n, 10n) }],
+    ['a negative price multiplier', { priceMultiplier: makeRate(-1n, 10n) }],
+    ['a negative fixed-cost multiplier', { fixedCostMultiplier: makeRate(-1n, 10n) }],
+    ['a negative launch delay', { launchDelayMonths: -1 }],
+    ['a launch delay that is not a whole number', { launchDelayMonths: 1.5 }],
+  ])('refuses %s', (_name, options) => {
+    expect(() => projectOperatingLines(flat5, DEFAULT_ENGINE_PARAMS, options)).toThrow(
+      expect.objectContaining({ code: 'invalid_param' }) as Error,
+    );
   });
 });
 

@@ -112,8 +112,9 @@ export interface UnitCurve {
  * points; between them the level follows `interpolateLevels`, and each later year grows from the
  * previous year's last level by that year's rate in `yearlyGrowth` (one per year from year 2),
  * also month by month. Each month's level is multiplied back by its calendar month's factor,
- * rounded half away from zero to a whole number of units, and cut to `capacity` when there is one
- * (E7); a month that was cut is flagged. Throws `length_mismatch` unless `yearlyGrowth` has one
+ * (and by the optional scenario `multiplier`), rounded once, half away from zero, to a whole
+ * number of units, and cut to `capacity` when there is one (E7), also after a multiplier above 1; a
+ * month that was cut is flagged. Throws `length_mismatch` unless `yearlyGrowth` has one
  * rate per year after the first.
  */
 export function unitCurve(input: {
@@ -122,8 +123,11 @@ export function unitCurve(input: {
   readonly factors: readonly Rate[];
   readonly yearlyGrowth: readonly Rate[];
   readonly capacity: bigint | null;
+  /** A scenario multiplier on the units (T10, D-217): applied before the one rounding. Default 1. */
+  readonly multiplier?: Rate;
 }): UnitCurve {
   const { calendar, levels: points, factors, yearlyGrowth, capacity } = input;
+  const multiplier = input.multiplier ?? ONE_RATE;
   const years = calendar.horizonMonths / 12;
   if (yearlyGrowth.length !== years - 1) {
     throw new EngineError(
@@ -145,7 +149,10 @@ export function unitCurve(input: {
   calendar.months.forEach((month, index) => {
     const level = at(levels, index);
     const factor = at(factors, month.calendar.month - 1);
-    const rounded = divRoundHalfAwayFromZero(level.num * factor.num, level.den * factor.den);
+    const rounded = divRoundHalfAwayFromZero(
+      level.num * factor.num * multiplier.num,
+      level.den * factor.den * multiplier.den,
+    );
     const limit = capacity === null || rounded <= capacity ? rounded : capacity;
     units.push(limit);
     capped.push(limit !== rounded);
