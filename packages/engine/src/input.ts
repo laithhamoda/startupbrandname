@@ -62,6 +62,23 @@ export interface StaffMember {
   readonly startMonth: number;
 }
 
+/** The range of capital the founder has available now (A5), in the project currency. */
+export interface CapitalRange {
+  readonly min: Money;
+  readonly max: Money;
+}
+
+/**
+ * A limit on a number of months read from a bucket answer (A7, H5, D-190): `within` is the upper
+ * bound of the chosen bucket, so a value above it surely breaks the limit; `unbounded` is the top
+ * bucket ("more than 12 months"), which no value in the horizon can break; `unset` is an answer
+ * that was never given or is «لا أعرف».
+ */
+export type MonthLimit =
+  | { readonly kind: 'within'; readonly months: number }
+  | { readonly kind: 'unbounded' }
+  | { readonly kind: 'unset' };
+
 /**
  * Something the reader should be told about the way an answer was read, so the report can say it
  * (D-183). `state` is why the answer was replaced: never given (`missing`) or «لا أعرف» (`unknown`).
@@ -77,9 +94,16 @@ export interface EngineNote {
     | 'setup_costs_unset'
     | 'seasonality_ignored'
     | 'capacity_reached'
-    | 'inflation_not_applied';
+    | 'inflation_not_applied'
+    | 'churn_unset'
+    | 'capital_unset'
+    | 'capital_other_currency'
+    | 'runway_unset'
+    | 'break_even_target_unset';
   readonly questionId?: StepId;
   readonly state?: 'missing' | 'unknown';
+  /** For `capital_other_currency`, the currency A5 was given in. */
+  readonly currency?: string;
 }
 
 /**
@@ -119,6 +143,22 @@ export interface EngineInput {
   readonly setupCosts: Figure<Money> | null;
   /** F7: how the customer pays; null when not answered. Carried for the cash flow. */
   readonly paymentOption: Figure<PaymentOption> | null;
+  /**
+   * F2.1: the share of subscribers who cancel each month, an exact rate from 0 to 1. Null when F2
+   * is not "subscription" (the question is not asked), or when the answer is missing or «لا أعرف»
+   * (a note says so): LTV and LTV / CAC are then left out (D-183).
+   */
+  readonly churn: Figure<Rate | null>;
+  /**
+   * A5: the capital available now. Null when missing, «لا أعرف», or given in another currency
+   * than the project's (a note says which): nothing is converted, so nothing is compared (D-190).
+   * The one amount the adapter reads that does not stop the run for being in another currency.
+   */
+  readonly capital: Figure<CapitalRange | null>;
+  /** A7: how long the founder can go without income, as a limit on the break-even month. */
+  readonly runway: Figure<MonthLimit>;
+  /** H5: the longest wait for break-even the founder accepts, as a limit on the break-even month. */
+  readonly breakEvenTarget: Figure<MonthLimit>;
   readonly notes: readonly EngineNote[];
 }
 
@@ -150,6 +190,24 @@ export type EngineInputResult =
   | { readonly status: 'ok'; readonly input: EngineInput }
   | { readonly status: 'not_calculable'; readonly reasons: readonly NotCalculableReason[] };
 
+/** The upper bound of each A7 option, in months (D-190); the top option has none. */
+const RUNWAY_LIMITS: ReadonlyMap<string, MonthLimit> = new Map<string, MonthLimit>([
+  ['lt3', { kind: 'within', months: 3 }],
+  ['3to6', { kind: 'within', months: 6 }],
+  ['6to12', { kind: 'within', months: 12 }],
+  ['gt12', { kind: 'unbounded' }],
+]);
+
+/** The upper bound of each H5 option, in months (D-190); the top option has none. */
+const BREAK_EVEN_LIMITS: ReadonlyMap<string, MonthLimit> = new Map<string, MonthLimit>([
+  ['m6', { kind: 'within', months: 6 }],
+  ['m12', { kind: 'within', months: 12 }],
+  ['m18', { kind: 'within', months: 18 }],
+  ['m24', { kind: 'within', months: 24 }],
+  ['m36', { kind: 'within', months: 36 }],
+  ['more', { kind: 'unbounded' }],
+]);
+
 /** The rule behind a price taken from competitors; it is listed in that figure's inputs (D-201). */
 export const PRICE_FROM_D4_RULE = 'F1.d4_median';
 
@@ -164,7 +222,9 @@ export const PRICE_FROM_D4_RULE = 'F1.d4_median';
  * and D-188) decides what an unknown F5 means. An unknown F1 takes
  * the median of D4's known prices as a low-confidence assumption (D-201). An unknown or missing
  * F4.1 counts as zero, F6.2 as the engine's estimate, E7 as no cap, E8 as no staff and D7 as no
- * season, each with a note (D-183, D-200). An answer given as a picked range, or without stored
+ * season, each with a note (D-183, D-200). An unknown or missing F2.1 (asked only for a
+ * subscription), A5, A7 or H5 is left unset with a note, and the alert that needs it is not
+ * evaluated; an A5 in another currency is likewise left unset, never converted (D-190, D-206). An answer given as a picked range, or without stored
  * provenance, counts as an assumption. Money is converted from major to minor units here, once
  * (D-179). Every problem is reported, not only the first.
  */
@@ -384,6 +444,64 @@ export function engineInputFrom(
 
   const model = valueOf(answers, 'F2', 'single');
   const pricingModel = model === undefined ? null : answered('F2', model);
+
+  // F2.1 is asked, and read, only for a subscription: a stale answer after F2 changed is ignored.
+  let churn = standIn<Rate | null>('F2.1', null);
+  if (model === 'subscription') {
+    const f21 = followUpValueOf(answers, 'F2.1', 'number');
+    if (f21 === undefined) {
+      note('churn_unset', 'F2.1');
+    } else if (Number.isFinite(f21) && f21 >= 0 && f21 <= 100) {
+      churn = answered<Rate | null>('F2.1', rateFromPercent(f21));
+    } else {
+      unreadable('F2.1');
+    }
+  }
+
+  let capital = standIn<CapitalRange | null>('A5', null);
+  const a5 = valueOf(answers, 'A5', 'money_range');
+  if (a5 === undefined) {
+    note('capital_unset', 'A5');
+  } else if (a5.currency !== currency) {
+    notes.push({
+      code: 'capital_other_currency',
+      questionId: 'A5',
+      currency: a5.currency,
+    });
+  } else if ([a5.min, a5.max].some((amount) => !Number.isFinite(amount) || amount < 0)) {
+    unreadable('A5');
+  } else {
+    capital = answered<CapitalRange | null>('A5', {
+      min: moneyFromMajor(a5.min, currency),
+      max: moneyFromMajor(a5.max, currency),
+    });
+  }
+
+  /** A bucket answer as a limit on months; an option the question bank does not offer is unreadable. */
+  function limitOf(
+    id: 'A7' | 'H5',
+    option: string | undefined,
+    limits: ReadonlyMap<string, MonthLimit>,
+    unsetNote: EngineNote['code'],
+  ): Figure<MonthLimit> {
+    if (option === undefined) {
+      note(unsetNote, id);
+      return standIn<MonthLimit>(id, { kind: 'unset' });
+    }
+    const limit = limits.get(option);
+    if (limit === undefined) {
+      unreadable(id);
+      return standIn<MonthLimit>(id, { kind: 'unset' });
+    }
+    return answered(id, limit);
+  }
+  const runway = limitOf('A7', valueOf(answers, 'A7', 'single'), RUNWAY_LIMITS, 'runway_unset');
+  const breakEvenTarget = limitOf(
+    'H5',
+    valueOf(answers, 'H5', 'single'),
+    BREAK_EVEN_LIMITS,
+    'break_even_target_unset',
+  );
   const way = valueOf(answers, 'F7', 'single');
   const option = PAYMENT_OPTIONS.find((candidate) => candidate === way);
   const paymentOption = option === undefined ? null : answered('F7', option);
@@ -411,6 +529,10 @@ export function engineInputFrom(
       pricingModel,
       setupCosts,
       paymentOption,
+      churn,
+      capital,
+      runway,
+      breakEvenTarget,
       notes,
     },
   };

@@ -422,6 +422,9 @@ describe('engineInputFrom: the optional answers and their fallbacks', () => {
       expect.objectContaining({ code: 'seasonality_unset' }),
       expect.objectContaining({ code: 'capacity_unlimited' }),
       expect.objectContaining({ code: 'setup_costs_unset' }),
+      expect.objectContaining({ code: 'capital_unset' }),
+      expect.objectContaining({ code: 'runway_unset' }),
+      expect.objectContaining({ code: 'break_even_target_unset' }),
     ]);
   });
 
@@ -462,5 +465,167 @@ describe('engineInputFrom: the optional answers and their fallbacks', () => {
 
   it('ignores a payment option the engine does not know', () => {
     expect(inputOf({ ...basic(), F7: real('barter') }).paymentOption).toBeNull();
+  });
+});
+
+describe('engineInputFrom: churn (F2.1), capital (A5), runway (A7) and break-even target (H5)', () => {
+  const subscription = (): Answers => ({ ...basic(), F2: real('subscription') });
+
+  it('reads the churn of a subscription as an exact monthly rate', () => {
+    const input = inputOf({ ...subscription(), 'F2.1': real(2.5) }, allUser('F2', 'F2.1'));
+    expect(input.churn.value).toEqual(makeRate(1n, 40n));
+    expect(input.churn).toMatchObject({ source: 'user', confidence: 'high', validated: true });
+    expect(input.churn.inputs).toEqual([{ kind: 'answer', id: 'F2.1' }]);
+    expect(input.notes.some((note) => note.code === 'churn_unset')).toBe(false);
+  });
+
+  it('accepts a churn of 0 and of 100', () => {
+    expect(inputOf({ ...subscription(), 'F2.1': real(0) }).churn.value).toEqual(makeRate(0n, 1n));
+    expect(inputOf({ ...subscription(), 'F2.1': real(100) }).churn.value).toEqual(makeRate(1n, 1n));
+  });
+
+  it('leaves the churn out, with a note, when F2.1 is missing or unknown', () => {
+    const missing = inputOf(subscription());
+    expect(missing.churn.value).toBeNull();
+    expect(missing.churn).toMatchObject({
+      source: 'assumption',
+      confidence: 'low',
+      validated: false,
+    });
+    expect(missing.notes).toContainEqual({
+      code: 'churn_unset',
+      questionId: 'F2.1',
+      state: 'missing',
+    });
+    expect(inputOf({ ...subscription(), 'F2.1': UNKNOWN }).notes).toContainEqual({
+      code: 'churn_unset',
+      questionId: 'F2.1',
+      state: 'unknown',
+    });
+  });
+
+  it('does not read, or note, the churn when the pricing model is not a subscription', () => {
+    for (const answers of [basic(), { ...basic(), F2: real('fixed'), 'F2.1': real(5) }]) {
+      const input = inputOf(answers);
+      expect(input.churn.value).toBeNull();
+      expect(input.notes.some((note) => note.code === 'churn_unset')).toBe(false);
+    }
+  });
+
+  it.each([[-1], [100.5], [Number.NaN], [Number.POSITIVE_INFINITY]])(
+    'refuses a churn of %s as an invalid value',
+    (churn) => {
+      expect(reasonsOf({ ...subscription(), 'F2.1': real(churn) })).toEqual([
+        { code: 'invalid_value', questionId: 'F2.1', item: undefined },
+      ]);
+    },
+  );
+
+  it('reads the capital range in the project currency', () => {
+    const range = { min: 2000, max: 5000.5, currency: 'JOD' };
+    const input = inputOf({ ...basic(), A5: real(range) }, allUser('A5'));
+    expect(input.capital.value).toEqual({
+      min: makeMoney(2000000n, 'JOD'),
+      max: makeMoney(5000500n, 'JOD'),
+    });
+    expect(input.capital.inputs).toEqual([{ kind: 'answer', id: 'A5' }]);
+    expect(input.capital.source).toBe('user');
+  });
+
+  it('leaves the capital out, with a note, when A5 is missing or unknown', () => {
+    expect(inputOf(basic()).capital.value).toBeNull();
+    expect(inputOf(basic()).notes).toContainEqual({
+      code: 'capital_unset',
+      questionId: 'A5',
+      state: 'missing',
+    });
+    expect(inputOf({ ...basic(), A5: UNKNOWN }).notes).toContainEqual({
+      code: 'capital_unset',
+      questionId: 'A5',
+      state: 'unknown',
+    });
+  });
+
+  it('does not convert a capital in another currency, and does not stop the run for it (D-113)', () => {
+    const input = inputOf({ ...basic(), A5: real({ min: 3000, max: 9000, currency: 'USD' }) });
+    expect(input.capital.value).toBeNull();
+    expect(input.notes).toContainEqual({
+      code: 'capital_other_currency',
+      questionId: 'A5',
+      currency: 'USD',
+    });
+    expect(input.notes.some((note) => note.code === 'capital_unset')).toBe(false);
+  });
+
+  it.each([[{ min: -1, max: 5, currency: 'JOD' }], [{ min: 1, max: Number.NaN, currency: 'JOD' }]])(
+    'refuses a capital range that is negative or unreadable: %j',
+    (range) => {
+      expect(reasonsOf({ ...basic(), A5: real(range) })).toEqual([
+        { code: 'invalid_value', questionId: 'A5', item: undefined },
+      ]);
+    },
+  );
+
+  it.each([
+    ['lt3', { kind: 'within', months: 3 }],
+    ['3to6', { kind: 'within', months: 6 }],
+    ['6to12', { kind: 'within', months: 12 }],
+    ['gt12', { kind: 'unbounded' }],
+  ])('reads the runway option %s (A7) as its upper bound', (option, limit) => {
+    const input = inputOf({ ...basic(), A7: real(option) }, allUser('A7'));
+    expect(input.runway.value).toEqual(limit);
+    expect(input.runway).toMatchObject({ source: 'user', inputs: [{ kind: 'answer', id: 'A7' }] });
+  });
+
+  it.each([
+    ['m6', { kind: 'within', months: 6 }],
+    ['m12', { kind: 'within', months: 12 }],
+    ['m18', { kind: 'within', months: 18 }],
+    ['m24', { kind: 'within', months: 24 }],
+    ['m36', { kind: 'within', months: 36 }],
+    ['more', { kind: 'unbounded' }],
+  ])('reads the break-even option %s (H5) as its upper bound', (option, limit) => {
+    const input = inputOf({ ...basic(), H5: real(option) }, allUser('H5'));
+    expect(input.breakEvenTarget.value).toEqual(limit);
+    expect(input.breakEvenTarget.inputs).toEqual([{ kind: 'answer', id: 'H5' }]);
+  });
+
+  it('leaves the runway and the break-even target unset, with notes, when missing or unknown', () => {
+    const input = inputOf(basic());
+    expect(input.runway.value).toEqual({ kind: 'unset' });
+    expect(input.breakEvenTarget.value).toEqual({ kind: 'unset' });
+    expect(input.runway).toMatchObject({
+      source: 'assumption',
+      confidence: 'low',
+      validated: false,
+    });
+    expect(input.notes).toContainEqual({
+      code: 'runway_unset',
+      questionId: 'A7',
+      state: 'missing',
+    });
+    expect(input.notes).toContainEqual({
+      code: 'break_even_target_unset',
+      questionId: 'H5',
+      state: 'missing',
+    });
+    const unknown = inputOf({ ...basic(), A7: UNKNOWN, H5: UNKNOWN });
+    expect(unknown.notes).toContainEqual({
+      code: 'runway_unset',
+      questionId: 'A7',
+      state: 'unknown',
+    });
+    expect(unknown.notes).toContainEqual({
+      code: 'break_even_target_unset',
+      questionId: 'H5',
+      state: 'unknown',
+    });
+  });
+
+  it('refuses an option the question bank does not offer', () => {
+    expect(reasonsOf({ ...basic(), A7: real('forever'), H5: real('never') })).toEqual([
+      { code: 'invalid_value', questionId: 'A7', item: undefined },
+      { code: 'invalid_value', questionId: 'H5', item: undefined },
+    ]);
   });
 });
