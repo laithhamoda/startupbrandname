@@ -274,9 +274,10 @@ Vercel applies a variable change to the next deployment only: redeploy after cha
 
 `FULL_REPORT_PREVIEW_EMAILS` (D-245) is a comma-separated list of addresses that see the full report
 before paid plans exist. The owner sets it on Vercel and changes it there; it is read on the next
-deployment, an empty or unset value means nobody, and one malformed address makes the server
-configuration invalid, so the app fails loudly instead of reading it as an empty list. It is
-removed with M7, when the entitlements come from the account's plan.
+deployment, and an empty or unset value means nobody. One malformed address (a semicolon, a
+stray word) makes the whole list empty and logs `report.preview_list_invalid`, so nobody sees the
+full report and the rest of the site keeps working. It is removed with M7, when the entitlements
+come from the account's plan.
 
 `LOG_LEVEL` sets the lowest level that `apps/web/src/lib/log.ts` writes to the server logs (D-126). The
 schemas are `apps/web/src/env/server.ts` and `client.ts`; a new variable follows the checklist in

@@ -21,6 +21,13 @@ export const emailList = z
   ])
   .pipe(z.array(z.email().max(254)).max(20));
 
+/**
+ * The accounts that see the full report before paid plans exist (D-232, D-245): the owner's address
+ * while the report is built. Read through `getPreviewEmails()`, not through `serverEnvSchema`, so a
+ * typo in this temporary variable cannot take every page down (D-245). Remove it with M7.
+ */
+export const previewEmailsSchema = emailList.default([]);
+
 /** Server-only variables. Importing this module from a Client Component fails the build. */
 export const serverEnvSchema = z.object({
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
@@ -37,9 +44,6 @@ export const serverEnvSchema = z.object({
   // "fake" is a deterministic stand-in for tests and CI that makes no network call (D-123).
   ANTHROPIC_API_KEY: z.string().min(1).optional(),
   AI_PROVIDER: z.enum(['anthropic', 'fake', 'off']).default('anthropic'),
-  // Accounts that see the full report before paid plans exist (D-232, D-245): the owner's address
-  // while the report is built. Empty by default; remove the variable when M7 ships entitlements.
-  FULL_REPORT_PREVIEW_EMAILS: emailList.default([]),
   // Search indexing stays off until public launch, and always off outside production (D-027, D-054).
   SITE_INDEXABLE: booleanFlag.default(false),
   // Set by Vercel at build and run time. VERCEL is "1" on Vercel only; tests that imitate
@@ -53,4 +57,21 @@ export type ServerEnv = z.infer<typeof serverEnvSchema>;
 
 export function getServerEnv(): ServerEnv {
   return serverEnvSchema.parse(process.env);
+}
+
+export interface PreviewEmails {
+  readonly emails: readonly string[];
+  /** False when `FULL_REPORT_PREVIEW_EMAILS` is malformed: the list is then empty, so the caller logs it. */
+  readonly valid: boolean;
+}
+
+/**
+ * `FULL_REPORT_PREVIEW_EMAILS` as a list. One malformed address makes the whole list empty and
+ * `valid` false: nobody previews, and the rest of the site keeps working.
+ */
+export function getPreviewEmails(
+  raw: string | undefined = process.env.FULL_REPORT_PREVIEW_EMAILS,
+): PreviewEmails {
+  const parsed = previewEmailsSchema.safeParse(raw);
+  return parsed.success ? { emails: parsed.data, valid: true } : { emails: [], valid: false };
 }

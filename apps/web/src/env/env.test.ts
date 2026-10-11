@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { clientEnvSchema } from './client';
-import { booleanFlag, emailList, serverEnvSchema } from './server';
+import { booleanFlag, emailList, getPreviewEmails, serverEnvSchema } from './server';
 
 const validClient = {
   NEXT_PUBLIC_SUPABASE_URL: 'https://abc.supabase.co',
@@ -73,22 +73,10 @@ describe('emailList', () => {
 });
 
 describe('serverEnvSchema', () => {
-  it('lets nobody preview the full report by default (D-245)', () => {
-    expect(serverEnvSchema.parse({}).FULL_REPORT_PREVIEW_EMAILS).toEqual([]);
-    expect(
-      serverEnvSchema.parse({ FULL_REPORT_PREVIEW_EMAILS: '' }).FULL_REPORT_PREVIEW_EMAILS,
-    ).toEqual([]);
-  });
-
-  it('reads the preview allow-list as lower-case addresses', () => {
-    expect(
-      serverEnvSchema.parse({ FULL_REPORT_PREVIEW_EMAILS: 'Owner@Example.com' })
-        .FULL_REPORT_PREVIEW_EMAILS,
-    ).toEqual(['owner@example.com']);
-  });
-
-  it('refuses a malformed preview allow-list instead of reading it as empty', () => {
-    expect(() => serverEnvSchema.parse({ FULL_REPORT_PREVIEW_EMAILS: 'owner@' })).toThrow();
+  it('does not read the preview allow-list in the schema, so a typo cannot fail every page (D-245)', () => {
+    expect(serverEnvSchema.parse({ FULL_REPORT_PREVIEW_EMAILS: 'owner@' })).not.toHaveProperty(
+      'FULL_REPORT_PREVIEW_EMAILS',
+    );
   });
 
   it('keeps the Algeria market open when the flag is unset (D-068)', () => {
@@ -121,5 +109,27 @@ describe('serverEnvSchema', () => {
     expect(serverEnvSchema.parse({ AI_PROVIDER: 'fake' }).AI_PROVIDER).toBe('fake');
     expect(() => serverEnvSchema.parse({ AI_PROVIDER: 'openai' })).toThrow();
     expect(serverEnvSchema.parse({}).ANTHROPIC_API_KEY).toBeUndefined();
+  });
+});
+
+describe('getPreviewEmails', () => {
+  it('lets nobody preview the full report by default (D-245)', () => {
+    expect(getPreviewEmails(undefined)).toEqual({ emails: [], valid: true });
+    expect(getPreviewEmails('')).toEqual({ emails: [], valid: true });
+  });
+
+  it('reads the allow-list as lower-case addresses', () => {
+    expect(getPreviewEmails('Owner@Example.com')).toEqual({
+      emails: ['owner@example.com'],
+      valid: true,
+    });
+  });
+
+  it('fails closed on a malformed list: nobody previews, and the caller is told', () => {
+    expect(getPreviewEmails('owner@example.com; other@example.com')).toEqual({
+      emails: [],
+      valid: false,
+    });
+    expect(getPreviewEmails('owner@')).toEqual({ emails: [], valid: false });
   });
 });
