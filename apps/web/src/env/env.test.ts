@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { clientEnvSchema } from './client';
-import { booleanFlag, serverEnvSchema } from './server';
+import { booleanFlag, emailList, serverEnvSchema } from './server';
 
 const validClient = {
   NEXT_PUBLIC_SUPABASE_URL: 'https://abc.supabase.co',
@@ -47,7 +47,50 @@ describe('booleanFlag', () => {
   });
 });
 
+describe('emailList', () => {
+  it('trims, lower-cases and drops blanks and repeats', () => {
+    expect(emailList.parse(' Owner@Example.com ,, owner@example.com,second@example.org ')).toEqual([
+      'owner@example.com',
+      'second@example.org',
+    ]);
+  });
+
+  it('reads an empty value as nobody', () => {
+    expect(emailList.parse('')).toEqual([]);
+    expect(emailList.parse(' , ')).toEqual([]);
+  });
+
+  it('rejects the whole list when one address is malformed', () => {
+    expect(() => emailList.parse('owner@example.com,not-an-email')).toThrow();
+  });
+
+  it('rejects more than 20 addresses', () => {
+    const many = Array.from({ length: 21 }, (_, index) => `user${String(index)}@example.com`).join(
+      ',',
+    );
+    expect(() => emailList.parse(many)).toThrow();
+  });
+});
+
 describe('serverEnvSchema', () => {
+  it('lets nobody preview the full report by default (D-245)', () => {
+    expect(serverEnvSchema.parse({}).FULL_REPORT_PREVIEW_EMAILS).toEqual([]);
+    expect(
+      serverEnvSchema.parse({ FULL_REPORT_PREVIEW_EMAILS: '' }).FULL_REPORT_PREVIEW_EMAILS,
+    ).toEqual([]);
+  });
+
+  it('reads the preview allow-list as lower-case addresses', () => {
+    expect(
+      serverEnvSchema.parse({ FULL_REPORT_PREVIEW_EMAILS: 'Owner@Example.com' })
+        .FULL_REPORT_PREVIEW_EMAILS,
+    ).toEqual(['owner@example.com']);
+  });
+
+  it('refuses a malformed preview allow-list instead of reading it as empty', () => {
+    expect(() => serverEnvSchema.parse({ FULL_REPORT_PREVIEW_EMAILS: 'owner@' })).toThrow();
+  });
+
   it('keeps the Algeria market open when the flag is unset (D-068)', () => {
     expect(serverEnvSchema.parse({}).MARKET_DZ_ENABLED).toBe(true);
   });

@@ -4,6 +4,23 @@ import { z } from 'zod';
 /** Accepts exactly "true" or "false". `z.coerce.boolean()` would turn "false" into true. */
 export const booleanFlag = z.enum(['true', 'false']).transform((value) => value === 'true');
 
+/**
+ * A comma-separated list of email addresses: trimmed, lower-cased, without blanks or repeats. Empty
+ * means none. One malformed address fails the whole variable, so a typo is never read as "nobody".
+ */
+export const emailList = z
+  .string()
+  .max(2000)
+  .transform((value) => [
+    ...new Set(
+      value
+        .split(',')
+        .map((email) => email.trim().toLowerCase())
+        .filter((email) => email !== ''),
+    ),
+  ])
+  .pipe(z.array(z.email().max(254)).max(20));
+
 /** Server-only variables. Importing this module from a Client Component fails the build. */
 export const serverEnvSchema = z.object({
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
@@ -20,6 +37,9 @@ export const serverEnvSchema = z.object({
   // "fake" is a deterministic stand-in for tests and CI that makes no network call (D-123).
   ANTHROPIC_API_KEY: z.string().min(1).optional(),
   AI_PROVIDER: z.enum(['anthropic', 'fake', 'off']).default('anthropic'),
+  // Accounts that see the full report before paid plans exist (D-232, D-245): the owner's address
+  // while the report is built. Empty by default; remove the variable when M7 ships entitlements.
+  FULL_REPORT_PREVIEW_EMAILS: emailList.default([]),
   // Search indexing stays off until public launch, and always off outside production (D-027, D-054).
   SITE_INDEXABLE: booleanFlag.default(false),
   // Set by Vercel at build and run time. VERCEL is "1" on Vercel only; tests that imitate

@@ -269,7 +269,14 @@ Vercel applies a variable change to the next deployment only: redeploy after cha
 | `AUTH_GOOGLE_VERIFY_PROVIDER`           | Unset; tests only                     | Never set                                  | Never set                                   |
 | `AI_PROVIDER`                           | `fake`                                | Unset (`anthropic`)                        | Unset (`anthropic`); `fake` turns AI off    |
 | `ANTHROPIC_API_KEY`                     | Unset                                 | Sensitive                                  | Sensitive                                   |
+| `FULL_REPORT_PREVIEW_EMAILS`            | Unset (nobody)                        | The owner's address, if needed             | The owner's address; removed with M7        |
 | `VERCEL`, `VERCEL_ENV`, `VERCEL_REGION` | Unset                                 | Set by Vercel                              | Set by Vercel                               |
+
+`FULL_REPORT_PREVIEW_EMAILS` (D-245) is a comma-separated list of addresses that see the full report
+before paid plans exist. The owner sets it on Vercel and changes it there; it is read on the next
+deployment, an empty or unset value means nobody, and one malformed address makes the server
+configuration invalid, so the app fails loudly instead of reading it as an empty list. It is
+removed with M7, when the entitlements come from the account's plan.
 
 `LOG_LEVEL` sets the lowest level that `apps/web/src/lib/log.ts` writes to the server logs (D-126). The
 schemas are `apps/web/src/env/server.ts` and `client.ts`; a new variable follows the checklist in

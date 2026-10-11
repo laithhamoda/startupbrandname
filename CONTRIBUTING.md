@@ -72,6 +72,8 @@ The full order, rollback and kill switches: [docs/runbooks/operations.md](docs/r
 - [ ] Vercel: set it for Production and Preview (Sensitive for secrets). A change applies to the
       next deployment only.
 - [ ] The variable table in `docs/runbooks/operations.md`.
+- [ ] A temporary variable (it stands in for a feature that comes later): say in its comment, in
+      `.env.example` and in the variable table which milestone removes it.
 
 ### A question, option or follow-up
 
