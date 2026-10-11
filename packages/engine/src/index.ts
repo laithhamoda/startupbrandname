@@ -145,3 +145,25 @@ export {
   type PricingOptions,
 } from './pricing';
 export { analyseEconomics, type EconomicsAnalysis } from './economics';
+export {
+  TAX_ALERT_SEVERITY,
+  TAX_RULES,
+  taxAnalysis,
+  taxDue,
+  validateTaxRule,
+  type CalculatedTax,
+  type TaxAlert,
+  type TaxAlertCode,
+  type TaxAnalysis,
+  type TaxBasis,
+  type TaxBracket,
+  type TaxCharge,
+  type TaxContext,
+  type TaxDue,
+  type TaxGap,
+  type TaxKind,
+  type TaxRule,
+  type TaxRuleStatus,
+  type TaxYear,
+  type UncalculatedTax,
+} from './tax';
