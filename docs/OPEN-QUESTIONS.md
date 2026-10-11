@@ -16,7 +16,7 @@ Mixed currencies stay uncompared until #21 is answered (D-113).
 1. `M0` **Resolved (D-001):** docs moved into the repository.
 2. `M3` **Resolved (D-107): `packages/ai/src/deidentify.ts`.** Rule 5 names `lib/ai/deidentify.ts`; CLAUDE.md §7 has no `lib/` and puts AI code in `packages/ai/`. Which path?
 3. `M3` **Resolved (D-107): de-identification ships in M3c.** First LLM calls happen in M3 (dialect normalization, R-rule classification), but de-identification tests are only in M6's definition of done and cost logging and consent come later. Rule 5 means de-identification must ship in M3.
-4. `M5` T6 (basic competitor matrix) is marked MVP but appears in no milestone; its report section is not marked ●.
+4. `M5` **Resolved (D-236): T6 is deferred to v2; the MVP report has no competition section.** Original note: T6 (basic competitor matrix) is marked MVP but appears in no milestone; its report section is not marked ●.
 5. `M4` **Resolved (D-186): tests and golden files use fixture rules marked unverified, checked again when M5 verifies the rules.** Original note: The M4 golden file for the Algerian auto-entrepreneur needs tax rules that are only verified from official sources in M5.
 
 ## B. Access, entitlements and vouchers
@@ -66,10 +66,10 @@ Mixed currencies stay uncompared until #21 is answered (D-113).
 36. `M3` **Resolved (D-104, D-105).** Do optional questions (B6), follow-ups and "لا أعرف" assumptions count as complete?
 37. `M3` **Resolved (D-112): named field kinds and option lists in the question bank.** Undefined field types: `text`, `currency`, and the combined types (`multi + text`, `boolean + text`, `boolean + percent`, `single + peak months`, `3 × number`, `3 × short_text`, `long_text / steps`, conditional C2, `range + currency`). Missing option lists: D2 sectors, H5, G5, A3, C7, C2 bands.
 38. `M3` **Resolved (D-112).** Do R1 and R5 apply to every text field or only the questions named in the Logic column?
-39. `M5` **Contradiction:** T17 JO checks `B7 ∈ {food, cosmetics}`, but B7 options are product / service / digital / hybrid; food and cosmetics are D2 sectors.
-40. `M5` T17 DZ needs an ANAE activity code (no question collects it) and a "goods import" signal (D6 mixes imports and FX exposure).
+39. `M5` **Resolved (D-233): Jordan decides the food and cosmetics approvals from the sector D2, not from B7.** Original note: **Contradiction:** T17 JO checks `B7 ∈ {food, cosmetics}`, but B7 options are product / service / digital / hybrid; food and cosmetics are D2 sectors.
+40. `M5` **Resolved (D-233): Algeria shows both paths and asks the founder to confirm the activity on the official ANAE list; goods import comes from D6.** Original note: T17 DZ needs an ANAE activity code (no question collects it) and a "goods import" signal (D6 mixes imports and FX exposure).
 41. `M4` **Resolved (D-190): amounts are compared in one currency only, and buckets by their upper bound.** Original note: Cross-type comparisons: F5 (amount) vs A5 (range + currency); A7 and H5 buckets vs BE_month. Which bound, which currency?
-42. `M5` The full-report gate requires F1, F3, F4, F5 but not F6 (sales) or F8 (currency), which T9 needs.
+42. `M5` **Resolved (D-232): the full report also needs F6; F8 is satisfied by the project currency.** Original note: The full-report gate requires F1, F3, F4, F5 but not F6 (sales) or F8 (currency), which T9 needs.
 
 ## G. Engine formulas
 
@@ -83,13 +83,13 @@ Mixed currencies stay uncompared until #21 is answered (D-113).
 50. `M4` **Resolved (D-188): months until cumulative cash after tax is back at zero, or "not within 3 years".** Original note: Payback: pre- or post-tax profit, horizon, output when never profitable.
 51. `M4` **Resolved (D-189): the year 1 averages of the base projection.** Original note: T7 "average expected monthly units": over which months?
 52. `M4` **Resolved (D-189): sales shift three months; costs start as planned.** Original note: T10 launch delay: do fixed costs still start in month 0?
-53. `M5` T18 `(4 − confidence) × sensitivity rank`: confidence has no numeric mapping, and if rank 1 is most sensitive the formula favours the least sensitive variable.
+53. `M5` **Resolved (D-230): confidence maps low 1, medium 2, high 3 and rank 1 weighs most.** Original note: T18 `(4 − confidence) × sensitivity rank`: confidence has no numeric mapping, and if rank 1 is most sensitive the formula favours the least sensitive variable.
 54. `M4` **Resolved (D-179): integer minor units, exact rates, rounded half away from zero on each monthly line.** Original note: Money precision and rounding (JOD has 3 decimals): integer minor units or a decimal library; display vs calculation rounding.
-55. `M5` Is the verdict decided by fixed thresholds or by the LLM? Which "3 numbers" go in the executive summary? How is "overall confidence" computed?
+55. `M5` **Resolved (D-227 and D-229): fixed rules with a 75% line, three numbers and a confidence formula.** Original note: Is the verdict decided by fixed thresholds or by the LLM? Which "3 numbers" go in the executive summary? How is "overall confidence" computed?
 
 ## H. Report, design and AI
 
-56. `M5` Banning "فائدة" (G7 = yes) also blocks its everyday meaning "benefit". Ban only in financing contexts?
+56. `M5` **Resolved (D-236): the word is banned only in financing text when G7 is yes.** Original note: Banning "فائدة" (G7 = yes) also blocks its everyday meaning "benefit". Ban only in financing contexts?
 57. `M1/M5` **Resolved (D-051).** **Contradiction:** "BMC mirrored, starting at the right with customer segments". The standard canvas already has customer segments on the right; mirroring moves them left.
 58. `M3` **Resolved (D-103, D-120): consent only; 40 calls per user a day and 5 USD a day overall, to revise after measurement.** Free users trigger Haiku calls on 64+ answers with no free-tier AI limit defined.
 59. `M6` Is the mentor's "~1 page project summary" built by code or by the LLM?
@@ -142,3 +142,4 @@ Mixed currencies stay uncompared until #21 is answered (D-113).
 ## Added 2026-10-11
 
 93. `M4` Engine readings to confirm (pull request 3: D-200, D-204 and D-205). Each is a reading the owner has not seen, and each can be reversed with a small change in the engine. (a) D-205: the founder's own yearly growth (F6.2) applies at full rate to years 2 and 3; only the engine's estimate is halved in year 3. (b) D-204: eight or more peak months at x1.5 cannot keep the year's total, so the season is ignored and a note says so. (c) D-200: an amount in another currency stops the run, D4 competitor prices included, even when the projection does not use D4; and a missing F5 does not stop the projection, because pull request 5 reads F5. Confirm or change each one before the report (M5). Added with pull requests 5 and 6 (D-212, D-213, D-215, D-217, D-218): (d) D-212: the tax of year 3 is paid after month 36, so it is left out of the funding need and the payback, and a note says so. (e) D-212: when no tax rule exists for the country and legal form, the cash flow is made before tax and says so, instead of refusing to calculate. (f) D-213: a missing answer to how the customer pays (F7) is read as cash at the sale, and a note says so. (g) D-215: the payback needs the cash to stay recovered: if it returns to zero and then falls below zero again (a tax payment, for example), the later month counts, not the first time it touched zero. (h) D-217: the 3-month launch delay of the conservative scenario moves the seasons with the sales, so a delayed shop meets its peak months three months later. (i) D-218: in the sensitivity chart (tornado), "fixed costs" means the full fixed cost: the F4 items, the salaries of staff who have started, and the marketing budget together.
+94. `M5` Engine and report readings to confirm (D-227 to D-238). Each can be reversed with a small change. (a) D-227: the verdict criteria have equal weight and the thresholds are 75% for the score, twice the largest capital for the funding blocker, and 36 months. (b) D-227: a project whose confidence is low is `revise` even when its score is high. (c) D-228: a suggested price stays within the competitors' largest price, and above it counts as a premium that needs a measurable difference. (d) D-229: overall confidence is the share of five pivotal figures at medium or high, with 75% and 50% as the lines. (e) D-230: the founder's biggest worry (H6) takes the first place of the validation plan, and experiment costs are described in words. (f) D-233: no tax figure appears without a rule read on an official page, and every report shows the official link and a line recommending a tax adviser. (g) D-236: one report template with an audience-dependent opening. (h) D-227: the English verdict wording is Go, Revise and Stop, and "Not viable in its current form" (#74).
