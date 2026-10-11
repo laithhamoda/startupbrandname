@@ -26,7 +26,8 @@ on conflict (key) do nothing;
 -- (validateTaxRule, D-216): an empty list, or objects with exactly "up_to" and "rate", where
 -- up_to is a whole number of minor units as text, rising from one bracket to the next, except
 -- the last, whose up_to is null (no limit), and rate is an exact fraction "n/d" of two whole
--- numbers with d above 0 (the form the engine parses, D-243). Nothing else is stored.
+-- numbers with d above 0 (D-243; the code that reads a row builds the engine's Rate from the two
+-- integers with makeRate, as no engine function parses this text). Nothing else is stored.
 create function private.tax_brackets_valid(p_brackets jsonb)
 returns boolean
 language sql
@@ -233,9 +234,12 @@ create policy "reports: owner reads" on public.reports
   ));
 
 -- Records a stored report for a project of the signed-in user and returns its id. The app makes
--- the id, uploads the file to {user_id}/{project_id}/{report_id}.pdf with the user's own session,
--- and records it here; the path must be exactly that, so a user cannot point a row at a file in
--- another user's or another project's folder. An empty audience means none.
+-- the id, records the report here, and then uploads the file to {user_id}/{project_id}/{report_id}.pdf
+-- with the user's own session: the storage policy lets a user add exactly the file a recorded
+-- report names. The path must be exactly that, so a user cannot point a row at a file in another
+-- user's or another project's folder. A user records at most report.pdf_per_day reports per UTC
+-- day (D-234), so the rows, and with them the files, are bounded by the database and not only by
+-- the app. An empty audience means none.
 create function public.record_report(
   p_report_id uuid,
   p_project_id uuid,
@@ -254,6 +258,8 @@ set search_path = ''
 as $$
 declare
   v_user uuid := auth.uid();
+  v_limit integer;
+  v_today integer;
 begin
   if v_user is null then
     raise exception 'record_report: not signed in' using errcode = '42501';
@@ -269,6 +275,20 @@ begin
     raise exception 'record_report: the path is not {user}/{project}/{report}.pdf' using errcode = '42501';
   end if;
 
+  -- The daily limit, counted under a lock so two calls at once cannot both pass. A missing or
+  -- non-positive setting closes the door.
+  perform pg_advisory_xact_lock(hashtextextended('record_report:' || v_user::text, 0));
+  select (value #>> '{}')::integer into v_limit
+  from public.settings where key = 'report.pdf_per_day';
+  select count(*)::integer into v_today
+  from public.reports r
+  join public.projects p on p.id = r.project_id
+  where p.user_id = v_user
+    and r.created_at >= (date_trunc('day', now() at time zone 'utc') at time zone 'utc');
+  if coalesce(v_limit, 0) <= 0 or v_today >= v_limit then
+    raise exception 'record_report: the daily limit is reached' using errcode = '54000';
+  end if;
+
   insert into public.reports (
     id, project_id, kind, locale, audience, input_hash, engine_version, pdf_path, pdf_bytes
   )
@@ -281,7 +301,7 @@ end;
 $$;
 
 comment on function public.record_report(uuid, uuid, text, text, text, text, text, text, integer) is
-  'Records a stored report PDF for a project of the signed-in user. The path must be {user_id}/{project_id}/{report_id}.pdf. Returns the report id.';
+  'Records a stored report PDF for a project of the signed-in user, up to report.pdf_per_day a UTC day. The path must be {user_id}/{project_id}/{report_id}.pdf. Returns the report id.';
 
 revoke all on function public.record_report(uuid, uuid, text, text, text, text, text, text, integer)
   from public, anon;
@@ -303,7 +323,9 @@ create unique index tool_runs_engine_run_key
 -- cost, and returns its id; the id of the existing row when the same project, tool, input hash and
 -- engine version are already recorded. The output is the compact summary of D-238, not the full
 -- run. The model tools write their rows through record_ai_run() only: a new one is listed here
--- with its migration.
+-- with its migration. The writes are bounded here, not left to the app: a project keeps the newest
+-- five engine runs of each tool (older ones are recomputable and are deleted as a new one is
+-- written) and at most twelve different engine tools, so a loop of calls cannot fill tool_runs.
 create function public.record_engine_run(
   p_project_id uuid,
   p_tool_id text,
@@ -318,6 +340,7 @@ set search_path = ''
 as $$
 declare
   v_id bigint;
+  v_tools integer;
 begin
   if auth.uid() is null then
     raise exception 'record_engine_run: not signed in' using errcode = '42501';
@@ -344,6 +367,21 @@ begin
     raise exception 'record_engine_run: the output is missing or too large' using errcode = '22023';
   end if;
 
+  -- One writer per project at a time, so the counts below hold under concurrent calls.
+  perform pg_advisory_xact_lock(hashtextextended('record_engine_run:' || p_project_id::text, 0));
+
+  if not exists (
+    select 1 from public.tool_runs
+    where project_id = p_project_id and tool_id = p_tool_id and engine_version is not null
+  ) then
+    select count(distinct tool_id)::integer into v_tools
+    from public.tool_runs
+    where project_id = p_project_id and engine_version is not null;
+    if v_tools >= 12 then
+      raise exception 'record_engine_run: too many engine tools for one project' using errcode = '54000';
+    end if;
+  end if;
+
   insert into public.tool_runs (project_id, tool_id, input_hash, output, engine_version)
   values (p_project_id, p_tool_id, p_input_hash, p_output, p_engine_version)
   on conflict (project_id, tool_id, input_hash, engine_version) where engine_version is not null
@@ -357,13 +395,28 @@ begin
       and tool_id = p_tool_id
       and input_hash = p_input_hash
       and engine_version = p_engine_version;
+  else
+    delete from public.tool_runs
+    where project_id = p_project_id
+      and tool_id = p_tool_id
+      and engine_version is not null
+      and model is null
+      and id not in (
+        select r.id from public.tool_runs r
+        where r.project_id = p_project_id
+          and r.tool_id = p_tool_id
+          and r.engine_version is not null
+          and r.model is null
+        order by r.id desc
+        limit 5
+      );
   end if;
   return v_id;
 end;
 $$;
 
 comment on function public.record_engine_run(uuid, text, text, jsonb, text) is
-  'Records an engine tool run (no model, no cost) for a project of the signed-in user and returns its id; returns the existing id for the same project, tool, input hash and engine version.';
+  'Records an engine tool run (no model, no cost) for a project of the signed-in user and returns its id; returns the existing id for the same project, tool, input hash and engine version. Keeps the newest five runs of each tool and at most twelve tools per project.';
 
 revoke all on function public.record_engine_run(uuid, text, text, jsonb, text) from public, anon;
 grant execute on function public.record_engine_run(uuid, text, text, jsonb, text) to authenticated;
@@ -398,15 +451,18 @@ begin
       and split_part(name, '/', 1) = (select auth.uid())::text
     );
 
-  create policy "reports bucket: owner adds files to own projects" on storage.objects
+  -- A user adds only the file that a report of theirs names: record_report() (daily limit, exact
+  -- path, ownership) comes first, so the files cannot outnumber the recorded reports. A file is
+  -- written once: there is no update policy, and an upload under an existing name is refused.
+  create policy "reports bucket: owner adds the file of a recorded report" on storage.objects
     for insert to authenticated
     with check (
       bucket_id = 'reports'
-      and name ~ '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.pdf$'
-      and split_part(name, '/', 1) = (select auth.uid())::text
       and exists (
-        select 1 from public.projects p
-        where p.id::text = split_part(name, '/', 2) and p.user_id = (select auth.uid())
+        select 1
+        from public.reports r
+        join public.projects p on p.id = r.project_id
+        where r.pdf_path = objects.name and p.user_id = (select auth.uid())
       )
     );
 

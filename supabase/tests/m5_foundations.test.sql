@@ -4,7 +4,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(103);
+select plan(112);
 
 insert into auth.users (id, email, created_at) values
   ('a5000000-0000-4000-8000-000000000001', 'm5-owner@example.test', now()),
@@ -146,9 +146,15 @@ select lives_ok($$select pg_temp.item()$$, 'a valid country pack item is stored'
 select pg_temp.act_as('a5000000-0000-4000-8000-000000000001');
 set local role authenticated;
 
-select is((select count(*)::int from public.tax_rules), 1, 'a signed-in user reads the tax rules');
 select is(
-  (select count(*)::int from public.country_pack_items), 1, 'a signed-in user reads the country pack'
+  (select count(*)::int from public.tax_rules where country_code = 'ZZ'),
+  1,
+  'a signed-in user reads the tax rules'
+);
+select is(
+  (select count(*)::int from public.country_pack_items where country_code = 'ZZ'),
+  1,
+  'a signed-in user reads the country pack'
 );
 
 select throws_ok(
@@ -459,7 +465,40 @@ select is(
   'a user does not see another user''s report'
 );
 
+-- The daily limit (report.pdf_per_day, D-234): the owner has two reports today, so a limit of two
+-- refuses a third, while the stranger, with one, is under the same limit.
 reset role;
+update public.settings set value = '2'::jsonb where key = 'report.pdf_per_day';
+
+select pg_temp.act_as('a5000000-0000-4000-8000-000000000001');
+set local role authenticated;
+
+select throws_ok(
+  $$select public.record_report(
+    'a5200000-0000-4000-8000-000000000012', 'a5100000-0000-4000-8000-000000000001', 'summary', 'ar',
+    '', repeat('a', 64), '1.0.0',
+    'a5000000-0000-4000-8000-000000000001/a5100000-0000-4000-8000-000000000001/a5200000-0000-4000-8000-000000000012.pdf',
+    100
+  )$$,
+  '54000', 'record_report: the daily limit is reached', 'a user over the daily limit cannot record another report'
+);
+
+reset role;
+select pg_temp.act_as('b5000000-0000-4000-8000-000000000002');
+set local role authenticated;
+
+select lives_ok(
+  $$select public.record_report(
+    'b5200000-0000-4000-8000-000000000012', 'b5100000-0000-4000-8000-000000000003', 'summary', 'ar',
+    '', repeat('a', 64), '1.0.0',
+    'b5000000-0000-4000-8000-000000000002/b5100000-0000-4000-8000-000000000003/b5200000-0000-4000-8000-000000000012.pdf',
+    100
+  )$$,
+  'the limit counts each user''s own reports'
+);
+
+reset role;
+update public.settings set value = '10'::jsonb where key = 'report.pdf_per_day';
 set local role anon;
 
 select throws_ok(
@@ -649,6 +688,77 @@ select is(
 
 reset role;
 
+-- The bounds on what one project can write: the newest five runs of a tool, and twelve tools.
+select pg_temp.act_as('a5000000-0000-4000-8000-000000000001');
+set local role authenticated;
+
+select lives_ok(
+  $$select pg_temp.keep('prune_first', public.record_engine_run(
+    'a5100000-0000-4000-8000-000000000002', 'prune_tool', lpad('1', 64, '0'), '{}', '1.0.0'
+  ))$$,
+  'the first of many runs of one tool is recorded'
+);
+select lives_ok(
+  $q$do $d$
+  begin
+    for i in 2..7 loop
+      perform public.record_engine_run(
+        'a5100000-0000-4000-8000-000000000002', 'prune_tool', lpad(i::text, 64, '0'), '{}', '1.0.0'
+      );
+    end loop;
+  end
+  $d$$q$,
+  'six more runs of the same tool are recorded'
+);
+select is(
+  (
+    select count(*)::int from public.tool_runs
+    where project_id = 'a5100000-0000-4000-8000-000000000002' and tool_id = 'prune_tool'
+  ),
+  5,
+  'a project keeps the newest five runs of a tool'
+);
+select is(
+  (select count(*)::int from public.tool_runs where id = pg_temp.kept('prune_first')),
+  0,
+  'and the oldest was the one deleted'
+);
+select isnt(
+  public.record_engine_run(
+    'a5100000-0000-4000-8000-000000000002', 'prune_tool', lpad('1', 64, '0'), '{}', '1.0.0'
+  ),
+  pg_temp.kept('prune_first'),
+  'a deleted run can be recorded again, as a new row'
+);
+
+select lives_ok(
+  $q$do $d$
+  begin
+    for i in 1..10 loop
+      perform public.record_engine_run(
+        'a5100000-0000-4000-8000-000000000002', 'cap_tool_' || i, lpad('1', 64, '0'), '{}', '1.0.0'
+      );
+    end loop;
+  end
+  $d$$q$,
+  'a project records twelve different engine tools'
+);
+select throws_ok(
+  $$select public.record_engine_run(
+    'a5100000-0000-4000-8000-000000000002', 'cap_tool_x', lpad('1', 64, '0'), '{}', '1.0.0'
+  )$$,
+  '54000', 'record_engine_run: too many engine tools for one project',
+  'a thirteenth tool is refused'
+);
+select lives_ok(
+  $$select public.record_engine_run(
+    'a5100000-0000-4000-8000-000000000002', 'prune_tool', lpad('9', 64, '0'), '{}', '1.0.0'
+  )$$,
+  'a tool the project already has is still accepted at the limit'
+);
+
+reset role;
+
 -- ---------------------------------------------------------------------------------------------
 -- Deleting a project deletes its reports (the erasure guard covers the foreign key)
 -- ---------------------------------------------------------------------------------------------
@@ -670,7 +780,7 @@ language plpgsql
 as $$
 begin
   if to_regclass('storage.objects') is null then
-    return next skip('no storage schema in this stack: the reports bucket and its policies are not tested', 11);
+    return next skip('no storage schema in this stack: the reports bucket and its policies are not tested', 10);
     return;
   end if;
 
@@ -704,32 +814,30 @@ begin
     'a user reads their own files in the bucket and no one else''s'
   );
 
+  -- The owner recorded reports 01 and 02 above (record_report comes first, then the upload).
   return next lives_ok(
     $q$insert into storage.objects (bucket_id, name) values
       ('reports', 'a5000000-0000-4000-8000-000000000001/a5100000-0000-4000-8000-000000000002/a5200000-0000-4000-8000-000000000002.pdf')$q$,
-    'a user adds a PDF under their own project'
+    'a user adds the PDF of a report they recorded'
   );
   return next throws_ok(
     $q$insert into storage.objects (bucket_id, name) values
-      ('reports', 'b5000000-0000-4000-8000-000000000002/b5100000-0000-4000-8000-000000000003/b5200000-0000-4000-8000-000000000020.pdf')$q$,
-    '42501', null, 'a user cannot add a file in another user''s folder'
+      ('reports', 'a5000000-0000-4000-8000-000000000001/a5100000-0000-4000-8000-000000000002/a5200000-0000-4000-8000-000000000022.pdf')$q$,
+    '42501', null, 'a user cannot add a file that no recorded report names'
   );
   return next throws_ok(
     $q$insert into storage.objects (bucket_id, name) values
-      ('reports', 'a5000000-0000-4000-8000-000000000001/b5100000-0000-4000-8000-000000000003/a5200000-0000-4000-8000-000000000021.pdf')$q$,
-    '42501', null, 'a user cannot add a file under a project that is not theirs'
+      ('reports', 'b5000000-0000-4000-8000-000000000002/b5100000-0000-4000-8000-000000000003/b5200000-0000-4000-8000-000000000009.pdf')$q$,
+    '42501', null, 'a user cannot add the file of another user''s report'
   );
   return next throws_ok(
     $q$insert into storage.objects (bucket_id, name) values
       ('reports', 'a5000000-0000-4000-8000-000000000001/a5100000-0000-4000-8000-000000000001/notes.txt')$q$,
-    '42501', null, 'a user cannot add a file that is not {report}.pdf'
-  );
-  return next throws_ok(
-    $q$insert into storage.objects (bucket_id, name) values
-      ('reports', 'a5000000-0000-4000-8000-000000000001/a5200000-0000-4000-8000-000000000022.pdf')$q$,
-    '42501', null, 'a user cannot add a file outside the user and project folders'
+    '42501', null, 'a user cannot add a file that is not the PDF of a report'
   );
 
+  -- Storage refuses a direct delete unless its own API sets this; the policy is what is tested.
+  perform set_config('storage.allow_delete_query', 'true', true);
   delete from storage.objects where bucket_id = 'reports'
     and name like 'b5000000-0000-4000-8000-000000000002/%';
   return next is(
