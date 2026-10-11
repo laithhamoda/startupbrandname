@@ -5,7 +5,7 @@
 export const ENGINE_VERSION = '0.1.0';
 
 export { EngineError, type EngineErrorCode } from './errors';
-export { divRoundHalfAwayFromZero } from './integer';
+export { divCeil, divRoundHalfAwayFromZero, medianBigInt } from './integer';
 export {
   CURRENCY_EXPONENTS,
   ISO_AND_ICU_DIFFER,
@@ -99,10 +99,12 @@ export {
 export {
   PRICE_FROM_D4_RULE,
   engineInputFrom,
+  type CapitalRange,
   type CompetitorPrice,
   type EngineInput,
   type EngineInputResult,
   type EngineNote,
+  type MonthLimit,
   type NotCalculableReason,
   type ProjectContext,
   type ProvenanceBySteps,
@@ -115,3 +117,29 @@ export {
   type OperatingProjection,
   type ProjectionLine,
 } from './projection';
+export {
+  ALERT_SEVERITY,
+  economicsAlerts,
+  type Alert,
+  type AlertCode,
+  type AlertSeverity,
+  type AlertValue,
+} from './alerts';
+export {
+  T8_RULES,
+  unitEconomics,
+  type BlockedUnitEconomics,
+  type OkUnitEconomics,
+  type SubscriptionEconomics,
+  type SubscriptionGap,
+  type UnitEconomics,
+} from './unit-economics';
+export {
+  T7_RULES,
+  pricing,
+  type PriceBand,
+  type Pricing,
+  type PricingGap,
+  type PricingOptions,
+} from './pricing';
+export { analyseEconomics, type EconomicsAnalysis } from './economics';
