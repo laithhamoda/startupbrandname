@@ -1425,10 +1425,17 @@ The owner approved all recommendations offered before the M2 plan.
   browser's `bin` folder (four files, 68 MB) and the ten font files to the spike route, and
   `@sbn/report` joins `transpilePackages`. `apps/web` also lists the four runtime packages as its own
   dependencies, because pnpm shows the tracer and the external resolution only the direct
-  dependencies of the app. A production build puts the four `bin/*.br` files and the ten font files
-  in `.next/server/app/api/internal/pdf-spike/route.js.nft.json`, and the route ran from
-  `next start`. Not verified here: the Vercel runtime itself (D-242 records the preview
-  measurements).
+  dependencies of the app. The include globs name the browser's `bin` folder and the fonts at their
+  real pnpm path (`node_modules/.pnpm/@sparticuz+chromium@*/node_modules/@sparticuz/chromium/bin`),
+  because the package finds its `bin` folder from its own real location, not from the symlink in
+  `apps/web/node_modules`; the browser is listed only there (68 MB, once), the fonts at both paths.
+  A production build puts the four `bin/*.br` files and the ten font files at those real paths in
+  `.next/server/app/api/internal/pdf-spike/route.js.nft.json`, and the route ran from `next start`.
+  The two packages move together: `puppeteer-core` and `@sparticuz/chromium` must keep the same
+  Chrome major, so a Dependabot bump of one without the other breaks the pairing; the lead adds a
+  Dependabot group for the pair (root configuration). Not verified here: the Vercel runtime itself
+  (D-242 records the preview measurements; if the first log line says the `bin` input directory does
+  not exist, the cause is packaging, not the choice between a function and a worker).
 - **Reason:** CLAUDE.md §5 (validate Arabic shaping and bidi; propose a worker before building
   around limits); D-235.
 - **Status:** Active
@@ -1441,7 +1448,13 @@ The owner approved all recommendations offered before the M2 plan.
   back to the newest Chromium in `~/.cache/ms-playwright` (headless shell first), so a laptop that ran
   `playwright install chromium` needs nothing else. It starts a headless shell binary in the `shell`
   mode and a full Chromium in the new headless mode, and adds `--no-sandbox` only when it runs as
-  root (the Playwright container). A missing browser throws `PdfRenderError` with the code
+  root or when `PDF_CHROMIUM_NO_SANDBOX=1` is set. The pinned Playwright container of CI runs as
+  user 1001 (`options: --user 1001`), where Chromium cannot use its sandbox either (Playwright's own
+  launcher drops it by default, Puppeteer's does not), so the e2e spec sets the variable; it is never
+  set on Vercel. On Vercel it passes the flags of `@sparticuz/chromium` without
+  `--disable-web-security` and `--allow-running-insecure-content`, which a renderer of static `data:`
+  documents does not need (the other flags of the package, `--no-sandbox` and `--single-process`
+  among them, stay: the runtime needs them). A missing browser throws `PdfRenderError` with the code
   `browser_unavailable`, a browser that does not start `launch_failed`; the message never quotes the
   document or the cause. `renderPdf({ html, locale, headerTitle })` opens a page, turns JavaScript off
   before the content is set (`setContent` and the wait for `document.fonts.ready` still work), aborts
@@ -1472,8 +1485,9 @@ The owner approved all recommendations offered before the M2 plan.
 
 - **Decision:** `packages/report` has unit tests (escaping, the print CSS, the fonts loader, the
   document and its policy, the fixture, the launcher including its error paths and the Vercel branch
-  with the package mocked, the header and footer, and the line reader) under the coverage gate of
-  D-237; the files that need a running browser (`render/pdf.ts`, `render/shared.ts`,
+  with the package mocked, the shared browser with the launcher mocked (a dead browser, a failed
+  start, two concurrent first calls), the header and footer, and the line reader) under the
+  coverage gate of D-237; the files that need a running browser (`render/pdf.ts`,
   `testing/pdf-inspect.ts`) are left out of the gate and covered by `apps/web/e2e/pdf/pdf.spec.ts`
   in the "site" project, which renders both fixtures with Playwright's Chromium
   (`PDF_CHROMIUM_PATH` from `chromium.executablePath()`) and reads the PDF back with pdf.js: the page
