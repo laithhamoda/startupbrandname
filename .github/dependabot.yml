@@ -29,6 +29,10 @@ updates:
       # pull request; scripts/check-playwright-version.mjs fails CI until it is.
       playwright:
         patterns: ['@playwright/test', '@axe-core/playwright']
+      # The PDF renderer pair must share a Chrome major: the Chrome that @sparticuz/chromium ships has
+      # to be the one puppeteer-core is built for (D-239).
+      pdf-renderer:
+        patterns: ['puppeteer-core', '@sparticuz/chromium']
       vitest:
         patterns: ['vitest', '@vitest/*']
       eslint:
