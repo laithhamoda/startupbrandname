@@ -167,3 +167,11 @@ export {
   type TaxYear,
   type UncalculatedTax,
 } from './tax';
+export {
+  CASH_FLOW_RULES,
+  cashFlow,
+  type BlockedCashFlow,
+  type CashFlow,
+  type CashFlowNote,
+  type OkCashFlow,
+} from './cash-flow';
