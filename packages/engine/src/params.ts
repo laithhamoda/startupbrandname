@@ -51,6 +51,8 @@ export const PARAM_KEYS = {
   conservativeVcFactor: 'scenario.conservative.vc_factor',
   optimisticVcFactor: 'scenario.optimistic.vc_factor',
   conservativeLaunchDelayMonths: 'scenario.conservative.launch_delay_months',
+  penetrationFloorFactor: 'pricing.penetration_floor_factor',
+  ltvCacMinimum: 'unit_economics.ltv_cac_minimum',
 } as const;
 
 /**
@@ -86,6 +88,10 @@ export interface EngineParams {
   readonly optimisticVcFactor: Figure<Rate>;
   /** T10 conservative launch delay (D-189). Default 3. Unit: months. */
   readonly conservativeLaunchDelayMonths: Figure<number>;
+  /** T7 penetration price is at least the floor times this (SPEC §4, D-206). Default 1.1. */
+  readonly penetrationFloorFactor: Figure<Rate>;
+  /** T8 alert when LTV / CAC is below this (SPEC §4). Default 3. */
+  readonly ltvCacMinimum: Figure<Rate>;
 }
 
 /**
@@ -128,6 +134,8 @@ function defaultParams(): EngineParams {
     conservativeVcFactor: defaultFigure(PARAM_KEYS.conservativeVcFactor, rate('1.1')),
     optimisticVcFactor: defaultFigure(PARAM_KEYS.optimisticVcFactor, rate('0.95')),
     conservativeLaunchDelayMonths: defaultFigure(PARAM_KEYS.conservativeLaunchDelayMonths, 3),
+    penetrationFloorFactor: defaultFigure(PARAM_KEYS.penetrationFloorFactor, rate('1.1')),
+    ltvCacMinimum: defaultFigure(PARAM_KEYS.ltvCacMinimum, rate('3')),
   };
 }
 
@@ -198,6 +206,8 @@ function validate(params: EngineParams): void {
     [PARAM_KEYS.optimisticSalesFactor, params.optimisticSalesFactor],
     [PARAM_KEYS.conservativeVcFactor, params.conservativeVcFactor],
     [PARAM_KEYS.optimisticVcFactor, params.optimisticVcFactor],
+    [PARAM_KEYS.penetrationFloorFactor, params.penetrationFloorFactor],
+    [PARAM_KEYS.ltvCacMinimum, params.ltvCacMinimum],
   ] as const) {
     requireRate(key, figure.value);
   }
@@ -236,6 +246,12 @@ function validate(params: EngineParams): void {
   requirePositive(PARAM_KEYS.optimisticSalesFactor, params.optimisticSalesFactor.value);
   requirePositive(PARAM_KEYS.conservativeVcFactor, params.conservativeVcFactor.value);
   requirePositive(PARAM_KEYS.optimisticVcFactor, params.optimisticVcFactor.value);
+  ensure(
+    compareRates(params.penetrationFloorFactor.value, ONE_RATE) >= 0,
+    PARAM_KEYS.penetrationFloorFactor,
+    'must be at least 1',
+  );
+  requirePositive(PARAM_KEYS.ltvCacMinimum, params.ltvCacMinimum.value);
   requireMonths(
     PARAM_KEYS.conservativeLaunchDelayMonths,
     params.conservativeLaunchDelayMonths.value,
@@ -312,5 +328,7 @@ export function listEngineParams(params: EngineParams): readonly Figure<unknown>
     params.conservativeVcFactor,
     params.optimisticVcFactor,
     params.conservativeLaunchDelayMonths,
+    params.penetrationFloorFactor,
+    params.ltvCacMinimum,
   ];
 }

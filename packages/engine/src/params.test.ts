@@ -28,6 +28,8 @@ describe('documented defaults', () => {
     expect(p.optimisticVcFactor.value).toEqual(parseRate('0.95'));
     expect(p.conservativeLaunchDelayMonths.value).toBe(3);
     expect(p.inflationRate.value).toBeNull(); // D-185
+    expect(p.penetrationFloorFactor.value).toEqual(parseRate('1.1')); // SPEC T7, D-206
+    expect(p.ltvCacMinimum.value).toEqual(parseRate('3')); // SPEC T8
   });
 
   it('times the cash of each F7 option (D-187)', () => {
@@ -155,6 +157,12 @@ describe('overrides', () => {
     ['a negative sales multiplier', { optimisticSalesFactor: defaultFigure('s', parseRate('-1')) }],
     ['a zero cost multiplier', { conservativeVcFactor: defaultFigure('s', ZERO_RATE) }],
     ['a negative cost multiplier', { optimisticVcFactor: defaultFigure('s', parseRate('-1')) }],
+    [
+      'a penetration factor below 1',
+      { penetrationFloorFactor: defaultFigure('p', parseRate('0.9')) },
+    ],
+    ['a zero LTV / CAC minimum', { ltvCacMinimum: defaultFigure('l', ZERO_RATE) }],
+    ['a negative LTV / CAC minimum', { ltvCacMinimum: defaultFigure('l', parseRate('-3')) }],
     ['a negative launch delay', { conservativeLaunchDelayMonths: defaultFigure('d', -1) }],
     ['a fractional launch delay', { conservativeLaunchDelayMonths: defaultFigure('d', 1.5) }],
     ['a launch delay beyond 120', { conservativeLaunchDelayMonths: defaultFigure('d', 121) }],

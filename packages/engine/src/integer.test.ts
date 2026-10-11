@@ -2,9 +2,11 @@ import { describe, expect, it } from 'vitest';
 import { EngineError } from './errors';
 import {
   absBigInt,
+  divCeil,
   divRoundHalfAwayFromZero,
   formatScaled,
   gcdBigInt,
+  medianBigInt,
   parseDecimal,
   pow10,
 } from './integer';
@@ -121,5 +123,47 @@ describe('parseDecimal', () => {
 
   it('accepts the largest exponent allowed', () => {
     expect(parseDecimal('1e400')?.units).toBe(10n ** 400n);
+  });
+});
+
+describe('divCeil', () => {
+  it.each([
+    [7n, 2n, 4n],
+    [6n, 2n, 3n],
+    [1n, 3n, 1n],
+    [0n, 5n, 0n],
+    [-7n, 2n, -3n],
+    [7n, -2n, -3n],
+    [-7n, -2n, 4n],
+    [-6n, 2n, -3n],
+  ])('divides %d by %d and rounds up to %d', (numerator, divisor, expected) => {
+    expect(divCeil(numerator, divisor)).toBe(expected);
+  });
+
+  it('rejects a zero divisor', () => {
+    expect(() => divCeil(1n, 0n)).toThrow(EngineError);
+  });
+});
+
+describe('medianBigInt', () => {
+  it('takes the middle value of an odd count, in any order', () => {
+    expect(medianBigInt([9000n, 15000n, 12000n])).toBe(12000n);
+    expect(medianBigInt([5n])).toBe(5n);
+  });
+
+  it('takes the mean of the two middle values of an even count, rounded half away from zero', () => {
+    expect(medianBigInt([9000n, 12000n])).toBe(10500n);
+    expect(medianBigInt([1n, 2n])).toBe(2n);
+    expect(medianBigInt([-2n, -1n])).toBe(-2n);
+  });
+
+  it('does not reorder the list it is given', () => {
+    const values = [3n, 1n, 2n];
+    medianBigInt(values);
+    expect(values).toEqual([3n, 1n, 2n]);
+  });
+
+  it('rejects an empty list', () => {
+    expect(() => medianBigInt([])).toThrow(EngineError);
   });
 });
