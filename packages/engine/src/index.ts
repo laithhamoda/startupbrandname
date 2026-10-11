@@ -85,3 +85,33 @@ export {
   type ProjectionMonth,
   type ProjectionPeriod,
 } from './calendar';
+export { ROOT_RESOLUTION, ROOT_RESOLUTION_DIGITS, nthRootFloor, rateRoot } from './root';
+export { seasonalFactors, type SeasonalFactors, type SeasonalityKind } from './seasonality';
+export {
+  deseasonalisedPoints,
+  estimateYearlyGrowth,
+  interpolateLevels,
+  unitCurve,
+  yearlyGrowthRates,
+  type SalesPoints,
+  type UnitCurve,
+} from './sales-curve';
+export {
+  PRICE_FROM_D4_RULE,
+  engineInputFrom,
+  type CompetitorPrice,
+  type EngineInput,
+  type EngineInputResult,
+  type EngineNote,
+  type NotCalculableReason,
+  type ProjectContext,
+  type ProvenanceBySteps,
+  type StaffMember,
+  type StoredProvenance,
+} from './input';
+export {
+  T9_RULES,
+  projectOperatingLines,
+  type OperatingProjection,
+  type ProjectionLine,
+} from './projection';
