@@ -27,7 +27,30 @@ import {
 import type { TaxAlert } from './tax';
 
 /** The page without its number isolation, to look for words that hold digits. */
-const plainOf = (html: string): string => html.replace(/<\/?bdi[^>]*>/g, '');
+const plainOf = (html: string): string =>
+  html.split('<bdi dir="ltr">').join('').split('</bdi>').join('');
+
+/**
+ * The text of the page that is outside every tag and outside the `style`, `code` and `bdi`
+ * elements, where digits are allowed. It walks the pieces between tags instead of stripping tags
+ * with a pattern, so an unclosed element cannot hide text: it throws when they do not balance.
+ */
+function textOutsideIsolates(html: string): string {
+  const skipped = new Set(['style', 'code', 'bdi']);
+  let open = 0;
+  let text = '';
+  for (const piece of html.split(/(<[^>]*>)/)) {
+    if (piece.startsWith('<')) {
+      const name = /^<\/?([a-z][a-z0-9]*)/i.exec(piece)?.[1]?.toLowerCase() ?? '';
+      if (skipped.has(name)) open += piece.startsWith('</') ? -1 : 1;
+      if (open < 0) throw new Error('A closing tag has no opening tag: ' + piece);
+    } else if (open === 0) {
+      text += piece;
+    }
+  }
+  if (open !== 0) throw new Error('An element that holds digits is not closed');
+  return text;
+}
 
 const jod = { currency: 'JOD', label: 'د.أ' };
 const dzd = { currency: 'DZD', label: 'DZD' };
@@ -439,12 +462,7 @@ describe('the review page', () => {
 
   it('writes only Western digits, each isolated in a bdi, and the currency after the number', () => {
     expect(page).not.toMatch(/[٠-٩۰-۹]/);
-    const text = page
-      .replace(/<style>[\s\S]*<\/style>/, '')
-      .replace(/<code>[\s\S]*?<\/code>/g, '')
-      .replace(/<bdi dir="ltr">[^<]*<\/bdi>/g, '')
-      .replace(/<[^>]*>/g, '');
-    expect(text).not.toMatch(/\d/);
+    expect(textOutsideIsolates(page)).not.toMatch(/\d/);
   });
 
   it('never splits a pair of brackets between an isolate and the text around it', () => {
