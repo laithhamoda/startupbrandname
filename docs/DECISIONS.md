@@ -693,14 +693,20 @@ The owner approved all recommendations offered before the M2 plan.
   pure. `answers` is the question bank's `Answers`; `provenance` is the stored source, confidence
   and validated of each step ID, which the adapter passes on and never works out again; `project`
   is `{country, currency, mode, referenceDate}`. It returns `ok` with an `EngineInput`, or
-  `not_calculable` with every reason it found, in the order the questions are read, each a question
-  ID (null for a project setting), a code and the row at fault: `invalid_project` (a currency the
-  engine does not know, or a reference date that is no date), `missing_answer` and `unknown_answer`
-  (F1, F3, F4 and F6 must be real answers, D-110), `currency_mismatch` (an amount outside the
-  project currency, D-180, with the currency found), `invalid_value` (NaN, infinite or negative, or
-  an E7 that is not a whole number) and `no_price` (D-201). The currency rule covers every amount
-  the adapter reads, including D4, F4.1, E8 and F5, not only those the projection uses: nothing is
-  converted, and one rule is easier to explain to a founder than several. F3, F4 and F5 are sums of
+  `not_calculable` with every reason it found, in the order the adapter reads the answers (D4, F1,
+  F3, F4, F4.1, E8, F6, F6.2, D7, E7, F5), each a question ID (null for a project setting), a code
+  and the row at fault: `invalid_project` (a currency the engine does not know, or a reference date
+  that is no date), `missing_answer` and `unknown_answer` (F1, F3, F4 and F6 must be real answers:
+  D-110 names F3 and F4, and F6 is the sales forecast the projection is made of), `currency_mismatch`
+  (an amount outside the project currency, D-180, with the currency found), `invalid_value` (NaN,
+  infinite or negative, or an E7 that is not a whole number) and `no_price` (D-201). F5 is not
+  required here although D-110 names it for the full-report gate: the projection does not use it,
+  so an unknown or missing F5 gives `setupCosts` null and a note `setup_costs_unset`, and pull
+  request 5 (payback and funding need, D-187 and D-188) decides there what that means for the runs
+  that need it. The currency rule covers every amount the adapter reads, including D4, F4.1, E8 and
+  F5, not only those the projection uses: nothing is converted, one rule is easier to explain to a
+  founder than several, and a competitor price in another currency therefore also stops a run that
+  would not have used D4 (the owner may relax this for D4 once T7 exists). F3, F4 and F5 are sums of
   their items in minor units; F6 and F6.2 are exact rates. A step with no stored provenance counts
   as an unvalidated low-confidence assumption, a picked range as an assumption (D-157) and «لا
   أعرف» as D-104 says, all through `figureFromAnswer`. An unknown or missing F4.1 is zero marketing,
@@ -721,7 +727,8 @@ The owner approved all recommendations offered before the M2 plan.
   from zero to the minor unit. Competitors whose price is unknown are skipped. The price is an
   assumption of low confidence, not validated, with the inputs F1, D4 and the rule
   `F1.d4_median`, and a note `price_from_competitors`. Without a known D4 price the result is
-  `no_price`. A D4 price in another currency stops the run (D-200) instead of being skipped. An F1
+  `no_price`. A D4 price in another currency stops the run (D-200) instead of being skipped, and is
+  then reported as `currency_mismatch` alone, not also as `no_price`. An F1
   that was never answered is `missing_answer`: the fallback is for «لا أعرف», not for silence.
 - **Reason:** D-110 and SPEC F1 ("unknown → range from D4"). T7 shows the whole band (pull request 4);
   the projection needs one price, and the middle of what competitors charge is the least arbitrary.
@@ -790,7 +797,10 @@ The owner approved all recommendations offered before the M2 plan.
   units, revenue, COGS, gross profit, fixed costs, payroll, marketing, operating costs and operating
   profit, each with its monthly values, its calendar columns (sums of the months) and its provenance
   (D-181). A line's provenance covers the whole series, so an unknown F6.2 lowers the confidence of
-  every units, revenue, COGS and profit line, years 2 and 3 included. Payroll counts a person from
+  every units, revenue, COGS and profit line, years 2 and 3 included. The same holds for E7 and D7:
+  "no cap" and "no season" are assumptions made for a founder who gave no answer, so units and every
+  line built on them are assumption and low confidence, and the notes `capacity_unlimited` and
+  `seasonality_unset` say why; this is intended, not an oversight. Payroll counts a person from
   their start month. Inflation applies from year 2 only when the caller's `inflationRate` has a
   value: the year's factor `(1 + i)^(year - 1)` multiplies COGS (units times the variable cost, one
   rounding), fixed costs, payroll and marketing, each rounded half away from zero on its own monthly
