@@ -42,7 +42,7 @@ A decision may sit under several topics. A new decision joins its topics in the 
   D-149, D-156 to D-161, D-163, D-165, D-167, D-182, D-183, D-197 to D-199, D-231, D-232.
 - **Calculation engine:** D-178 to D-190, D-193 to D-196, D-200 to D-224, D-227 to D-230,
   D-238.
-- **Report, canvases and PDF (M5):** D-225 to D-238, D-239 to D-241.
+- **Report, canvases and PDF (M5):** D-225 to D-242.
 - **AI and cost:** D-062, D-071, D-072, D-073, D-082, D-103, D-107, D-119 to D-124, D-143, D-146 to
   D-152, D-155, D-183, D-191, D-226.
 - **Privacy, consent and security:** D-013, D-016, D-040, D-041, D-061, D-062, D-074, D-077,
@@ -1504,4 +1504,28 @@ The owner approved all recommendations offered before the M2 plan.
   `x-pdf-aborted` and `x-pdf-node-rss-mb` (Node only, without Chromium). Vercel's own preview
   protection is its only gate: it serves a literal fixture, no data. Step 6 removes the route.
 - **Reason:** D-235 and D-237; the gate of step 0 is a measured decision, not a guess (D-242).
+- **Status:** Amended by D-242
+
+### D-242 (2026-10-12): The PDF is made by a Vercel function
+
+- **Decision:** The report PDF is rendered by headless Chromium inside a Vercel function in `fra1`,
+  not by a separate render worker. Measured on the Vercel preview of `m5/0-pdf-spike` (Node.js
+  24.21.0, the Hobby plan, the six-page Arabic fixture and its English twin): the first call, which
+  starts the browser, took 4.3 s in all (2.6 s to launch it and 0.2 s to render); later calls took
+  0.15 to 0.23 s to render and 0.6 to 1.1 s in all; the files are 118,136 bytes in Arabic and
+  101,439 in English; no request was aborted; the Node process held 135 MB, and Chromium's own
+  memory is not shown because the platform does not expose the container peak. The route's traced
+  files are 71 MB, far under the 250 MB limit, and `maxDuration = 60` is enough by a wide margin.
+  The PDFs made on Vercel were rasterized and checked by eye: joined letters, tashkeel, digits and
+  currency in place, right-to-left tables, the landscape page, the header and the footer. Not yet
+  measured: a report of fifteen pages, memory under concurrent requests, and the memory ceiling of
+  the plan; step 6 measures them with the real report on the real route, and a Pro plan is already
+  required before M7 (D-021). A worker stays the fallback if step 6 meets a limit. Two findings:
+  the first preview build of the branch failed because `next/font` could not fetch Cairo from Google
+  Fonts, and a rebuild fixed it (self-hosting the fonts would remove that dependency); and the
+  previews of this project are public, because Vercel Authentication is off, so the sentence of
+  D-241 that Vercel's preview protection is the route's only gate does not hold. The temporary route
+  stays acceptable until step 6 removes it because it serves a literal fixture and nothing else
+  (open question #96).
+- **Reason:** D-235 and CLAUDE.md §5: the function or the worker is decided by a measurement.
 - **Status:** Active
