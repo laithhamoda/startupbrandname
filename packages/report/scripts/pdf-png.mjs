@@ -52,6 +52,11 @@ const pdfjsBuild = join(
   'build',
 );
 const pdfBytes = await readFile(resolve(pdfPath));
+// The two files the page loads, read once at the start: a request never picks a path.
+const pdfjsFiles = new Map([
+  ['/pdf.mjs', await readFile(join(pdfjsBuild, 'pdf.mjs'))],
+  ['/pdf.worker.mjs', await readFile(join(pdfjsBuild, 'pdf.worker.mjs'))],
+]);
 
 const PAGE = `<!doctype html><meta charset="utf-8"><body><script type="module">
 try {
@@ -89,16 +94,14 @@ const server = createServer((request, response) => {
     response.writeHead(200, { 'content-type': type });
     response.end(body);
   };
-  void (async () => {
-    if (request.url === '/') send('text/html', PAGE);
-    else if (request.url === '/doc.pdf') send('application/pdf', pdfBytes);
-    else if (request.url === '/pdf.mjs' || request.url === '/pdf.worker.mjs') {
-      send('text/javascript', await readFile(join(pdfjsBuild, request.url)));
-    } else {
-      response.writeHead(404);
-      response.end();
-    }
-  })();
+  const script = pdfjsFiles.get(request.url ?? '');
+  if (request.url === '/') send('text/html', PAGE);
+  else if (request.url === '/doc.pdf') send('application/pdf', pdfBytes);
+  else if (script) send('text/javascript', script);
+  else {
+    response.writeHead(404);
+    response.end();
+  }
 });
 await new Promise((done) => server.listen(0, '127.0.0.1', done));
 const { port } = server.address();
