@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import {
   GOLDEN_PROJECTS,
+  decisionAgreement,
   headlineValue,
   runGolden,
   runWithPayment,
@@ -13,7 +14,7 @@ import {
   type GoldenProject,
 } from './golden-projects';
 import { makeMoney } from './money';
-import { goldenReviewEntries, renderReviewPage } from './review-page';
+import { caseReviewEntries, goldenReviewEntries, renderReviewPage } from './review-page';
 import { makeRate } from './rate';
 import type { EngineRun } from './run';
 import { serialiseRun } from './serialise';
@@ -91,6 +92,19 @@ describe.each(GOLDEN_PROJECTS)('golden project $name', (golden) => {
 
   it('is the golden file', () => {
     matchFile(`${GOLDEN_DIR}${golden.name}.json`, serialiseRun(run));
+  });
+
+  it('agrees with the hand computation of the score, the verdict, confidence and the plan', () => {
+    const agreement = decisionAgreement(run, golden.decision);
+    expect(agreement.criteria).toEqual(golden.decision.criteria.map(() => true));
+    expect(agreement.criteria).toHaveLength(11);
+    expect(agreement).toMatchObject({
+      score: true,
+      blockers: true,
+      verdict: true,
+      confidence: true,
+      plan: true,
+    });
   });
 
   it('is deterministic: a second run gives the same bytes', () => {
@@ -429,6 +443,83 @@ describe('golden project 3: the Algerian auto-entrepreneur', () => {
   });
 });
 
+/*
+ * The verdicts of the three projects (D-227, D-229, D-230); the hand computations are in the
+ * decision rows of golden-projects.ts and asserted above. The subscription service passes 6 of 10
+ * criteria (60 percent, under the line) and is revise. The home shop passes 6 of 10 as well, but
+ * its funding need of 12,900 is above twice its largest capital of 6,000 and H3 names only savings
+ * and family, so it is stop. The auto-entrepreneur passes 8 of 9 (88.89 percent): go.
+ */
+describe('the verdicts of the golden projects', () => {
+  const verdicts = GOLDEN_PROJECTS.map((golden) => {
+    const run = runGolden(golden);
+    return {
+      name: golden.name,
+      verdict: run.verdict.verdict.value,
+      blockers: run.verdict.blockers.map((blocker) => blocker.code),
+      passed: run.feasibility.passed,
+      evaluated: run.feasibility.evaluated,
+      confidence: run.confidence.level.value,
+      plan: run.validationPlan.entries.map((entry) => entry.variable),
+    };
+  });
+
+  it('are revise, stop and go', () => {
+    expect(verdicts).toEqual([
+      {
+        name: 'jo-service-subscription',
+        verdict: 'revise',
+        blockers: [],
+        passed: 6,
+        evaluated: 10,
+        confidence: 'high',
+        plan: ['worry', 'price', 'fixed_costs'],
+      },
+      {
+        name: 'jo-home-ecommerce',
+        verdict: 'stop',
+        blockers: ['funding_need_above_capital_multiple'],
+        passed: 6,
+        evaluated: 10,
+        confidence: 'high',
+        plan: ['price', 'sales', 'vc'],
+      },
+      {
+        name: 'dz-auto-entrepreneur',
+        verdict: 'go',
+        blockers: [],
+        passed: 8,
+        evaluated: 9,
+        confidence: 'high',
+        plan: ['worry', 'sales', 'price'],
+      },
+    ]);
+  });
+
+  it('name H3 in each project, and none relies on outside financing to pass', () => {
+    const financing = GOLDEN_PROJECTS.map(
+      (golden) => runGolden(golden).input.outsideFinancing.value,
+    );
+    expect(financing).toEqual([true, false, false]);
+  });
+
+  it('stop the home shop only because of its funding: 12,900 against 2 x 6,000', () => {
+    const shop = project('jo-home-ecommerce');
+    const run = runGolden(shop);
+    expect(run.input.capital.value?.max.minor).toBe(6_000_000n);
+    expect(run.cash.cashFlow.status === 'ok' && run.cash.cashFlow.fundingNeed.value.minor).toBe(
+      12_900_000n,
+    );
+    // The same shop funded by a loan has no blocker and is revise.
+    const loan = runGolden({
+      ...shop,
+      answers: { ...shop.answers, H3: { status: 'answered', value: { values: ['self', 'loan'] } } },
+    });
+    expect(loan.verdict.blockers).toEqual([]);
+    expect(loan.verdict.verdict.value).toBe('revise');
+  });
+});
+
 describe('the golden fixtures as a set', () => {
   it('use every F7 option and both kinds of payback', () => {
     const options = new Set(
@@ -510,6 +601,6 @@ describe('the helpers of the golden fixtures', () => {
  */
 describe('the owner review page', () => {
   it('is docs/engine-review/index.html', () => {
-    matchFile(REVIEW_PAGE, renderReviewPage(goldenReviewEntries()));
+    matchFile(REVIEW_PAGE, renderReviewPage(goldenReviewEntries(), caseReviewEntries()));
   });
 });

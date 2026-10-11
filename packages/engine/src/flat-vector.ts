@@ -39,9 +39,9 @@ export const jodItems = (...rows: readonly (readonly [string, number])[]) => ({
 export function flatAnswers(more: Answers = {}): Answers {
   return {
     F1: real({ amount: 10, currency: 'JOD' }),
-    F3: real(jodItems(['Materials', 4])),
-    F4: real(jodItems(['Rent', 1000])),
-    F5: real(jodItems(['Set-up', 3000])),
+    F3: real(jodItems(['مواد', 4])),
+    F4: real(jodItems(['إيجار', 1000])),
+    F5: real(jodItems(['تأسيس', 3000])),
     F6: real({ month1: 400, month6: 400, month12: 400 }),
     A5: real({ min: 5000, max: 8000, currency: 'JOD' }),
     A7: real('3to6'),

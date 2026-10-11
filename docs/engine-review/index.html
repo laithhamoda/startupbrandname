@@ -16,6 +16,8 @@ body{margin:0;background:var(--bg);color:var(--fg);font:1rem/1.85 Tajawal,Cairo,
 h1{font-size:1.9rem;line-height:1.45;margin-block:1.5rem .5rem}
 h2{font-size:1.5rem;line-height:1.5;margin-block:3rem 1rem;padding-block-start:.75rem;border-block-start:3px solid var(--fg)}
 h3{font-size:1.15rem;line-height:1.6;margin-block:2rem .5rem}
+h4{font-size:1rem;line-height:1.6;margin-block:1.5rem .25rem}
+article{margin-block:2rem;padding-block-start:1rem;border-block-start:1px solid var(--line)}
 p,li,dd{max-inline-size:70ch;overflow-wrap:anywhere}
 .lead{font-size:1.1rem}
 .sentence{font-size:1.1rem}
@@ -64,10 +66,11 @@ h1{font-size:1.6rem}
 <p class="banner" role="note">هذه مشاريع نموذجية وليست حقيقية. قواعد الضرائب فيها تجريبية غير موثّقة، ومصدرها عنوان وهمي، ولا تعني أي نسبة حقيقية. ولا نصيحة مالية أو ضريبية في هذه الصفحة. ولن يرى المؤسسون أي رقم من المحرّك قبل المرحلة <bdi dir="ltr">M5</bdi>.</p>
 <nav aria-label="المشاريع"><ul><li><a href="#jo-service-subscription">خدمة برمجية بالاشتراك الشهري</a></li>
 <li><a href="#jo-home-ecommerce">متجر إلكتروني منزلي للبضائع المستوردة</a></li>
-<li><a href="#dz-auto-entrepreneur">مقاول ذاتي يبيع أكلات منزلية في الجزائر</a></li></ul></nav>
+<li><a href="#dz-auto-entrepreneur">مقاول ذاتي يبيع أكلات منزلية في الجزائر</a></li>
+<li><a href="#verdict-cases">حالات اصطناعية للقرار</a></li></ul></nav>
 <section id="how" aria-labelledby="how-title">
 <h2 id="how-title">كيف تقرأ كل مشروع</h2>
-<p>يبدأ كل مشروع بجملة تصفه، ثم المدخلات بالكلمات كما أجاب المؤسس، ثم جدول الأرقام الرئيسية: الرقم، وحسابه اليدوي، وما أخرجه المحرّك، وهل يتطابقان. بعد ذلك السيناريوهات الثلاثة (Scenarios) ومخطط الحساسية (Tornado) الذي يرتّب المتغيّرات بحسب أثرها على ربح السنة الأولى، ثم اختبار العملة الأجنبية (FX test) إن وُجد، ثم التنبيهات التي ظهرت وما افترضه المحرّك لأن إجابة ناقصة. الأرقام المقصودة بالنظر مكتوبة بخط عريض ذهبي على أسود.</p>
+<p>يبدأ كل مشروع بجملة تصفه، ثم المدخلات بالكلمات كما أجاب المؤسس، ثم جدول الأرقام الرئيسية: الرقم، وحسابه اليدوي، وما أخرجه المحرّك، وهل يتطابقان. بعد ذلك السيناريوهات الثلاثة (Scenarios) ومخطط الحساسية (Tornado) الذي يرتّب المتغيّرات بحسب أثرها على ربح السنة الأولى، ثم اختبار العملة الأجنبية (FX test) إن وُجد، ثم التنبيهات التي ظهرت. بعدها قسم «الجدوى والقرار»: معايير الجدوى الأحد عشر بأوزان متساوية (كل معيار منها نتيجة محسوبة أصلًا في التحليل، فلا يخالف القرار تنبيهًا)، ثم الدرجة والحواجب والقرار (امضِ أو عدّل أو توقّف) والثقة الإجمالية وخطة التحقّق، وكلها بجانب حسابها اليدوي. ثم ما افترضه المحرّك لأن إجابة ناقصة. الأرقام المقصودة بالنظر مكتوبة بخط عريض ذهبي على أسود.</p>
 </section>
 <section id="jo-service-subscription" aria-labelledby="jo-service-subscription-title">
 <h2 id="jo-service-subscription-title"><bdi dir="ltr">1</bdi>. خدمة برمجية بالاشتراك الشهري</h2>
@@ -91,7 +94,9 @@ h1{font-size:1.6rem}
 <dt>الشكل القانوني (<bdi dir="ltr">G1</bdi>)</dt><dd>شركة</dd>
 <dt>رأس المال المتاح (<bdi dir="ltr">A5</bdi>)</dt><dd>من <bdi dir="ltr">8,000</bdi> د.أ إلى <bdi dir="ltr">15,000</bdi> د.أ</dd>
 <dt>المدة التي يتحمّلها بلا دخل (<bdi dir="ltr">A7</bdi>)</dt><dd>أقل من <bdi dir="ltr">3</bdi> أشهر</dd>
-<dt>أطول مدة مقبولة حتى التعادل (<bdi dir="ltr">H5</bdi>)</dt><dd>خلال <bdi dir="ltr">12</bdi> شهرًا</dd></dl>
+<dt>مصدر التمويل (<bdi dir="ltr">H3</bdi>)</dt><dd>مدخراته الشخصية ومستثمر</dd>
+<dt>أطول مدة مقبولة حتى التعادل (<bdi dir="ltr">H5</bdi>)</dt><dd>خلال <bdi dir="ltr">12</bdi> شهرًا</dd>
+<dt>أكبر ما يقلقه أو لا يعرفه (<bdi dir="ltr">H6</bdi>)</dt><dd>هل سيقبل العملاء دفع اشتراك شهري بهذا السعر؟</dd></dl>
 <h3>الأرقام الرئيسية</h3>
 <table class="stack">
 <caption>الأرقام الرئيسية، كل رقم بجانب حسابه اليدوي</caption>
@@ -132,10 +137,54 @@ h1{font-size:1.6rem}
 <ul class="plain"><li><strong class="sev sev-warning">تحذير</strong> التعادل (<bdi dir="ltr">6</bdi> أشهر) بعد المدة التي يتحمّلها المؤسس بلا دخل (<bdi dir="ltr">3</bdi> أشهر). <span class="prov">افتراض، الثقة منخفضة، غير مؤكَّد.</span></li>
 <li><strong class="sev sev-warning">تحذير</strong> السعر (<bdi dir="ltr">30</bdi> د.أ) أقل من سعر الحدّ الأدنى (<bdi dir="ltr">30.833</bdi> د.أ). <span class="prov">افتراض، الثقة منخفضة، غير مؤكَّد.</span></li>
 <li><strong class="sev sev-note">ملاحظة</strong> تكاليف التأسيس (<bdi dir="ltr">12,000</bdi> د.أ) فوق أدنى رأس مال متاح (<bdi dir="ltr">8,000</bdi> د.أ) وتحت أقصاه (<bdi dir="ltr">15,000</bdi> د.أ). <span class="prov">من المؤسس، الثقة عالية، مؤكَّد.</span></li></ul>
+<h3>الجدوى والقرار</h3>
+<h4>معايير الجدوى</h4>
+<table class="stack">
+<caption>معايير الجدوى، بأوزان متساوية: المعيار الذي تنقص مدخلاته يخرج من العدّ</caption>
+<thead><tr><th scope="col">المعيار</th><th scope="col">الحالة</th><th scope="col">الحساب اليدوي</th><th scope="col">المطابقة</th></tr></thead>
+<tbody><tr><th scope="row" data-label="المعيار">هامش المساهمة للوحدة أكبر من صفر</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي"><bdi dir="ltr">30 − 6 = 24</bdi> د.أ، وهو موجب</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">التعادل ضمن نافذة الجدوى (<bdi dir="ltr">36</bdi> شهرًا افتراضيًا)</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي">التعادل في الشهر <bdi dir="ltr">6</bdi> (ربح الشهر <bdi dir="ltr">6 = 200 × 24 − 4,100 = 700</bdi> د.أ)، وهو ضمن <bdi dir="ltr">36</bdi> شهرًا</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">التعادل ضمن أطول مدة يقبلها المؤسس (<bdi dir="ltr">H5</bdi>)</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي">الشهر <bdi dir="ltr">6</bdi> ضمن أطول مدة قبلها المؤسس (<bdi dir="ltr">H5</bdi>: <bdi dir="ltr">12</bdi> شهرًا)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">التعادل ضمن المدة التي يتحمّلها بلا دخل (<bdi dir="ltr">A7</bdi>)</th><td data-label="الحالة"><strong>لا يتحقق</strong></td><td data-label="الحساب اليدوي">الشهر <bdi dir="ltr">6</bdi> بعد المدة التي يتحمّلها المؤسس بلا دخل (<bdi dir="ltr">A7</bdi>: أقل من <bdi dir="ltr">3</bdi> أشهر)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">احتياج التمويل ضمن أقصى رأس مال متاح (<bdi dir="ltr">A5</bdi>)</th><td data-label="الحالة"><strong>لا يتحقق</strong></td><td data-label="الحساب اليدوي">احتياج التمويل <bdi dir="ltr">18,400</bdi> د.أ أعلى من أقصى رأس مال متاح (<bdi dir="ltr">15,000</bdi> د.أ)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">تكاليف التأسيس ضمن أقصى رأس مال متاح (<bdi dir="ltr">A5</bdi>)</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي">تكاليف التأسيس <bdi dir="ltr">12,000</bdi> د.أ ضمن أقصى رأس مال متاح (<bdi dir="ltr">15,000</bdi> د.أ)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">السعر ليس دون سعر الحدّ الأدنى (<bdi dir="ltr">T7</bdi>)</th><td data-label="الحالة"><strong>لا يتحقق</strong></td><td data-label="الحساب اليدوي">السعر <bdi dir="ltr">30</bdi> د.أ أقل من سعر الحدّ الأدنى (<bdi dir="ltr">30.833</bdi> د.أ)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">نسبة LTV إلى CAC لا تقل عن الحدّ الأدنى (للاشتراك فقط)</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي">LTV ÷ CAC = <bdi dir="ltr">480 ÷ 60 = 8</bdi>، وهو <bdi dir="ltr">3</bdi> فأكثر</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">التعادل في السيناريو المتحفّظ</th><td data-label="الحالة"><strong>لا يتحقق</strong></td><td data-label="الحساب اليدوي">في السيناريو المتحفّظ: <bdi dir="ltr">120</bdi> مشتركًا × <bdi dir="ltr">23.4 = 2,808</bdi> د.أ شهريًا أقل من التكاليف <bdi dir="ltr">4,100</bdi> د.أ، فلا يوجد تعادل</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">الاسترداد ضمن نافذة الجدوى</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي">الاسترداد بعد <bdi dir="ltr">34</bdi> شهرًا، وهو ضمن <bdi dir="ltr">36</bdi> شهرًا</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">وحدات التعادل ضمن الطاقة القصوى (<bdi dir="ltr">E7</bdi>)</th><td data-label="الحالة"><strong>خارج العدّ</strong></td><td data-label="الحساب اليدوي">الطاقة القصوى (<bdi dir="ltr">E7</bdi>) غير محددة، فلا يُقارَن بها شيء</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr></tbody>
+</table>
+<h4>الدرجة والقرار</h4>
+<table class="stack">
+<caption>الدرجة والحواجب والقرار والثقة والخطة، كل منها بجانب حسابه اليدوي</caption>
+<thead><tr><th scope="col">البند</th><th scope="col">الحساب اليدوي</th><th scope="col">ناتج المحرّك</th><th scope="col">المطابقة</th></tr></thead>
+<tbody><tr><th scope="row" data-label="البند">الدرجة</th><td data-label="الحساب اليدوي">المعايير المقيَّمة <bdi dir="ltr">10</bdi> (معيار الطاقة القصوى خارج العدّ)؛ المتحقق منها <bdi dir="ltr">6</bdi> (الأول والثاني والثالث والسادس والثامن والعاشر)، فالدرجة <bdi dir="ltr">6 ÷ 10 = 60%</bdi></td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">6</bdi> من <bdi dir="ltr">10 = 60%</bdi></strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="البند">الحواجب</th><td data-label="الحساب اليدوي">لا حاجب: الهامش <bdi dir="ltr">24</bdi> د.أ موجب، والتعادل في الشهر <bdi dir="ltr">6</bdi> ضمن <bdi dir="ltr">36</bdi> شهرًا، واحتياج التمويل <bdi dir="ltr">18,400</bdi> د.أ لا يتجاوز ضعف أقصى رأس مال (<bdi dir="ltr">2 × 15,000 = 30,000</bdi> د.أ)</td><td data-label="ناتج المحرّك">لا حاجب</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="البند">القرار</th><td data-label="الحساب اليدوي">الدرجة <bdi dir="ltr">60%</bdi> أقل من <bdi dir="ltr">75%</bdi> ولا حاجب والثقة الإجمالية عالية: القرار عدّل</td><td data-label="ناتج المحرّك"><strong class="key">عدّل</strong> <span class="prov">ما يمنع «امضِ»: الدرجة دون الخط</span></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="البند">الثقة الإجمالية</th><td data-label="الحساب اليدوي"><bdi dir="ltr">F1</bdi> و<bdi dir="ltr">F4</bdi> و<bdi dir="ltr">F5</bdi> و<bdi dir="ltr">F6</bdi> بثقة عالية و<bdi dir="ltr">F3</bdi> بثقة متوسطة: <bdi dir="ltr">5</bdi> من <bdi dir="ltr">5</bdi> أرقام محورية بثقة متوسطة أو أعلى = <bdi dir="ltr">100%</bdi>، وهو <bdi dir="ltr">75%</bdi> فأكثر: عالية</td><td data-label="ناتج المحرّك"><strong class="key">عالية</strong> <bdi dir="ltr">5</bdi> من <bdi dir="ltr">5</bdi></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="البند">خطة التحقّق</th><td data-label="الحساب اليدوي">قلق المؤسس (<bdi dir="ltr">H6</bdi>) أولًا. ثم الدرجة (<bdi dir="ltr">4</bdi> − الثقة) × (<bdi dir="ltr">5</bdi> − الترتيب): السعر <bdi dir="ltr">1 × 4 = 4</bdi>، والتكاليف الثابتة <bdi dir="ltr">1 × 3 = 3</bdi>، والمبيعات <bdi dir="ltr">1 × 2 = 2</bdi>، والتكلفة المتغيرة (ثقة متوسطة) <bdi dir="ltr">2 × 1 = 2</bdi>؛ فيدخل السعر ثم التكاليف الثابتة</td><td data-label="ناتج المحرّك">قلق المؤسس (<bdi dir="ltr">H6</bdi>) ثم السعر (P) ثم التكاليف الثابتة (FC)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr></tbody>
+</table>
+<p>الدرجة ليست احتمال نجاح: هي نسبة المعايير المقيَّمة التي تحققت، بأوزان متساوية.</p>
+<h4>الثقة الإجمالية</h4>
+<table class="stack">
+<caption>الأرقام المحورية الخمسة: السليم منها ما ثقته متوسطة أو عالية</caption>
+<thead><tr><th scope="col">الرقم المحوري</th><th scope="col">الثقة</th><th scope="col">يُحسب سليمًا</th><th scope="col">مصدره</th></tr></thead>
+<tbody><tr><th scope="row" data-label="الرقم المحوري">سعر البيع (<bdi dir="ltr">F1</bdi>)</th><td data-label="الثقة">عالية</td><td data-label="يُحسب سليمًا">نعم</td><td data-label="مصدره">من المؤسس، الثقة عالية، مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الرقم المحوري">التكلفة المتغيرة (<bdi dir="ltr">F3</bdi>)</th><td data-label="الثقة">متوسطة</td><td data-label="يُحسب سليمًا">نعم</td><td data-label="مصدره">من المؤسس، الثقة متوسطة، مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الرقم المحوري">التكاليف الثابتة (<bdi dir="ltr">F4</bdi>)</th><td data-label="الثقة">عالية</td><td data-label="يُحسب سليمًا">نعم</td><td data-label="مصدره">من المؤسس، الثقة عالية، مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الرقم المحوري">تكاليف التأسيس (<bdi dir="ltr">F5</bdi>)</th><td data-label="الثقة">عالية</td><td data-label="يُحسب سليمًا">نعم</td><td data-label="مصدره">من المؤسس، الثقة عالية، مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الرقم المحوري">المبيعات المتوقعة (<bdi dir="ltr">F6</bdi>)</th><td data-label="الثقة">عالية</td><td data-label="يُحسب سليمًا">نعم</td><td data-label="مصدره">من المؤسس، الثقة عالية، مؤكَّد</td></tr></tbody>
+</table>
+<h4>خطة التحقّق</h4>
+<table class="stack">
+<caption>خطة التحقّق (<bdi dir="ltr">T18</bdi>): ثلاث تجارب، وكلفتها نوع لا مبلغ</caption>
+<thead><tr><th scope="col">المكان</th><th scope="col">المتغيّر</th><th scope="col">الدرجة</th><th scope="col">الثقة والترتيب</th><th scope="col">التجربة (رموز)</th><th scope="col">الكلفة</th></tr></thead>
+<tbody><tr><th scope="row" data-label="المكان"><bdi dir="ltr">1</bdi></th><td data-label="المتغيّر">قلق المؤسس (<bdi dir="ltr">H6</bdi>)<br>«هل سيقبل العملاء دفع اشتراك شهري بهذا السعر؟»</td><td data-label="الدرجة">—</td><td data-label="الثقة والترتيب">— و—</td><td data-label="التجربة (رموز)"><code>worry.smallest_test</code><br><code>worry.founder_sets_the_line</code><br><code>worry.ask_an_expert</code></td><td data-label="الكلفة">وقت المؤسس</td></tr>
+<tr><th scope="row" data-label="المكان"><bdi dir="ltr">2</bdi></th><td data-label="المتغيّر">السعر (P)</td><td data-label="الدرجة"><bdi dir="ltr">4</bdi></td><td data-label="الثقة والترتيب"><bdi dir="ltr">3</bdi> و<bdi dir="ltr">1</bdi></td><td data-label="التجربة (رموز)"><code>price.willingness_to_pay</code><br><code>price.accepting_share</code><br><code>price.test_second_price</code></td><td data-label="الكلفة">وقت المؤسس</td></tr>
+<tr><th scope="row" data-label="المكان"><bdi dir="ltr">3</bdi></th><td data-label="المتغيّر">التكاليف الثابتة (FC)</td><td data-label="الدرجة"><bdi dir="ltr">3</bdi></td><td data-label="الثقة والترتيب"><bdi dir="ltr">3</bdi> و<bdi dir="ltr">2</bdi></td><td data-label="التجربة (رموز)"><code>fixed_costs.written_quotes</code><br><code>fixed_costs.total_within_estimate</code><br><code>fixed_costs.cut_or_postpone</code></td><td data-label="الكلفة">عرض سعر من مورّد</td></tr></tbody>
+</table>
 <h3>ما قرأه المحرّك على غير ظاهره</h3>
 <ul class="plain"><li>الطاقة القصوى (<bdi dir="ltr">E7</bdi>) لم تُحدَّد فلا سقف لعدد الوحدات.</li>
-<li>مصدر التمويل (<bdi dir="ltr">H3</bdi>) غير محدد فلا يُطبَّق حاجب احتياج التمويل في القرار.</li>
-<li>أكبر ما يقلق المؤسس (<bdi dir="ltr">H6</bdi>) غير محدد فلا يتصدّر خطة التحقّق.</li>
 <li>لم يُطبَّق تضخم على التكاليف لأنه لا توجد نسبة موثّقة بمصدرها.</li>
 <li>ضريبة السنة الأخيرة تُدفع بعد الشهر <bdi dir="ltr">36</bdi> فلم تدخل في الحساب.</li></ul>
 </section>
@@ -161,7 +210,9 @@ h1{font-size:1.6rem}
 <dt>الشكل القانوني (<bdi dir="ltr">G1</bdi>)</dt><dd>لم أقرّر بعد</dd>
 <dt>رأس المال المتاح (<bdi dir="ltr">A5</bdi>)</dt><dd>من <bdi dir="ltr">3,000</bdi> د.أ إلى <bdi dir="ltr">6,000</bdi> د.أ</dd>
 <dt>المدة التي يتحمّلها بلا دخل (<bdi dir="ltr">A7</bdi>)</dt><dd>أكثر من <bdi dir="ltr">12</bdi> شهرًا</dd>
-<dt>أطول مدة مقبولة حتى التعادل (<bdi dir="ltr">H5</bdi>)</dt><dd>خلال <bdi dir="ltr">6</bdi> أشهر</dd></dl>
+<dt>مصدر التمويل (<bdi dir="ltr">H3</bdi>)</dt><dd>مدخراته الشخصية والعائلة والأصدقاء</dd>
+<dt>أطول مدة مقبولة حتى التعادل (<bdi dir="ltr">H5</bdi>)</dt><dd>خلال <bdi dir="ltr">6</bdi> أشهر</dd>
+<dt>أكبر ما يقلقه أو لا يعرفه (<bdi dir="ltr">H6</bdi>)</dt><dd>لم يُجَب</dd></dl>
 <h3>الأرقام الرئيسية</h3>
 <table class="stack">
 <caption>الأرقام الرئيسية، كل رقم بجانب حسابه اليدوي</caption>
@@ -217,11 +268,57 @@ h1{font-size:1.6rem}
 </table>
 <h3>التنبيهات التي ظهرت</h3>
 <ul class="plain"><li><strong class="sev sev-warning">تحذير</strong> تكاليف التأسيس (<bdi dir="ltr">9,000</bdi> د.أ) أعلى من أقصى رأس مال متاح (<bdi dir="ltr">6,000</bdi> د.أ). <span class="prov">من المؤسس، الثقة متوسطة، مؤكَّد.</span></li></ul>
+<h3>الجدوى والقرار</h3>
+<h4>معايير الجدوى</h4>
+<table class="stack">
+<caption>معايير الجدوى، بأوزان متساوية: المعيار الذي تنقص مدخلاته يخرج من العدّ</caption>
+<thead><tr><th scope="col">المعيار</th><th scope="col">الحالة</th><th scope="col">الحساب اليدوي</th><th scope="col">المطابقة</th></tr></thead>
+<tbody><tr><th scope="row" data-label="المعيار">هامش المساهمة للوحدة أكبر من صفر</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي"><bdi dir="ltr">40 − 25 = 15</bdi> د.أ، وهو موجب</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">التعادل ضمن نافذة الجدوى (<bdi dir="ltr">36</bdi> شهرًا افتراضيًا)</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي">التعادل في الشهر <bdi dir="ltr">1</bdi> (ربحه <bdi dir="ltr">150 × 15 − 1,200 = 1,050</bdi> د.أ)، وهو ضمن <bdi dir="ltr">36</bdi> شهرًا</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">التعادل ضمن أطول مدة يقبلها المؤسس (<bdi dir="ltr">H5</bdi>)</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي">الشهر <bdi dir="ltr">1</bdi> ضمن أطول مدة قبلها المؤسس (<bdi dir="ltr">H5</bdi>: <bdi dir="ltr">6</bdi> أشهر)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">التعادل ضمن المدة التي يتحمّلها بلا دخل (<bdi dir="ltr">A7</bdi>)</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي"><bdi dir="ltr">A7</bdi> هو «أكثر من <bdi dir="ltr">12</bdi> شهرًا»: لا حدّ يمكن أن يتجاوزه التعادل</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">احتياج التمويل ضمن أقصى رأس مال متاح (<bdi dir="ltr">A5</bdi>)</th><td data-label="الحالة"><strong>لا يتحقق</strong></td><td data-label="الحساب اليدوي">احتياج التمويل <bdi dir="ltr">12,900</bdi> د.أ أعلى من أقصى رأس مال متاح (<bdi dir="ltr">6,000</bdi> د.أ)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">تكاليف التأسيس ضمن أقصى رأس مال متاح (<bdi dir="ltr">A5</bdi>)</th><td data-label="الحالة"><strong>لا يتحقق</strong></td><td data-label="الحساب اليدوي">تكاليف التأسيس <bdi dir="ltr">9,000</bdi> د.أ أعلى من أقصى رأس مال متاح (<bdi dir="ltr">6,000</bdi> د.أ)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">السعر ليس دون سعر الحدّ الأدنى (<bdi dir="ltr">T7</bdi>)</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي">السعر <bdi dir="ltr">40</bdi> د.أ فوق سعر الحدّ الأدنى (<bdi dir="ltr">37</bdi> د.أ)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">نسبة LTV إلى CAC لا تقل عن الحدّ الأدنى (للاشتراك فقط)</th><td data-label="الحالة"><strong>خارج العدّ</strong></td><td data-label="الحساب اليدوي">ليس اشتراكًا (<bdi dir="ltr">F2</bdi> سعر ثابت)، فلا LTV ولا CAC</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">التعادل في السيناريو المتحفّظ</th><td data-label="الحالة"><strong>لا يتحقق</strong></td><td data-label="الحساب اليدوي">في السيناريو المتحفّظ (مبيعات × <bdi dir="ltr">0.6</bdi>، وتكلفة متغيرة × <bdi dir="ltr">1.1</bdi>، وإطلاق متأخر <bdi dir="ltr">3</bdi> أشهر) لا تعادل خلال <bdi dir="ltr">36</bdi> شهرًا</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">الاسترداد ضمن نافذة الجدوى</th><td data-label="الحالة"><strong>لا يتحقق</strong></td><td data-label="الحساب اليدوي">رصيد الشهر <bdi dir="ltr">36</bdi> ما زال <bdi dir="ltr">−2,520</bdi> د.أ، فلا استرداد خلال <bdi dir="ltr">36</bdi> شهرًا</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">وحدات التعادل ضمن الطاقة القصوى (<bdi dir="ltr">E7</bdi>)</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي">نقطة التعادل <bdi dir="ltr">80</bdi> وحدة ضمن الطاقة القصوى (<bdi dir="ltr">E7</bdi>: <bdi dir="ltr">200</bdi> وحدة)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr></tbody>
+</table>
+<h4>الدرجة والقرار</h4>
+<table class="stack">
+<caption>الدرجة والحواجب والقرار والثقة والخطة، كل منها بجانب حسابه اليدوي</caption>
+<thead><tr><th scope="col">البند</th><th scope="col">الحساب اليدوي</th><th scope="col">ناتج المحرّك</th><th scope="col">المطابقة</th></tr></thead>
+<tbody><tr><th scope="row" data-label="البند">الدرجة</th><td data-label="الحساب اليدوي">المعايير المقيَّمة <bdi dir="ltr">10</bdi> (معيار LTV ÷ CAC خارج العدّ)؛ المتحقق منها <bdi dir="ltr">6</bdi> (الأول والثاني والثالث والرابع والسابع والحادي عشر)، فالدرجة <bdi dir="ltr">6 ÷ 10 = 60%</bdi></td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">6</bdi> من <bdi dir="ltr">10 = 60%</bdi></strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="البند">الحواجب</th><td data-label="الحساب اليدوي">حاجب واحد: احتياج التمويل <bdi dir="ltr">12,900</bdi> د.أ أعلى من ضعف أقصى رأس مال (<bdi dir="ltr">2 × 6,000 = 12,000</bdi> د.أ)، و <bdi dir="ltr">H3</bdi> لا يذكر غير المدخرات والعائلة</td><td data-label="ناتج المحرّك">احتياج التمويل فوق ضعف أقصى رأس مال ولا مصدر خارجي في <bdi dir="ltr">H3</bdi></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="البند">القرار</th><td data-label="الحساب اليدوي">حاجب واحد يوقف المشروع مهما كانت الدرجة: القرار توقّف</td><td data-label="ناتج المحرّك"><strong class="key">توقّف</strong> غير قابل للتنفيذ بصيغته الحالية</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="البند">الثقة الإجمالية</th><td data-label="الحساب اليدوي"><bdi dir="ltr">F1</bdi> و<bdi dir="ltr">F3</bdi> و<bdi dir="ltr">F4</bdi> بثقة عالية و<bdi dir="ltr">F5</bdi> و<bdi dir="ltr">F6</bdi> بثقة متوسطة: <bdi dir="ltr">5</bdi> من <bdi dir="ltr">5</bdi> أرقام محورية بثقة متوسطة أو أعلى = <bdi dir="ltr">100%</bdi>: عالية</td><td data-label="ناتج المحرّك"><strong class="key">عالية</strong> <bdi dir="ltr">5</bdi> من <bdi dir="ltr">5</bdi></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="البند">خطة التحقّق</th><td data-label="الحساب اليدوي">لا قلق مسجّل (<bdi dir="ltr">H6</bdi>). السعر <bdi dir="ltr">1 × 4 = 4</bdi>، والمبيعات (ثقة متوسطة) <bdi dir="ltr">2 × 2 = 4</bdi>، والتكلفة المتغيرة <bdi dir="ltr">1 × 3 = 3</bdi>، والتكاليف الثابتة <bdi dir="ltr">1 × 1 = 1</bdi>؛ يتعادل السعر والمبيعات في <bdi dir="ltr">4</bdi> فيتقدّم الأعلى حساسية، ثم التكلفة المتغيرة</td><td data-label="ناتج المحرّك">السعر (P) ثم المبيعات ثم التكلفة المتغيرة (VC)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr></tbody>
+</table>
+<p>الدرجة ليست احتمال نجاح: هي نسبة المعايير المقيَّمة التي تحققت، بأوزان متساوية.</p>
+<p>القرار توقّف: غير قابل للتنفيذ بصيغته الحالية. التغييرات الثلاثة التي قد تغيّر القرار تأتي في الخطوة التالية (<bdi dir="ltr">2</bdi>b) وليست في هذه الصفحة بعد.</p>
+<h4>الثقة الإجمالية</h4>
+<table class="stack">
+<caption>الأرقام المحورية الخمسة: السليم منها ما ثقته متوسطة أو عالية</caption>
+<thead><tr><th scope="col">الرقم المحوري</th><th scope="col">الثقة</th><th scope="col">يُحسب سليمًا</th><th scope="col">مصدره</th></tr></thead>
+<tbody><tr><th scope="row" data-label="الرقم المحوري">سعر البيع (<bdi dir="ltr">F1</bdi>)</th><td data-label="الثقة">عالية</td><td data-label="يُحسب سليمًا">نعم</td><td data-label="مصدره">من المؤسس، الثقة عالية، مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الرقم المحوري">التكلفة المتغيرة (<bdi dir="ltr">F3</bdi>)</th><td data-label="الثقة">عالية</td><td data-label="يُحسب سليمًا">نعم</td><td data-label="مصدره">من المؤسس، الثقة عالية، مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الرقم المحوري">التكاليف الثابتة (<bdi dir="ltr">F4</bdi>)</th><td data-label="الثقة">عالية</td><td data-label="يُحسب سليمًا">نعم</td><td data-label="مصدره">من المؤسس، الثقة عالية، مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الرقم المحوري">تكاليف التأسيس (<bdi dir="ltr">F5</bdi>)</th><td data-label="الثقة">متوسطة</td><td data-label="يُحسب سليمًا">نعم</td><td data-label="مصدره">من المؤسس، الثقة متوسطة، مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الرقم المحوري">المبيعات المتوقعة (<bdi dir="ltr">F6</bdi>)</th><td data-label="الثقة">متوسطة</td><td data-label="يُحسب سليمًا">نعم</td><td data-label="مصدره">من المؤسس، الثقة متوسطة، غير مؤكَّد</td></tr></tbody>
+</table>
+<h4>خطة التحقّق</h4>
+<table class="stack">
+<caption>خطة التحقّق (<bdi dir="ltr">T18</bdi>): ثلاث تجارب، وكلفتها نوع لا مبلغ</caption>
+<thead><tr><th scope="col">المكان</th><th scope="col">المتغيّر</th><th scope="col">الدرجة</th><th scope="col">الثقة والترتيب</th><th scope="col">التجربة (رموز)</th><th scope="col">الكلفة</th></tr></thead>
+<tbody><tr><th scope="row" data-label="المكان"><bdi dir="ltr">1</bdi></th><td data-label="المتغيّر">السعر (P)</td><td data-label="الدرجة"><bdi dir="ltr">4</bdi></td><td data-label="الثقة والترتيب"><bdi dir="ltr">3</bdi> و<bdi dir="ltr">1</bdi></td><td data-label="التجربة (رموز)"><code>price.willingness_to_pay</code><br><code>price.accepting_share</code><br><code>price.test_second_price</code></td><td data-label="الكلفة">وقت المؤسس</td></tr>
+<tr><th scope="row" data-label="المكان"><bdi dir="ltr">2</bdi></th><td data-label="المتغيّر">المبيعات</td><td data-label="الدرجة"><bdi dir="ltr">4</bdi></td><td data-label="الثقة والترتيب"><bdi dir="ltr">2</bdi> و<bdi dir="ltr">3</bdi></td><td data-label="التجربة (رموز)"><code>sales.paid_preorders</code><br><code>sales.preorders_against_month_one</code><br><code>sales.revise_forecast</code></td><td data-label="الكلفة">مبلغ نقدي صغير</td></tr>
+<tr><th scope="row" data-label="المكان"><bdi dir="ltr">3</bdi></th><td data-label="المتغيّر">التكلفة المتغيرة (VC)</td><td data-label="الدرجة"><bdi dir="ltr">3</bdi></td><td data-label="الثقة والترتيب"><bdi dir="ltr">3</bdi> و<bdi dir="ltr">2</bdi></td><td data-label="التجربة (رموز)"><code>variable_cost.supplier_quotes</code><br><code>variable_cost.quotes_within_estimate</code><br><code>variable_cost.second_supplier</code></td><td data-label="الكلفة">عرض سعر من مورّد</td></tr></tbody>
+</table>
 <h3>ما قرأه المحرّك على غير ظاهره</h3>
 <ul class="plain"><li>خطة الموظفين (<bdi dir="ltr">E8</bdi>) لم تُحدَّد فلا رواتب في الحساب.</li>
 <li>النمو السنوي (<bdi dir="ltr">F6.2</bdi>) لم يُحدَّد فقدّره المحرّك من مبيعات الشهرين <bdi dir="ltr">6</bdi> و<bdi dir="ltr">12</bdi>.</li>
 <li>الشكل القانوني (<bdi dir="ltr">G1</bdi>) غير محسوم فافترض المحرّك صاحب منشأة فردية.</li>
-<li>مصدر التمويل (<bdi dir="ltr">H3</bdi>) غير محدد فلا يُطبَّق حاجب احتياج التمويل في القرار.</li>
 <li>أكبر ما يقلق المؤسس (<bdi dir="ltr">H6</bdi>) غير محدد فلا يتصدّر خطة التحقّق.</li>
 <li>لم يُطبَّق تضخم على التكاليف لأنه لا توجد نسبة موثّقة بمصدرها.</li>
 <li>جزء من النقد يصل بعد الشهر <bdi dir="ltr">36</bdi> فلم يدخل في الحساب.</li>
@@ -249,7 +346,9 @@ h1{font-size:1.6rem}
 <dt>الشكل القانوني (<bdi dir="ltr">G1</bdi>)</dt><dd>منشأة فردية</dd>
 <dt>رأس المال المتاح (<bdi dir="ltr">A5</bdi>)</dt><dd>من <bdi dir="ltr">200,000</bdi> DZD إلى <bdi dir="ltr">400,000</bdi> DZD</dd>
 <dt>المدة التي يتحمّلها بلا دخل (<bdi dir="ltr">A7</bdi>)</dt><dd>من <bdi dir="ltr">3</bdi> إلى <bdi dir="ltr">6</bdi> أشهر</dd>
-<dt>أطول مدة مقبولة حتى التعادل (<bdi dir="ltr">H5</bdi>)</dt><dd>خلال <bdi dir="ltr">6</bdi> أشهر</dd></dl>
+<dt>مصدر التمويل (<bdi dir="ltr">H3</bdi>)</dt><dd>مدخراته الشخصية والعائلة والأصدقاء</dd>
+<dt>أطول مدة مقبولة حتى التعادل (<bdi dir="ltr">H5</bdi>)</dt><dd>خلال <bdi dir="ltr">6</bdi> أشهر</dd>
+<dt>أكبر ما يقلقه أو لا يعرفه (<bdi dir="ltr">H6</bdi>)</dt><dd>هل يستمر الطلب على الأكل المنزلي خارج المناسبات؟</dd></dl>
 <h3>الأرقام الرئيسية</h3>
 <table class="stack">
 <caption>الأرقام الرئيسية، كل رقم بجانب حسابه اليدوي</caption>
@@ -288,15 +387,309 @@ h1{font-size:1.6rem}
 <h3>التنبيهات التي ظهرت</h3>
 <ul class="plain"><li><strong class="sev sev-warning">تحذير</strong> مبيعات السنة <bdi dir="ltr">3</bdi> (<bdi dir="ltr">7,126,000</bdi> DZD) تتجاوز سقف نظام fixture_auto_entrepreneur (<bdi dir="ltr">5,000,000</bdi> DZD). <span class="prov">افتراض، الثقة منخفضة، غير مؤكَّد.</span></li>
 <li><strong class="sev sev-note">ملاحظة</strong> تكاليف التأسيس (<bdi dir="ltr">300,000</bdi> DZD) فوق أدنى رأس مال متاح (<bdi dir="ltr">200,000</bdi> DZD) وتحت أقصاه (<bdi dir="ltr">400,000</bdi> DZD). <span class="prov">من المؤسس، الثقة عالية، مؤكَّد.</span></li></ul>
+<h3>الجدوى والقرار</h3>
+<h4>معايير الجدوى</h4>
+<table class="stack">
+<caption>معايير الجدوى، بأوزان متساوية: المعيار الذي تنقص مدخلاته يخرج من العدّ</caption>
+<thead><tr><th scope="col">المعيار</th><th scope="col">الحالة</th><th scope="col">الحساب اليدوي</th><th scope="col">المطابقة</th></tr></thead>
+<tbody><tr><th scope="row" data-label="المعيار">هامش المساهمة للوحدة أكبر من صفر</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي"><bdi dir="ltr">2,000 − 800 = 1,200</bdi> DZD، وهو موجب</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">التعادل ضمن نافذة الجدوى (<bdi dir="ltr">36</bdi> شهرًا افتراضيًا)</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي">التعادل في الشهر <bdi dir="ltr">4</bdi> (ربح الشهر <bdi dir="ltr">3 = 40 × 1,200 − 50,000 = −2,000</bdi>، وربح الشهر <bdi dir="ltr">4 = 60 × 1,200 − 50,000 = 22,000</bdi> DZD)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">التعادل ضمن أطول مدة يقبلها المؤسس (<bdi dir="ltr">H5</bdi>)</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي">الشهر <bdi dir="ltr">4</bdi> ضمن أطول مدة قبلها المؤسس (<bdi dir="ltr">H5</bdi>: <bdi dir="ltr">6</bdi> أشهر)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">التعادل ضمن المدة التي يتحمّلها بلا دخل (<bdi dir="ltr">A7</bdi>)</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي">الشهر <bdi dir="ltr">4</bdi> ضمن المدة التي يتحمّلها المؤسس بلا دخل (<bdi dir="ltr">A7</bdi>: من <bdi dir="ltr">3</bdi> إلى <bdi dir="ltr">6</bdi> أشهر)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">احتياج التمويل ضمن أقصى رأس مال متاح (<bdi dir="ltr">A5</bdi>)</th><td data-label="الحالة"><strong>لا يتحقق</strong></td><td data-label="الحساب اليدوي">احتياج التمويل <bdi dir="ltr">418,000</bdi> DZD أعلى من أقصى رأس مال متاح (<bdi dir="ltr">400,000</bdi> DZD)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">تكاليف التأسيس ضمن أقصى رأس مال متاح (<bdi dir="ltr">A5</bdi>)</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي">تكاليف التأسيس <bdi dir="ltr">300,000</bdi> DZD ضمن أقصى رأس مال متاح (<bdi dir="ltr">400,000</bdi> DZD)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">السعر ليس دون سعر الحدّ الأدنى (<bdi dir="ltr">T7</bdi>)</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي">السعر <bdi dir="ltr">2,000</bdi> DZD فوق سعر الحدّ الأدنى (<bdi dir="ltr">1,466.67</bdi> DZD)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">نسبة LTV إلى CAC لا تقل عن الحدّ الأدنى (للاشتراك فقط)</th><td data-label="الحالة"><strong>خارج العدّ</strong></td><td data-label="الحساب اليدوي">ليس اشتراكًا (<bdi dir="ltr">F2</bdi> سعر ثابت)، فلا LTV ولا CAC</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">التعادل في السيناريو المتحفّظ</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي">في السيناريو المتحفّظ التعادل في الشهر <bdi dir="ltr">8</bdi>، وهو ضمن <bdi dir="ltr">36</bdi> شهرًا</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">الاسترداد ضمن نافذة الجدوى</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي">الاسترداد بعد <bdi dir="ltr">11</bdi> شهرًا، وهو ضمن <bdi dir="ltr">36</bdi> شهرًا</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">وحدات التعادل ضمن الطاقة القصوى (<bdi dir="ltr">E7</bdi>)</th><td data-label="الحالة"><strong>خارج العدّ</strong></td><td data-label="الحساب اليدوي">الطاقة القصوى (<bdi dir="ltr">E7</bdi>) غير محددة، فلا يُقارَن بها شيء</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr></tbody>
+</table>
+<h4>الدرجة والقرار</h4>
+<table class="stack">
+<caption>الدرجة والحواجب والقرار والثقة والخطة، كل منها بجانب حسابه اليدوي</caption>
+<thead><tr><th scope="col">البند</th><th scope="col">الحساب اليدوي</th><th scope="col">ناتج المحرّك</th><th scope="col">المطابقة</th></tr></thead>
+<tbody><tr><th scope="row" data-label="البند">الدرجة</th><td data-label="الحساب اليدوي">المعايير المقيَّمة <bdi dir="ltr">9</bdi> (معيارا LTV ÷ CAC والطاقة القصوى خارج العدّ)؛ المتحقق منها <bdi dir="ltr">8</bdi>، فالدرجة <bdi dir="ltr">8 ÷ 9 = 88.89%</bdi></td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">8</bdi> من <bdi dir="ltr">9 = 88.89%</bdi></strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="البند">الحواجب</th><td data-label="الحساب اليدوي">لا حاجب: الهامش <bdi dir="ltr">1,200</bdi> DZD موجب، والتعادل في الشهر <bdi dir="ltr">4</bdi>، واحتياج التمويل <bdi dir="ltr">418,000</bdi> DZD لا يتجاوز ضعف أقصى رأس مال (<bdi dir="ltr">2 × 400,000 = 800,000</bdi> DZD)</td><td data-label="ناتج المحرّك">لا حاجب</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="البند">القرار</th><td data-label="الحساب اليدوي">الدرجة <bdi dir="ltr">88.89%</bdi> فوق <bdi dir="ltr">75%</bdi> ولا حاجب والثقة الإجمالية عالية: القرار امضِ</td><td data-label="ناتج المحرّك"><strong class="key">امضِ</strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="البند">الثقة الإجمالية</th><td data-label="الحساب اليدوي"><bdi dir="ltr">F6</bdi> بثقة متوسطة والبقية بثقة عالية: <bdi dir="ltr">5</bdi> من <bdi dir="ltr">5</bdi> أرقام محورية بثقة متوسطة أو أعلى = <bdi dir="ltr">100%</bdi>: عالية</td><td data-label="ناتج المحرّك"><strong class="key">عالية</strong> <bdi dir="ltr">5</bdi> من <bdi dir="ltr">5</bdi></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="البند">خطة التحقّق</th><td data-label="الحساب اليدوي">قلق المؤسس (<bdi dir="ltr">H6</bdi>) أولًا. السعر <bdi dir="ltr">1 × 4 = 4</bdi>، والمبيعات (ثقة متوسطة) <bdi dir="ltr">2 × 3 = 6</bdi>، والتكلفة المتغيرة <bdi dir="ltr">1 × 2 = 2</bdi>، والتكاليف الثابتة <bdi dir="ltr">1 × 1 = 1</bdi>؛ فيدخل بعد القلق الأعلى درجة: المبيعات ثم السعر</td><td data-label="ناتج المحرّك">قلق المؤسس (<bdi dir="ltr">H6</bdi>) ثم المبيعات ثم السعر (P)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr></tbody>
+</table>
+<p>الدرجة ليست احتمال نجاح: هي نسبة المعايير المقيَّمة التي تحققت، بأوزان متساوية.</p>
+<h4>الثقة الإجمالية</h4>
+<table class="stack">
+<caption>الأرقام المحورية الخمسة: السليم منها ما ثقته متوسطة أو عالية</caption>
+<thead><tr><th scope="col">الرقم المحوري</th><th scope="col">الثقة</th><th scope="col">يُحسب سليمًا</th><th scope="col">مصدره</th></tr></thead>
+<tbody><tr><th scope="row" data-label="الرقم المحوري">سعر البيع (<bdi dir="ltr">F1</bdi>)</th><td data-label="الثقة">عالية</td><td data-label="يُحسب سليمًا">نعم</td><td data-label="مصدره">من المؤسس، الثقة عالية، مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الرقم المحوري">التكلفة المتغيرة (<bdi dir="ltr">F3</bdi>)</th><td data-label="الثقة">عالية</td><td data-label="يُحسب سليمًا">نعم</td><td data-label="مصدره">من المؤسس، الثقة عالية، مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الرقم المحوري">التكاليف الثابتة (<bdi dir="ltr">F4</bdi>)</th><td data-label="الثقة">عالية</td><td data-label="يُحسب سليمًا">نعم</td><td data-label="مصدره">من المؤسس، الثقة عالية، مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الرقم المحوري">تكاليف التأسيس (<bdi dir="ltr">F5</bdi>)</th><td data-label="الثقة">عالية</td><td data-label="يُحسب سليمًا">نعم</td><td data-label="مصدره">من المؤسس، الثقة عالية، مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الرقم المحوري">المبيعات المتوقعة (<bdi dir="ltr">F6</bdi>)</th><td data-label="الثقة">متوسطة</td><td data-label="يُحسب سليمًا">نعم</td><td data-label="مصدره">من المؤسس، الثقة متوسطة، مؤكَّد</td></tr></tbody>
+</table>
+<h4>خطة التحقّق</h4>
+<table class="stack">
+<caption>خطة التحقّق (<bdi dir="ltr">T18</bdi>): ثلاث تجارب، وكلفتها نوع لا مبلغ</caption>
+<thead><tr><th scope="col">المكان</th><th scope="col">المتغيّر</th><th scope="col">الدرجة</th><th scope="col">الثقة والترتيب</th><th scope="col">التجربة (رموز)</th><th scope="col">الكلفة</th></tr></thead>
+<tbody><tr><th scope="row" data-label="المكان"><bdi dir="ltr">1</bdi></th><td data-label="المتغيّر">قلق المؤسس (<bdi dir="ltr">H6</bdi>)<br>«هل يستمر الطلب على الأكل المنزلي خارج المناسبات؟»</td><td data-label="الدرجة">—</td><td data-label="الثقة والترتيب">— و—</td><td data-label="التجربة (رموز)"><code>worry.smallest_test</code><br><code>worry.founder_sets_the_line</code><br><code>worry.ask_an_expert</code></td><td data-label="الكلفة">وقت المؤسس</td></tr>
+<tr><th scope="row" data-label="المكان"><bdi dir="ltr">2</bdi></th><td data-label="المتغيّر">المبيعات</td><td data-label="الدرجة"><bdi dir="ltr">6</bdi></td><td data-label="الثقة والترتيب"><bdi dir="ltr">2</bdi> و<bdi dir="ltr">2</bdi></td><td data-label="التجربة (رموز)"><code>sales.paid_preorders</code><br><code>sales.preorders_against_month_one</code><br><code>sales.revise_forecast</code></td><td data-label="الكلفة">مبلغ نقدي صغير</td></tr>
+<tr><th scope="row" data-label="المكان"><bdi dir="ltr">3</bdi></th><td data-label="المتغيّر">السعر (P)</td><td data-label="الدرجة"><bdi dir="ltr">4</bdi></td><td data-label="الثقة والترتيب"><bdi dir="ltr">3</bdi> و<bdi dir="ltr">1</bdi></td><td data-label="التجربة (رموز)"><code>price.willingness_to_pay</code><br><code>price.accepting_share</code><br><code>price.test_second_price</code></td><td data-label="الكلفة">وقت المؤسس</td></tr></tbody>
+</table>
 <h3>ما قرأه المحرّك على غير ظاهره</h3>
 <ul class="plain"><li>خطة الموظفين (<bdi dir="ltr">E8</bdi>) لم تُحدَّد فلا رواتب في الحساب.</li>
 <li>الموسمية (<bdi dir="ltr">D7</bdi>) لم تُحدَّد فاعتُبر الطلب غير موسمي.</li>
 <li>الطاقة القصوى (<bdi dir="ltr">E7</bdi>) لم تُحدَّد فلا سقف لعدد الوحدات.</li>
-<li>مصدر التمويل (<bdi dir="ltr">H3</bdi>) غير محدد فلا يُطبَّق حاجب احتياج التمويل في القرار.</li>
-<li>أكبر ما يقلق المؤسس (<bdi dir="ltr">H6</bdi>) غير محدد فلا يتصدّر خطة التحقّق.</li>
 <li>لم يُطبَّق تضخم على التكاليف لأنه لا توجد نسبة موثّقة بمصدرها.</li>
 <li>جزء من النقد يصل بعد الشهر <bdi dir="ltr">36</bdi> فلم يدخل في الحساب.</li>
 <li>ضريبة السنة الأخيرة تُدفع بعد الشهر <bdi dir="ltr">36</bdi> فلم تدخل في الحساب.</li></ul>
+</section>
+<section id="verdict-cases" aria-labelledby="verdict-cases-title">
+<h2 id="verdict-cases-title">حالات اصطناعية للقرار</h2>
+<p>أربع حالات بُنيت في اختبارات المحرّك على مشروع بسيط مسطّح (<bdi dir="ltr">400</bdi> وحدة شهريًا بسعر <bdi dir="ltr">10</bdi> د.أ)، وليست ملفات ذهبية ولا مشاريع حقيقية: مشروع جيد، ومشروع على الحدّ دون خط <bdi dir="ltr">75%</bdi> بمعيار واحد، ومشروع هامشه سالب، ومشروع احتياج تمويله فوق ضعف رأس ماله بلا مصدر خارجي. لكل حالة معاييرها وحسابها اليدوي كما في المشاريع الثلاثة.</p>
+<article id="case-good" aria-labelledby="case-good-title">
+<h3 id="case-good-title">مشروع جيد: كل المعايير المقيَّمة متحققة</h3>
+<p class="sentence">يبيع <bdi dir="ltr">400</bdi> وحدة كل شهر بسعر <bdi dir="ltr">10</bdi> د.أ وتكلفة متغيرة <bdi dir="ltr">4</bdi> د.أ، وتكاليفه الثابتة <bdi dir="ltr">1,000</bdi> د.أ شهريًا وتأسيسه <bdi dir="ltr">3,000</bdi> د.أ، ورأس ماله المتاح من <bdi dir="ltr">5,000</bdi> إلى <bdi dir="ltr">8,000</bdi> د.أ، ويموّله بمدخراته. مشروع اصطناعي مبني على أرقام الاختبار المسطّحة وليس مشروعًا حقيقيًا.</p>
+<h4>المدخلات بالكلمات</h4>
+<dl class="inputs"><dt>سعر البيع للوحدة (<bdi dir="ltr">F1</bdi>)</dt><dd><bdi dir="ltr">10</bdi> د.أ</dd>
+<dt>التكلفة المتغيرة للوحدة (<bdi dir="ltr">F3</bdi>)</dt><dd>مواد: <bdi dir="ltr">4</bdi> د.أ. المجموع <bdi dir="ltr">4</bdi> د.أ</dd>
+<dt>التكاليف الثابتة الشهرية (<bdi dir="ltr">F4</bdi>)</dt><dd>إيجار: <bdi dir="ltr">1,000</bdi> د.أ. المجموع <bdi dir="ltr">1,000</bdi> د.أ</dd>
+<dt>تكاليف التأسيس (<bdi dir="ltr">F5</bdi>)</dt><dd>تأسيس: <bdi dir="ltr">3,000</bdi> د.أ. المجموع <bdi dir="ltr">3,000</bdi> د.أ</dd>
+<dt>المبيعات المتوقعة بالوحدات (<bdi dir="ltr">F6</bdi>)</dt><dd>الشهر <bdi dir="ltr">1</bdi>: <bdi dir="ltr">400</bdi>، الشهر <bdi dir="ltr">6</bdi>: <bdi dir="ltr">400</bdi>، الشهر <bdi dir="ltr">12</bdi>: <bdi dir="ltr">400</bdi> وحدة</dd>
+<dt>الطاقة القصوى شهريًا (<bdi dir="ltr">E7</bdi>)</dt><dd><bdi dir="ltr">500</bdi> وحدة</dd>
+<dt>رأس المال المتاح (<bdi dir="ltr">A5</bdi>)</dt><dd>من <bdi dir="ltr">5,000</bdi> د.أ إلى <bdi dir="ltr">8,000</bdi> د.أ</dd>
+<dt>المدة التي يتحمّلها بلا دخل (<bdi dir="ltr">A7</bdi>)</dt><dd>من <bdi dir="ltr">3</bdi> إلى <bdi dir="ltr">6</bdi> أشهر</dd>
+<dt>مصدر التمويل (<bdi dir="ltr">H3</bdi>)</dt><dd>مدخراته الشخصية</dd>
+<dt>أطول مدة مقبولة حتى التعادل (<bdi dir="ltr">H5</bdi>)</dt><dd>خلال <bdi dir="ltr">12</bdi> شهرًا</dd>
+<dt>أكبر ما يقلقه أو لا يعرفه (<bdi dir="ltr">H6</bdi>)</dt><dd>هل سيدفع العملاء هذا السعر؟</dd></dl>
+<h4>معايير الجدوى</h4>
+<table class="stack">
+<caption>معايير الجدوى، بأوزان متساوية: المعيار الذي تنقص مدخلاته يخرج من العدّ</caption>
+<thead><tr><th scope="col">المعيار</th><th scope="col">الحالة</th><th scope="col">الحساب اليدوي</th><th scope="col">المطابقة</th></tr></thead>
+<tbody><tr><th scope="row" data-label="المعيار">هامش المساهمة للوحدة أكبر من صفر</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي"><bdi dir="ltr">10 − 4 = 6</bdi> د.أ، وهو موجب</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">التعادل ضمن نافذة الجدوى (<bdi dir="ltr">36</bdi> شهرًا افتراضيًا)</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي">التعادل في الشهر <bdi dir="ltr">1</bdi> (ربحه <bdi dir="ltr">400 × 6 − 1,000 = 1,400</bdi> د.أ)، وهو ضمن <bdi dir="ltr">36</bdi> شهرًا</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">التعادل ضمن أطول مدة يقبلها المؤسس (<bdi dir="ltr">H5</bdi>)</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي">الشهر <bdi dir="ltr">1</bdi> ضمن أطول مدة قبلها المؤسس (<bdi dir="ltr">H5</bdi>: <bdi dir="ltr">12</bdi> شهرًا)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">التعادل ضمن المدة التي يتحمّلها بلا دخل (<bdi dir="ltr">A7</bdi>)</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي">الشهر <bdi dir="ltr">1</bdi> ضمن المدة التي يتحمّلها المؤسس بلا دخل (<bdi dir="ltr">A7</bdi>: من <bdi dir="ltr">3</bdi> إلى <bdi dir="ltr">6</bdi> أشهر)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">احتياج التمويل ضمن أقصى رأس مال متاح (<bdi dir="ltr">A5</bdi>)</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي">الربح <bdi dir="ltr">1,400</bdi> د.أ شهريًا من الشهر <bdi dir="ltr">1</bdi>، فأدنى رصيد هو التأسيس <bdi dir="ltr">−3,000</bdi> د.أ، وهو ضمن أقصى رأس مال (<bdi dir="ltr">8,000</bdi> د.أ)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">تكاليف التأسيس ضمن أقصى رأس مال متاح (<bdi dir="ltr">A5</bdi>)</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي">تكاليف التأسيس <bdi dir="ltr">3,000</bdi> د.أ ضمن أقصى رأس مال متاح (<bdi dir="ltr">8,000</bdi> د.أ)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">السعر ليس دون سعر الحدّ الأدنى (<bdi dir="ltr">T7</bdi>)</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي">السعر <bdi dir="ltr">10</bdi> د.أ فوق سعر الحدّ الأدنى (<bdi dir="ltr">4 + 1,000 ÷ 400 = 6.5</bdi> د.أ)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">نسبة LTV إلى CAC لا تقل عن الحدّ الأدنى (للاشتراك فقط)</th><td data-label="الحالة"><strong>خارج العدّ</strong></td><td data-label="الحساب اليدوي">ليس اشتراكًا، فلا LTV ولا CAC</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">التعادل في السيناريو المتحفّظ</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي">في السيناريو المتحفّظ تخلو الأشهر الثلاثة الأولى من المبيعات، ثم <bdi dir="ltr">240</bdi> وحدة × <bdi dir="ltr">(10 − 4.4) − 1,000 = 344</bdi> د.أ: التعادل في الشهر <bdi dir="ltr">4</bdi></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">الاسترداد ضمن نافذة الجدوى</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي">الرصيد بعد الأشهر <bdi dir="ltr">0</bdi> و<bdi dir="ltr">1</bdi> و<bdi dir="ltr">2</bdi> و<bdi dir="ltr">3</bdi>: <bdi dir="ltr">−3,000</bdi> و<bdi dir="ltr">−1,600</bdi> و<bdi dir="ltr">−200</bdi> و<bdi dir="ltr">+1,200</bdi>، فالاسترداد بعد <bdi dir="ltr">3</bdi> أشهر</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">وحدات التعادل ضمن الطاقة القصوى (<bdi dir="ltr">E7</bdi>)</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي">نقطة التعادل <bdi dir="ltr">1,000 ÷ 6 = 166.67</bdi> فتُقرَّب إلى <bdi dir="ltr">167</bdi> وحدة، ضمن الطاقة القصوى (<bdi dir="ltr">E7</bdi>: <bdi dir="ltr">500</bdi> وحدة)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr></tbody>
+</table>
+<h4>الدرجة والقرار</h4>
+<table class="stack">
+<caption>الدرجة والحواجب والقرار والثقة والخطة، كل منها بجانب حسابه اليدوي</caption>
+<thead><tr><th scope="col">البند</th><th scope="col">الحساب اليدوي</th><th scope="col">ناتج المحرّك</th><th scope="col">المطابقة</th></tr></thead>
+<tbody><tr><th scope="row" data-label="البند">الدرجة</th><td data-label="الحساب اليدوي">المعايير المقيَّمة <bdi dir="ltr">10</bdi> (معيار LTV ÷ CAC خارج العدّ)؛ المتحقق منها <bdi dir="ltr">10</bdi>، فالدرجة <bdi dir="ltr">10 ÷ 10 = 100%</bdi></td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">10</bdi> من <bdi dir="ltr">10 = 100%</bdi></strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="البند">الحواجب</th><td data-label="الحساب اليدوي">لا حاجب: الهامش <bdi dir="ltr">6</bdi> د.أ موجب، والتعادل في الشهر <bdi dir="ltr">1</bdi>، واحتياج التمويل <bdi dir="ltr">3,000</bdi> د.أ أقل بكثير من ضعف أقصى رأس مال (<bdi dir="ltr">2 × 8,000 = 16,000</bdi> د.أ)</td><td data-label="ناتج المحرّك">لا حاجب</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="البند">القرار</th><td data-label="الحساب اليدوي">الدرجة <bdi dir="ltr">100%</bdi> فوق <bdi dir="ltr">75%</bdi> ولا حاجب والثقة الإجمالية عالية: القرار امضِ. وبالأرقام نفسها وثقة منخفضة في ثلاثة من الأرقام الخمسة يصير القرار عدّل (يغطيه اختبار في المحرّك)</td><td data-label="ناتج المحرّك"><strong class="key">امضِ</strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="البند">الثقة الإجمالية</th><td data-label="الحساب اليدوي">الأرقام المحورية الخمسة كلها بثقة عالية: <bdi dir="ltr">5</bdi> من <bdi dir="ltr">5 = 100%</bdi>، وهو <bdi dir="ltr">75%</bdi> فأكثر: عالية</td><td data-label="ناتج المحرّك"><strong class="key">عالية</strong> <bdi dir="ltr">5</bdi> من <bdi dir="ltr">5</bdi></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="البند">خطة التحقّق</th><td data-label="الحساب اليدوي">قلق المؤسس (<bdi dir="ltr">H6</bdi>) أولًا. السعر <bdi dir="ltr">1 × 4 = 4</bdi>، والمبيعات <bdi dir="ltr">1 × 3 = 3</bdi>، والتكلفة المتغيرة <bdi dir="ltr">1 × 2 = 2</bdi>، والتكاليف الثابتة <bdi dir="ltr">1 × 1 = 1</bdi>؛ فيدخل السعر ثم المبيعات</td><td data-label="ناتج المحرّك">قلق المؤسس (<bdi dir="ltr">H6</bdi>) ثم السعر (P) ثم المبيعات</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr></tbody>
+</table>
+<p>الدرجة ليست احتمال نجاح: هي نسبة المعايير المقيَّمة التي تحققت، بأوزان متساوية.</p>
+<h4>الثقة الإجمالية</h4>
+<table class="stack">
+<caption>الأرقام المحورية الخمسة: السليم منها ما ثقته متوسطة أو عالية</caption>
+<thead><tr><th scope="col">الرقم المحوري</th><th scope="col">الثقة</th><th scope="col">يُحسب سليمًا</th><th scope="col">مصدره</th></tr></thead>
+<tbody><tr><th scope="row" data-label="الرقم المحوري">سعر البيع (<bdi dir="ltr">F1</bdi>)</th><td data-label="الثقة">عالية</td><td data-label="يُحسب سليمًا">نعم</td><td data-label="مصدره">من المؤسس، الثقة عالية، مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الرقم المحوري">التكلفة المتغيرة (<bdi dir="ltr">F3</bdi>)</th><td data-label="الثقة">عالية</td><td data-label="يُحسب سليمًا">نعم</td><td data-label="مصدره">من المؤسس، الثقة عالية، مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الرقم المحوري">التكاليف الثابتة (<bdi dir="ltr">F4</bdi>)</th><td data-label="الثقة">عالية</td><td data-label="يُحسب سليمًا">نعم</td><td data-label="مصدره">من المؤسس، الثقة عالية، مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الرقم المحوري">تكاليف التأسيس (<bdi dir="ltr">F5</bdi>)</th><td data-label="الثقة">عالية</td><td data-label="يُحسب سليمًا">نعم</td><td data-label="مصدره">من المؤسس، الثقة عالية، مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الرقم المحوري">المبيعات المتوقعة (<bdi dir="ltr">F6</bdi>)</th><td data-label="الثقة">عالية</td><td data-label="يُحسب سليمًا">نعم</td><td data-label="مصدره">من المؤسس، الثقة عالية، مؤكَّد</td></tr></tbody>
+</table>
+<h4>خطة التحقّق</h4>
+<table class="stack">
+<caption>خطة التحقّق (<bdi dir="ltr">T18</bdi>): ثلاث تجارب، وكلفتها نوع لا مبلغ</caption>
+<thead><tr><th scope="col">المكان</th><th scope="col">المتغيّر</th><th scope="col">الدرجة</th><th scope="col">الثقة والترتيب</th><th scope="col">التجربة (رموز)</th><th scope="col">الكلفة</th></tr></thead>
+<tbody><tr><th scope="row" data-label="المكان"><bdi dir="ltr">1</bdi></th><td data-label="المتغيّر">قلق المؤسس (<bdi dir="ltr">H6</bdi>)<br>«هل سيدفع العملاء هذا السعر؟»</td><td data-label="الدرجة">—</td><td data-label="الثقة والترتيب">— و—</td><td data-label="التجربة (رموز)"><code>worry.smallest_test</code><br><code>worry.founder_sets_the_line</code><br><code>worry.ask_an_expert</code></td><td data-label="الكلفة">وقت المؤسس</td></tr>
+<tr><th scope="row" data-label="المكان"><bdi dir="ltr">2</bdi></th><td data-label="المتغيّر">السعر (P)</td><td data-label="الدرجة"><bdi dir="ltr">4</bdi></td><td data-label="الثقة والترتيب"><bdi dir="ltr">3</bdi> و<bdi dir="ltr">1</bdi></td><td data-label="التجربة (رموز)"><code>price.willingness_to_pay</code><br><code>price.accepting_share</code><br><code>price.test_second_price</code></td><td data-label="الكلفة">وقت المؤسس</td></tr>
+<tr><th scope="row" data-label="المكان"><bdi dir="ltr">3</bdi></th><td data-label="المتغيّر">المبيعات</td><td data-label="الدرجة"><bdi dir="ltr">3</bdi></td><td data-label="الثقة والترتيب"><bdi dir="ltr">3</bdi> و<bdi dir="ltr">2</bdi></td><td data-label="التجربة (رموز)"><code>sales.paid_preorders</code><br><code>sales.preorders_against_month_one</code><br><code>sales.revise_forecast</code></td><td data-label="الكلفة">مبلغ نقدي صغير</td></tr></tbody>
+</table>
+</article>
+<article id="case-borderline" aria-labelledby="case-borderline-title">
+<h3 id="case-borderline-title">مشروع على الحدّ: معيار واحد دون خط <bdi dir="ltr">75%</bdi></h3>
+<p class="sentence">المشروع الجيد نفسه بسعر <bdi dir="ltr">8</bdi> د.أ وتكاليف تأسيس <bdi dir="ltr">9,000</bdi> د.أ، أي فوق أقصى رأس مال متاح (<bdi dir="ltr">8,000</bdi> د.أ). مشروع اصطناعي مبني على أرقام الاختبار المسطّحة وليس مشروعًا حقيقيًا.</p>
+<h4>المدخلات بالكلمات</h4>
+<dl class="inputs"><dt>سعر البيع للوحدة (<bdi dir="ltr">F1</bdi>)</dt><dd><bdi dir="ltr">8</bdi> د.أ</dd>
+<dt>التكلفة المتغيرة للوحدة (<bdi dir="ltr">F3</bdi>)</dt><dd>مواد: <bdi dir="ltr">4</bdi> د.أ. المجموع <bdi dir="ltr">4</bdi> د.أ</dd>
+<dt>التكاليف الثابتة الشهرية (<bdi dir="ltr">F4</bdi>)</dt><dd>إيجار: <bdi dir="ltr">1,000</bdi> د.أ. المجموع <bdi dir="ltr">1,000</bdi> د.أ</dd>
+<dt>تكاليف التأسيس (<bdi dir="ltr">F5</bdi>)</dt><dd>تأسيس: <bdi dir="ltr">9,000</bdi> د.أ. المجموع <bdi dir="ltr">9,000</bdi> د.أ</dd>
+<dt>المبيعات المتوقعة بالوحدات (<bdi dir="ltr">F6</bdi>)</dt><dd>الشهر <bdi dir="ltr">1</bdi>: <bdi dir="ltr">400</bdi>، الشهر <bdi dir="ltr">6</bdi>: <bdi dir="ltr">400</bdi>، الشهر <bdi dir="ltr">12</bdi>: <bdi dir="ltr">400</bdi> وحدة</dd>
+<dt>الطاقة القصوى شهريًا (<bdi dir="ltr">E7</bdi>)</dt><dd><bdi dir="ltr">500</bdi> وحدة</dd>
+<dt>رأس المال المتاح (<bdi dir="ltr">A5</bdi>)</dt><dd>من <bdi dir="ltr">5,000</bdi> د.أ إلى <bdi dir="ltr">8,000</bdi> د.أ</dd>
+<dt>المدة التي يتحمّلها بلا دخل (<bdi dir="ltr">A7</bdi>)</dt><dd>من <bdi dir="ltr">3</bdi> إلى <bdi dir="ltr">6</bdi> أشهر</dd>
+<dt>مصدر التمويل (<bdi dir="ltr">H3</bdi>)</dt><dd>مدخراته الشخصية</dd>
+<dt>أطول مدة مقبولة حتى التعادل (<bdi dir="ltr">H5</bdi>)</dt><dd>خلال <bdi dir="ltr">12</bdi> شهرًا</dd>
+<dt>أكبر ما يقلقه أو لا يعرفه (<bdi dir="ltr">H6</bdi>)</dt><dd>هل سيدفع العملاء هذا السعر؟</dd></dl>
+<h4>معايير الجدوى</h4>
+<table class="stack">
+<caption>معايير الجدوى، بأوزان متساوية: المعيار الذي تنقص مدخلاته يخرج من العدّ</caption>
+<thead><tr><th scope="col">المعيار</th><th scope="col">الحالة</th><th scope="col">الحساب اليدوي</th><th scope="col">المطابقة</th></tr></thead>
+<tbody><tr><th scope="row" data-label="المعيار">هامش المساهمة للوحدة أكبر من صفر</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي"><bdi dir="ltr">8 − 4 = 4</bdi> د.أ، وهو موجب</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">التعادل ضمن نافذة الجدوى (<bdi dir="ltr">36</bdi> شهرًا افتراضيًا)</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي">التعادل في الشهر <bdi dir="ltr">1</bdi> (ربحه <bdi dir="ltr">400 × 4 − 1,000 = 600</bdi> د.أ)، وهو ضمن <bdi dir="ltr">36</bdi> شهرًا</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">التعادل ضمن أطول مدة يقبلها المؤسس (<bdi dir="ltr">H5</bdi>)</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي">الشهر <bdi dir="ltr">1</bdi> ضمن أطول مدة قبلها المؤسس (<bdi dir="ltr">H5</bdi>: <bdi dir="ltr">12</bdi> شهرًا)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">التعادل ضمن المدة التي يتحمّلها بلا دخل (<bdi dir="ltr">A7</bdi>)</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي">الشهر <bdi dir="ltr">1</bdi> ضمن المدة التي يتحمّلها المؤسس بلا دخل (<bdi dir="ltr">A7</bdi>: من <bdi dir="ltr">3</bdi> إلى <bdi dir="ltr">6</bdi> أشهر)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">احتياج التمويل ضمن أقصى رأس مال متاح (<bdi dir="ltr">A5</bdi>)</th><td data-label="الحالة"><strong>لا يتحقق</strong></td><td data-label="الحساب اليدوي">أدنى رصيد هو التأسيس <bdi dir="ltr">−9,000</bdi> د.أ في الشهر <bdi dir="ltr">0</bdi>، أعلى من أقصى رأس مال متاح (<bdi dir="ltr">8,000</bdi> د.أ)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">تكاليف التأسيس ضمن أقصى رأس مال متاح (<bdi dir="ltr">A5</bdi>)</th><td data-label="الحالة"><strong>لا يتحقق</strong></td><td data-label="الحساب اليدوي">تكاليف التأسيس <bdi dir="ltr">9,000</bdi> د.أ أعلى من أقصى رأس مال متاح (<bdi dir="ltr">8,000</bdi> د.أ)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">السعر ليس دون سعر الحدّ الأدنى (<bdi dir="ltr">T7</bdi>)</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي">السعر <bdi dir="ltr">8</bdi> د.أ فوق سعر الحدّ الأدنى (<bdi dir="ltr">4 + 1,000 ÷ 400 = 6.5</bdi> د.أ)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">نسبة LTV إلى CAC لا تقل عن الحدّ الأدنى (للاشتراك فقط)</th><td data-label="الحالة"><strong>خارج العدّ</strong></td><td data-label="الحساب اليدوي">ليس اشتراكًا، فلا LTV ولا CAC</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">التعادل في السيناريو المتحفّظ</th><td data-label="الحالة"><strong>لا يتحقق</strong></td><td data-label="الحساب اليدوي">في السيناريو المتحفّظ: <bdi dir="ltr">240</bdi> وحدة × <bdi dir="ltr">(8 − 4.4) − 1,000 = −136</bdi> د.أ كل شهر، فلا يوجد تعادل</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">الاسترداد ضمن نافذة الجدوى</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي"><bdi dir="ltr">−9,000 + 600 × 15 = 0</bdi>: الرصيد يعود إلى الصفر بعد <bdi dir="ltr">15</bdi> شهرًا، وهو ضمن <bdi dir="ltr">36</bdi> شهرًا</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">وحدات التعادل ضمن الطاقة القصوى (<bdi dir="ltr">E7</bdi>)</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي">نقطة التعادل <bdi dir="ltr">1,000 ÷ 4 = 250</bdi> وحدة، ضمن الطاقة القصوى (<bdi dir="ltr">E7</bdi>: <bdi dir="ltr">500</bdi> وحدة)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr></tbody>
+</table>
+<h4>الدرجة والقرار</h4>
+<table class="stack">
+<caption>الدرجة والحواجب والقرار والثقة والخطة، كل منها بجانب حسابه اليدوي</caption>
+<thead><tr><th scope="col">البند</th><th scope="col">الحساب اليدوي</th><th scope="col">ناتج المحرّك</th><th scope="col">المطابقة</th></tr></thead>
+<tbody><tr><th scope="row" data-label="البند">الدرجة</th><td data-label="الحساب اليدوي">المعايير المقيَّمة <bdi dir="ltr">10</bdi>؛ المتحقق منها <bdi dir="ltr">7</bdi>، فالدرجة <bdi dir="ltr">7 ÷ 10 = 70%</bdi>، دون خط <bdi dir="ltr">75%</bdi>. ومعيار واحد إضافي يرفعها إلى <bdi dir="ltr">80%</bdi></td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">7</bdi> من <bdi dir="ltr">10 = 70%</bdi></strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="البند">الحواجب</th><td data-label="الحساب اليدوي">لا حاجب: الهامش <bdi dir="ltr">4</bdi> د.أ موجب، والتعادل في الشهر <bdi dir="ltr">1</bdi>، واحتياج التمويل <bdi dir="ltr">9,000</bdi> د.أ أقل من ضعف أقصى رأس مال (<bdi dir="ltr">2 × 8,000 = 16,000</bdi> د.أ)</td><td data-label="ناتج المحرّك">لا حاجب</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="البند">القرار</th><td data-label="الحساب اليدوي">الدرجة <bdi dir="ltr">70%</bdi> أقل من <bdi dir="ltr">75%</bdi> ولا حاجب: القرار عدّل</td><td data-label="ناتج المحرّك"><strong class="key">عدّل</strong> <span class="prov">ما يمنع «امضِ»: الدرجة دون الخط</span></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="البند">الثقة الإجمالية</th><td data-label="الحساب اليدوي">الأرقام المحورية الخمسة كلها بثقة عالية: <bdi dir="ltr">5</bdi> من <bdi dir="ltr">5 = 100%</bdi>، وهو <bdi dir="ltr">75%</bdi> فأكثر: عالية</td><td data-label="ناتج المحرّك"><strong class="key">عالية</strong> <bdi dir="ltr">5</bdi> من <bdi dir="ltr">5</bdi></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="البند">خطة التحقّق</th><td data-label="الحساب اليدوي">قلق المؤسس (<bdi dir="ltr">H6</bdi>) أولًا. تتعادل التكلفة المتغيرة والمبيعات في حساسيتهما (<bdi dir="ltr">7,680</bdi> د.أ لكل منهما)، فيبقى الترتيب السعر ثم التكلفة المتغيرة ثم المبيعات ثم التكاليف الثابتة: السعر <bdi dir="ltr">1 × 4 = 4</bdi>، والتكلفة المتغيرة <bdi dir="ltr">1 × 3 = 3</bdi>، والمبيعات <bdi dir="ltr">1 × 2 = 2</bdi>، والتكاليف الثابتة <bdi dir="ltr">1 × 1 = 1</bdi></td><td data-label="ناتج المحرّك">قلق المؤسس (<bdi dir="ltr">H6</bdi>) ثم السعر (P) ثم التكلفة المتغيرة (VC)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr></tbody>
+</table>
+<p>الدرجة ليست احتمال نجاح: هي نسبة المعايير المقيَّمة التي تحققت، بأوزان متساوية.</p>
+<h4>الثقة الإجمالية</h4>
+<table class="stack">
+<caption>الأرقام المحورية الخمسة: السليم منها ما ثقته متوسطة أو عالية</caption>
+<thead><tr><th scope="col">الرقم المحوري</th><th scope="col">الثقة</th><th scope="col">يُحسب سليمًا</th><th scope="col">مصدره</th></tr></thead>
+<tbody><tr><th scope="row" data-label="الرقم المحوري">سعر البيع (<bdi dir="ltr">F1</bdi>)</th><td data-label="الثقة">عالية</td><td data-label="يُحسب سليمًا">نعم</td><td data-label="مصدره">من المؤسس، الثقة عالية، مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الرقم المحوري">التكلفة المتغيرة (<bdi dir="ltr">F3</bdi>)</th><td data-label="الثقة">عالية</td><td data-label="يُحسب سليمًا">نعم</td><td data-label="مصدره">من المؤسس، الثقة عالية، مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الرقم المحوري">التكاليف الثابتة (<bdi dir="ltr">F4</bdi>)</th><td data-label="الثقة">عالية</td><td data-label="يُحسب سليمًا">نعم</td><td data-label="مصدره">من المؤسس، الثقة عالية، مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الرقم المحوري">تكاليف التأسيس (<bdi dir="ltr">F5</bdi>)</th><td data-label="الثقة">عالية</td><td data-label="يُحسب سليمًا">نعم</td><td data-label="مصدره">من المؤسس، الثقة عالية، مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الرقم المحوري">المبيعات المتوقعة (<bdi dir="ltr">F6</bdi>)</th><td data-label="الثقة">عالية</td><td data-label="يُحسب سليمًا">نعم</td><td data-label="مصدره">من المؤسس، الثقة عالية، مؤكَّد</td></tr></tbody>
+</table>
+<h4>خطة التحقّق</h4>
+<table class="stack">
+<caption>خطة التحقّق (<bdi dir="ltr">T18</bdi>): ثلاث تجارب، وكلفتها نوع لا مبلغ</caption>
+<thead><tr><th scope="col">المكان</th><th scope="col">المتغيّر</th><th scope="col">الدرجة</th><th scope="col">الثقة والترتيب</th><th scope="col">التجربة (رموز)</th><th scope="col">الكلفة</th></tr></thead>
+<tbody><tr><th scope="row" data-label="المكان"><bdi dir="ltr">1</bdi></th><td data-label="المتغيّر">قلق المؤسس (<bdi dir="ltr">H6</bdi>)<br>«هل سيدفع العملاء هذا السعر؟»</td><td data-label="الدرجة">—</td><td data-label="الثقة والترتيب">— و—</td><td data-label="التجربة (رموز)"><code>worry.smallest_test</code><br><code>worry.founder_sets_the_line</code><br><code>worry.ask_an_expert</code></td><td data-label="الكلفة">وقت المؤسس</td></tr>
+<tr><th scope="row" data-label="المكان"><bdi dir="ltr">2</bdi></th><td data-label="المتغيّر">السعر (P)</td><td data-label="الدرجة"><bdi dir="ltr">4</bdi></td><td data-label="الثقة والترتيب"><bdi dir="ltr">3</bdi> و<bdi dir="ltr">1</bdi></td><td data-label="التجربة (رموز)"><code>price.willingness_to_pay</code><br><code>price.accepting_share</code><br><code>price.test_second_price</code></td><td data-label="الكلفة">وقت المؤسس</td></tr>
+<tr><th scope="row" data-label="المكان"><bdi dir="ltr">3</bdi></th><td data-label="المتغيّر">التكلفة المتغيرة (VC)</td><td data-label="الدرجة"><bdi dir="ltr">3</bdi></td><td data-label="الثقة والترتيب"><bdi dir="ltr">3</bdi> و<bdi dir="ltr">2</bdi></td><td data-label="التجربة (رموز)"><code>variable_cost.supplier_quotes</code><br><code>variable_cost.quotes_within_estimate</code><br><code>variable_cost.second_supplier</code></td><td data-label="الكلفة">عرض سعر من مورّد</td></tr></tbody>
+</table>
+</article>
+<article id="case-negative-margin" aria-labelledby="case-negative-margin-title">
+<h3 id="case-negative-margin-title">مشروع هامشه سالب: يخسر على كل وحدة</h3>
+<p class="sentence">تكلفة الوحدة المتغيرة <bdi dir="ltr">12</bdi> د.أ وسعرها <bdi dir="ltr">10</bdi> د.أ، فيخسر المشروع <bdi dir="ltr">2</bdi> د.أ على كل وحدة تُباع، وتمويله من قرض. مشروع اصطناعي مبني على أرقام الاختبار المسطّحة وليس مشروعًا حقيقيًا.</p>
+<h4>المدخلات بالكلمات</h4>
+<dl class="inputs"><dt>سعر البيع للوحدة (<bdi dir="ltr">F1</bdi>)</dt><dd><bdi dir="ltr">10</bdi> د.أ</dd>
+<dt>التكلفة المتغيرة للوحدة (<bdi dir="ltr">F3</bdi>)</dt><dd>مواد: <bdi dir="ltr">12</bdi> د.أ. المجموع <bdi dir="ltr">12</bdi> د.أ</dd>
+<dt>التكاليف الثابتة الشهرية (<bdi dir="ltr">F4</bdi>)</dt><dd>إيجار: <bdi dir="ltr">1,000</bdi> د.أ. المجموع <bdi dir="ltr">1,000</bdi> د.أ</dd>
+<dt>تكاليف التأسيس (<bdi dir="ltr">F5</bdi>)</dt><dd>تأسيس: <bdi dir="ltr">3,000</bdi> د.أ. المجموع <bdi dir="ltr">3,000</bdi> د.أ</dd>
+<dt>المبيعات المتوقعة بالوحدات (<bdi dir="ltr">F6</bdi>)</dt><dd>الشهر <bdi dir="ltr">1</bdi>: <bdi dir="ltr">400</bdi>، الشهر <bdi dir="ltr">6</bdi>: <bdi dir="ltr">400</bdi>، الشهر <bdi dir="ltr">12</bdi>: <bdi dir="ltr">400</bdi> وحدة</dd>
+<dt>الطاقة القصوى شهريًا (<bdi dir="ltr">E7</bdi>)</dt><dd><bdi dir="ltr">500</bdi> وحدة</dd>
+<dt>رأس المال المتاح (<bdi dir="ltr">A5</bdi>)</dt><dd>من <bdi dir="ltr">5,000</bdi> د.أ إلى <bdi dir="ltr">8,000</bdi> د.أ</dd>
+<dt>المدة التي يتحمّلها بلا دخل (<bdi dir="ltr">A7</bdi>)</dt><dd>من <bdi dir="ltr">3</bdi> إلى <bdi dir="ltr">6</bdi> أشهر</dd>
+<dt>مصدر التمويل (<bdi dir="ltr">H3</bdi>)</dt><dd>قرض</dd>
+<dt>أطول مدة مقبولة حتى التعادل (<bdi dir="ltr">H5</bdi>)</dt><dd>خلال <bdi dir="ltr">12</bdi> شهرًا</dd>
+<dt>أكبر ما يقلقه أو لا يعرفه (<bdi dir="ltr">H6</bdi>)</dt><dd>هل سيدفع العملاء هذا السعر؟</dd></dl>
+<h4>معايير الجدوى</h4>
+<table class="stack">
+<caption>معايير الجدوى، بأوزان متساوية: المعيار الذي تنقص مدخلاته يخرج من العدّ</caption>
+<thead><tr><th scope="col">المعيار</th><th scope="col">الحالة</th><th scope="col">الحساب اليدوي</th><th scope="col">المطابقة</th></tr></thead>
+<tbody><tr><th scope="row" data-label="المعيار">هامش المساهمة للوحدة أكبر من صفر</th><td data-label="الحالة"><strong>لا يتحقق</strong></td><td data-label="الحساب اليدوي"><bdi dir="ltr">10 − 12 = −2</bdi> د.أ، وهو ليس موجبًا</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">التعادل ضمن نافذة الجدوى (<bdi dir="ltr">36</bdi> شهرًا افتراضيًا)</th><td data-label="الحالة"><strong>لا يتحقق</strong></td><td data-label="الحساب اليدوي">يخسر المشروع <bdi dir="ltr">400 × 2 + 1,000 = 1,800</bdi> د.أ كل شهر، ولا يصل إلى التعادل في أي شهر</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">التعادل ضمن أطول مدة يقبلها المؤسس (<bdi dir="ltr">H5</bdi>)</th><td data-label="الحالة"><strong>لا يتحقق</strong></td><td data-label="الحساب اليدوي">لا تعادل في أي شهر، فلا يتحقق ضمن أطول مدة قبلها المؤسس (<bdi dir="ltr">H5</bdi>: <bdi dir="ltr">12</bdi> شهرًا)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">التعادل ضمن المدة التي يتحمّلها بلا دخل (<bdi dir="ltr">A7</bdi>)</th><td data-label="الحالة"><strong>لا يتحقق</strong></td><td data-label="الحساب اليدوي">لا تعادل في أي شهر، فلا يتحقق ضمن المدة التي يتحمّلها بلا دخل (<bdi dir="ltr">A7</bdi>: من <bdi dir="ltr">3</bdi> إلى <bdi dir="ltr">6</bdi> أشهر)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">احتياج التمويل ضمن أقصى رأس مال متاح (<bdi dir="ltr">A5</bdi>)</th><td data-label="الحالة"><strong>لا يتحقق</strong></td><td data-label="الحساب اليدوي">التأسيس <bdi dir="ltr">3,000 + 36 × 1,800 = 67,800</bdi> د.أ، أعلى من أقصى رأس مال متاح (<bdi dir="ltr">8,000</bdi> د.أ)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">تكاليف التأسيس ضمن أقصى رأس مال متاح (<bdi dir="ltr">A5</bdi>)</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي">تكاليف التأسيس <bdi dir="ltr">3,000</bdi> د.أ ضمن أقصى رأس مال متاح (<bdi dir="ltr">8,000</bdi> د.أ)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">السعر ليس دون سعر الحدّ الأدنى (<bdi dir="ltr">T7</bdi>)</th><td data-label="الحالة"><strong>لا يتحقق</strong></td><td data-label="الحساب اليدوي">سعر الحدّ الأدنى <bdi dir="ltr">12 + 1,000 ÷ 400 = 14.5</bdi> د.أ، والسعر <bdi dir="ltr">10</bdi> د.أ أقل منه</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">نسبة LTV إلى CAC لا تقل عن الحدّ الأدنى (للاشتراك فقط)</th><td data-label="الحالة"><strong>خارج العدّ</strong></td><td data-label="الحساب اليدوي">ليس اشتراكًا، فلا LTV ولا CAC</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">التعادل في السيناريو المتحفّظ</th><td data-label="الحالة"><strong>لا يتحقق</strong></td><td data-label="الحساب اليدوي">التكلفة المتغيرة × <bdi dir="ltr">1.1 = 13.2</bdi> د.أ والمبيعات × <bdi dir="ltr">0.6</bdi>: الخسارة أكبر ولا يوجد تعادل</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">الاسترداد ضمن نافذة الجدوى</th><td data-label="الحالة"><strong>لا يتحقق</strong></td><td data-label="الحساب اليدوي">الرصيد ينخفض كل شهر ولا يعود إلى الصفر</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">وحدات التعادل ضمن الطاقة القصوى (<bdi dir="ltr">E7</bdi>)</th><td data-label="الحالة"><strong>لا يتحقق</strong></td><td data-label="الحساب اليدوي">لا يوجد عدد من الوحدات يغطي التكاليف بهامش سالب، فلا تعادل ضمن الطاقة القصوى (<bdi dir="ltr">E7</bdi>: <bdi dir="ltr">500</bdi> وحدة)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr></tbody>
+</table>
+<h4>الدرجة والقرار</h4>
+<table class="stack">
+<caption>الدرجة والحواجب والقرار والثقة والخطة، كل منها بجانب حسابه اليدوي</caption>
+<thead><tr><th scope="col">البند</th><th scope="col">الحساب اليدوي</th><th scope="col">ناتج المحرّك</th><th scope="col">المطابقة</th></tr></thead>
+<tbody><tr><th scope="row" data-label="البند">الدرجة</th><td data-label="الحساب اليدوي">المعايير المقيَّمة <bdi dir="ltr">10</bdi>؛ المتحقق منها <bdi dir="ltr">1</bdi> (تكاليف التأسيس)، فالدرجة <bdi dir="ltr">1 ÷ 10 = 10%</bdi></td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">1</bdi> من <bdi dir="ltr">10 = 10%</bdi></strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="البند">الحواجب</th><td data-label="الحساب اليدوي">حاجب واحد: الهامش <bdi dir="ltr">−2</bdi> د.أ ليس موجبًا. ولا يُعدّ «لا تعادل» حاجبًا ثانيًا لأن الهامش هو سببه</td><td data-label="ناتج المحرّك">هامش المساهمة صفر أو أقل</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="البند">القرار</th><td data-label="الحساب اليدوي">حاجب واحد يوقف المشروع مهما كانت الدرجة: القرار توقّف</td><td data-label="ناتج المحرّك"><strong class="key">توقّف</strong> غير قابل للتنفيذ بصيغته الحالية</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="البند">الثقة الإجمالية</th><td data-label="الحساب اليدوي">الأرقام المحورية الخمسة كلها بثقة عالية: <bdi dir="ltr">5</bdi> من <bdi dir="ltr">5 = 100%</bdi>، وهو <bdi dir="ltr">75%</bdi> فأكثر: عالية</td><td data-label="ناتج المحرّك"><strong class="key">عالية</strong> <bdi dir="ltr">5</bdi> من <bdi dir="ltr">5</bdi></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="البند">خطة التحقّق</th><td data-label="الحساب اليدوي">قلق المؤسس (<bdi dir="ltr">H6</bdi>) أولًا. الحساسية الآن أعلى ما تكون للتكلفة المتغيرة (ترتيب <bdi dir="ltr">1</bdi>): التكلفة المتغيرة <bdi dir="ltr">1 × 4 = 4</bdi>، ثم السعر <bdi dir="ltr">1 × 3 = 3</bdi>، والتكاليف الثابتة <bdi dir="ltr">1 × 2 = 2</bdi>، والمبيعات <bdi dir="ltr">1 × 1 = 1</bdi></td><td data-label="ناتج المحرّك">قلق المؤسس (<bdi dir="ltr">H6</bdi>) ثم التكلفة المتغيرة (VC) ثم السعر (P)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr></tbody>
+</table>
+<p>الدرجة ليست احتمال نجاح: هي نسبة المعايير المقيَّمة التي تحققت، بأوزان متساوية.</p>
+<p>القرار توقّف: غير قابل للتنفيذ بصيغته الحالية. التغييرات الثلاثة التي قد تغيّر القرار تأتي في الخطوة التالية (<bdi dir="ltr">2</bdi>b) وليست في هذه الصفحة بعد.</p>
+<h4>الثقة الإجمالية</h4>
+<table class="stack">
+<caption>الأرقام المحورية الخمسة: السليم منها ما ثقته متوسطة أو عالية</caption>
+<thead><tr><th scope="col">الرقم المحوري</th><th scope="col">الثقة</th><th scope="col">يُحسب سليمًا</th><th scope="col">مصدره</th></tr></thead>
+<tbody><tr><th scope="row" data-label="الرقم المحوري">سعر البيع (<bdi dir="ltr">F1</bdi>)</th><td data-label="الثقة">عالية</td><td data-label="يُحسب سليمًا">نعم</td><td data-label="مصدره">من المؤسس، الثقة عالية، مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الرقم المحوري">التكلفة المتغيرة (<bdi dir="ltr">F3</bdi>)</th><td data-label="الثقة">عالية</td><td data-label="يُحسب سليمًا">نعم</td><td data-label="مصدره">من المؤسس، الثقة عالية، مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الرقم المحوري">التكاليف الثابتة (<bdi dir="ltr">F4</bdi>)</th><td data-label="الثقة">عالية</td><td data-label="يُحسب سليمًا">نعم</td><td data-label="مصدره">من المؤسس، الثقة عالية، مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الرقم المحوري">تكاليف التأسيس (<bdi dir="ltr">F5</bdi>)</th><td data-label="الثقة">عالية</td><td data-label="يُحسب سليمًا">نعم</td><td data-label="مصدره">من المؤسس، الثقة عالية، مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الرقم المحوري">المبيعات المتوقعة (<bdi dir="ltr">F6</bdi>)</th><td data-label="الثقة">عالية</td><td data-label="يُحسب سليمًا">نعم</td><td data-label="مصدره">من المؤسس، الثقة عالية، مؤكَّد</td></tr></tbody>
+</table>
+<h4>خطة التحقّق</h4>
+<table class="stack">
+<caption>خطة التحقّق (<bdi dir="ltr">T18</bdi>): ثلاث تجارب، وكلفتها نوع لا مبلغ</caption>
+<thead><tr><th scope="col">المكان</th><th scope="col">المتغيّر</th><th scope="col">الدرجة</th><th scope="col">الثقة والترتيب</th><th scope="col">التجربة (رموز)</th><th scope="col">الكلفة</th></tr></thead>
+<tbody><tr><th scope="row" data-label="المكان"><bdi dir="ltr">1</bdi></th><td data-label="المتغيّر">قلق المؤسس (<bdi dir="ltr">H6</bdi>)<br>«هل سيدفع العملاء هذا السعر؟»</td><td data-label="الدرجة">—</td><td data-label="الثقة والترتيب">— و—</td><td data-label="التجربة (رموز)"><code>worry.smallest_test</code><br><code>worry.founder_sets_the_line</code><br><code>worry.ask_an_expert</code></td><td data-label="الكلفة">وقت المؤسس</td></tr>
+<tr><th scope="row" data-label="المكان"><bdi dir="ltr">2</bdi></th><td data-label="المتغيّر">التكلفة المتغيرة (VC)</td><td data-label="الدرجة"><bdi dir="ltr">4</bdi></td><td data-label="الثقة والترتيب"><bdi dir="ltr">3</bdi> و<bdi dir="ltr">1</bdi></td><td data-label="التجربة (رموز)"><code>variable_cost.supplier_quotes</code><br><code>variable_cost.quotes_within_estimate</code><br><code>variable_cost.second_supplier</code></td><td data-label="الكلفة">عرض سعر من مورّد</td></tr>
+<tr><th scope="row" data-label="المكان"><bdi dir="ltr">3</bdi></th><td data-label="المتغيّر">السعر (P)</td><td data-label="الدرجة"><bdi dir="ltr">3</bdi></td><td data-label="الثقة والترتيب"><bdi dir="ltr">3</bdi> و<bdi dir="ltr">2</bdi></td><td data-label="التجربة (رموز)"><code>price.willingness_to_pay</code><br><code>price.accepting_share</code><br><code>price.test_second_price</code></td><td data-label="الكلفة">وقت المؤسس</td></tr></tbody>
+</table>
+</article>
+<article id="case-funding-gap" aria-labelledby="case-funding-gap-title">
+<h3 id="case-funding-gap-title">تمويل يفوق ضعف رأس المال بلا مصدر خارجي</h3>
+<p class="sentence">المشروع الجيد نفسه بتكاليف تأسيس <bdi dir="ltr">17,000</bdi> د.أ ورأس مال أقصاه <bdi dir="ltr">8,000</bdi> د.أ، ويموّله صاحبه بمدخراته وبمال العائلة فقط. مشروع اصطناعي مبني على أرقام الاختبار المسطّحة وليس مشروعًا حقيقيًا.</p>
+<h4>المدخلات بالكلمات</h4>
+<dl class="inputs"><dt>سعر البيع للوحدة (<bdi dir="ltr">F1</bdi>)</dt><dd><bdi dir="ltr">10</bdi> د.أ</dd>
+<dt>التكلفة المتغيرة للوحدة (<bdi dir="ltr">F3</bdi>)</dt><dd>مواد: <bdi dir="ltr">4</bdi> د.أ. المجموع <bdi dir="ltr">4</bdi> د.أ</dd>
+<dt>التكاليف الثابتة الشهرية (<bdi dir="ltr">F4</bdi>)</dt><dd>إيجار: <bdi dir="ltr">1,000</bdi> د.أ. المجموع <bdi dir="ltr">1,000</bdi> د.أ</dd>
+<dt>تكاليف التأسيس (<bdi dir="ltr">F5</bdi>)</dt><dd>تأسيس: <bdi dir="ltr">17,000</bdi> د.أ. المجموع <bdi dir="ltr">17,000</bdi> د.أ</dd>
+<dt>المبيعات المتوقعة بالوحدات (<bdi dir="ltr">F6</bdi>)</dt><dd>الشهر <bdi dir="ltr">1</bdi>: <bdi dir="ltr">400</bdi>، الشهر <bdi dir="ltr">6</bdi>: <bdi dir="ltr">400</bdi>، الشهر <bdi dir="ltr">12</bdi>: <bdi dir="ltr">400</bdi> وحدة</dd>
+<dt>الطاقة القصوى شهريًا (<bdi dir="ltr">E7</bdi>)</dt><dd><bdi dir="ltr">500</bdi> وحدة</dd>
+<dt>رأس المال المتاح (<bdi dir="ltr">A5</bdi>)</dt><dd>من <bdi dir="ltr">5,000</bdi> د.أ إلى <bdi dir="ltr">8,000</bdi> د.أ</dd>
+<dt>المدة التي يتحمّلها بلا دخل (<bdi dir="ltr">A7</bdi>)</dt><dd>من <bdi dir="ltr">3</bdi> إلى <bdi dir="ltr">6</bdi> أشهر</dd>
+<dt>مصدر التمويل (<bdi dir="ltr">H3</bdi>)</dt><dd>مدخراته الشخصية والعائلة والأصدقاء</dd>
+<dt>أطول مدة مقبولة حتى التعادل (<bdi dir="ltr">H5</bdi>)</dt><dd>خلال <bdi dir="ltr">12</bdi> شهرًا</dd>
+<dt>أكبر ما يقلقه أو لا يعرفه (<bdi dir="ltr">H6</bdi>)</dt><dd>هل سيدفع العملاء هذا السعر؟</dd></dl>
+<h4>معايير الجدوى</h4>
+<table class="stack">
+<caption>معايير الجدوى، بأوزان متساوية: المعيار الذي تنقص مدخلاته يخرج من العدّ</caption>
+<thead><tr><th scope="col">المعيار</th><th scope="col">الحالة</th><th scope="col">الحساب اليدوي</th><th scope="col">المطابقة</th></tr></thead>
+<tbody><tr><th scope="row" data-label="المعيار">هامش المساهمة للوحدة أكبر من صفر</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي"><bdi dir="ltr">10 − 4 = 6</bdi> د.أ، وهو موجب</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">التعادل ضمن نافذة الجدوى (<bdi dir="ltr">36</bdi> شهرًا افتراضيًا)</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي">التعادل في الشهر <bdi dir="ltr">1</bdi> (ربحه <bdi dir="ltr">400 × 6 − 1,000 = 1,400</bdi> د.أ)، وهو ضمن <bdi dir="ltr">36</bdi> شهرًا</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">التعادل ضمن أطول مدة يقبلها المؤسس (<bdi dir="ltr">H5</bdi>)</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي">الشهر <bdi dir="ltr">1</bdi> ضمن أطول مدة قبلها المؤسس (<bdi dir="ltr">H5</bdi>: <bdi dir="ltr">12</bdi> شهرًا)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">التعادل ضمن المدة التي يتحمّلها بلا دخل (<bdi dir="ltr">A7</bdi>)</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي">الشهر <bdi dir="ltr">1</bdi> ضمن المدة التي يتحمّلها المؤسس بلا دخل (<bdi dir="ltr">A7</bdi>: من <bdi dir="ltr">3</bdi> إلى <bdi dir="ltr">6</bdi> أشهر)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">احتياج التمويل ضمن أقصى رأس مال متاح (<bdi dir="ltr">A5</bdi>)</th><td data-label="الحالة"><strong>لا يتحقق</strong></td><td data-label="الحساب اليدوي">أدنى رصيد هو التأسيس <bdi dir="ltr">−17,000</bdi> د.أ في الشهر <bdi dir="ltr">0</bdi>، أعلى من أقصى رأس مال متاح (<bdi dir="ltr">8,000</bdi> د.أ)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">تكاليف التأسيس ضمن أقصى رأس مال متاح (<bdi dir="ltr">A5</bdi>)</th><td data-label="الحالة"><strong>لا يتحقق</strong></td><td data-label="الحساب اليدوي">تكاليف التأسيس <bdi dir="ltr">17,000</bdi> د.أ أعلى من أقصى رأس مال متاح (<bdi dir="ltr">8,000</bdi> د.أ)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">السعر ليس دون سعر الحدّ الأدنى (<bdi dir="ltr">T7</bdi>)</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي">السعر <bdi dir="ltr">10</bdi> د.أ فوق سعر الحدّ الأدنى (<bdi dir="ltr">4 + 1,000 ÷ 400 = 6.5</bdi> د.أ)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">نسبة LTV إلى CAC لا تقل عن الحدّ الأدنى (للاشتراك فقط)</th><td data-label="الحالة"><strong>خارج العدّ</strong></td><td data-label="الحساب اليدوي">ليس اشتراكًا، فلا LTV ولا CAC</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">التعادل في السيناريو المتحفّظ</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي">في السيناريو المتحفّظ تخلو الأشهر الثلاثة الأولى من المبيعات، ثم <bdi dir="ltr">240</bdi> وحدة × <bdi dir="ltr">(10 − 4.4) − 1,000 = 344</bdi> د.أ: التعادل في الشهر <bdi dir="ltr">4</bdi></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">الاسترداد ضمن نافذة الجدوى</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي"><bdi dir="ltr">−17,000 + 1,400 × 13 = 1,200</bdi>: الرصيد يعود إلى الصفر أو أكثر بعد <bdi dir="ltr">13</bdi> شهرًا، وهو ضمن <bdi dir="ltr">36</bdi> شهرًا</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="المعيار">وحدات التعادل ضمن الطاقة القصوى (<bdi dir="ltr">E7</bdi>)</th><td data-label="الحالة"><strong>يتحقق</strong></td><td data-label="الحساب اليدوي">نقطة التعادل <bdi dir="ltr">1,000 ÷ 6 = 166.67</bdi> فتُقرَّب إلى <bdi dir="ltr">167</bdi> وحدة، ضمن الطاقة القصوى (<bdi dir="ltr">E7</bdi>: <bdi dir="ltr">500</bdi> وحدة)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr></tbody>
+</table>
+<h4>الدرجة والقرار</h4>
+<table class="stack">
+<caption>الدرجة والحواجب والقرار والثقة والخطة، كل منها بجانب حسابه اليدوي</caption>
+<thead><tr><th scope="col">البند</th><th scope="col">الحساب اليدوي</th><th scope="col">ناتج المحرّك</th><th scope="col">المطابقة</th></tr></thead>
+<tbody><tr><th scope="row" data-label="البند">الدرجة</th><td data-label="الحساب اليدوي">المعايير المقيَّمة <bdi dir="ltr">10</bdi>؛ المتحقق منها <bdi dir="ltr">8</bdi>، فالدرجة <bdi dir="ltr">8 ÷ 10 = 80%</bdi>، وهي فوق <bdi dir="ltr">75%</bdi></td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">8</bdi> من <bdi dir="ltr">10 = 80%</bdi></strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="البند">الحواجب</th><td data-label="الحساب اليدوي">حاجب واحد: احتياج التمويل <bdi dir="ltr">17,000</bdi> د.أ أعلى من ضعف أقصى رأس مال (<bdi dir="ltr">2 × 8,000 = 16,000</bdi> د.أ) و <bdi dir="ltr">H3</bdi> لا يذكر غير المدخرات والعائلة. ولو ذكر قرضًا أو مستثمرًا أو منحة أو جائزة لما كان حاجبًا، ولو كان احتياج التمويل <bdi dir="ltr">16,000</bdi> د.أ بالضبط لما كان حاجبًا</td><td data-label="ناتج المحرّك">احتياج التمويل فوق ضعف أقصى رأس مال ولا مصدر خارجي في <bdi dir="ltr">H3</bdi></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="البند">القرار</th><td data-label="الحساب اليدوي">الدرجة <bdi dir="ltr">80%</bdi> كافية للمضي، لكن الحاجب يوقف المشروع مهما كانت الدرجة: القرار توقّف</td><td data-label="ناتج المحرّك"><strong class="key">توقّف</strong> غير قابل للتنفيذ بصيغته الحالية</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="البند">الثقة الإجمالية</th><td data-label="الحساب اليدوي">الأرقام المحورية الخمسة كلها بثقة عالية: <bdi dir="ltr">5</bdi> من <bdi dir="ltr">5 = 100%</bdi>، وهو <bdi dir="ltr">75%</bdi> فأكثر: عالية</td><td data-label="ناتج المحرّك"><strong class="key">عالية</strong> <bdi dir="ltr">5</bdi> من <bdi dir="ltr">5</bdi></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="البند">خطة التحقّق</th><td data-label="الحساب اليدوي">قلق المؤسس (<bdi dir="ltr">H6</bdi>) أولًا. السعر <bdi dir="ltr">1 × 4 = 4</bdi>، والمبيعات <bdi dir="ltr">1 × 3 = 3</bdi>، والتكلفة المتغيرة <bdi dir="ltr">1 × 2 = 2</bdi>، والتكاليف الثابتة <bdi dir="ltr">1 × 1 = 1</bdi>؛ فيدخل السعر ثم المبيعات</td><td data-label="ناتج المحرّك">قلق المؤسس (<bdi dir="ltr">H6</bdi>) ثم السعر (P) ثم المبيعات</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr></tbody>
+</table>
+<p>الدرجة ليست احتمال نجاح: هي نسبة المعايير المقيَّمة التي تحققت، بأوزان متساوية.</p>
+<p>القرار توقّف: غير قابل للتنفيذ بصيغته الحالية. التغييرات الثلاثة التي قد تغيّر القرار تأتي في الخطوة التالية (<bdi dir="ltr">2</bdi>b) وليست في هذه الصفحة بعد.</p>
+<h4>الثقة الإجمالية</h4>
+<table class="stack">
+<caption>الأرقام المحورية الخمسة: السليم منها ما ثقته متوسطة أو عالية</caption>
+<thead><tr><th scope="col">الرقم المحوري</th><th scope="col">الثقة</th><th scope="col">يُحسب سليمًا</th><th scope="col">مصدره</th></tr></thead>
+<tbody><tr><th scope="row" data-label="الرقم المحوري">سعر البيع (<bdi dir="ltr">F1</bdi>)</th><td data-label="الثقة">عالية</td><td data-label="يُحسب سليمًا">نعم</td><td data-label="مصدره">من المؤسس، الثقة عالية، مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الرقم المحوري">التكلفة المتغيرة (<bdi dir="ltr">F3</bdi>)</th><td data-label="الثقة">عالية</td><td data-label="يُحسب سليمًا">نعم</td><td data-label="مصدره">من المؤسس، الثقة عالية، مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الرقم المحوري">التكاليف الثابتة (<bdi dir="ltr">F4</bdi>)</th><td data-label="الثقة">عالية</td><td data-label="يُحسب سليمًا">نعم</td><td data-label="مصدره">من المؤسس، الثقة عالية، مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الرقم المحوري">تكاليف التأسيس (<bdi dir="ltr">F5</bdi>)</th><td data-label="الثقة">عالية</td><td data-label="يُحسب سليمًا">نعم</td><td data-label="مصدره">من المؤسس، الثقة عالية، مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الرقم المحوري">المبيعات المتوقعة (<bdi dir="ltr">F6</bdi>)</th><td data-label="الثقة">عالية</td><td data-label="يُحسب سليمًا">نعم</td><td data-label="مصدره">من المؤسس، الثقة عالية، مؤكَّد</td></tr></tbody>
+</table>
+<h4>خطة التحقّق</h4>
+<table class="stack">
+<caption>خطة التحقّق (<bdi dir="ltr">T18</bdi>): ثلاث تجارب، وكلفتها نوع لا مبلغ</caption>
+<thead><tr><th scope="col">المكان</th><th scope="col">المتغيّر</th><th scope="col">الدرجة</th><th scope="col">الثقة والترتيب</th><th scope="col">التجربة (رموز)</th><th scope="col">الكلفة</th></tr></thead>
+<tbody><tr><th scope="row" data-label="المكان"><bdi dir="ltr">1</bdi></th><td data-label="المتغيّر">قلق المؤسس (<bdi dir="ltr">H6</bdi>)<br>«هل سيدفع العملاء هذا السعر؟»</td><td data-label="الدرجة">—</td><td data-label="الثقة والترتيب">— و—</td><td data-label="التجربة (رموز)"><code>worry.smallest_test</code><br><code>worry.founder_sets_the_line</code><br><code>worry.ask_an_expert</code></td><td data-label="الكلفة">وقت المؤسس</td></tr>
+<tr><th scope="row" data-label="المكان"><bdi dir="ltr">2</bdi></th><td data-label="المتغيّر">السعر (P)</td><td data-label="الدرجة"><bdi dir="ltr">4</bdi></td><td data-label="الثقة والترتيب"><bdi dir="ltr">3</bdi> و<bdi dir="ltr">1</bdi></td><td data-label="التجربة (رموز)"><code>price.willingness_to_pay</code><br><code>price.accepting_share</code><br><code>price.test_second_price</code></td><td data-label="الكلفة">وقت المؤسس</td></tr>
+<tr><th scope="row" data-label="المكان"><bdi dir="ltr">3</bdi></th><td data-label="المتغيّر">المبيعات</td><td data-label="الدرجة"><bdi dir="ltr">3</bdi></td><td data-label="الثقة والترتيب"><bdi dir="ltr">3</bdi> و<bdi dir="ltr">2</bdi></td><td data-label="التجربة (رموز)"><code>sales.paid_preorders</code><br><code>sales.preorders_against_month_one</code><br><code>sales.revise_forecast</code></td><td data-label="الكلفة">مبلغ نقدي صغير</td></tr></tbody>
+</table>
+</article>
 </section>
 <section id="assumptions" aria-labelledby="assumptions-title">
 <h2 id="assumptions-title">افتراضات المحرّك</h2>
@@ -318,7 +711,12 @@ h1{font-size:1.6rem}
 <tr><th scope="row" data-label="الافتراض">معامل سعر الاختراق فوق الحدّ الأدنى</th><td data-label="القيمة">× <bdi dir="ltr">1.1</bdi></td><td data-label="الحالة">افتراض، الثقة متوسطة، غير مؤكَّد</td></tr>
 <tr><th scope="row" data-label="الافتراض">أدنى نسبة مقبولة بين LTV وCAC</th><td data-label="القيمة"><bdi dir="ltr">3</bdi></td><td data-label="الحالة">افتراض، الثقة متوسطة، غير مؤكَّد</td></tr>
 <tr><th scope="row" data-label="الافتراض">صدمات تكلفة المستورد في اختبار العملة</th><td data-label="القيمة"><bdi dir="ltr">-20%</bdi>، <bdi dir="ltr">-10%</bdi>، <bdi dir="ltr">10%</bdi>، <bdi dir="ltr">20%</bdi></td><td data-label="الحالة">افتراض، الثقة متوسطة، غير مؤكَّد</td></tr>
-<tr><th scope="row" data-label="الافتراض">مدى حركة كل متغيّر في مخطط الحساسية</th><td data-label="القيمة"><bdi dir="ltr">20%</bdi></td><td data-label="الحالة">افتراض، الثقة متوسطة، غير مؤكَّد</td></tr></tbody>
+<tr><th scope="row" data-label="الافتراض">مدى حركة كل متغيّر في مخطط الحساسية</th><td data-label="القيمة"><bdi dir="ltr">20%</bdi></td><td data-label="الحالة">افتراض، الثقة متوسطة، غير مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الافتراض">نافذة الجدوى للتعادل والاسترداد</th><td data-label="القيمة"><bdi dir="ltr">36</bdi> شهرًا</td><td data-label="الحالة">افتراض، الثقة متوسطة، غير مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الافتراض">خط الدرجة للقرار «امضِ»</th><td data-label="القيمة"><bdi dir="ltr">75%</bdi></td><td data-label="الحالة">افتراض، الثقة متوسطة، غير مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الافتراض">حاجب التمويل: احتياج التمويل أكثر من هذا المضاعف لأقصى رأس مال</th><td data-label="القيمة">× <bdi dir="ltr">2</bdi></td><td data-label="الحالة">افتراض، الثقة متوسطة، غير مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الافتراض">خط الثقة الإجمالية العالية</th><td data-label="القيمة"><bdi dir="ltr">75%</bdi></td><td data-label="الحالة">افتراض، الثقة متوسطة، غير مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الافتراض">خط الثقة الإجمالية المتوسطة</th><td data-label="القيمة"><bdi dir="ltr">50%</bdi></td><td data-label="الحالة">افتراض، الثقة متوسطة، غير مؤكَّد</td></tr></tbody>
 </table>
 </section>
 </main>

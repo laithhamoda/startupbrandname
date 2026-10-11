@@ -2019,17 +2019,16 @@
       { "code": "staff_unset", "questionId": "E8", "state": "missing" },
       { "code": "growth_estimated", "questionId": "F6.2", "state": "missing" },
       { "code": "legal_form_assumed_sole", "questionId": "G1", "state": "unknown" },
-      { "code": "financing_unset", "questionId": "H3", "state": "missing" },
       { "code": "worry_unset", "questionId": "H6", "state": "missing" }
     ],
     "outsideFinancing": {
-      "confidence": "low",
+      "confidence": "high",
       "inputs": [
         { "id": "H3", "kind": "answer" }
       ],
-      "source": "assumption",
-      "validated": false,
-      "value": null
+      "source": "user",
+      "validated": true,
+      "value": false
     },
     "paymentOption": {
       "confidence": "high",
@@ -3158,7 +3157,6 @@
       { "code": "staff_unset", "questionId": "E8", "state": "missing" },
       { "code": "growth_estimated", "questionId": "F6.2", "state": "missing" },
       { "code": "legal_form_assumed_sole", "questionId": "G1", "state": "unknown" },
-      { "code": "financing_unset", "questionId": "H3", "state": "missing" },
       { "code": "worry_unset", "questionId": "H6", "state": "missing" },
       { "code": "inflation_not_applied" }
     ],
@@ -5020,7 +5018,51 @@
     ]
   },
   "verdict": {
-    "blockers": [],
+    "blockers": [
+      {
+        "code": "funding_need_above_capital_multiple",
+        "confidence": "low",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "growth.founder_share", "kind": "default" },
+          { "id": "growth.upper_bound_yearly", "kind": "default" },
+          { "id": "growth.year3_share_of_year2", "kind": "default" },
+          { "id": "T9.growth_estimate", "kind": "rule" },
+          { "id": "seasonality.peak_factor", "kind": "default" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "F1", "kind": "answer" },
+          { "id": "T9.revenue", "kind": "rule" },
+          { "id": "F7", "kind": "answer" },
+          { "id": "payment.instalments", "kind": "default" },
+          { "id": "T9.cash_receipts", "kind": "rule" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "T9.cogs", "kind": "rule" },
+          { "id": "F4", "kind": "answer" },
+          { "id": "E8", "kind": "answer" },
+          { "id": "F4.1", "kind": "answer" },
+          { "id": "T9.operating_costs", "kind": "rule" },
+          { "id": "fixture.jo.sole.profit_tax", "kind": "country_pack_item" },
+          { "id": "G1", "kind": "answer" },
+          { "id": "T9.gross_profit", "kind": "rule" },
+          { "id": "T9.operating_profit", "kind": "rule" },
+          { "id": "T9.tax_due", "kind": "rule" },
+          { "id": "T9.tax_paid", "kind": "rule" },
+          { "id": "T9.net_cash", "kind": "rule" },
+          { "id": "F5", "kind": "answer" },
+          { "id": "T9.cumulative_cash", "kind": "rule" },
+          { "id": "T9.funding_need", "kind": "rule" },
+          { "id": "A5", "kind": "answer" },
+          { "id": "H3", "kind": "answer" },
+          { "id": "verdict.funding_multiple", "kind": "default" },
+          { "id": "verdict.blocker.funding_need_above_capital_multiple", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false
+      }
+    ],
     "holdBacks": ["score_below_line"],
     "verdict": {
       "confidence": "low",
@@ -5088,11 +5130,14 @@
         { "id": "T8.break_even_units", "kind": "rule" },
         { "id": "feasibility.break_even_units_within_capacity", "kind": "rule" },
         { "id": "feasibility.score", "kind": "rule" },
+        { "id": "H3", "kind": "answer" },
+        { "id": "verdict.funding_multiple", "kind": "default" },
+        { "id": "verdict.blocker.funding_need_above_capital_multiple", "kind": "rule" },
         { "id": "verdict.verdict", "kind": "rule" }
       ],
       "source": "assumption",
       "validated": false,
-      "value": "revise"
+      "value": "stop"
     }
   }
 }

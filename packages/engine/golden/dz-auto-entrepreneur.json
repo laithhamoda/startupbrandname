@@ -1409,18 +1409,16 @@
     "notes": [
       { "code": "staff_unset", "questionId": "E8", "state": "missing" },
       { "code": "seasonality_unset", "questionId": "D7", "state": "unknown" },
-      { "code": "capacity_unlimited", "questionId": "E7", "state": "missing" },
-      { "code": "financing_unset", "questionId": "H3", "state": "missing" },
-      { "code": "worry_unset", "questionId": "H6", "state": "missing" }
+      { "code": "capacity_unlimited", "questionId": "E7", "state": "missing" }
     ],
     "outsideFinancing": {
-      "confidence": "low",
+      "confidence": "high",
       "inputs": [
         { "id": "H3", "kind": "answer" }
       ],
-      "source": "assumption",
-      "validated": false,
-      "value": null
+      "source": "user",
+      "validated": true,
+      "value": false
     },
     "paymentOption": {
       "confidence": "high",
@@ -1505,13 +1503,13 @@
       "value": { "currency": "DZD", "minor": "80000" }
     },
     "worry": {
-      "confidence": "low",
+      "confidence": "high",
       "inputs": [
         { "id": "H6", "kind": "answer" }
       ],
-      "source": "assumption",
-      "validated": false,
-      "value": null
+      "source": "user",
+      "validated": true,
+      "value": "هل يستمر الطلب على الأكل المنزلي خارج المناسبات؟"
     },
     "yearlyGrowth": {
       "confidence": "low",
@@ -2529,8 +2527,6 @@
       { "code": "staff_unset", "questionId": "E8", "state": "missing" },
       { "code": "seasonality_unset", "questionId": "D7", "state": "unknown" },
       { "code": "capacity_unlimited", "questionId": "E7", "state": "missing" },
-      { "code": "financing_unset", "questionId": "H3", "state": "missing" },
-      { "code": "worry_unset", "questionId": "H6", "state": "missing" },
       { "code": "inflation_not_applied" }
     ],
     "operatingCosts": {
@@ -3959,6 +3955,27 @@
     ],
     "entries": [
       {
+        "confidence": null,
+        "costClass": "time",
+        "experiment": "worry",
+        "fallback": "worry.ask_an_expert",
+        "metric": "worry.smallest_test",
+        "rank": null,
+        "score": null,
+        "threshold": "worry.founder_sets_the_line",
+        "variable": "worry",
+        "worry": {
+          "confidence": "high",
+          "inputs": [
+            { "id": "H6", "kind": "answer" },
+            { "id": "T18.worry", "kind": "rule" }
+          ],
+          "source": "user",
+          "validated": true,
+          "value": "هل يستمر الطلب على الأكل المنزلي خارج المناسبات؟"
+        }
+      },
+      {
         "confidence": {
           "confidence": "medium",
           "inputs": [
@@ -4102,79 +4119,6 @@
         },
         "threshold": "price.accepting_share",
         "variable": "price",
-        "worry": null
-      },
-      {
-        "confidence": {
-          "confidence": "high",
-          "inputs": [
-            { "id": "F3", "kind": "answer" },
-            { "id": "T18.priority", "kind": "rule" }
-          ],
-          "source": "user",
-          "validated": true,
-          "value": 3
-        },
-        "costClass": "supplier_quote",
-        "experiment": "variable_cost",
-        "fallback": "variable_cost.second_supplier",
-        "metric": "variable_cost.supplier_quotes",
-        "rank": {
-          "confidence": "low",
-          "inputs": [
-            { "id": "F6", "kind": "answer" },
-            { "id": "D7", "kind": "answer" },
-            { "id": "E7", "kind": "answer" },
-            { "id": "F6.2", "kind": "answer" },
-            { "id": "T9.units", "kind": "rule" },
-            { "id": "F1", "kind": "answer" },
-            { "id": "T9.revenue", "kind": "rule" },
-            { "id": "F3", "kind": "answer" },
-            { "id": "T9.cogs", "kind": "rule" },
-            { "id": "T9.cogs_multiplier", "kind": "rule" },
-            { "id": "T9.gross_profit", "kind": "rule" },
-            { "id": "F4", "kind": "answer" },
-            { "id": "E8", "kind": "answer" },
-            { "id": "F4.1", "kind": "answer" },
-            { "id": "T9.operating_costs", "kind": "rule" },
-            { "id": "T9.operating_profit", "kind": "rule" },
-            { "id": "scenario.tornado_swing", "kind": "default" },
-            { "id": "T10.tornado", "kind": "rule" },
-            { "id": "T18.priority", "kind": "rule" }
-          ],
-          "source": "assumption",
-          "validated": false,
-          "value": 3
-        },
-        "score": {
-          "confidence": "low",
-          "inputs": [
-            { "id": "F3", "kind": "answer" },
-            { "id": "T18.priority", "kind": "rule" },
-            { "id": "F6", "kind": "answer" },
-            { "id": "D7", "kind": "answer" },
-            { "id": "E7", "kind": "answer" },
-            { "id": "F6.2", "kind": "answer" },
-            { "id": "T9.units", "kind": "rule" },
-            { "id": "F1", "kind": "answer" },
-            { "id": "T9.revenue", "kind": "rule" },
-            { "id": "T9.cogs", "kind": "rule" },
-            { "id": "T9.cogs_multiplier", "kind": "rule" },
-            { "id": "T9.gross_profit", "kind": "rule" },
-            { "id": "F4", "kind": "answer" },
-            { "id": "E8", "kind": "answer" },
-            { "id": "F4.1", "kind": "answer" },
-            { "id": "T9.operating_costs", "kind": "rule" },
-            { "id": "T9.operating_profit", "kind": "rule" },
-            { "id": "scenario.tornado_swing", "kind": "default" },
-            { "id": "T10.tornado", "kind": "rule" }
-          ],
-          "source": "assumption",
-          "validated": false,
-          "value": 2
-        },
-        "threshold": "variable_cost.quotes_within_estimate",
-        "variable": "vc",
         "worry": null
       }
     ]
