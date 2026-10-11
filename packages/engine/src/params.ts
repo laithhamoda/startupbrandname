@@ -55,6 +55,11 @@ export const PARAM_KEYS = {
   ltvCacMinimum: 'unit_economics.ltv_cac_minimum',
   fxShocks: 'fx.cogs_shocks',
   tornadoSwing: 'scenario.tornado_swing',
+  feasibilityWindowMonths: 'feasibility.window_months',
+  goScoreLine: 'verdict.go_score_line',
+  fundingBlockerMultiple: 'verdict.funding_multiple',
+  confidenceHighLine: 'confidence.high_line',
+  confidenceMediumLine: 'confidence.medium_line',
 } as const;
 
 /**
@@ -104,6 +109,23 @@ export interface EngineParams {
    * rate above 0 and at most 1.
    */
   readonly tornadoSwing: Figure<Rate>;
+  /**
+   * The number of months the feasibility criteria and the blocker of the verdict allow for the
+   * break-even and the payback (D-227, D-247): 36 by default. When the projection is shorter, the
+   * criteria read the projection's length instead. Unit: months.
+   */
+  readonly feasibilityWindowMonths: Figure<number>;
+  /** The share of evaluated criteria that must pass for a `go` (D-227). Default 3/4. */
+  readonly goScoreLine: Figure<Rate>;
+  /**
+   * The funding need that stops a project without outside financing, as a multiple of the
+   * largest capital of A5 (D-227). Default 2.
+   */
+  readonly fundingBlockerMultiple: Figure<Rate>;
+  /** The share of pivotal figures at medium or high confidence that makes overall confidence high (D-229). Default 3/4. */
+  readonly confidenceHighLine: Figure<Rate>;
+  /** The share that makes overall confidence at least medium (D-229). Default 1/2. */
+  readonly confidenceMediumLine: Figure<Rate>;
 }
 
 /**
@@ -155,6 +177,11 @@ function defaultParams(): EngineParams {
       rate('0.2'),
     ]),
     tornadoSwing: defaultFigure(PARAM_KEYS.tornadoSwing, rate('0.2')),
+    feasibilityWindowMonths: defaultFigure(PARAM_KEYS.feasibilityWindowMonths, 36),
+    goScoreLine: defaultFigure(PARAM_KEYS.goScoreLine, makeRate(3n, 4n)),
+    fundingBlockerMultiple: defaultFigure(PARAM_KEYS.fundingBlockerMultiple, makeRate(2n, 1n)),
+    confidenceHighLine: defaultFigure(PARAM_KEYS.confidenceHighLine, makeRate(3n, 4n)),
+    confidenceMediumLine: defaultFigure(PARAM_KEYS.confidenceMediumLine, makeRate(1n, 2n)),
   };
 }
 
@@ -294,6 +321,28 @@ function validate(params: EngineParams): void {
     params.conservativeLaunchDelayMonths.value,
     0,
   );
+  requireMonths(PARAM_KEYS.feasibilityWindowMonths, params.feasibilityWindowMonths.value, 1);
+  for (const [key, figure] of [
+    [PARAM_KEYS.goScoreLine, params.goScoreLine],
+    [PARAM_KEYS.fundingBlockerMultiple, params.fundingBlockerMultiple],
+    [PARAM_KEYS.confidenceHighLine, params.confidenceHighLine],
+    [PARAM_KEYS.confidenceMediumLine, params.confidenceMediumLine],
+  ] as const) {
+    requireRate(key, figure.value);
+    requirePositive(key, figure.value);
+  }
+  for (const [key, figure] of [
+    [PARAM_KEYS.goScoreLine, params.goScoreLine],
+    [PARAM_KEYS.confidenceHighLine, params.confidenceHighLine],
+    [PARAM_KEYS.confidenceMediumLine, params.confidenceMediumLine],
+  ] as const) {
+    requireShare(key, figure.value);
+  }
+  ensure(
+    compareRates(params.confidenceMediumLine.value, params.confidenceHighLine.value) <= 0,
+    PARAM_KEYS.confidenceMediumLine,
+    'must not be above the high confidence line',
+  );
 }
 
 /**
@@ -369,5 +418,10 @@ export function listEngineParams(params: EngineParams): readonly Figure<unknown>
     params.ltvCacMinimum,
     params.fxShocks,
     params.tornadoSwing,
+    params.feasibilityWindowMonths,
+    params.goScoreLine,
+    params.fundingBlockerMultiple,
+    params.confidenceHighLine,
+    params.confidenceMediumLine,
   ];
 }

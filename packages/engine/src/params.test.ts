@@ -39,6 +39,19 @@ describe('documented defaults', () => {
     expect(p.tornadoSwing.value).toEqual(parseRate('0.2')); // SPEC T10, D-217
   });
 
+  it('has the thresholds of the verdict as named assumptions (D-227, D-229, D-247)', () => {
+    expect(p.feasibilityWindowMonths.value).toBe(36);
+    expect(p.goScoreLine.value).toEqual(makeRate(3n, 4n));
+    expect(p.fundingBlockerMultiple.value).toEqual(makeRate(2n, 1n));
+    expect(p.confidenceHighLine.value).toEqual(makeRate(3n, 4n));
+    expect(p.confidenceMediumLine.value).toEqual(makeRate(1n, 2n));
+    expect(PARAM_KEYS.feasibilityWindowMonths).toBe('feasibility.window_months');
+    expect(PARAM_KEYS.goScoreLine).toBe('verdict.go_score_line');
+    expect(PARAM_KEYS.fundingBlockerMultiple).toBe('verdict.funding_multiple');
+    expect(PARAM_KEYS.confidenceHighLine).toBe('confidence.high_line');
+    expect(PARAM_KEYS.confidenceMediumLine).toBe('confidence.medium_line');
+  });
+
   it('times the cash of each F7 option (D-187)', () => {
     const t = p.paymentTiming;
     expect(t.cash.value).toEqual([{ delayMonths: 0, share: ONE_RATE }]);
@@ -138,6 +151,18 @@ describe('overrides', () => {
     expect(createEngineParams({ fxShocks: shocks }).fxShocks).toBe(shocks);
   });
 
+  it('accepts other thresholds for the verdict', () => {
+    const params = createEngineParams({
+      feasibilityWindowMonths: defaultFigure('w', 24),
+      goScoreLine: defaultFigure('g', makeRate(4n, 5n)),
+      fundingBlockerMultiple: defaultFigure('m', makeRate(3n, 2n)),
+      confidenceHighLine: defaultFigure('h', ONE_RATE),
+      confidenceMediumLine: defaultFigure('m', ONE_RATE),
+    });
+    expect(params.goScoreLine.value).toEqual(makeRate(4n, 5n));
+    expect(params.confidenceMediumLine.value).toEqual(ONE_RATE);
+  });
+
   it('accepts a longer horizon and mild deflation', () => {
     expect(createEngineParams({ horizonMonths: defaultFigure('h', 60) }).horizonMonths.value).toBe(
       60,
@@ -191,6 +216,26 @@ describe('overrides', () => {
       { fxShocks: defaultFigure('f', [{ num: 2n, den: 4n }]) },
     ],
     ['a zero tornado swing', { tornadoSwing: defaultFigure('t', ZERO_RATE) }],
+    ['a zero feasibility window', { feasibilityWindowMonths: defaultFigure('w', 0) }],
+    ['a fractional feasibility window', { feasibilityWindowMonths: defaultFigure('w', 6.5) }],
+    ['a feasibility window beyond 120', { feasibilityWindowMonths: defaultFigure('w', 121) }],
+    ['a zero go line', { goScoreLine: defaultFigure('g', ZERO_RATE) }],
+    ['a go line above 100%', { goScoreLine: defaultFigure('g', parseRate('1.01')) }],
+    ['a zero funding multiple', { fundingBlockerMultiple: defaultFigure('m', ZERO_RATE) }],
+    [
+      'a negative funding multiple',
+      { fundingBlockerMultiple: defaultFigure('m', parseRate('-2')) },
+    ],
+    ['a zero high confidence line', { confidenceHighLine: defaultFigure('c', ZERO_RATE) }],
+    [
+      'a high confidence line above 100%',
+      { confidenceHighLine: defaultFigure('c', parseRate('2')) },
+    ],
+    ['a zero medium confidence line', { confidenceMediumLine: defaultFigure('c', ZERO_RATE) }],
+    [
+      'a medium confidence line above the high one',
+      { confidenceMediumLine: defaultFigure('c', parseRate('0.8')) },
+    ],
     ['a tornado swing above 100%', { tornadoSwing: defaultFigure('t', parseRate('1.1')) }],
     ['a negative launch delay', { conservativeLaunchDelayMonths: defaultFigure('d', -1) }],
     ['a fractional launch delay', { conservativeLaunchDelayMonths: defaultFigure('d', 1.5) }],

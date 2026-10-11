@@ -1289,6 +1289,51 @@
       "source": "assumption",
       "validated": false,
       "value": "1/5"
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "feasibility.window_months", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": 36
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "verdict.go_score_line", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": "3/4"
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "verdict.funding_multiple", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": "2/1"
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "confidence.high_line", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": "3/4"
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "confidence.medium_line", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": "1/2"
     }
   ],
   "pricing": {
