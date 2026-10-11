@@ -106,18 +106,24 @@ describe('the blockers', () => {
   });
 
   it('holds the blocker exactly when the criterion fails, for any window and horizon', () => {
+    const never = { F6: real({ month1: 100, month6: 100, month12: 100 }) };
     const ramp = { F6: real({ month1: 0, month6: 400, month12: 400 }) };
-    for (const window of [1, 3, 4, 36]) {
-      for (const horizon of [12, 36]) {
-        const run = withAnswers(
-          ramp,
-          { horizonMonths: defaultFigure('engine.horizon_months', horizon) },
-          { feasibilityWindowMonths: defaultFigure('feasibility.window_months', window) },
-        );
-        const criterion = run.feasibility.criteria.find(
-          (item) => item.id === 'break_even_within_window',
-        );
-        expect(codes(run).includes('no_break_even_in_window')).toBe(criterion?.status === 'fail');
+    for (const answers of [ramp, never]) {
+      for (const window of [1, 3, 4, 36]) {
+        for (const horizon of [12, 36]) {
+          const run = withAnswers(
+            answers,
+            {},
+            {
+              horizonMonths: defaultFigure('engine.horizon_months', horizon),
+              feasibilityWindowMonths: defaultFigure('feasibility.window_months', window),
+            },
+          );
+          const criterion = run.feasibility.criteria.find(
+            (item) => item.id === 'break_even_within_window',
+          );
+          expect(codes(run).includes('no_break_even_in_window')).toBe(criterion?.status === 'fail');
+        }
       }
     }
   });
