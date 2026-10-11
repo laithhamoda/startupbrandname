@@ -98,7 +98,7 @@ describe.each(GOLDEN_PROJECTS)('golden project $name', (golden) => {
   });
 
   it('is run by the version of the engine that wrote the file', () => {
-    expect(run.engineVersion).toBe('1.0.0');
+    expect(run.engineVersion).toBe('1.1.0');
   });
 });
 

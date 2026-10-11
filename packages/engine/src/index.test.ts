@@ -6,7 +6,7 @@ describe('ENGINE_VERSION', () => {
     expect(ENGINE_VERSION).toMatch(/^\d+\.\d+\.\d+$/);
   });
 
-  it('is 1.0.0 now that the engine of M4 is complete (D-221)', () => {
-    expect(ENGINE_VERSION).toBe('1.0.0');
+  it('is 1.1.0 now that the verdict, confidence and validation plan are in (D-246)', () => {
+    expect(ENGINE_VERSION).toBe('1.1.0');
   });
 });

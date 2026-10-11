@@ -52,6 +52,7 @@ export {
   defaultFigure,
   figureFromAnswer,
   makeFigure,
+  missingProvenance,
   type Figure,
   type FigureConfidence,
   type FigureSource,
@@ -92,6 +93,7 @@ export {
   type UnitCurve,
 } from './sales-curve';
 export {
+  FINANCING_SOURCES,
   PRICE_FROM_D4_RULE,
   engineInputFrom,
   type CapitalRange,
@@ -186,5 +188,49 @@ export {
   type TornadoRow,
   type TornadoVariable,
 } from './scenarios';
+export {
+  CRITERION_IDS,
+  FEASIBILITY_RULES,
+  feasibility,
+  feasibilityCriteria,
+  scoreCriteria,
+  type Criterion,
+  type CriterionId,
+  type CriterionStatus,
+  type Feasibility,
+  type FeasibilityNote,
+  type NotEvaluatedReason,
+} from './feasibility';
+export {
+  CONFIDENCE_RULES,
+  PIVOTAL_IDS,
+  overallConfidence,
+  type OverallConfidence,
+  type PivotalFigure,
+  type PivotalId,
+} from './confidence';
+export {
+  VERDICT_RULES,
+  blockersOf,
+  verdictOf,
+  type Blocker,
+  type BlockerCode,
+  type HoldBack,
+  type Verdict,
+  type VerdictResult,
+} from './verdict';
+export {
+  EXPERIMENT_LIBRARY,
+  PLAN_SIZE,
+  T18_RULES,
+  validationPlan,
+  type ConfidenceScore,
+  type CostClass,
+  type Experiment,
+  type ExperimentKey,
+  type PlanCandidate,
+  type ValidationEntry,
+  type ValidationPlan,
+} from './validation-plan';
 export { mergeAlerts, runEngine, type EngineRun, type EngineRunResult, type RunAlert } from './run';
 export { canonicalJson, serialiseRun } from './serialise';
