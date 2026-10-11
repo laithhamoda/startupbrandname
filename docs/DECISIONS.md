@@ -41,13 +41,13 @@ A decision may sit under several topics. A new decision joins its topics in the 
 - **Diagnostic and question bank:** D-072, D-102, D-104, D-105, D-106, D-108, D-110 to D-119, D-129,
   D-149, D-156 to D-161, D-163, D-165, D-167, D-182, D-183, D-197 to D-199, D-231, D-232.
 - **Calculation engine:** D-178 to D-190, D-193 to D-196, D-200 to D-224, D-227 to D-230,
-  D-238.
-- **Report, canvases and PDF (M5):** D-225 to D-242.
+  D-238, D-244.
+- **Report, canvases and PDF (M5):** D-225 to D-245.
 - **AI and cost:** D-062, D-071, D-072, D-073, D-082, D-103, D-107, D-119 to D-124, D-143, D-146 to
   D-152, D-155, D-183, D-191, D-226.
 - **Privacy, consent and security:** D-013, D-016, D-040, D-041, D-061, D-062, D-074, D-077,
   D-082, D-085, D-092, D-098, D-103, D-107, D-126, D-130, D-137, D-138, D-142, D-144 to D-149,
-  D-153, D-154, D-175, D-232, D-234, D-235.
+  D-153, D-154, D-175, D-232, D-234, D-235, D-244, D-245.
 - **Legal:** D-059, D-066, D-068, D-082, D-086, D-137, D-145, D-147, D-154, D-186, D-233.
 - **Design and accessibility:** D-007, D-008, D-049 to D-053, D-055 to D-058, D-099, D-118, D-128,
   D-131, D-158, D-159, D-161, D-162, D-170, D-231.
@@ -1528,4 +1528,96 @@ The owner approved all recommendations offered before the M2 plan.
   stays acceptable until step 6 removes it because it serves a literal fixture and nothing else
   (open question #96).
 - **Reason:** D-235 and CLAUDE.md §5: the function or the worker is decided by a measurement.
+- **Status:** Active
+
+### D-243 (2026-10-12): The tables for tax rules, country packs and reports
+
+- **Decision:** One migration, `20261012000000_m5_foundations.sql`, adds three tables with row
+  level security on and explicit grants. `tax_rules` has one row per rule and maps to the
+  engine's `TaxRule` one to one: `country_code`, `legal_form` (`sole` or `company`), `regime`,
+  `levy`, `kind` (`tax` or `social_contribution`), `basis` (`turnover`, `profit` or `fixed`), `rate`,
+  `brackets`, `fixed_amount`, `min_amount` (`minimum`), `ceiling` (`turnoverCeiling`), `currency`,
+  `payment_month` (1 to 12), `effective_from`, `source_url`, `last_verified` and `status`. A rate is
+  the exact fraction `n/d` as text, never negative, `d` above 0 (`1/20` is 5%), not a float and not a
+  percentage. No engine function parses this text (`parseRate` reads decimals): the code that reads a
+  row splits it at the slash and builds the `Rate` with `makeRate(BigInt(n), BigInt(d))`. `brackets` is a jsonb array of `{"up_to": "<minor units as text>" or null, "rate":
+"n/d"}`, rising, with the last one open, checked by `private.tax_brackets_valid()`. Amounts are
+  `bigint` minor units, never negative; the code that reads a row turns them into `Money` with
+  `moneyFromSafeMinor`, which refuses a value a JavaScript number cannot hold. The shape checks
+  repeat `validateTaxRule`: a `fixed` basis has only its amount, any other basis has no amount and
+  exactly one of a rate and brackets, and a `verified` row has `last_verified`. A rule is unique by
+  country, legal form, regime, levy and effective date. `status` has four values (`verified`,
+  `unverified`, `under_review`, `stale`) while the engine knows two: the reader maps the last three to
+  `unverified`, so their figures stay external and low confidence, and the report shows the
+  rule 8 label for anything not verified or older than 90 days. `source_url` must be `https` with a
+  plain host and no login. `country_pack_items` has `country_code`, a dotted lowercase `key`, a
+  `value` of at most 16 KB, `source_url`, `source_domain` (which must equal the host of `source_url`,
+  so the allowed-domain check of M8 reads a stored, checked value), `last_verified` and the same four
+  statuses, unique by country and key. `reports` has the project (deleted with it), `kind`, `locale`,
+  `audience` (null allowed), `input_hash`, `engine_version`, `pdf_path` and `pdf_bytes`. Signed-in
+  users may read `tax_rules` and `country_pack_items` and nothing else on them; no role writes them,
+  so they are filled by a migration (step 4) or the admin (M7, M8). Visitors read nothing. No row is
+  seeded here.
+- **Reason:** D-216 asked for a typed contract for the table now, D-233 and D-234; CLAUDE.md rules 6,
+  8 and 9. The database is the last guard before a wrong tax reaches a report, so it refuses the same
+  malformed rules the engine refuses.
+- **Status:** Active
+
+### D-244 (2026-10-12): Recording engine runs and reports, and the private bucket
+
+- **Decision:** `record_engine_run(project, tool, input_hash, output, engine_version)` is a security
+  definer function for a signed-in owner. It writes a `tool_runs` row with no model, no prompt
+  version, zero tokens and zero cost, and returns the id of the existing row for the same project,
+  tool, hash and engine version (D-238). A partial unique index `tool_runs_engine_run_key` (where
+  `engine_version` is not null) makes this exact under concurrent calls (`ON CONFLICT DO NOTHING`);
+  it is an expand-only addition, because no existing row has an engine version. The function refuses
+  the model tool `review_text` (model rows are written by `record_ai_run()` only), a tool name that
+  is not a plain identifier, a hash that is not a sha256, a malformed engine version and an output
+  over 64 KB (D-238's output is a compact summary). The writes are bounded in the function, not left
+  to the app: a project keeps the newest five runs of each tool (older ones are recomputable and are
+  deleted as a new one is written, which brings the purge of D-238 forward for engine rows) and at
+  most twelve different engine tools (SQLSTATE 54000), counted under a per-project advisory lock so a
+  loop of calls cannot fill `tool_runs`. `record_report(report_id, project, kind, locale,
+audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer for the owner of
+  the project and requires `pdf_path` to be exactly `{auth.uid()}/{project}/{report_id}.pdf`; a
+  blank audience is stored as none. It also refuses a report once the user has recorded
+  `report.pdf_per_day` of them in the UTC day (SQLSTATE 54000, counted under a per-user advisory
+  lock; a missing or non-positive setting refuses all), so the database bounds the rows and, through
+  the insert policy below, the files. The full-report entitlement is not checked there: the app
+  checks it before it renders (step 6, M7). The app makes the report id, records the report, then
+  uploads the file with the user's own session; a row whose upload failed has no file, and the
+  reader treats it as absent. `reports` is read by its owner and written by no role. The private bucket `reports`
+  (10 MB, PDFs only) has owner-only policies on `storage.objects`: read and delete where the first
+  folder is the user's id, insert only for the exact file that a report of the user's names (`reports.pdf_path`
+  under one of their projects), so a file cannot exist without a recorded report, and no update (a PDF is written once under a new id). The bucket and
+  its policies are created in a `DO` block that checks `to_regclass('storage.objects')`: the CI
+  stacks that run the migrations without the Storage API have no such table and skip it, the hosted
+  projects and a full local stack get it all. The pgTAP file tests the bucket and policies only where
+  the table exists and says so when it skips them. The `settings` row `report.pdf_per_day` is 10;
+  step 6 also counts the PDFs rendered in `usage_counters`. Deleting a project or account removes the rows; the
+  files are removed through the Storage API (D-234).
+- **Reason:** D-234 and D-238; CLAUDE.md rules 4, 6 and 7. One path format that the table, the
+  function and the policies all check means a user cannot point a row or a file at someone else's
+  folder.
+- **Status:** Active
+
+### D-245 (2026-10-12): The entitlement module and the full-report preview list
+
+- **Decision:** `apps/web/src/lib/entitlements.ts` has `accessFor({ email, planId }, { previewEmails })`,
+  which returns the plan, its entitlements from `config/plans.ts` and `fullReportPreview`. A missing
+  plan is `free`, which is every account until M7; no code names another plan (a test reads the
+  source). `reportAccess(gate, access)` maps the completeness gate to what the page shows: `none`
+  for the gate `none`, `summary` for the gate `summary`, and at the gate `full` either `full` (the
+  plan's full-report quota is not `none`, or the address is on the preview list) or `summary_locked`;
+  a plan without the one-page summary gets `none`. A count quota (the weekly plan's one report) counts
+  as included until M7 enforces the count with payments. `FULL_REPORT_PREVIEW_EMAILS` is a
+  server-only comma-separated list, trimmed, lower-cased and without repeats, at most 20 valid
+  addresses, empty by default; one malformed address makes the whole list empty (nobody previews) and
+  `getPreviewEmails()` returns `valid: false`, so its caller logs `report.preview_list_invalid`. The
+  variable is read through that getter and is not in `serverEnvSchema`, so a typo in this temporary
+  variable cannot take every page down (`getServerEnv()` parses the schema on every request). The comparison is on the whole address, ignoring case.
+  The address is the one sign-in proved (an emailed code or Google). The preview changes nothing
+  else: the plan stays `free`, with its project limit. The owner sets the variable on Vercel, and it
+  is removed with M7 (the variable, its getter, its documentation and `fullReportPreview`).
+- **Reason:** D-232; CLAUDE.md §3 (entitlements are table-driven) and rule 6.
 - **Status:** Active

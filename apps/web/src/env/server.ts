@@ -4,6 +4,30 @@ import { z } from 'zod';
 /** Accepts exactly "true" or "false". `z.coerce.boolean()` would turn "false" into true. */
 export const booleanFlag = z.enum(['true', 'false']).transform((value) => value === 'true');
 
+/**
+ * A comma-separated list of email addresses: trimmed, lower-cased, without blanks or repeats. Empty
+ * means none. One malformed address fails the whole variable, so a typo is never read as "nobody".
+ */
+export const emailList = z
+  .string()
+  .max(2000)
+  .transform((value) => [
+    ...new Set(
+      value
+        .split(',')
+        .map((email) => email.trim().toLowerCase())
+        .filter((email) => email !== ''),
+    ),
+  ])
+  .pipe(z.array(z.email().max(254)).max(20));
+
+/**
+ * The accounts that see the full report before paid plans exist (D-232, D-245): the owner's address
+ * while the report is built. Read through `getPreviewEmails()`, not through `serverEnvSchema`, so a
+ * typo in this temporary variable cannot take every page down (D-245). Remove it with M7.
+ */
+export const previewEmailsSchema = emailList.default([]);
+
 /** Server-only variables. Importing this module from a Client Component fails the build. */
 export const serverEnvSchema = z.object({
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
@@ -33,4 +57,21 @@ export type ServerEnv = z.infer<typeof serverEnvSchema>;
 
 export function getServerEnv(): ServerEnv {
   return serverEnvSchema.parse(process.env);
+}
+
+export interface PreviewEmails {
+  readonly emails: readonly string[];
+  /** False when `FULL_REPORT_PREVIEW_EMAILS` is malformed: the list is then empty, so the caller logs it. */
+  readonly valid: boolean;
+}
+
+/**
+ * `FULL_REPORT_PREVIEW_EMAILS` as a list. One malformed address makes the whole list empty and
+ * `valid` false: nobody previews, and the rest of the site keeps working.
+ */
+export function getPreviewEmails(
+  raw: string | undefined = process.env.FULL_REPORT_PREVIEW_EMAILS,
+): PreviewEmails {
+  const parsed = previewEmailsSchema.safeParse(raw);
+  return parsed.success ? { emails: parsed.data, valid: true } : { emails: [], valid: false };
 }

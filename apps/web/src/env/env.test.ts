@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { clientEnvSchema } from './client';
-import { booleanFlag, serverEnvSchema } from './server';
+import { booleanFlag, emailList, getPreviewEmails, serverEnvSchema } from './server';
 
 const validClient = {
   NEXT_PUBLIC_SUPABASE_URL: 'https://abc.supabase.co',
@@ -47,7 +47,38 @@ describe('booleanFlag', () => {
   });
 });
 
+describe('emailList', () => {
+  it('trims, lower-cases and drops blanks and repeats', () => {
+    expect(emailList.parse(' Owner@Example.com ,, owner@example.com,second@example.org ')).toEqual([
+      'owner@example.com',
+      'second@example.org',
+    ]);
+  });
+
+  it('reads an empty value as nobody', () => {
+    expect(emailList.parse('')).toEqual([]);
+    expect(emailList.parse(' , ')).toEqual([]);
+  });
+
+  it('rejects the whole list when one address is malformed', () => {
+    expect(() => emailList.parse('owner@example.com,not-an-email')).toThrow();
+  });
+
+  it('rejects more than 20 addresses', () => {
+    const many = Array.from({ length: 21 }, (_, index) => `user${String(index)}@example.com`).join(
+      ',',
+    );
+    expect(() => emailList.parse(many)).toThrow();
+  });
+});
+
 describe('serverEnvSchema', () => {
+  it('does not read the preview allow-list in the schema, so a typo cannot fail every page (D-245)', () => {
+    expect(serverEnvSchema.parse({ FULL_REPORT_PREVIEW_EMAILS: 'owner@' })).not.toHaveProperty(
+      'FULL_REPORT_PREVIEW_EMAILS',
+    );
+  });
+
   it('keeps the Algeria market open when the flag is unset (D-068)', () => {
     expect(serverEnvSchema.parse({}).MARKET_DZ_ENABLED).toBe(true);
   });
@@ -78,5 +109,27 @@ describe('serverEnvSchema', () => {
     expect(serverEnvSchema.parse({ AI_PROVIDER: 'fake' }).AI_PROVIDER).toBe('fake');
     expect(() => serverEnvSchema.parse({ AI_PROVIDER: 'openai' })).toThrow();
     expect(serverEnvSchema.parse({}).ANTHROPIC_API_KEY).toBeUndefined();
+  });
+});
+
+describe('getPreviewEmails', () => {
+  it('lets nobody preview the full report by default (D-245)', () => {
+    expect(getPreviewEmails(undefined)).toEqual({ emails: [], valid: true });
+    expect(getPreviewEmails('')).toEqual({ emails: [], valid: true });
+  });
+
+  it('reads the allow-list as lower-case addresses', () => {
+    expect(getPreviewEmails('Owner@Example.com')).toEqual({
+      emails: ['owner@example.com'],
+      valid: true,
+    });
+  });
+
+  it('fails closed on a malformed list: nobody previews, and the caller is told', () => {
+    expect(getPreviewEmails('owner@example.com; other@example.com')).toEqual({
+      emails: [],
+      valid: false,
+    });
+    expect(getPreviewEmails('owner@')).toEqual({ emails: [], valid: false });
   });
 });
