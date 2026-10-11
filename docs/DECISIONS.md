@@ -37,18 +37,20 @@ A decision may sit under several topics. A new decision joins its topics in the 
 - **Auth and accounts:** D-018, D-034, D-059, D-061, D-065, D-074, D-077, D-078, D-079, D-084,
   D-085, D-086, D-087, D-089, D-129, D-131, D-163, D-168, D-174.
 - **Markets, countries and languages:** D-026, D-063, D-066, D-067, D-068, D-069, D-070, D-075,
-  D-080, D-081, D-088, D-129, D-180, D-186.
+  D-080, D-081, D-088, D-129, D-180, D-186, D-233, D-236.
 - **Diagnostic and question bank:** D-072, D-102, D-104, D-105, D-106, D-108, D-110 to D-119, D-129,
-  D-149, D-156 to D-161, D-163, D-165, D-167, D-182, D-183, D-197 to D-199.
-- **Calculation engine:** D-178 to D-190, D-193 to D-196, D-200 to D-224.
+  D-149, D-156 to D-161, D-163, D-165, D-167, D-182, D-183, D-197 to D-199, D-231, D-232.
+- **Calculation engine:** D-178 to D-190, D-193 to D-196, D-200 to D-224, D-227 to D-230,
+  D-238.
+- **Report, canvases and PDF (M5):** D-225 to D-238.
 - **AI and cost:** D-062, D-071, D-072, D-073, D-082, D-103, D-107, D-119 to D-124, D-143, D-146 to
-  D-152, D-155, D-183, D-191.
+  D-152, D-155, D-183, D-191, D-226.
 - **Privacy, consent and security:** D-013, D-016, D-040, D-041, D-061, D-062, D-074, D-077,
   D-082, D-085, D-092, D-098, D-103, D-107, D-126, D-130, D-137, D-138, D-142, D-144 to D-149,
-  D-153, D-154, D-175.
-- **Legal:** D-059, D-066, D-068, D-082, D-086, D-137, D-145, D-147, D-154, D-186.
+  D-153, D-154, D-175, D-232, D-234, D-235.
+- **Legal:** D-059, D-066, D-068, D-082, D-086, D-137, D-145, D-147, D-154, D-186, D-233.
 - **Design and accessibility:** D-007, D-008, D-049 to D-053, D-055 to D-058, D-099, D-118, D-128,
-  D-131, D-158, D-159, D-161, D-162, D-170.
+  D-131, D-158, D-159, D-161, D-162, D-170, D-231.
 - **Public site and SEO:** D-027, D-054, D-076, D-090 to D-098, D-100, D-101, D-153.
 - **Performance:** D-054, D-150, D-151, D-167 to D-171.
 - **CI and repository:** D-001 to D-007, D-012 to D-016, D-020, D-023 to D-025, D-028, D-030 to
@@ -1197,4 +1199,210 @@ The owner approved all recommendations offered before the M2 plan.
   `listEngineParams` after `fx.cogs_shocks`.
 - **Reason:** Keeping the fixtures next to the code they test keeps the coverage gate honest, and
   keeping them out of the public surface keeps M5 from depending on them.
+- **Status:** Active
+
+### D-225 (2026-10-11): The M5 plan and its order
+
+- **Decision:** M5 is built in eight steps, in this order, each a pull request reviewed
+  independently and merged after the six checks and CodeQL, under the merge rule the owner gives for
+  M5: (0) the PDF spike, which decides a Vercel function or a render worker; (1) data foundations
+  (`tax_rules`, `country_pack_items`, `reports`, the `reports` bucket, an engine-run recorder,
+  entitlement checks); (2) the verdict, confidence and T18 logic in the engine (1.1.0); (3) the
+  canvases T1 and T2; (4) country data and T17; (5) the summary and the report on screen; (6) the PDF;
+  (7) AI wording and the English pass. The owner approves four print pages as an HTML mock before step 5. The working plan is `docs/M5-PLAN.md`.
+- **Reason:** CLAUDE.md §8.1 and §9; the owner's approval on 2026-10-11 (the plan page, four answers
+  and three clarifications). The spike comes first because CLAUDE.md §5 requires Arabic PDF rendering
+  to be proven before anything is built around it; the canvases come before the country data so that
+  the owner can use a screen early.
+- **Status:** Active
+
+### D-226 (2026-10-11): Deterministic first, AI wording last, and the number guard
+
+- **Decision:** Every M5 output (canvases, summary, report, PDF) is complete without AI, because an
+  account without the cross-border consent keeps every non-AI feature (D-062). AI only rewrites
+  wording, in step 7, from computed numbers it is given, for paying users with consent and quota; the
+  free summary uses deterministic text. A number guard (`guardNumbers`) compares every numeric token of
+  a model reply, in Western or Arabic-Indic digits, with the numbers that were sent; one extra number
+  rejects the reply and the deterministic text is used. Replies are cached in `tool_runs` by input
+  hash, rendered as text only, and the founder's text enters a prompt as quoted data.
+- **Reason:** CLAUDE.md rules 1, 4, 5 and 9; D-062.
+- **Status:** Active
+
+### D-227 (2026-10-11): The feasibility score and the verdict
+
+- **Decision:** The engine adds `feasibility` and `verdict`. The score is the share of applicable
+  criteria that pass, each of equal weight: unit margin above zero; break-even within 36 months;
+  break-even within the patience of H5; break-even within the runway of A7 (as the T8 alert reads
+  it, D-190); funding need within the capital of A5; set-up costs within A5; price not below the T7
+  floor; LTV/CAC of at least 3 (subscriptions only); break-even in the conservative scenario; payback
+  within 36 months; break-even units within E7. A criterion whose inputs are missing is left out, and
+  the report shows how many were evaluated. Blockers: unit margin of zero or less; no break-even
+  within 36 months in the base case; a funding need above twice the largest capital of A5 when H3
+  names no outside source (loan, investor, grant or competition). `go` needs a score of 75% or more,
+  no blocker and a project confidence (D-229) of medium or high; `stop` is any blocker; `revise` is
+  everything else. The thresholds (75%, 2, 36) are engine parameters, labelled assumptions. The score
+  is not a probability of success, and the report says so. Wording: امضِ / عدّل / توقّف, where توقّف
+  is always «غير قابل للتنفيذ بصيغته الحالية» with three changes (D-228); in English Go / Revise / Stop
+  and "Not viable in its current form" (#74: the owner may change it).
+- **Reason:** The owner's decision of 2026-10-11 (fixed rules, a 75% line, suggested changes),
+  CLAUDE.md §3 and rule 1. The criteria are the T8 and T10 alerts read as pass or fail, so the
+  verdict adds no second source of truth. Resolves #55 (the verdict).
+- **Status:** Active
+
+### D-228 (2026-10-11): The changes that would change the verdict
+
+- **Decision:** `suggestChanges` in `packages/engine/src/changes.ts` searches, deterministically and
+  within a budget of engine evaluations (a parameter), for changes of the founder's own numbers that
+  remove the blockers and, where it can, lift the score to the threshold. Levers: price (first up to
+  the largest competitor price of D4; above it only as a premium that needs a measurable difference
+  under T7's rule R5, shown as a prompt to strengthen the value and not as a number), variable cost
+  (down to half), fixed cost as D-182 defines it (down to half), sales (up to double) and set-up costs
+  (down to half). It tries single levers by bisection to a rounded value, then pairs of levers, and
+  returns the three smallest relative changes for `stop` and up to three for `revise`; each has the new
+  value, the relative change, and the resulting score and verdict. When fewer than three changes work
+  inside the bounds for `stop`, the remaining places are the largest drivers of the tornado, listed as
+  "rethink these" without target values. Every number comes from the engine. It runs on demand and is
+  cached by input hash, not inside `runEngine`.
+- **Reason:** CLAUDE.md §3 (exactly three changes for stop); the owner's decision that a suggested
+  price must fit market basics and otherwise the value must change.
+- **Status:** Active
+
+### D-229 (2026-10-11): Overall confidence, the three numbers and the risks
+
+- **Decision:** Overall confidence is the share of five pivotal figures (price F1, variable cost F3,
+  fixed costs F4, set-up F5, sales F6) whose confidence is medium or high: 75% or more is high, 50% or
+  more is medium, below that is low. The three numbers of the executive summary are the funding need,
+  the break-even month and the operating profit of year 1 before tax. The three risks are taken in this
+  order: blockers, then warnings (by the tornado rank of the variable they concern), then notes, then
+  the least confident pivotal figures, and the founder's own worry (H6) when the list is short; each is
+  a template sentence with the numbers of the alert. Low-confidence pivotal numbers render highlighted
+  with «هذا الرقم افتراض، اختبره قبل أن تبني عليه قراراً.»
+- **Reason:** CLAUDE.md rules 2 and 9; SPEC §6. Resolves #55 (confidence and the three numbers).
+- **Status:** Active
+
+### D-230 (2026-10-11): The validation plan T18
+
+- **Decision:** The assumptions are the four tornado variables (price, variable cost, sales, fixed
+  costs). Confidence maps low 1, medium 2, high 3 from the answers behind each; the score is
+  (4 − confidence) × (5 − rank), rank 1 being the most sensitive, so low confidence and high
+  sensitivity score highest. The founder's own biggest worry (H6) takes the first place when it is
+  answered; the other places go to the highest scores (ties by rank, then the order P, VC, sales,
+  fixed costs), three in all. Each experiment comes from a fixed library keyed by variable, with a
+  metric, a success threshold, a fallback and a cost described in words (your time, a small amount of
+  cash, a supplier quote), never an invented amount. Thresholds are protocol defaults, shown as such
+  and editable by the founder. The engine returns the plan data; the wording is deterministic until
+  step 7.
+- **Reason:** SPEC §5 (T18) and §1 (H6 first); CLAUDE.md rule 9. Resolves #53.
+- **Status:** Active
+
+### D-231 (2026-10-11): The canvases and two-way binding
+
+- **Decision:** `packages/report/src/canvas/` holds the map from answers to blocks and pure
+  builders. Business Model Canvas: customer segments from C1, C2 and B3; value propositions from B1,
+  B2, D5 and C3; channels from C7, E1 and D1; customer relationships from the new follow-up C7.1;
+  revenue streams from F1, F2 and F7; key resources from E3, A3 and E6; key activities from E2 and E1;
+  key partners from E5, E4 and A4; cost structure from F3, F4, F4.1, F5 and E8 with the engine's totals.
+  Lean Canvas: problem from B2 and B4 (existing alternatives from D3); customer segments from C2 and
+  B3; unique value proposition from B1 and D5; solution from B1 and E1; channels from C7 and D1; revenue
+  streams from F1, F2 and F7; cost structure as above; key metrics from H2 and H1; unfair advantage
+  from B8. A cell shows one chip per source answer or line item, each with its provenance mark and a
+  link to its question. Editing a chip uses the diagnostic's own editor and save action, so the
+  answer stays the single source (rule 3), and the run is recomputed by input hash (rule 4). A cell
+  with no answer shows an empty state with its reason, never invented text. The geometry is D-051; on
+  a phone the cells stack in filling order. C7.1 is a draft question for the owner's review (#86).
+- **Reason:** SPEC §5 (T1, T2); CLAUDE.md rules 2, 3, 4 and 9; D-051.
+- **Status:** Active
+
+### D-232 (2026-10-11): Entitlements before payments, the full-report gate and server-side locks
+
+- **Decision:** `lib/entitlements.ts` reads `config/plans.ts`, and no code branches on a plan name.
+  Until M7 every account is `free`; the server-only variable `FULL_REPORT_PREVIEW_EMAILS` lists the
+  owner's address so that the full report can be built and seen, and it is removed with M7. The full
+  report needs a completeness of 80% or more and F1, F3, F4, F5 and F6 (F8 is satisfied by the
+  project's currency, D-111); `FULL_REPORT_QUESTIONS` gains F6. Locked sections are decided on the
+  server: for an account without the entitlement the page receives the section titles only, so the
+  locked values are in neither the HTML nor the RSC payload, and a test proves it.
+- **Reason:** CLAUDE.md §3 (entitlements) and rule 6; SPEC §3. Resolves #42.
+- **Status:** Active
+
+### D-233 (2026-10-11): Country packs, T17 and the tax information policy
+
+- **Decision:** Country data is collected from official sources only, from an allowed-domain list kept
+  in `settings` (government portals and official agencies such as anae.dz). Each `country_pack_items`
+  row has `source_url`, `last_verified` and a status (`verified`, `unverified` or `under_review`); an
+  item older than 90 days, or not verified, renders with «تحقّق من المصدر الرسمي» (rule 8). A
+  `tax_rules` row is stored only when its rule was read on an official page; otherwise none is stored
+  and the report says the tax was not calculated (the engine already refuses to guess, D-211). Every
+  report shows the official tax authority link for the user's country where one is known, and a line
+  that recommends a tax adviser there; for a country with no pack it shows that line without a link,
+  never an invented one. T17 for Jordan decides the food and cosmetics approvals from the sector D2,
+  not from B7 (#39). For Algeria it shows the auto-entrepreneur path and the commercial register path
+  with their conditions, asks the founder to confirm the activity on the official ANAE list instead of
+  deciding eligibility, and takes the goods-import signal from D6 (#40). Reading tax law with AI, and
+  answering a user's questions by verbatim quotation with the link, is a later feature that comes with
+  the mentor (M6): it needs consent and quota, and no number written by a model enters a report
+  (rules 1, 8 and 9).
+- **Reason:** The owner's decision of 2026-10-11 (official links and an adviser, AI reading of the law
+  after M5), CLAUDE.md rules 1, 8 and 9, SPEC §7. Resolves #39 and #40.
+- **Status:** Active
+
+### D-234 (2026-10-11): Reports, storage, retention and deletion
+
+- **Decision:** A `reports` row records the project, the kind (summary or full), the locale, the
+  audience (H8), the input hash, the engine version, the path and the size. PDFs live in a private
+  bucket `reports` at `{user_id}/{project_id}/{report_id}.pdf` with owner-only policies, are served by
+  short-lived signed URLs, and follow the project's retention (CLAUDE.md §3). Account deletion removes
+  the files through the Storage API with the user's own session before the database deletion, because
+  deleting rows does not delete files; the retention job of M9 must do the same with the service role.
+  The PDF carries the project title, never a name or an email. A daily limit per user (a `settings`
+  row, counted in `usage_counters`) bounds the cost.
+- **Reason:** CLAUDE.md rules 6 and 7; privacy by design.
+- **Status:** Active
+
+### D-235 (2026-10-11): PDF rendering and its hardening
+
+- **Decision:** The PDF is made by headless Chromium behind a launcher abstraction in
+  `packages/report`, from the same `ReportModel` as the screen. Step 0 measures it on Vercel (Hobby
+  today, Pro before M7, D-021) and decides between a Vercel function and a separate render worker; a
+  worker is a new processor, so it needs the owner's approval and an entry in the processing register
+  before it is built. Wherever it runs: the HTML is built from escaped text only, JavaScript is off,
+  every network request is aborted, the fonts (Cairo, Tajawal) are embedded, the content security
+  policy is `default-src 'none'`, and the PDF is tagged with an outline if the renderer supports it.
+  Tests extract the PDF text in CI against the pinned Playwright image.
+- **Reason:** CLAUDE.md §5 (validate Arabic shaping and bidi in M5 week 1; propose a worker before
+  building around limits) and rule 7; the founder's text must never run as markup.
+- **Status:** Active
+
+### D-236 (2026-10-11): The scope of the M5 report
+
+- **Decision:** The report has the sections SPEC §6 marks ● and a sources list (Appendix B), in
+  Arabic first and in English in step 7 (D-067). It uses tables and no charts (SPEC: the chart is v2).
+  There is one template whose opening and first number depend on the audience in H8 (investor, bank,
+  grant body, course or self); the full variants are v2. T6, the competitor matrix, is deferred to v2
+  (resolves #4). The word «فائدة» is banned only in financing text when G7 is yes, and stays allowed
+  in its everyday sense (resolves #56).
+- **Reason:** SPEC §5 and §6; the owner's decision of 2026-10-11 (English inside M5, in the last step).
+- **Status:** Active
+
+### D-237 (2026-10-11): M5 quality gates
+
+- **Decision:** `@sbn/report` has coverage thresholds (statements and lines 95%, branches 90%,
+  functions 95%); the engine keeps its gates. The golden `ReportModel` of each golden project is a
+  file under the `UPDATE_GOLDEN` rule of D-222. PDF tests extract text, fonts and pages in CI. The leak
+  test of D-232, the accessibility checks and the RTL and phone snapshots cover every new screen.
+  Every change that can alter an output raises `ENGINE_VERSION` (D-221).
+- **Reason:** CLAUDE.md rule 11 and §9.
+- **Status:** Active
+
+### D-238 (2026-10-11): Recording engine runs
+
+- **Decision:** A new database function `record_engine_run` (security definer, with an ownership
+  check, like `record_ai_run`) writes a `tool_runs` row for an engine tool. Its `output` is a compact
+  JSON-safe summary: the engine version, the verdict, the score and criteria, the headline numbers as
+  decimal strings, the alert codes and the cached changes of D-228. The full run is not stored: it is
+  about 100 KB and has no parser (D-219), so it is recomputed from the answers when it is needed. The
+  input hash covers the answers with their provenance, the tax context, the parameters and
+  `ENGINE_VERSION`, so a changed answer, rule or engine makes a new row (rule 4). Rows older than the
+  newest five of a project and tool are purged by the retention job of M9.
+- **Reason:** CLAUDE.md rule 4; D-219; `record_tool_run` was dropped (D-191).
 - **Status:** Active
