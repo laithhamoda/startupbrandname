@@ -38,7 +38,7 @@ export function buildPrintCss(locale: PrintLocale): string {
   --ink:${t.ink};--muted:${t.muted};--rule:${t.rule};--paper:${t.paper};--wash:${t.wash};
 }
 @page{size:A4 portrait;margin:24mm 18mm 22mm}
-@page ${WIDE_PAGE_NAME}{size:A4 landscape;margin:22mm 14mm 20mm}
+@page ${WIDE_PAGE_NAME}{size:A4 landscape;margin:22mm 18mm 20mm}
 *,*::before,*::after{box-sizing:border-box}
 html{-webkit-print-color-adjust:exact;print-color-adjust:exact;font-kerning:normal;text-rendering:geometricPrecision}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:'Tajawal','Cairo',sans-serif;font-weight:400;font-size:11pt;line-height:${lineHeight};overflow-wrap:anywhere;text-align:start}

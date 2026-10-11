@@ -22,6 +22,15 @@ describe('buildPrintCss', () => {
       expect(css).toContain(`@page ${WIDE_PAGE_NAME}{size:A4 landscape;`);
       expect(css).toContain(`section.${WIDE_PAGE_NAME}{page:${WIDE_PAGE_NAME}}`);
     });
+
+    it(`gives both page types the side margin of the running header (${locale})`, () => {
+      // The header and footer templates have one inset for every page (18mm, template.ts), so the
+      // landscape page needs the same side margin or its table edge would not line up with them.
+      expect(css).toMatch(/@page\{size:A4 portrait;margin:\d+mm 18mm \d+mm\}/);
+      expect(css).toMatch(
+        new RegExp(`@page ${WIDE_PAGE_NAME}\\{size:A4 landscape;margin:\\d+mm 18mm \\d+mm\\}`),
+      );
+    });
   }
 
   it('builds the colours from the brand tokens', () => {
