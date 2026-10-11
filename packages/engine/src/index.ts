@@ -114,6 +114,7 @@ export {
 } from './input';
 export {
   T9_RULES,
+  firstProfitableMonth,
   projectOperatingLines,
   type OperatingProjection,
   type ProjectionLine,
@@ -175,3 +176,5 @@ export {
   type CashFlowNote,
   type OkCashFlow,
 } from './cash-flow';
+export { FX_RULES, fxTest, type FxShockResult, type FxTest } from './fx-test';
+export { analyseCash, type CashAnalysis } from './cash';
