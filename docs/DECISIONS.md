@@ -41,8 +41,8 @@ A decision may sit under several topics. A new decision joins its topics in the 
 - **Diagnostic and question bank:** D-072, D-102, D-104, D-105, D-106, D-108, D-110 to D-119, D-129,
   D-149, D-156 to D-161, D-163, D-165, D-167, D-182, D-183, D-197 to D-199, D-231, D-232.
 - **Calculation engine:** D-178 to D-190, D-193 to D-196, D-200 to D-224, D-227 to D-230,
-  D-238, D-244.
-- **Report, canvases and PDF (M5):** D-225 to D-245.
+  D-238, D-244, D-246 to D-248.
+- **Report, canvases and PDF (M5):** D-225 to D-248.
 - **AI and cost:** D-062, D-071, D-072, D-073, D-082, D-103, D-107, D-119 to D-124, D-143, D-146 to
   D-152, D-155, D-183, D-191, D-226.
 - **Privacy, consent and security:** D-013, D-016, D-040, D-041, D-061, D-062, D-074, D-077,
@@ -1620,4 +1620,113 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   else: the plan stays `free`, with its project limit. The owner sets the variable on Vercel, and it
   is removed with M7 (the variable, its getter, its documentation and `fullReportPreview`).
 - **Reason:** D-232; CLAUDE.md §3 (entitlements are table-driven) and rule 6.
+- **Status:** Active
+
+### D-246 (2026-10-12): M5 step 2 is built in two pull requests
+
+- **Decision:** The verdict in the engine (M5 step 2) is built in two pull requests. 2a: the
+  feasibility score and the verdict (D-227), overall confidence (D-229), the validation plan T18
+  (D-230), the funding input H3 and the founder worry H6 in the adapter, `ENGINE_VERSION` 1.1.0, the
+  golden files, the owner review page, and F6 in `FULL_REPORT_QUESTIONS` (D-232). 2b: the changes
+  that would change the verdict (D-228, `suggestChanges` in `changes.ts`). 2a returns codes and
+  numbers only; the wording of the verdict, the blockers and the experiments is the report's work
+  (step 5). `runEngine` gains `feasibility`, `confidence`, `verdict` and `validationPlan`, all cheap
+  and without search. 2b does not touch `runEngine` (D-228 runs on demand and is cached by input
+  hash), so it needs a new `ENGINE_VERSION` only if it changes a field of the run.
+- **Reason:** D-228 is a bounded search that reruns the engine many times, with its own budget,
+  tests and cache; the score, the blockers and the verdict are the part the owner reviews first and
+  the part the report needs for the executive summary. Two smaller pull requests are reviewed and
+  merged faster than one large one.
+- **Status:** Active
+
+### D-247 (2026-10-12): How step 2a reads the verdict decisions
+
+- **Decision:** The readings below fill gaps in D-227, D-229 and D-230; each is a small change.
+  **H3 and H6.** The adapter reads H3 (a multi-choice of `self`, `family`, `loan`, `investor`,
+  `grant`, `competition`) into `outsideFinancing`: true when it names a loan, an investor, a grant or
+  a competition prize, false when it names only savings and family. A missing or «لا أعرف» H3 is
+  `null`, an unvalidated low-confidence assumption with the note `financing_unset`, and a `null`
+  never triggers the funding blocker, so a project is not stopped over an unanswered question. An H3
+  the question bank cannot produce (an unknown option, an empty list, a repeated option or an
+  `other` text) stops the run with `invalid_value`, like G1 and D6. H6 is read into `worry`, the raw
+  text as typed; missing, «لا أعرف» or blank is `null` with the note `worry_unset`.
+  **The criteria**, in this order, each with an id, a status (`pass`, `fail`, `not_evaluated`) and as
+  provenance the answers, defaults and rule it used: `margin_positive`, `break_even_within_window`,
+  `break_even_within_target` (H5), `break_even_within_runway` (A7), `funding_within_capital`,
+  `setup_within_capital`, `price_above_floor`, `ltv_cac_at_minimum`, `conservative_break_even`,
+  `payback_within_window`, `break_even_units_within_capacity`. Each reads a result the engine
+  already has (T8, T7, the cash flow, the scenarios), so the criteria and the alerts cannot
+  disagree (a property test proves it). The window is `feasibility.window_months` (36) or the
+  projection's length when that is shorter. H5 and A7 are read as the T8 alerts read them (D-190): a
+  break-even after the bucket's upper bound fails, none within a horizon that reaches the bound
+  fails, "more than" passes because no month can break it, an unset answer is not evaluated, and a
+  bound beyond a shorter projection is not evaluated (`beyond_projection`); a margin of zero or less
+  has no break-even at all, so it fails both limits unless the limit is unset. The funding need and
+  the set-up costs are compared with the largest amount of A5, in the project currency only (the
+  adapter leaves A5 unset otherwise). `price_above_floor` is not evaluated without a floor (no units
+  in year 1). `ltv_cac_at_minimum` is for subscriptions only: it is not evaluated without one, with
+  an unset churn (`input_missing`), with a zero churn or no customers or marketing
+  (`not_applicable`) or while T8 is blocked. `payback_within_window` needs F5: a payback of 0 passes
+  and "not within 36 months" fails. `break_even_units_within_capacity` is not evaluated without E7
+  and fails while T8 is blocked. The score is `passed / evaluated` as an exact rate; with nothing
+  evaluated there is no score and the note `no_criterion_evaluated`.
+  **The comparisons are exact integers**: the go line is `passed x denominator >= evaluated x
+numerator` of `verdict.go_score_line` (3/4, so `passed x 4 >= evaluated x 3`); the funding blocker
+  is `funding need x denominator > largest capital x numerator` of `verdict.funding_multiple` (2), so
+  exactly twice the capital is not a blocker and one minor unit more is; the confidence lines compare
+  `sound / 5` with `compareRates`. **The blockers**: a margin of zero or less; no break-even within
+  the window in the base case, checked only while the margin is positive (a margin of zero or less
+  already stops the project, and reporting "no break-even" as well would say the same thing twice); a
+  funding need above the multiple of the largest capital when `outsideFinancing` is false. **The
+  verdict** carries `holdBacks` for a project that is not `go` (`score_below_line`, `no_score`,
+  `confidence_low`), and its figure has the combined provenance of its inputs, which makes it an
+  assumption because the thresholds are. **Overall confidence** counts a pivotal figure whose answer
+  is missing (F5 unknown) as not sound; a picked range keeps its stored confidence (only its source
+  becomes an assumption, D-157). **T18.** The confidence of a variable is that of the answer behind
+  it (price F1, variable cost F3, sales F6, fixed costs F4); the rank is the position in the tornado;
+  ties in the score are broken by rank, which already follows price, VC, sales, fixed costs when
+  swings are equal. The library is fixed, and each entry is codes plus a cost class: `price`
+  (`price.willingness_to_pay`, `price.accepting_share`, `price.test_second_price`, `time`),
+  `variable_cost` (`variable_cost.supplier_quotes`, `variable_cost.quotes_within_estimate`,
+  `variable_cost.second_supplier`, `supplier_quote`), `sales` (`sales.paid_preorders`,
+  `sales.preorders_against_month_one`, `sales.revise_forecast`, `small_cash`), `fixed_costs`
+  (`fixed_costs.written_quotes`, `fixed_costs.total_within_estimate`,
+  `fixed_costs.cut_or_postpone`, `supplier_quote`) and `worry` (`worry.smallest_test`,
+  `worry.founder_sets_the_line`, `worry.ask_an_expert`, `time`), listed as metric, threshold,
+  fallback, cost class. **The parameters** are `feasibility.window_months` (36),
+  `verdict.go_score_line` (3/4), `verdict.funding_multiple` (2), `confidence.high_line` (3/4) and
+  `confidence.medium_line` (1/2), assumptions listed by `listEngineParams`. **The samples.** The
+  three golden projects answer H3 (the subscription service: savings and an investor; the shop and
+  the auto-entrepreneur: savings and family), so their verdicts are revise (6 of 10), stop (6 of 10,
+  and a funding need of 12,900 against twice a capital of 6,000 with no outside source) and go (8 of
+  9). The review page shows four synthetic cases built on the flat vector (400 units at 10, VC 4,
+  fixed costs 1,000): good, borderline (7 of 10), negative margin and funding gap.
+- **Reason:** D-227, D-229 and D-230 fix the rules but not these edges; each reading keeps the
+  verdict from stopping a project over a missing answer (CLAUDE.md rule 9), from disagreeing with an
+  alert (D-190, D-210) and from using floating point (rule 1). OPEN-QUESTIONS #94 lists the ones the
+  owner may want to change.
+- **Status:** Active
+
+### D-248 (2026-10-12): What the property test found, and the files it added
+
+- **Decision:** `verdict.properties.test.ts` draws projects with a fixed seed and checks that a
+  higher price, a lower variable cost, lower fixed costs or higher sales (all three points of F6
+  multiplied by 1 to 5) never lower the score and never worsen the verdict, and that every alert of
+  T8 and T7 has its criterion failing. It found two limits, kept as example tests, so the claim is
+  stated with them: (1) with a late-paying customer (F7 credit, instalments or deposit) more sales
+  need more working capital, because the variable cost is paid before the cash arrives, so on a
+  thin margin the funding need rises with sales and a criterion, even the verdict, can get worse;
+  higher sales are therefore checked with cash on sale. (2) The curve between the points of F6 is
+  geometric and linear only when month 1 is zero (D-184, D-203), so raising month 1 from 0 to 1 can
+  lower months 2 to 5 sharply and move the break-even later; only a rise of the whole curve is
+  claimed. Both are what the engine's formulas say, not errors; the report should not promise that
+  more sales always help. The claim also starts from a positive contribution margin (selling more at
+  a loss loses more). `flat-vector.ts` (the engine's fixture vector) and `verdict-cases.ts` (the
+  four synthetic cases) are ordinary sources of the package, covered by its tests and not exported
+  from `index.ts`. The hand computations of the verdict live in `golden-projects.ts` next to the
+  headline rows (`DecisionRows`, `decisionAgreement`). The sentence of `docs/SPEC.md` section 3 that
+  lists F1, F3, F4 and F5 for the full report is not updated here (D-232 amends it); it is left to
+  the pull request that owns the SPEC.
+- **Reason:** CLAUDE.md rule 9 (do not promise what the numbers do not support) and D-222 (a
+  changed formula must show as a diff the owner can read).
 - **Status:** Active
