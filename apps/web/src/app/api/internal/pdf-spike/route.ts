@@ -1,3 +1,4 @@
+import { readFile } from 'node:fs/promises';
 import {
   PdfRenderError,
   buildSpikeFixture,
@@ -17,11 +18,30 @@ function isAvailable(): boolean {
   return process.env.VERCEL_ENV === 'preview' || process.env.NODE_ENV === 'development';
 }
 
+/** The peak memory of the whole container, Chromium included, where the platform shows it. */
+async function cgroupPeakMb(): Promise<string> {
+  for (const path of [
+    '/sys/fs/cgroup/memory.peak',
+    '/sys/fs/cgroup/memory/memory.max_usage_in_bytes',
+  ]) {
+    try {
+      const bytes = Number((await readFile(path, 'utf8')).trim());
+      if (Number.isFinite(bytes)) return String(Math.round(bytes / 1_048_576));
+    } catch {
+      // The file does not exist on every platform.
+    }
+  }
+  return 'n/a';
+}
+
 /**
  * The Arabic spike PDF, or the English one with ?locale=en, with what the lead measures in the
  * response headers: x-pdf-ms (the render), x-pdf-cold (this call started the browser, so it paid
  * the 1 to 3 seconds of a cold start), x-pdf-launch-ms, x-pdf-bytes, x-pdf-aborted (requests the
- * filter had to abort) and x-pdf-node-rss-mb (the Node process only, without Chromium).
+ * filter had to abort), x-pdf-node-rss-mb (the Node process only, without Chromium),
+ * x-pdf-cgroup-peak-mb (the whole container, when it is shown), x-pdf-region and x-pdf-node. A
+ * failure answers with its code and the first 400 characters of the message: this route only
+ * exists on a protected preview, and the message is what tells packaging from a real limit.
  */
 export async function GET(request: Request): Promise<Response> {
   if (!isAvailable()) return new Response('Not found', { status: 404 });
@@ -53,13 +73,16 @@ export async function GET(request: Request): Promise<Response> {
         'x-pdf-bytes': String(pdf.byteLength),
         'x-pdf-aborted': String(aborted),
         'x-pdf-node-rss-mb': String(Math.round(process.memoryUsage().rss / 1_048_576)),
+        'x-pdf-cgroup-peak-mb': await cgroupPeakMb(),
+        'x-pdf-region': process.env.VERCEL_REGION ?? 'local',
+        'x-pdf-node': process.version,
       },
     });
   } catch (error) {
     const code = error instanceof PdfRenderError ? error.code : 'unknown';
     await log.error('pdf_spike.failed', { code });
     return Response.json(
-      { error: code },
+      { error: code, detail: error instanceof Error ? error.message.slice(0, 400) : null },
       { status: 500, headers: { 'cache-control': 'no-store' } },
     );
   }
