@@ -17,7 +17,7 @@ export interface CashAnalysis {
 
 /**
  * Composes the tax engine, the cash flow and the FX test from an input the adapter accepted and
- * the projection made from it (SPEC §4 T9; D-186 to D-188, D-211 to D-214). `context` holds the
+ * the projection made from it (SPEC §4 T9; D-186 to D-188, D-211 to D-215). `context` holds the
  * tax rules and the VAT threshold the caller knows; without it no regime is calculated and the
  * cash flow is before tax, with a note. Pure and deterministic. Throws `currency_mismatch` if the
  * projection was made in another currency than the input.

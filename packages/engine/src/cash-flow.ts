@@ -38,7 +38,7 @@ export interface CashFlowNote {
     'receipts_after_horizon' | 'tax_after_horizon' | 'tax_not_calculated' | 'payment_assumed_cash';
 }
 
-/** The cash flow, funding need and payback of a project (SPEC §4 T9; D-187, D-188, D-212, D-213). */
+/** The cash flow, funding need and payback of a project (SPEC §4 T9; D-187, D-188, D-212, D-213, D-215). */
 export interface OkCashFlow {
   readonly status: 'ok';
   readonly currency: CurrencyCode;
@@ -69,7 +69,7 @@ export interface OkCashFlow {
   readonly fundingNeed: Figure<Money>;
   /**
    * Months, counted from month 1, until the cumulative cash is back at zero or above and stays
-   * there to the end of the horizon (D-188, D-213). Zero when it was never below zero; null for
+   * there to the end of the horizon (D-188, D-215). Zero when it was never below zero; null for
    * "not within 3 years".
    */
   readonly payback: Figure<number | null>;
@@ -119,14 +119,14 @@ function splitSale(sale: bigint, parts: readonly PaymentPart[]): bigint[] {
 }
 
 /**
- * The cash flow of a project, month by month (SPEC §4 T9; D-186 to D-188, D-212, D-213): for the
+ * The cash flow of a project, month by month (SPEC §4 T9; D-186 to D-188, D-212, D-213, D-215): for the
  * months 1 to the horizon, the cash received from sales (delayed as F7 says, `splitSale`), less
  * COGS and operating costs (paid in the month they arise) and the taxes of `tax` (paid in the
  * month the rules give, D-212). Cumulative cash starts from zero before month 0, where the set-up
  * costs (F5) are paid. Cash that arrives, and tax that falls due, after the last month is left out
  * and noted. From the cumulative cash: the funding need is the absolute value of its lowest point
  * (zero when it never goes below zero), and the payback is the month after the last month it was
- * below zero (D-188, D-213): zero when never below zero, null when it is still below zero in the
+ * below zero (D-188, D-215): zero when never below zero, null when it is still below zero in the
  * last month. Without F5 the result is `not_calculable`. Without a tax regime the cash flow has no
  * tax and says so (`taxIncluded` false). Every figure carries the provenance of what it used;
  * money stays in whole minor units and nothing is rounded here (D-179). Throws `currency_mismatch`

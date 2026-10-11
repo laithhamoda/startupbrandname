@@ -40,7 +40,7 @@ A decision may sit under several topics. A new decision joins its topics in the 
   D-080, D-081, D-088, D-129, D-180, D-186.
 - **Diagnostic and question bank:** D-072, D-102, D-104, D-105, D-106, D-108, D-110 to D-119, D-129,
   D-149, D-156 to D-161, D-163, D-165, D-167, D-182, D-183, D-197 to D-199.
-- **Calculation engine:** D-178 to D-190, D-193 to D-196, D-200 to D-210.
+- **Calculation engine:** D-178 to D-190, D-193 to D-196, D-200 to D-216.
 - **AI and cost:** D-062, D-071, D-072, D-073, D-082, D-103, D-107, D-119 to D-124, D-143, D-146 to
   D-152, D-155, D-183, D-191.
 - **Privacy, consent and security:** D-013, D-016, D-040, D-041, D-061, D-062, D-074, D-077,
@@ -898,4 +898,128 @@ The owner approved all recommendations offered before the M2 plan.
   evaluated. F5 and A5 are compared only in the same currency.
 - **Reason:** D-190 and SPEC §4: the report and the mentor branch on a code and word the sentence
   in the user's language, and an alert must never overstate what the answers prove.
+- **Status:** Active
+
+### D-211 (2026-10-11): The tax rule contract and how the regime is picked
+
+- **Decision:** `TaxRule` in `packages/engine/src/tax.ts` is the shape of the future `tax_rules` table
+  of M5: id, country code, legal form (`sole` or `company`), regime, levy (what is paid under the
+  regime, for example IFU or CASNOS), kind (`tax` or `social_contribution`), basis (`turnover`,
+  `profit` or `fixed`), a flat rate or marginal brackets (up to an amount, at a rate; the last is open)
+  or a fixed amount, a minimum, the regime's turnover ceiling, the payment month (1 to 12), the
+  currency, the date it takes effect, the source URL, the date it was last verified and a status
+  (`verified` or `unverified`). The engine holds no rate (CLAUDE.md rule 8): the caller passes the
+  rules in a `TaxContext` with an optional VAT registration threshold (a figure with its
+  provenance). A malformed rule stops the run with `invalid_param`. `taxDue` follows SPEC §4: a turnover
+  basis uses the year's turnover, a profit basis the larger of the profit and zero, a fixed basis its
+  amount; brackets are marginal and their parts are added exactly and rounded once, half away from
+  zero (D-179); the minimum applies whenever the rule has one, also to a year with no turnover or
+  profit. The regime comes from the country and G1: the rules of that country and legal form that
+  take effect on or before the run's reference date, a newer rule of the same levy replacing an older
+  one (two taking effect on the same day is a data error). G1 "not sure yet" or missing is the sole
+  proprietor, flagged by `legalFormAssumed` and the note `legal_form_assumed_sole` (unvalidated
+  low-confidence assumption); a G1 the question bank does not offer stops the run. No rule, rules of
+  several regimes (the engine does not choose) or rules in another currency than the project's (D-180)
+  give `not_calculated` with the reason, never a guessed tax, and the alert
+  `tax_regime_not_calculated`. Every tax figure is `external` and lists the rule as a
+  `country_pack_item`; it is validated with high confidence only when the rule is `verified`, so a
+  fixture or unverified rule shows (D-181). Three warnings, typed like D-210 but with the projection
+  year and the regime: `turnover_above_regime_ceiling` (a year's turnover strictly above the lowest
+  ceiling of the regime), `turnover_above_vat_threshold` (strictly above the caller's threshold) and
+  `tax_regime_not_calculated`. VAT itself is not calculated.
+- **Reason:** D-186 and CLAUDE.md rules 8 and 9. Keeping the regime and the levy apart keeps CASNOS and an
+  income tax apart and lets a new rule replace an old one without editing it. Choosing between
+  regimes belongs to T17 in M5, not to a guess here. Tests and the golden files use fixture rules
+  marked unverified, including the Algerian auto-entrepreneur values of SPEC §7 (0.5%, minimum
+  10,000 DZD, ceiling 5,000,000 DZD).
+- **Status:** Active
+
+### D-212 (2026-10-11): When tax is paid, and the tax of year 3
+
+- **Decision:** Tax accrues on each projection year (months 1 to 12 are year 1, not a calendar year,
+  D-184) from that year's turnover and operating profit before tax. A rule's payment month is a month
+  of the next projection year: the tax of year `y` is paid in projection month `12 x y + payment month`.
+  With the 36-month horizon the tax of year 3 falls in months 37 to 48. It is left out of the cash
+  flow, so it is in neither the funding need nor the payback; the cash flow reports it as
+  `taxAfterHorizon` and the note `tax_after_horizon`. When no regime could be calculated the cash flow
+  is made without tax, flagged by `taxIncluded: false` and the note `tax_not_calculated`, instead of
+  being not calculable: countries without verified rules (every country but Jordan and Algeria at
+  first, D-066) still get the funding need and the payback, before tax and saying so. A rule that
+  takes effect after the reference date is not applied to later years of the same run.
+- **Reason:** D-186 ("paid in the rule's month of the following year") and the projection of D-184,
+  whose years begin at month 1. Calendar-year tax periods would split every year of a run in two
+  and need the real tax calendar of each country, which M5 will bring with the rules.
+- **Status:** Active
+
+### D-213 (2026-10-11): The timing of cash receipts and payments
+
+- **Decision:** Set-up costs (F5) are paid in month 0, before month 1; COGS and operating costs are
+  paid in the month they arise (no supplier credit); receipts follow F7 with the timings of D-187
+  (cash in the month of the sale, credit the month after, three monthly instalments from the month
+  of the sale, a deposit of half and half). A sale is split over its parts so that they add to the
+  sale exactly: every part but the first gets its share rounded down, and the first gets the
+  remainder, so 1,000.000 JOD in three instalments is 333.334, 333.333 and 333.333, and a deposit of
+  1,001 fils is 501 and 500. This is a floor, not D-179's half-away rounding, because a split must
+  not create or lose a minor unit. Receipts after the last month are left out of the cumulative cash
+  and reported as `receiptsAfterHorizon` with the note `receipts_after_horizon`. An F7 that is missing
+  or not an option the engine knows is cash on sale, an unvalidated low-confidence assumption with
+  the note `payment_assumed_cash`. An F5 that is missing or «لا أعرف» makes the cash flow
+  `not_calculable` with the reason `setup_costs_unset` and the state (D-200 left this to this
+  decision); the projection, T8, the tax and the break-even and profit of the FX test stay available.
+- **Reason:** D-187 and D-200. Hiding the remainder in the last part would make the first instalment
+  smaller than the others, which is not what a founder invoicing the first part expects. Cash is the
+  least surprising reading of a missing F7, and the note makes the assumption visible.
+- **Status:** Active
+
+### D-214 (2026-10-11): The FX test
+
+- **Decision:** D6 reads into `foreignShare`: "yes" with a percent above 0 is that percent as an exact
+  rate; "no", "yes" with 0 percent, a missing or an unknown D6 gives none (the last two with the note
+  `foreign_exposure_unset`), and an answer the question bank cannot produce (a yes without a percent,
+  a percent outside 0 to 100) stops the run. With a share, `fxTest` makes the projection, the tax and
+  the cash flow again for each shock of the engine parameter `fx.cogs_shocks` (default -20%, -10%,
+  +10%, +20%; each at least -100%, at most ten). Shocked COGS is `COGS x (1 - share) + COGS x share x
+(1 + shock)`, which is COGS multiplied by `1 + share x shock`, on COGS only: fixed costs are not
+  shocked. The multiplier is applied together with the inflation of the year, so a monthly line is
+  rounded once; `projectOperatingLines` takes it as the option `cogsMultiplier` (an exact rate of 0 or
+  more, listed as the rule `T9.cogs_multiplier` in the inputs of COGS when it is not 1), which pull
+  request 6 uses for the variable-cost scenarios. Without the option, or at 1, every result and
+  provenance is what it was. For each shock the test reports the break-even month (the first month
+  with an operating profit of zero or more, one function shared with T8, D-207), the funding need
+  (null if the cash flow needs F5) and the operating profit before tax of year 1.
+- **Reason:** SPEC §4 T9 ("if D6 > 0: COGS at ±10% and ±20% FX") and the brief of this pull request.
+  Rounding once keeps the line independent of the order of the two factors, and the shocks are a
+  documented default like the T10 multipliers (CLAUDE.md rule 10).
+- **Status:** Active
+
+### D-215 (2026-10-11): The funding need and the payback
+
+- **Decision:** Cumulative cash starts at zero before month 0, so it is minus the set-up costs after
+  month 0 and the cash after tax of each month adds to it up to month 36. The funding need is the
+  absolute value of the lowest cumulative cash over months 0 to 36, and zero when it never goes below
+  zero; the first month with the lowest value is reported with it. The payback of D-188 is read as
+  the month after the last month, from 0 to 36, in which the cumulative cash is below zero: the
+  number of months counted from month 1 until the cash is back at zero or above _and stays there_
+  to the end of the 36 months. It is 0 when the cash was never below zero, and null, shown as "not
+  within 3 years", when it is still below zero in month 36. A recovery followed by a new loss does
+  not count: the project would need cash again, and the first time the sum touches zero would show a
+  payback sooner than the cash allows, which D-188 rejects.
+- **Reason:** D-188 and SPEC §4 T9. "Is back at zero or above" is ambiguous for a cash flow that
+  dips again (a tax paid in month 16 after the cash had recovered in month 10); the reading that
+  needs the cash to stay is the conservative one and is easy to explain.
+- **Status:** Active
+
+### D-216 (2026-10-11): The surface of the cash analysis
+
+- **Decision:** `analyseCash(input, projection, context, params)` returns the tax analysis, the cash
+  flow (ok, or not calculable for F5), the FX test (or null) and the tax alerts. The tax alerts are
+  their own type, `TaxAlert`, not members of D-210's `Alert`, because they carry a projection year,
+  a regime and a gap; the run function of pull request 6 merges the two lists. Each cash line is a
+  `ProjectionLine` (months 1 to 36 and the calendar columns); the cumulative cash is a figure with 37
+  entries, the entry at index `m` being the cash after month `m`. `ENGINE_VERSION` stays 0.1.0 until
+  pull request 6 sets 1.0.0. For M5, the `tax_rules` table of SPEC §8 needs, besides its listed
+  columns, the legal form, the levy, the kind, the brackets, the fixed amount, the payment month and
+  the status of `TaxRule`.
+- **Reason:** The same composition as `analyseEconomics` (D-190) keeps the run function a thin
+  caller, and a typed contract for the table now saves a migration later.
 - **Status:** Active
