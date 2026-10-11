@@ -4,11 +4,22 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./testing": "./src/testing/index.ts"
   },
   "scripts": {
     "lint": "eslint . --max-warnings=0",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run --coverage",
+    "pdf:png": "node scripts/pdf-png.mjs"
+  },
+  "dependencies": {
+    "@fontsource/cairo": "5.3.0",
+    "@fontsource/tajawal": "5.3.0",
+    "@sparticuz/chromium": "153.0.0",
+    "puppeteer-core": "25.11.0"
+  },
+  "devDependencies": {
+    "pdfjs-dist": "6.4.299"
   }
 }
