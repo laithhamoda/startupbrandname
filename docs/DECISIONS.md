@@ -1670,8 +1670,8 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   and "not within 36 months" fails. `break_even_units_within_capacity` is not evaluated without E7
   and fails while T8 is blocked. The score is `passed / evaluated` as an exact rate; with nothing
   evaluated there is no score and the note `no_criterion_evaluated`.
-  **The comparisons are exact integers**: the go line is `passed x denominator >= evaluated x
-numerator` of `verdict.go_score_line` (3/4, so `passed x 4 >= evaluated x 3`); the funding blocker
+  **The comparisons are exact integers**: the go line, from `verdict.go_score_line` (3/4), is
+  `passed x denominator >= evaluated x numerator`, so `passed x 4 >= evaluated x 3`; the funding blocker
   is `funding need x denominator > largest capital x numerator` of `verdict.funding_multiple` (2), so
   exactly twice the capital is not a blocker and one minor unit more is; the confidence lines compare
   `sound / 5` with `compareRates`. **The blockers**: a margin of zero or less; no break-even within
