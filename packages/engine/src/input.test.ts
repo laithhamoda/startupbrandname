@@ -557,14 +557,15 @@ describe('engineInputFrom: churn (F2.1), capital (A5), runway (A7) and break-eve
     expect(input.notes.some((note) => note.code === 'capital_unset')).toBe(false);
   });
 
-  it.each([[{ min: -1, max: 5, currency: 'JOD' }], [{ min: 1, max: Number.NaN, currency: 'JOD' }]])(
-    'refuses a capital range that is negative or unreadable: %j',
-    (range) => {
-      expect(reasonsOf({ ...basic(), A5: real(range) })).toEqual([
-        { code: 'invalid_value', questionId: 'A5', item: undefined },
-      ]);
-    },
-  );
+  it.each([
+    [{ min: -1, max: 5, currency: 'JOD' }],
+    [{ min: 1, max: Number.NaN, currency: 'JOD' }],
+    [{ min: 9000, max: 3000, currency: 'JOD' }],
+  ])('refuses a capital range that is negative, reversed or unreadable: %j', (range) => {
+    expect(reasonsOf({ ...basic(), A5: real(range) })).toEqual([
+      { code: 'invalid_value', questionId: 'A5', item: undefined },
+    ]);
+  });
 
   it.each([
     ['lt3', { kind: 'within', months: 3 }],

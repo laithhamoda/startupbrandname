@@ -224,8 +224,8 @@ export const PRICE_FROM_D4_RULE = 'F1.d4_median';
  * F4.1 counts as zero, F6.2 as the engine's estimate, E7 as no cap, E8 as no staff and D7 as no
  * season, each with a note (D-183, D-200). An unknown or missing F2.1 (asked only for a
  * subscription), A5, A7 or H5 is left unset with a note, and the alert that needs it is not
- * evaluated; an A5 in another currency is likewise left unset, never converted (D-190, D-206). An answer given as a picked range, or without stored
- * provenance, counts as an assumption. Money is converted from major to minor units here, once
+ * evaluated; an A5 in another currency is likewise left unset, never converted (D-190, D-206).
+ * An answer given as a picked range, or without stored provenance, counts as an assumption. Money is converted from major to minor units here, once
  * (D-179). Every problem is reported, not only the first.
  */
 export function engineInputFrom(
@@ -468,7 +468,10 @@ export function engineInputFrom(
       questionId: 'A5',
       currency: a5.currency,
     });
-  } else if ([a5.min, a5.max].some((amount) => !Number.isFinite(amount) || amount < 0)) {
+  } else if (
+    [a5.min, a5.max].some((amount) => !Number.isFinite(amount) || amount < 0) ||
+    a5.min > a5.max
+  ) {
     unreadable('A5');
   } else {
     capital = answered<CapitalRange | null>('A5', {
