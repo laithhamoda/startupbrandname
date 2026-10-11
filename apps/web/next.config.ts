@@ -31,9 +31,17 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ['puppeteer-core', '@sparticuz/chromium'],
   // What the tracer cannot see, because the code reads it by path: the browser's compressed files
   // and the print fonts. Only the temporary measuring route needs them until step 6 (D-241).
+  // Both are listed at their real pnpm path (.pnpm/<name>@<version>/node_modules/<name>), because
+  // @sparticuz/chromium finds its bin folder from its own real location (import.meta.url) and the
+  // function must carry the files there, not only behind the symlink of apps/web/node_modules
+  // (D-239). The browser is listed only once: it is 68 MB. The fonts also keep the symlink path,
+  // which the fonts loader walks to when it cannot resolve the package.
   outputFileTracingIncludes: {
     '/api/internal/pdf-spike': [
-      './node_modules/@sparticuz/chromium/bin/**',
+      '../../node_modules/.pnpm/@sparticuz+chromium@*/node_modules/@sparticuz/chromium/bin/**',
+      '../../node_modules/.pnpm/@fontsource+cairo@*/node_modules/@fontsource/cairo/files/cairo-{arabic,latin}-{600,700}-normal.woff2',
+      '../../node_modules/.pnpm/@fontsource+tajawal@*/node_modules/@fontsource/tajawal/files/tajawal-{arabic,latin}-{400,500,700}-normal.woff2',
+      '../../node_modules/.pnpm/@fontsource+{cairo,tajawal}@*/node_modules/@fontsource/{cairo,tajawal}/package.json',
       './node_modules/@fontsource/cairo/files/cairo-{arabic,latin}-{600,700}-normal.woff2',
       './node_modules/@fontsource/tajawal/files/tajawal-{arabic,latin}-{400,500,700}-normal.woff2',
       './node_modules/@fontsource/{cairo,tajawal}/package.json',
