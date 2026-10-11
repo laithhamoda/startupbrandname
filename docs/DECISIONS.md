@@ -42,7 +42,7 @@ A decision may sit under several topics. A new decision joins its topics in the 
   D-149, D-156 to D-161, D-163, D-165, D-167, D-182, D-183, D-197 to D-199, D-231, D-232.
 - **Calculation engine:** D-178 to D-190, D-193 to D-196, D-200 to D-224, D-227 to D-230,
   D-238.
-- **Report, canvases and PDF (M5):** D-225 to D-238.
+- **Report, canvases and PDF (M5):** D-225 to D-242.
 - **AI and cost:** D-062, D-071, D-072, D-073, D-082, D-103, D-107, D-119 to D-124, D-143, D-146 to
   D-152, D-155, D-183, D-191, D-226.
 - **Privacy, consent and security:** D-013, D-016, D-040, D-041, D-061, D-062, D-074, D-077,
@@ -1371,7 +1371,7 @@ The owner approved all recommendations offered before the M2 plan.
   Tests extract the PDF text in CI against the pinned Playwright image.
 - **Reason:** CLAUDE.md §5 (validate Arabic shaping and bidi in M5 week 1; propose a worker before
   building around limits) and rule 7; the founder's text must never run as markup.
-- **Status:** Active
+- **Status:** Amended by D-240
 
 ### D-236 (2026-10-11): The scope of the M5 report
 
@@ -1405,4 +1405,127 @@ The owner approved all recommendations offered before the M2 plan.
   `ENGINE_VERSION`, so a changed answer, rule or engine makes a new row (rule 4). Rows older than the
   newest five of a project and tool are purged by the retention job of M9.
 - **Reason:** CLAUDE.md rule 4; D-219; `record_tool_run` was dropped (D-191).
+- **Status:** Active
+
+### D-239 (2026-10-11): The PDF packages and how they ship
+
+- **Decision:** Chromium is `@sparticuz/chromium` 153.0.0, paired with `puppeteer-core` 25.11.0:
+  the package README asks for the Chromium major that the Puppeteer release was built for, and
+  25.11.0 bundles Chrome 153.0.8010.36 (25.12.0 expects 154 and 25.13.0 expects 155, for which
+  `@sparticuz/chromium` has no release yet). The package ships the Amazon Linux 2023 libraries
+  (`bin/al2023.tar.br`), the system of the Node.js 24 functions, and unpacks the browser into
+  `/tmp` on a cold start; its README asks for at least 512 MB of memory and recommends 1600 MB or
+  more. The fonts are `@fontsource/cairo` and `@fontsource/tajawal` 5.3.0 (SIL OFL 1.1, whose
+  `LICENSE` travels in each package; Arabic and Latin woff2 subsets of Cairo 600 and 700 and Tajawal
+  400, 500 and 700), read by the fonts loader and inlined as `data:` URLs. `pdfjs-dist` 6.4.299
+  (Apache-2.0) is a dev dependency of `@sbn/report`, for the tests and the PNG tool. Licences
+  checked with `pnpm licenses`: Apache-2.0, MIT, ISC, BSD-3-Clause and OFL-1.1 only. Exact versions,
+  as everywhere in the repository. In `apps/web/next.config.ts`, `serverExternalPackages` keeps
+  `puppeteer-core` and `@sparticuz/chromium` out of the bundle, `outputFileTracingIncludes` adds the
+  browser's `bin` folder (four files, 68 MB) and the ten font files to the spike route, and
+  `@sbn/report` joins `transpilePackages`. `apps/web` also lists the four runtime packages as its own
+  dependencies, because pnpm shows the tracer and the external resolution only the direct
+  dependencies of the app. The include globs name the browser's `bin` folder and the fonts at their
+  real pnpm path (`node_modules/.pnpm/@sparticuz+chromium@*/node_modules/@sparticuz/chromium/bin`),
+  because the package finds its `bin` folder from its own real location, not from the symlink in
+  `apps/web/node_modules`; the browser is listed only there (68 MB, once), the fonts at both paths.
+  A production build puts the four `bin/*.br` files and the ten font files at those real paths in
+  `.next/server/app/api/internal/pdf-spike/route.js.nft.json`, and the route ran from `next start`.
+  The two packages move together: `puppeteer-core` and `@sparticuz/chromium` must keep the same
+  Chrome major, so a Dependabot bump of one without the other breaks the pairing; the lead adds a
+  Dependabot group for the pair (root configuration). Not verified here: the Vercel runtime itself
+  (D-242 records the preview measurements; if the first log line says the `bin` input directory does
+  not exist, the cause is packaging, not the choice between a function and a worker).
+- **Reason:** CLAUDE.md §5 (validate Arabic shaping and bidi; propose a worker before building
+  around limits); D-235.
+- **Status:** Active
+
+### D-240 (2026-10-11): The launcher, the render options and what did not work
+
+- **Decision:** `launchBrowser()` (`packages/report/src/render/launch.ts`, no Next.js import) loads
+  `@sparticuz/chromium` with a dynamic import when `VERCEL` is set and turns its graphics mode off
+  (no WebGL is needed). Elsewhere it needs `PDF_CHROMIUM_PATH`; for local convenience only it falls
+  back to the newest Chromium in `~/.cache/ms-playwright` (headless shell first), so a laptop that ran
+  `playwright install chromium` needs nothing else. It starts a headless shell binary in the `shell`
+  mode and a full Chromium in the new headless mode, and adds `--no-sandbox` only when it runs as
+  root or when `PDF_CHROMIUM_NO_SANDBOX=1` is set. The pinned Playwright container of CI runs as
+  user 1001 (`options: --user 1001`), where Chromium cannot use its sandbox either (Playwright's own
+  launcher drops it by default, Puppeteer's does not), so the e2e spec sets the variable; it is never
+  set on Vercel. On Vercel it passes the flags of `@sparticuz/chromium` without
+  `--disable-web-security` and `--allow-running-insecure-content`, which a renderer of static `data:`
+  documents does not need (the other flags of the package, `--no-sandbox` and `--single-process`
+  among them, stay: the runtime needs them). A missing browser throws `PdfRenderError` with the code
+  `browser_unavailable`, a browser that does not start `launch_failed`; the message never quotes the
+  document or the cause. `renderPdf({ html, locale, headerTitle })` opens a page, turns JavaScript off
+  before the content is set (`setContent` and the wait for `document.fonts.ready` still work), aborts
+  and counts every request that is not a `data:` URL, refuses a document without the
+  `default-src 'none'` policy tag (`input_rejected`), and returns `{ pdf, aborted, ms }`. The policy
+  blocks a resource before a request exists, so `aborted` counts only what the policy let through and
+  is 0 for a well-formed document. `getSharedBrowser()` keeps one browser for a warm function.
+  Options that worked on Chromium 153 with Puppeteer 25.11: A4 with `printBackground` and
+  `preferCSSPageSize`; the named page `wide` (`@page wide { size: A4 landscape }`), which gives one
+  landscape page (842 by 595 points) inside a portrait document; `displayHeaderFooter` with a title and
+  "n / total" in Western digits, whose templates are drawn outside the page and so carry their own
+  inlined font; `tagged: true` (a structure tree on every page); `outline: true` (bookmarks from the
+  headings). What did not work well, and is therefore decided here: (1) the bookmarks of an Arabic
+  document come out with the words of a title in reverse order, so `outline` is off for Arabic by
+  default and on for English (it amends D-235, which said "if the renderer supports it"); (2) Chromium
+  stores Arabic the way it draws it, in joined presentation forms and from left to right, so copying
+  or searching text in an Arabic PDF gives reversed words in many viewers, although the page is drawn
+  correctly (checked on rasterized pages: joined letters, tashkeel, right-to-left tables, digits and
+  `Break-even` in brackets in the right place); the tests therefore read the file back with
+  `assembleLine` (`@sbn/report/testing`), which puts each line in reading order, and the
+  accessibility consequence (PDF/UA, selectable Arabic text) is open for the owner. The report page
+  on screen stays real text. Measured on a laptop (WSL, `next start`, not Vercel): first call 3.4 s to
+  start the browser and 0.8 s to render, later calls 0.6 to 1.1 s, 100 to 118 KB per PDF.
+- **Reason:** D-235; CLAUDE.md §5 and §6; rule 7 (the founder's text must never run).
+- **Status:** Active
+
+### D-241 (2026-10-11): The spike tests, the look tool and the temporary route
+
+- **Decision:** `packages/report` has unit tests (escaping, the print CSS, the fonts loader, the
+  document and its policy, the fixture, the launcher including its error paths and the Vercel branch
+  with the package mocked, the shared browser with the launcher mocked (a dead browser, a failed
+  start, two concurrent first calls), the header and footer, and the line reader) under the
+  coverage gate of D-237; the files that need a running browser (`render/pdf.ts`,
+  `testing/pdf-inspect.ts`) are left out of the gate and covered by `apps/web/e2e/pdf/pdf.spec.ts`
+  in the "site" project, which renders both fixtures with Playwright's Chromium
+  (`PDF_CHROMIUM_PATH` from `chromium.executablePath()`) and reads the PDF back with pdf.js: the page
+  count, the landscape page, the embedded Cairo and Tajawal fonts, the phrases in reading order with
+  Western digits, the page numbers, the number of aborted requests (0 for the fixture, 3 for a page
+  without the policy tag), and that nothing from the script and onerror attribute shows up. The spec
+  needs neither a page nor Supabase; the config still starts the web server for the project. PDF
+  bytes are never compared. `pnpm --filter @sbn/report run pdf:png -- <pdf> <outdir> [--scale n]
+[--crop x,y,w,h]` rasterizes pages by running pdf.js inside the same headless Chromium, so a person
+  can look at them. The temporary route `apps/web/src/app/api/internal/pdf-spike/route.ts` answers
+  GET only, on Node.js (never edge), with `maxDuration = 60`; it returns 404 unless
+  `VERCEL_ENV` is `preview` or `NODE_ENV` is `development`, renders the Arabic fixture (English with
+  `?locale=en`) and sets `x-pdf-ms`, `x-pdf-cold`, `x-pdf-launch-ms`, `x-pdf-bytes`,
+  `x-pdf-aborted` and `x-pdf-node-rss-mb` (Node only, without Chromium). Vercel's own preview
+  protection is its only gate: it serves a literal fixture, no data. Step 6 removes the route.
+- **Reason:** D-235 and D-237; the gate of step 0 is a measured decision, not a guess (D-242).
+- **Status:** Amended by D-242
+
+### D-242 (2026-10-12): The PDF is made by a Vercel function
+
+- **Decision:** The report PDF is rendered by headless Chromium inside a Vercel function in `fra1`,
+  not by a separate render worker. Measured on the Vercel preview of `m5/0-pdf-spike` (Node.js
+  24.21.0, the Hobby plan, the six-page Arabic fixture and its English twin): the first call, which
+  starts the browser, took 4.3 s in all (2.6 s to launch it and 0.2 s to render); later calls took
+  0.15 to 0.23 s to render and 0.6 to 1.1 s in all; the files are 118,136 bytes in Arabic and
+  101,439 in English; no request was aborted; the Node process held 135 MB, and Chromium's own
+  memory is not shown because the platform does not expose the container peak. The route's traced
+  files are 71 MB, far under the 250 MB limit, and `maxDuration = 60` is enough by a wide margin.
+  The PDFs made on Vercel were rasterized and checked by eye: joined letters, tashkeel, digits and
+  currency in place, right-to-left tables, the landscape page, the header and the footer. Not yet
+  measured: a report of fifteen pages, memory under concurrent requests, and the memory ceiling of
+  the plan; step 6 measures them with the real report on the real route, and a Pro plan is already
+  required before M7 (D-021). A worker stays the fallback if step 6 meets a limit. Two findings:
+  the first preview build of the branch failed because `next/font` could not fetch Cairo from Google
+  Fonts, and a rebuild fixed it (self-hosting the fonts would remove that dependency); and the
+  previews of this project are public, because Vercel Authentication is off, so the sentence of
+  D-241 that Vercel's preview protection is the route's only gate does not hold. The temporary route
+  stays acceptable until step 6 removes it because it serves a literal fixture and nothing else
+  (open question #96).
+- **Reason:** D-235 and CLAUDE.md §5: the function or the worker is decided by a measurement.
 - **Status:** Active
