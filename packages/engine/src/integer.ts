@@ -1,3 +1,4 @@
+import { at } from './array';
 import { EngineError } from './errors';
 
 /** The absolute value of a bigint. */
@@ -38,6 +39,30 @@ export function divRoundHalfAwayFromZero(numerator: bigint, divisor: bigint): bi
   const quotient = n / d;
   const rounded = (n % d) * 2n >= d ? quotient + 1n : quotient;
   return negative ? -rounded : rounded;
+}
+
+/**
+ * Integer division rounded up (toward positive infinity): 7/2 is 4, -7/2 is -3, 6/2 is 3. Used
+ * where a count must cover a need, such as the units that cover a fixed cost (T8). Units:
+ * unitless; the result is in the numerator's unit. Throws `division_by_zero` for a zero divisor.
+ */
+export function divCeil(numerator: bigint, divisor: bigint): bigint {
+  if (divisor === 0n) throw new EngineError('division_by_zero', 'Division by zero.');
+  const quotient = numerator / divisor;
+  const remainder = numerator % divisor;
+  return remainder !== 0n && remainder > 0n === divisor > 0n ? quotient + 1n : quotient;
+}
+
+/**
+ * The middle of the values; for an even count, the mean of the two middle ones, rounded half away
+ * from zero (D-201). Does not change the list it is given. Throws `length_mismatch` for an empty
+ * list: a median of nothing is a bug in the caller, which must check first.
+ */
+export function medianBigInt(values: readonly bigint[]): bigint {
+  const sorted = [...values].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+  const middle = Math.floor(sorted.length / 2);
+  if (sorted.length % 2 === 1) return at(sorted, middle);
+  return divRoundHalfAwayFromZero(at(sorted, middle - 1) + at(sorted, middle), 2n);
 }
 
 /**

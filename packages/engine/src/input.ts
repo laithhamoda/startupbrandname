@@ -6,7 +6,6 @@ import {
   type Mode,
   type StepId,
 } from '@sbn/question-bank';
-import { at } from './array';
 import { referenceMonth } from './calendar';
 import { isKnownCurrency, type CurrencyCode } from './currency';
 import {
@@ -16,7 +15,7 @@ import {
   type FigureConfidence,
   type FigureSource,
 } from './figure';
-import { divRoundHalfAwayFromZero } from './integer';
+import { medianBigInt } from './integer';
 import { addMoney, moneyFromMajor, zeroMoney, type Money } from './money';
 import { PAYMENT_OPTIONS, type PaymentOption } from './params';
 import { rateFromNumber, rateFromPercent, type Rate } from './rate';
@@ -153,14 +152,6 @@ export type EngineInputResult =
 
 /** The rule behind a price taken from competitors; it is listed in that figure's inputs (D-201). */
 export const PRICE_FROM_D4_RULE = 'F1.d4_median';
-
-/** The middle of the values; for an even count, the mean of the two middle ones, rounded half away from zero. */
-function median(values: readonly bigint[]): bigint {
-  const sorted = [...values].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
-  const middle = Math.floor(sorted.length / 2);
-  if (sorted.length % 2 === 1) return at(sorted, middle);
-  return divRoundHalfAwayFromZero(at(sorted, middle - 1) + at(sorted, middle), 2n);
-}
 
 /**
  * Reads the stored answers of a project into the engine's typed input (D-200). Pure: the same
@@ -310,7 +301,7 @@ export function engineInputFrom(
       }
     } else {
       price = combineFigures(
-        { minor: median(known), currency },
+        { minor: medianBigInt(known), currency },
         [standIn('F1', null), competitorPrices],
         [{ kind: 'rule', id: PRICE_FROM_D4_RULE }],
       );
