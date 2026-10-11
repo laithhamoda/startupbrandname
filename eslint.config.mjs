@@ -3,6 +3,7 @@ import nextVitals from 'eslint-config-next/core-web-vitals';
 import { defineConfig, globalIgnores } from 'eslint/config';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import globals from 'globals';
+import { builtinModules } from 'node:module';
 import tseslint from 'typescript-eslint';
 
 export default defineConfig([
@@ -69,6 +70,12 @@ export default defineConfig([
       'no-restricted-imports': [
         'error',
         {
+          // Every Node built-in by its exact name (the engine's tsconfig has the Node types for
+          // the golden test, so the type checker no longer refuses them).
+          paths: builtinModules.map((name) => ({
+            name,
+            message: 'The engine is pure: no Node built-ins.',
+          })),
           patterns: [
             {
               group: [
@@ -97,6 +104,12 @@ export default defineConfig([
         'document',
         'setTimeout',
         'setInterval',
+        'setImmediate',
+        'queueMicrotask',
+        'Buffer',
+        'require',
+        '__dirname',
+        '__filename',
       ],
       'no-restricted-properties': [
         'error',

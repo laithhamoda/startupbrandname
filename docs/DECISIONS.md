@@ -1187,9 +1187,11 @@ The owner approved all recommendations offered before the M2 plan.
 ### D-224 (2026-10-11): Smaller decisions of the last M4 pull request
 
 - **Decision:** `packages/engine/tsconfig.json` now has `types: ["node"]` (like `packages/ai`) so
-  that the golden test can read and write files; the ESLint rule that forbids Node imports in the
-  engine's source files is unchanged and still applies to everything but `*.test.ts`. The error code
-  `unserialisable` joins `EngineErrorCode`. `golden-projects.ts` and `review-page.ts` sit in `src` so
+  that the golden test can read and write files. Because the type checker no longer refuses Node
+  built-ins, the ESLint rule for the engine's source files (everything but `*.test.ts`) now bans
+  every built-in module by its exact name, taken from `node:module`, and the Node-only globals
+  `Buffer`, `require`, `__dirname`, `__filename`, `setImmediate` and `queueMicrotask`, besides the
+  bans it already had. The error code `unserialisable` joins `EngineErrorCode`. `golden-projects.ts` and `review-page.ts` sit in `src` so
   that they are tested and covered, and are not exported from `index.ts`: they are fixtures and a
   document, not engine API. A new engine parameter, `scenario.tornado_swing`, is listed by
   `listEngineParams` after `fx.cogs_shocks`.
