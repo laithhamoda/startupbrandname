@@ -212,7 +212,9 @@ depend only on zod (and the Anthropic SDK), never on each other or on the app.
   at most once a minute per server instance (`SETTINGS_TTL_MS`, D-167); the database computes each
   run's cost and keeps the daily spend in `private.ai_spend_daily` (D-146). Engine runs are
   recorded by `record_engine_run()` in `tool_runs` with the engine version and no model or cost; the
-  same project, tool, input hash and version is one row (D-238, D-244).
+  same project, tool, input hash and version is one row, a project keeps the newest five runs of each
+  tool and at most twelve tools, and a user records at most `report.pdf_per_day` stored reports a
+  UTC day (D-238, D-244).
 - **Consent (D-147).** A cross-border consent counts only for a text version listed in the settings
   key `consent.crossborder.accepted_versions`. `crossborder_consent_state()` answers `current`,
   `outdated` or `none`; only `current` lets the review run. The account page shows the text and

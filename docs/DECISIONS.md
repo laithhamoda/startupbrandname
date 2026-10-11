@@ -1533,13 +1533,14 @@ The owner approved all recommendations offered before the M2 plan.
 ### D-243 (2026-10-12): The tables for tax rules, country packs and reports
 
 - **Decision:** One migration, `20261012000000_m5_foundations.sql`, adds three tables with row
-  level security on and explicit grants. `tax_rules` has one row per rule and converts to the
-  engine's `TaxRule` without loss: `country_code`, `legal_form` (`sole` or `company`), `regime`,
+  level security on and explicit grants. `tax_rules` has one row per rule and maps to the
+  engine's `TaxRule` one to one: `country_code`, `legal_form` (`sole` or `company`), `regime`,
   `levy`, `kind` (`tax` or `social_contribution`), `basis` (`turnover`, `profit` or `fixed`), `rate`,
   `brackets`, `fixed_amount`, `min_amount` (`minimum`), `ceiling` (`turnoverCeiling`), `currency`,
   `payment_month` (1 to 12), `effective_from`, `source_url`, `last_verified` and `status`. A rate is
   the exact fraction `n/d` as text, never negative, `d` above 0 (`1/20` is 5%), not a float and not a
-  percentage. `brackets` is a jsonb array of `{"up_to": "<minor units as text>" or null, "rate":
+  percentage. No engine function parses this text (`parseRate` reads decimals): the code that reads a
+  row splits it at the slash and builds the `Rate` with `makeRate(BigInt(n), BigInt(d))`. `brackets` is a jsonb array of `{"up_to": "<minor units as text>" or null, "rate":
 "n/d"}`, rising, with the last one open, checked by `private.tax_brackets_valid()`. Amounts are
   `bigint` minor units, never negative; the code that reads a row turns them into `Money` with
   `moneyFromSafeMinor`, which refuses a value a JavaScript number cannot hold. The shape checks
@@ -1572,20 +1573,28 @@ The owner approved all recommendations offered before the M2 plan.
   it is an expand-only addition, because no existing row has an engine version. The function refuses
   the model tool `review_text` (model rows are written by `record_ai_run()` only), a tool name that
   is not a plain identifier, a hash that is not a sha256, a malformed engine version and an output
-  over 64 KB (D-238's output is a compact summary). `record_report(report_id, project, kind, locale,
+  over 64 KB (D-238's output is a compact summary). The writes are bounded in the function, not left
+  to the app: a project keeps the newest five runs of each tool (older ones are recomputable and are
+  deleted as a new one is written, which brings the purge of D-238 forward for engine rows) and at
+  most twelve different engine tools (SQLSTATE 54000), counted under a per-project advisory lock so a
+  loop of calls cannot fill `tool_runs`. `record_report(report_id, project, kind, locale,
 audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer for the owner of
   the project and requires `pdf_path` to be exactly `{auth.uid()}/{project}/{report_id}.pdf`; a
-  blank audience is stored as none. The app makes the report id, uploads the file with the user's
-  own session, then records it; a file whose record failed sits in the user's folder and goes with
-  the account. `reports` is read by its owner and written by no role. The private bucket `reports`
+  blank audience is stored as none. It also refuses a report once the user has recorded
+  `report.pdf_per_day` of them in the UTC day (SQLSTATE 54000, counted under a per-user advisory
+  lock; a missing or non-positive setting refuses all), so the database bounds the rows and, through
+  the insert policy below, the files. The full-report entitlement is not checked there: the app
+  checks it before it renders (step 6, M7). The app makes the report id, records the report, then
+  uploads the file with the user's own session; a row whose upload failed has no file, and the
+  reader treats it as absent. `reports` is read by its owner and written by no role. The private bucket `reports`
   (10 MB, PDFs only) has owner-only policies on `storage.objects`: read and delete where the first
-  folder is the user's id, insert only for a path of the form user, project, report `.pdf` under one
-  of the user's own projects, and no update (a PDF is written once under a new id). The bucket and
+  folder is the user's id, insert only for the exact file that a report of the user's names (`reports.pdf_path`
+  under one of their projects), so a file cannot exist without a recorded report, and no update (a PDF is written once under a new id). The bucket and
   its policies are created in a `DO` block that checks `to_regclass('storage.objects')`: the CI
   stacks that run the migrations without the Storage API have no such table and skip it, the hosted
   projects and a full local stack get it all. The pgTAP file tests the bucket and policies only where
   the table exists and says so when it skips them. The `settings` row `report.pdf_per_day` is 10;
-  step 6 counts the PDFs in `usage_counters`. Deleting a project or account removes the rows; the
+  step 6 also counts the PDFs rendered in `usage_counters`. Deleting a project or account removes the rows; the
   files are removed through the Storage API (D-234).
 - **Reason:** D-234 and D-238; CLAUDE.md rules 4, 6 and 7. One path format that the table, the
   function and the policies all check means a user cannot point a row or a file at someone else's
@@ -1603,10 +1612,12 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   a plan without the one-page summary gets `none`. A count quota (the weekly plan's one report) counts
   as included until M7 enforces the count with payments. `FULL_REPORT_PREVIEW_EMAILS` is a
   server-only comma-separated list, trimmed, lower-cased and without repeats, at most 20 valid
-  addresses, empty by default; one malformed address fails the whole variable, so the app fails
-  loudly and a typo is never read as "nobody". The comparison is on the whole address, ignoring case.
+  addresses, empty by default; one malformed address makes the whole list empty (nobody previews) and
+  `getPreviewEmails()` returns `valid: false`, so its caller logs `report.preview_list_invalid`. The
+  variable is read through that getter and is not in `serverEnvSchema`, so a typo in this temporary
+  variable cannot take every page down (`getServerEnv()` parses the schema on every request). The comparison is on the whole address, ignoring case.
   The address is the one sign-in proved (an emailed code or Google). The preview changes nothing
   else: the plan stays `free`, with its project limit. The owner sets the variable on Vercel, and it
-  is removed with M7 (the variable, its schema entry, its documentation and `fullReportPreview`).
+  is removed with M7 (the variable, its getter, its documentation and `fullReportPreview`).
 - **Reason:** D-232; CLAUDE.md §3 (entitlements are table-driven) and rule 6.
 - **Status:** Active
