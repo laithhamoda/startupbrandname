@@ -2,7 +2,7 @@ import { EngineError } from './errors';
 import { combineFigures, type Figure } from './figure';
 import type { EngineInput } from './input';
 import { divRoundHalfAwayFromZero, medianBigInt } from './integer';
-import { makeMoney, mulMoneyByRate, sumMoney, type Money } from './money';
+import { makeMoney, sumMoney, type Money } from './money';
 import { DEFAULT_ENGINE_PARAMS, type EngineParams } from './params';
 import type { OperatingProjection } from './projection';
 
@@ -59,7 +59,8 @@ export interface Pricing {
  * `VC + (sum of the fixed costs of months 1 to 12) / (sum of the units of months 1 to 12)`, which
  * equals VC plus the ratio of the two averages; the fixed cost is the full one of D-182 (F4,
  * payroll and marketing), and the quotient is rounded once, half away from zero. The penetration
- * price is `max(floor x penetrationFloorFactor, min(D4))` rounded the same way. Competitors whose
+ * price is `max(floor x penetrationFloorFactor, min(D4))`, taken from the exact floor and rounded once
+ * the same way. Competitors whose
  * price is unknown are skipped; the adapter has already refused prices in another currency (D-200),
  * and this function throws `currency_mismatch` if one is handed in anyway, or if the projection
  * was made in another currency than the input.
@@ -81,15 +82,15 @@ export function pricing(
   const yearOneCosts = sumMoney(currency, projection.operatingCosts.monthly.slice(0, 12));
   const yearOneUnits = projection.units.monthly.slice(0, 12).reduce((a, b) => a + b, 0n);
   let floor: Figure<Money> | null = null;
+  // The exact floor is exactFloor / yearOneUnits minor units; the penetration price starts from it,
+  // not from the rounded floor, so that it is rounded once.
+  let exactFloor = 0n;
   if (yearOneUnits === 0n) {
     gaps.push('no_units');
   } else {
-    const variableCost = input.variableCost.value.minor;
+    exactFloor = input.variableCost.value.minor * yearOneUnits + yearOneCosts.minor;
     floor = combineFigures(
-      makeMoney(
-        divRoundHalfAwayFromZero(variableCost * yearOneUnits + yearOneCosts.minor, yearOneUnits),
-        currency,
-      ),
+      makeMoney(divRoundHalfAwayFromZero(exactFloor, yearOneUnits), currency),
       [input.variableCost, projection.operatingCosts.provenance, projection.units.provenance],
       [{ kind: 'rule', id: T7_RULES.floor }],
     );
@@ -139,9 +140,10 @@ export function pricing(
   );
   let penetration: Figure<Money> | null = null;
   if (floor !== null) {
-    const lifted = mulMoneyByRate(floor.value, params.penetrationFloorFactor.value);
+    const factor = params.penetrationFloorFactor.value;
+    const lifted = divRoundHalfAwayFromZero(exactFloor * factor.num, yearOneUnits * factor.den);
     penetration = combineFigures(
-      makeMoney(lifted.minor > lowest ? lifted.minor : lowest, currency),
+      makeMoney(lifted > lowest ? lifted : lowest, currency),
       [floor, competitors, params.penetrationFloorFactor],
       [{ kind: 'rule', id: T7_RULES.penetration }],
     );
