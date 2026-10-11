@@ -916,9 +916,13 @@ The owner approved all recommendations offered before the M2 plan.
   zero (D-179); the minimum applies whenever the rule has one, also to a year with no turnover or
   profit. The regime comes from the country and G1: the rules of that country and legal form that
   take effect on or before the run's reference date, a newer rule of the same levy replacing an older
-  one (two taking effect on the same day is a data error). G1 "not sure yet" or missing is the sole
+  one, also when it renames the regime, and only then are the regimes of the remaining rules compared
+  (two rules of one regime and levy taking effect on the same day are a data error; two regimes
+  taking effect on the same day are ambiguous). A VAT threshold that is negative or in another
+  currency than the project's stops the run with `invalid_param`, like a malformed rule. G1 "not sure yet" or missing is the sole
   proprietor, flagged by `legalFormAssumed` and the note `legal_form_assumed_sole` (unvalidated
-  low-confidence assumption); a G1 the question bank does not offer stops the run. No rule, rules of
+  low-confidence assumption); G1 is an input of every tax figure and of the ceiling alert, so the tax,
+  the cash flow, the funding need and the payback built on an assumed regime are assumptions too; a G1 the question bank does not offer stops the run. No rule, rules of
   several regimes (the engine does not choose) or rules in another currency than the project's (D-180)
   give `not_calculated` with the reason, never a guessed tax, and the alert
   `tax_regime_not_calculated`. Every tax figure is `external` and lists the rule as a
@@ -1014,7 +1018,8 @@ The owner approved all recommendations offered before the M2 plan.
 - **Decision:** `analyseCash(input, projection, context, params)` returns the tax analysis, the cash
   flow (ok, or not calculable for F5), the FX test (or null) and the tax alerts. The tax alerts are
   their own type, `TaxAlert`, not members of D-210's `Alert`, because they carry a projection year,
-  a regime and a gap; the run function of pull request 6 merges the two lists. Each cash line is a
+  a regime and a gap; the run function of pull request 6 merges the two lists. `CashAnalysis.alerts`
+  is the same list as `tax.alerts`: merge one, not both. Each cash line is a
   `ProjectionLine` (months 1 to 36 and the calendar columns); the cumulative cash is a figure with 37
   entries, the entry at index `m` being the cash after month `m`. `ENGINE_VERSION` stays 0.1.0 until
   pull request 6 sets 1.0.0. For M5, the `tax_rules` table of SPEC §8 needs, besides its listed

@@ -11,7 +11,11 @@ export interface CashAnalysis {
   readonly cashFlow: CashFlow;
   /** Null when D6 gives no foreign-currency share. */
   readonly fxTest: FxTest | null;
-  /** The alerts of the tax engine: the regime not calculated, the ceiling, the VAT threshold. */
+  /**
+   * The alerts of the tax engine (the regime not calculated, the ceiling, the VAT threshold): the
+   * list to merge into a report. It is the same list as `tax.alerts`, which is for the tax view
+   * alone, so merge one of the two, not both (D-216).
+   */
   readonly alerts: readonly TaxAlert[];
 }
 
