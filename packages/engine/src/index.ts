@@ -1,9 +1,4 @@
-/**
- * Version of the calculation engine, stored on every tool run (`tool_runs.engine_version`)
- * so cached outputs are recomputed when a formula changes. Formulas arrive in M4.
- */
-export const ENGINE_VERSION = '0.1.0';
-
+export { ENGINE_VERSION } from './version';
 export { EngineError, type EngineErrorCode } from './errors';
 export { divCeil, divRoundHalfAwayFromZero, medianBigInt } from './integer';
 export {
@@ -117,6 +112,7 @@ export {
   firstProfitableMonth,
   projectOperatingLines,
   type OperatingProjection,
+  type ProjectionAdjustments,
   type ProjectionLine,
   type ProjectionOptions,
 } from './projection';
@@ -178,3 +174,17 @@ export {
 } from './cash-flow';
 export { FX_RULES, fxTest, type FxShockResult, type FxTest } from './fx-test';
 export { analyseCash, type CashAnalysis } from './cash';
+export {
+  T10_RULES,
+  scenarioAnalysis,
+  tornadoAnalysis,
+  type ScenarioFunding,
+  type ScenarioKind,
+  type ScenarioResult,
+  type Scenarios,
+  type Tornado,
+  type TornadoRow,
+  type TornadoVariable,
+} from './scenarios';
+export { mergeAlerts, runEngine, type EngineRun, type EngineRunResult, type RunAlert } from './run';
+export { canonicalJson, serialiseRun } from './serialise';

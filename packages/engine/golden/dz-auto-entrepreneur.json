@@ -1,0 +1,3206 @@
+{
+  "alerts": [
+    {
+      "code": "turnover_above_regime_ceiling",
+      "confidence": "low",
+      "gap": null,
+      "inputs": [
+        { "id": "F6", "kind": "answer" },
+        { "id": "D7", "kind": "answer" },
+        { "id": "E7", "kind": "answer" },
+        { "id": "F6.2", "kind": "answer" },
+        { "id": "T9.units", "kind": "rule" },
+        { "id": "F1", "kind": "answer" },
+        { "id": "T9.revenue", "kind": "rule" },
+        { "id": "fixture.dz.sole.turnover_levy", "kind": "country_pack_item" },
+        { "id": "G1", "kind": "answer" },
+        { "id": "alert.turnover_above_regime_ceiling", "kind": "rule" }
+      ],
+      "limit": {
+        "kind": "money",
+        "money": { "currency": "DZD", "minor": "500000000" }
+      },
+      "measured": {
+        "kind": "money",
+        "money": { "currency": "DZD", "minor": "712600000" }
+      },
+      "origin": "tax",
+      "regime": "fixture_auto_entrepreneur",
+      "severity": "warning",
+      "source": "assumption",
+      "validated": false,
+      "year": 3
+    },
+    {
+      "code": "setup_costs_within_capital_range",
+      "confidence": "high",
+      "inputs": [
+        { "id": "F5", "kind": "answer" },
+        { "id": "A5", "kind": "answer" },
+        { "id": "alert.setup_costs_within_capital_range", "kind": "rule" }
+      ],
+      "limit": {
+        "kind": "money",
+        "money": { "currency": "DZD", "minor": "40000000" }
+      },
+      "lowerLimit": {
+        "kind": "money",
+        "money": { "currency": "DZD", "minor": "20000000" }
+      },
+      "measured": {
+        "kind": "money",
+        "money": { "currency": "DZD", "minor": "30000000" }
+      },
+      "origin": "economics",
+      "severity": "note",
+      "source": "user",
+      "validated": true
+    }
+  ],
+  "cash": {
+    "cashFlow": {
+      "cogsPaid": {
+        "byPeriod": [
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "1600000" },
+          { "currency": "DZD", "minor": "3200000" },
+          { "currency": "DZD", "minor": "4800000" },
+          { "currency": "DZD", "minor": "6400000" },
+          { "currency": "DZD", "minor": "8000000" },
+          { "currency": "DZD", "minor": "8000000" },
+          { "currency": "DZD", "minor": "8000000" },
+          { "currency": "DZD", "minor": "8000000" },
+          { "currency": "DZD", "minor": "8000000" },
+          { "currency": "DZD", "minor": "8000000" },
+          { "currency": "DZD", "minor": "8000000" },
+          { "currency": "DZD", "minor": "26960000" },
+          { "currency": "DZD", "minor": "32000000" },
+          { "currency": "DZD", "minor": "38160000" },
+          { "currency": "DZD", "minor": "45360000" },
+          { "currency": "DZD", "minor": "53920000" },
+          { "currency": "DZD", "minor": "64160000" },
+          { "currency": "DZD", "minor": "76240000" },
+          { "currency": "DZD", "minor": "90720000" }
+        ],
+        "monthly": [
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "1600000" },
+          { "currency": "DZD", "minor": "3200000" },
+          { "currency": "DZD", "minor": "4800000" },
+          { "currency": "DZD", "minor": "6400000" },
+          { "currency": "DZD", "minor": "8000000" },
+          { "currency": "DZD", "minor": "8000000" },
+          { "currency": "DZD", "minor": "8000000" },
+          { "currency": "DZD", "minor": "8000000" },
+          { "currency": "DZD", "minor": "8000000" },
+          { "currency": "DZD", "minor": "8000000" },
+          { "currency": "DZD", "minor": "8000000" },
+          { "currency": "DZD", "minor": "8480000" },
+          { "currency": "DZD", "minor": "8960000" },
+          { "currency": "DZD", "minor": "9520000" },
+          { "currency": "DZD", "minor": "10080000" },
+          { "currency": "DZD", "minor": "10640000" },
+          { "currency": "DZD", "minor": "11280000" },
+          { "currency": "DZD", "minor": "12000000" },
+          { "currency": "DZD", "minor": "12720000" },
+          { "currency": "DZD", "minor": "13440000" },
+          { "currency": "DZD", "minor": "14240000" },
+          { "currency": "DZD", "minor": "15120000" },
+          { "currency": "DZD", "minor": "16000000" },
+          { "currency": "DZD", "minor": "16960000" },
+          { "currency": "DZD", "minor": "17920000" },
+          { "currency": "DZD", "minor": "19040000" },
+          { "currency": "DZD", "minor": "20160000" },
+          { "currency": "DZD", "minor": "21360000" },
+          { "currency": "DZD", "minor": "22640000" },
+          { "currency": "DZD", "minor": "24000000" },
+          { "currency": "DZD", "minor": "25360000" },
+          { "currency": "DZD", "minor": "26880000" },
+          { "currency": "DZD", "minor": "28480000" },
+          { "currency": "DZD", "minor": "30240000" },
+          { "currency": "DZD", "minor": "32000000" }
+        ],
+        "provenance": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false
+        }
+      },
+      "cumulative": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "F1", "kind": "answer" },
+          { "id": "T9.revenue", "kind": "rule" },
+          { "id": "F7", "kind": "answer" },
+          { "id": "payment.deposit", "kind": "default" },
+          { "id": "T9.cash_receipts", "kind": "rule" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "T9.cogs", "kind": "rule" },
+          { "id": "F4", "kind": "answer" },
+          { "id": "E8", "kind": "answer" },
+          { "id": "F4.1", "kind": "answer" },
+          { "id": "T9.operating_costs", "kind": "rule" },
+          { "id": "fixture.dz.sole.turnover_levy", "kind": "country_pack_item" },
+          { "id": "G1", "kind": "answer" },
+          { "id": "T9.tax_due", "kind": "rule" },
+          { "id": "T9.tax_paid", "kind": "rule" },
+          { "id": "T9.net_cash", "kind": "rule" },
+          { "id": "F5", "kind": "answer" },
+          { "id": "T9.cumulative_cash", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false,
+        "value": [
+          { "currency": "DZD", "minor": "-30000000" },
+          { "currency": "DZD", "minor": "-35000000" },
+          { "currency": "DZD", "minor": "-39600000" },
+          { "currency": "DZD", "minor": "-41800000" },
+          { "currency": "DZD", "minor": "-41600000" },
+          { "currency": "DZD", "minor": "-39000000" },
+          { "currency": "DZD", "minor": "-34000000" },
+          { "currency": "DZD", "minor": "-27000000" },
+          { "currency": "DZD", "minor": "-20000000" },
+          { "currency": "DZD", "minor": "-13000000" },
+          { "currency": "DZD", "minor": "-6000000" },
+          { "currency": "DZD", "minor": "1000000" },
+          { "currency": "DZD", "minor": "8000000" },
+          { "currency": "DZD", "minor": "15120000" },
+          { "currency": "DZD", "minor": "22960000" },
+          { "currency": "DZD", "minor": "30540000" },
+          { "currency": "DZD", "minor": "39960000" },
+          { "currency": "DZD", "minor": "50220000" },
+          { "currency": "DZD", "minor": "61340000" },
+          { "currency": "DZD", "minor": "73440000" },
+          { "currency": "DZD", "minor": "86620000" },
+          { "currency": "DZD", "minor": "100880000" },
+          { "currency": "DZD", "minor": "116240000" },
+          { "currency": "DZD", "minor": "132820000" },
+          { "currency": "DZD", "minor": "150720000" },
+          { "currency": "DZD", "minor": "169960000" },
+          { "currency": "DZD", "minor": "190640000" },
+          { "currency": "DZD", "minor": "211019000" },
+          { "currency": "DZD", "minor": "234859000" },
+          { "currency": "DZD", "minor": "260399000" },
+          { "currency": "DZD", "minor": "287759000" },
+          { "currency": "DZD", "minor": "317059000" },
+          { "currency": "DZD", "minor": "348399000" },
+          { "currency": "DZD", "minor": "381819000" },
+          { "currency": "DZD", "minor": "417539000" },
+          { "currency": "DZD", "minor": "455699000" },
+          { "currency": "DZD", "minor": "496499000" }
+        ]
+      },
+      "currency": "DZD",
+      "fundingNeed": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "F1", "kind": "answer" },
+          { "id": "T9.revenue", "kind": "rule" },
+          { "id": "F7", "kind": "answer" },
+          { "id": "payment.deposit", "kind": "default" },
+          { "id": "T9.cash_receipts", "kind": "rule" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "T9.cogs", "kind": "rule" },
+          { "id": "F4", "kind": "answer" },
+          { "id": "E8", "kind": "answer" },
+          { "id": "F4.1", "kind": "answer" },
+          { "id": "T9.operating_costs", "kind": "rule" },
+          { "id": "fixture.dz.sole.turnover_levy", "kind": "country_pack_item" },
+          { "id": "G1", "kind": "answer" },
+          { "id": "T9.tax_due", "kind": "rule" },
+          { "id": "T9.tax_paid", "kind": "rule" },
+          { "id": "T9.net_cash", "kind": "rule" },
+          { "id": "F5", "kind": "answer" },
+          { "id": "T9.cumulative_cash", "kind": "rule" },
+          { "id": "T9.funding_need", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false,
+        "value": { "currency": "DZD", "minor": "41800000" }
+      },
+      "lowest": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "F1", "kind": "answer" },
+          { "id": "T9.revenue", "kind": "rule" },
+          { "id": "F7", "kind": "answer" },
+          { "id": "payment.deposit", "kind": "default" },
+          { "id": "T9.cash_receipts", "kind": "rule" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "T9.cogs", "kind": "rule" },
+          { "id": "F4", "kind": "answer" },
+          { "id": "E8", "kind": "answer" },
+          { "id": "F4.1", "kind": "answer" },
+          { "id": "T9.operating_costs", "kind": "rule" },
+          { "id": "fixture.dz.sole.turnover_levy", "kind": "country_pack_item" },
+          { "id": "G1", "kind": "answer" },
+          { "id": "T9.tax_due", "kind": "rule" },
+          { "id": "T9.tax_paid", "kind": "rule" },
+          { "id": "T9.net_cash", "kind": "rule" },
+          { "id": "F5", "kind": "answer" },
+          { "id": "T9.cumulative_cash", "kind": "rule" },
+          { "id": "T9.funding_need", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false,
+        "value": {
+          "cumulative": { "currency": "DZD", "minor": "-41800000" },
+          "month": 3
+        }
+      },
+      "netCash": {
+        "byPeriod": [
+          { "currency": "DZD", "minor": "-5000000" },
+          { "currency": "DZD", "minor": "-4600000" },
+          { "currency": "DZD", "minor": "-2200000" },
+          { "currency": "DZD", "minor": "200000" },
+          { "currency": "DZD", "minor": "2600000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "7000000" },
+          { "currency": "DZD", "minor": "7000000" },
+          { "currency": "DZD", "minor": "7000000" },
+          { "currency": "DZD", "minor": "7000000" },
+          { "currency": "DZD", "minor": "7000000" },
+          { "currency": "DZD", "minor": "7000000" },
+          { "currency": "DZD", "minor": "22540000" },
+          { "currency": "DZD", "minor": "30800000" },
+          { "currency": "DZD", "minor": "39540000" },
+          { "currency": "DZD", "minor": "49840000" },
+          { "currency": "DZD", "minor": "60299000" },
+          { "currency": "DZD", "minor": "76740000" },
+          { "currency": "DZD", "minor": "94060000" },
+          { "currency": "DZD", "minor": "114680000" }
+        ],
+        "monthly": [
+          { "currency": "DZD", "minor": "-5000000" },
+          { "currency": "DZD", "minor": "-4600000" },
+          { "currency": "DZD", "minor": "-2200000" },
+          { "currency": "DZD", "minor": "200000" },
+          { "currency": "DZD", "minor": "2600000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "7000000" },
+          { "currency": "DZD", "minor": "7000000" },
+          { "currency": "DZD", "minor": "7000000" },
+          { "currency": "DZD", "minor": "7000000" },
+          { "currency": "DZD", "minor": "7000000" },
+          { "currency": "DZD", "minor": "7000000" },
+          { "currency": "DZD", "minor": "7120000" },
+          { "currency": "DZD", "minor": "7840000" },
+          { "currency": "DZD", "minor": "7580000" },
+          { "currency": "DZD", "minor": "9420000" },
+          { "currency": "DZD", "minor": "10260000" },
+          { "currency": "DZD", "minor": "11120000" },
+          { "currency": "DZD", "minor": "12100000" },
+          { "currency": "DZD", "minor": "13180000" },
+          { "currency": "DZD", "minor": "14260000" },
+          { "currency": "DZD", "minor": "15360000" },
+          { "currency": "DZD", "minor": "16580000" },
+          { "currency": "DZD", "minor": "17900000" },
+          { "currency": "DZD", "minor": "19240000" },
+          { "currency": "DZD", "minor": "20680000" },
+          { "currency": "DZD", "minor": "20379000" },
+          { "currency": "DZD", "minor": "23840000" },
+          { "currency": "DZD", "minor": "25540000" },
+          { "currency": "DZD", "minor": "27360000" },
+          { "currency": "DZD", "minor": "29300000" },
+          { "currency": "DZD", "minor": "31340000" },
+          { "currency": "DZD", "minor": "33420000" },
+          { "currency": "DZD", "minor": "35720000" },
+          { "currency": "DZD", "minor": "38160000" },
+          { "currency": "DZD", "minor": "40800000" }
+        ],
+        "provenance": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "F7", "kind": "answer" },
+            { "id": "payment.deposit", "kind": "default" },
+            { "id": "T9.cash_receipts", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "fixture.dz.sole.turnover_levy", "kind": "country_pack_item" },
+            { "id": "G1", "kind": "answer" },
+            { "id": "T9.tax_due", "kind": "rule" },
+            { "id": "T9.tax_paid", "kind": "rule" },
+            { "id": "T9.net_cash", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false
+        }
+      },
+      "notes": [
+        { "code": "receipts_after_horizon" },
+        { "code": "tax_after_horizon" }
+      ],
+      "operatingCostsPaid": {
+        "byPeriod": [
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "15000000" },
+          { "currency": "DZD", "minor": "15000000" },
+          { "currency": "DZD", "minor": "15000000" },
+          { "currency": "DZD", "minor": "15000000" },
+          { "currency": "DZD", "minor": "15000000" },
+          { "currency": "DZD", "minor": "15000000" },
+          { "currency": "DZD", "minor": "15000000" },
+          { "currency": "DZD", "minor": "15000000" }
+        ],
+        "monthly": [
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" },
+          { "currency": "DZD", "minor": "5000000" }
+        ],
+        "provenance": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false
+        }
+      },
+      "payback": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "F1", "kind": "answer" },
+          { "id": "T9.revenue", "kind": "rule" },
+          { "id": "F7", "kind": "answer" },
+          { "id": "payment.deposit", "kind": "default" },
+          { "id": "T9.cash_receipts", "kind": "rule" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "T9.cogs", "kind": "rule" },
+          { "id": "F4", "kind": "answer" },
+          { "id": "E8", "kind": "answer" },
+          { "id": "F4.1", "kind": "answer" },
+          { "id": "T9.operating_costs", "kind": "rule" },
+          { "id": "fixture.dz.sole.turnover_levy", "kind": "country_pack_item" },
+          { "id": "G1", "kind": "answer" },
+          { "id": "T9.tax_due", "kind": "rule" },
+          { "id": "T9.tax_paid", "kind": "rule" },
+          { "id": "T9.net_cash", "kind": "rule" },
+          { "id": "F5", "kind": "answer" },
+          { "id": "T9.cumulative_cash", "kind": "rule" },
+          { "id": "T9.payback", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false,
+        "value": 11
+      },
+      "paymentTiming": {
+        "confidence": "medium",
+        "inputs": [
+          { "id": "payment.deposit", "kind": "default" }
+        ],
+        "source": "assumption",
+        "validated": false,
+        "value": [
+          { "delayMonths": 0, "share": "1/2" },
+          { "delayMonths": 1, "share": "1/2" }
+        ]
+      },
+      "receipts": {
+        "byPeriod": [
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "2000000" },
+          { "currency": "DZD", "minor": "6000000" },
+          { "currency": "DZD", "minor": "10000000" },
+          { "currency": "DZD", "minor": "14000000" },
+          { "currency": "DZD", "minor": "18000000" },
+          { "currency": "DZD", "minor": "20000000" },
+          { "currency": "DZD", "minor": "20000000" },
+          { "currency": "DZD", "minor": "20000000" },
+          { "currency": "DZD", "minor": "20000000" },
+          { "currency": "DZD", "minor": "20000000" },
+          { "currency": "DZD", "minor": "20000000" },
+          { "currency": "DZD", "minor": "65500000" },
+          { "currency": "DZD", "minor": "77800000" },
+          { "currency": "DZD", "minor": "92700000" },
+          { "currency": "DZD", "minor": "110200000" },
+          { "currency": "DZD", "minor": "131000000" },
+          { "currency": "DZD", "minor": "155900000" },
+          { "currency": "DZD", "minor": "185300000" },
+          { "currency": "DZD", "minor": "220400000" }
+        ],
+        "monthly": [
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "2000000" },
+          { "currency": "DZD", "minor": "6000000" },
+          { "currency": "DZD", "minor": "10000000" },
+          { "currency": "DZD", "minor": "14000000" },
+          { "currency": "DZD", "minor": "18000000" },
+          { "currency": "DZD", "minor": "20000000" },
+          { "currency": "DZD", "minor": "20000000" },
+          { "currency": "DZD", "minor": "20000000" },
+          { "currency": "DZD", "minor": "20000000" },
+          { "currency": "DZD", "minor": "20000000" },
+          { "currency": "DZD", "minor": "20000000" },
+          { "currency": "DZD", "minor": "20600000" },
+          { "currency": "DZD", "minor": "21800000" },
+          { "currency": "DZD", "minor": "23100000" },
+          { "currency": "DZD", "minor": "24500000" },
+          { "currency": "DZD", "minor": "25900000" },
+          { "currency": "DZD", "minor": "27400000" },
+          { "currency": "DZD", "minor": "29100000" },
+          { "currency": "DZD", "minor": "30900000" },
+          { "currency": "DZD", "minor": "32700000" },
+          { "currency": "DZD", "minor": "34600000" },
+          { "currency": "DZD", "minor": "36700000" },
+          { "currency": "DZD", "minor": "38900000" },
+          { "currency": "DZD", "minor": "41200000" },
+          { "currency": "DZD", "minor": "43600000" },
+          { "currency": "DZD", "minor": "46200000" },
+          { "currency": "DZD", "minor": "49000000" },
+          { "currency": "DZD", "minor": "51900000" },
+          { "currency": "DZD", "minor": "55000000" },
+          { "currency": "DZD", "minor": "58300000" },
+          { "currency": "DZD", "minor": "61700000" },
+          { "currency": "DZD", "minor": "65300000" },
+          { "currency": "DZD", "minor": "69200000" },
+          { "currency": "DZD", "minor": "73400000" },
+          { "currency": "DZD", "minor": "77800000" }
+        ],
+        "provenance": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "F7", "kind": "answer" },
+            { "id": "payment.deposit", "kind": "default" },
+            { "id": "T9.cash_receipts", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false
+        }
+      },
+      "receiptsAfterHorizon": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "F1", "kind": "answer" },
+          { "id": "T9.revenue", "kind": "rule" },
+          { "id": "F7", "kind": "answer" },
+          { "id": "payment.deposit", "kind": "default" },
+          { "id": "T9.cash_receipts", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false,
+        "value": { "currency": "DZD", "minor": "40000000" }
+      },
+      "setupCosts": {
+        "confidence": "high",
+        "inputs": [
+          { "id": "F5", "kind": "answer" }
+        ],
+        "source": "user",
+        "validated": true,
+        "value": { "currency": "DZD", "minor": "30000000" }
+      },
+      "status": "ok",
+      "taxAfterHorizon": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "fixture.dz.sole.turnover_levy", "kind": "country_pack_item" },
+          { "id": "G1", "kind": "answer" },
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "F1", "kind": "answer" },
+          { "id": "T9.revenue", "kind": "rule" },
+          { "id": "T9.tax_due", "kind": "rule" },
+          { "id": "T9.tax_paid", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false,
+        "value": { "currency": "DZD", "minor": "3563000" }
+      },
+      "taxIncluded": true,
+      "taxPaid": {
+        "byPeriod": [
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "1000000" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "1781000" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" }
+        ],
+        "monthly": [
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "1000000" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "1781000" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" },
+          { "currency": "DZD", "minor": "0" }
+        ],
+        "provenance": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "fixture.dz.sole.turnover_levy", "kind": "country_pack_item" },
+            { "id": "G1", "kind": "answer" },
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "T9.tax_due", "kind": "rule" },
+            { "id": "T9.tax_paid", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false
+        }
+      }
+    },
+    "fxTest": null,
+    "tax": {
+      "alerts": [
+        {
+          "code": "turnover_above_regime_ceiling",
+          "confidence": "low",
+          "gap": null,
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "fixture.dz.sole.turnover_levy", "kind": "country_pack_item" },
+            { "id": "G1", "kind": "answer" },
+            { "id": "alert.turnover_above_regime_ceiling", "kind": "rule" }
+          ],
+          "limit": {
+            "kind": "money",
+            "money": { "currency": "DZD", "minor": "500000000" }
+          },
+          "measured": {
+            "kind": "money",
+            "money": { "currency": "DZD", "minor": "712600000" }
+          },
+          "regime": "fixture_auto_entrepreneur",
+          "severity": "warning",
+          "source": "assumption",
+          "validated": false,
+          "year": 3
+        }
+      ],
+      "legalForm": "sole",
+      "legalFormAssumed": false,
+      "regime": "fixture_auto_entrepreneur",
+      "status": "calculated",
+      "years": [
+        {
+          "charges": [
+            {
+              "base": { "currency": "DZD", "minor": "180000000" },
+              "basis": "turnover",
+              "due": {
+                "confidence": "low",
+                "inputs": [
+                  { "id": "fixture.dz.sole.turnover_levy", "kind": "country_pack_item" },
+                  { "id": "G1", "kind": "answer" },
+                  { "id": "F6", "kind": "answer" },
+                  { "id": "D7", "kind": "answer" },
+                  { "id": "E7", "kind": "answer" },
+                  { "id": "F6.2", "kind": "answer" },
+                  { "id": "T9.units", "kind": "rule" },
+                  { "id": "F1", "kind": "answer" },
+                  { "id": "T9.revenue", "kind": "rule" },
+                  { "id": "T9.tax_due", "kind": "rule" }
+                ],
+                "source": "assumption",
+                "validated": false,
+                "value": { "currency": "DZD", "minor": "1000000" }
+              },
+              "kind": "tax",
+              "levy": "fixture_turnover_levy",
+              "minimumApplied": true,
+              "paymentMonth": 15,
+              "ruleId": "fixture.dz.sole.turnover_levy"
+            }
+          ],
+          "profit": { "currency": "DZD", "minor": "48000000" },
+          "total": {
+            "confidence": "low",
+            "inputs": [
+              { "id": "fixture.dz.sole.turnover_levy", "kind": "country_pack_item" },
+              { "id": "G1", "kind": "answer" },
+              { "id": "F6", "kind": "answer" },
+              { "id": "D7", "kind": "answer" },
+              { "id": "E7", "kind": "answer" },
+              { "id": "F6.2", "kind": "answer" },
+              { "id": "T9.units", "kind": "rule" },
+              { "id": "F1", "kind": "answer" },
+              { "id": "T9.revenue", "kind": "rule" },
+              { "id": "T9.tax_due", "kind": "rule" },
+              { "id": "T9.tax_year_total", "kind": "rule" }
+            ],
+            "source": "assumption",
+            "validated": false,
+            "value": { "currency": "DZD", "minor": "1000000" }
+          },
+          "turnover": { "currency": "DZD", "minor": "180000000" },
+          "year": 1
+        },
+        {
+          "charges": [
+            {
+              "base": { "currency": "DZD", "minor": "356200000" },
+              "basis": "turnover",
+              "due": {
+                "confidence": "low",
+                "inputs": [
+                  { "id": "fixture.dz.sole.turnover_levy", "kind": "country_pack_item" },
+                  { "id": "G1", "kind": "answer" },
+                  { "id": "F6", "kind": "answer" },
+                  { "id": "D7", "kind": "answer" },
+                  { "id": "E7", "kind": "answer" },
+                  { "id": "F6.2", "kind": "answer" },
+                  { "id": "T9.units", "kind": "rule" },
+                  { "id": "F1", "kind": "answer" },
+                  { "id": "T9.revenue", "kind": "rule" },
+                  { "id": "T9.tax_due", "kind": "rule" }
+                ],
+                "source": "assumption",
+                "validated": false,
+                "value": { "currency": "DZD", "minor": "1781000" }
+              },
+              "kind": "tax",
+              "levy": "fixture_turnover_levy",
+              "minimumApplied": false,
+              "paymentMonth": 27,
+              "ruleId": "fixture.dz.sole.turnover_levy"
+            }
+          ],
+          "profit": { "currency": "DZD", "minor": "153720000" },
+          "total": {
+            "confidence": "low",
+            "inputs": [
+              { "id": "fixture.dz.sole.turnover_levy", "kind": "country_pack_item" },
+              { "id": "G1", "kind": "answer" },
+              { "id": "F6", "kind": "answer" },
+              { "id": "D7", "kind": "answer" },
+              { "id": "E7", "kind": "answer" },
+              { "id": "F6.2", "kind": "answer" },
+              { "id": "T9.units", "kind": "rule" },
+              { "id": "F1", "kind": "answer" },
+              { "id": "T9.revenue", "kind": "rule" },
+              { "id": "T9.tax_due", "kind": "rule" },
+              { "id": "T9.tax_year_total", "kind": "rule" }
+            ],
+            "source": "assumption",
+            "validated": false,
+            "value": { "currency": "DZD", "minor": "1781000" }
+          },
+          "turnover": { "currency": "DZD", "minor": "356200000" },
+          "year": 2
+        },
+        {
+          "charges": [
+            {
+              "base": { "currency": "DZD", "minor": "712600000" },
+              "basis": "turnover",
+              "due": {
+                "confidence": "low",
+                "inputs": [
+                  { "id": "fixture.dz.sole.turnover_levy", "kind": "country_pack_item" },
+                  { "id": "G1", "kind": "answer" },
+                  { "id": "F6", "kind": "answer" },
+                  { "id": "D7", "kind": "answer" },
+                  { "id": "E7", "kind": "answer" },
+                  { "id": "F6.2", "kind": "answer" },
+                  { "id": "T9.units", "kind": "rule" },
+                  { "id": "F1", "kind": "answer" },
+                  { "id": "T9.revenue", "kind": "rule" },
+                  { "id": "T9.tax_due", "kind": "rule" }
+                ],
+                "source": "assumption",
+                "validated": false,
+                "value": { "currency": "DZD", "minor": "3563000" }
+              },
+              "kind": "tax",
+              "levy": "fixture_turnover_levy",
+              "minimumApplied": false,
+              "paymentMonth": 39,
+              "ruleId": "fixture.dz.sole.turnover_levy"
+            }
+          ],
+          "profit": { "currency": "DZD", "minor": "367560000" },
+          "total": {
+            "confidence": "low",
+            "inputs": [
+              { "id": "fixture.dz.sole.turnover_levy", "kind": "country_pack_item" },
+              { "id": "G1", "kind": "answer" },
+              { "id": "F6", "kind": "answer" },
+              { "id": "D7", "kind": "answer" },
+              { "id": "E7", "kind": "answer" },
+              { "id": "F6.2", "kind": "answer" },
+              { "id": "T9.units", "kind": "rule" },
+              { "id": "F1", "kind": "answer" },
+              { "id": "T9.revenue", "kind": "rule" },
+              { "id": "T9.tax_due", "kind": "rule" },
+              { "id": "T9.tax_year_total", "kind": "rule" }
+            ],
+            "source": "assumption",
+            "validated": false,
+            "value": { "currency": "DZD", "minor": "3563000" }
+          },
+          "turnover": { "currency": "DZD", "minor": "712600000" },
+          "year": 3
+        }
+      ]
+    }
+  },
+  "engineVersion": "1.0.0",
+  "input": {
+    "breakEvenTarget": {
+      "confidence": "high",
+      "inputs": [
+        { "id": "H5", "kind": "answer" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": { "kind": "within", "months": 6 }
+    },
+    "capacity": {
+      "confidence": "low",
+      "inputs": [
+        { "id": "E7", "kind": "answer" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": null
+    },
+    "capital": {
+      "confidence": "high",
+      "inputs": [
+        { "id": "A5", "kind": "answer" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": {
+        "max": { "currency": "DZD", "minor": "40000000" },
+        "min": { "currency": "DZD", "minor": "20000000" }
+      }
+    },
+    "churn": {
+      "confidence": "low",
+      "inputs": [
+        { "id": "F2.1", "kind": "answer" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": null
+    },
+    "competitorPrices": {
+      "confidence": "high",
+      "inputs": [
+        { "id": "D4", "kind": "answer" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": [
+        {
+          "name": "منافس أ",
+          "price": { "currency": "DZD", "minor": "220000" }
+        },
+        {
+          "name": "منافس ب",
+          "price": { "currency": "DZD", "minor": "180000" }
+        }
+      ]
+    },
+    "country": "DZ",
+    "currency": "DZD",
+    "fixedCosts": {
+      "confidence": "high",
+      "inputs": [
+        { "id": "F4", "kind": "answer" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": { "currency": "DZD", "minor": "4000000" }
+    },
+    "foreignShare": {
+      "confidence": "high",
+      "inputs": [
+        { "id": "D6", "kind": "answer" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": null
+    },
+    "legalForm": {
+      "confidence": "high",
+      "inputs": [
+        { "id": "G1", "kind": "answer" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": "sole"
+    },
+    "marketing": {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "F4.1", "kind": "answer" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": { "currency": "DZD", "minor": "1000000" }
+    },
+    "mode": "full",
+    "notes": [
+      { "code": "staff_unset", "questionId": "E8", "state": "missing" },
+      { "code": "seasonality_unset", "questionId": "D7", "state": "unknown" },
+      { "code": "capacity_unlimited", "questionId": "E7", "state": "missing" }
+    ],
+    "paymentOption": {
+      "confidence": "high",
+      "inputs": [
+        { "id": "F7", "kind": "answer" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": "deposit"
+    },
+    "peakMonths": {
+      "confidence": "low",
+      "inputs": [
+        { "id": "D7", "kind": "answer" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": []
+    },
+    "price": {
+      "confidence": "high",
+      "inputs": [
+        { "id": "F1", "kind": "answer" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": { "currency": "DZD", "minor": "200000" }
+    },
+    "pricingModel": {
+      "confidence": "high",
+      "inputs": [
+        { "id": "F2", "kind": "answer" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": "fixed"
+    },
+    "referenceDate": "2026-10-05",
+    "runway": {
+      "confidence": "high",
+      "inputs": [
+        { "id": "A7", "kind": "answer" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": { "kind": "within", "months": 6 }
+    },
+    "sales": {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "F6", "kind": "answer" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": { "month1": "0/1", "month12": "100/1", "month6": "100/1" }
+    },
+    "setupCosts": {
+      "confidence": "high",
+      "inputs": [
+        { "id": "F5", "kind": "answer" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": { "currency": "DZD", "minor": "30000000" }
+    },
+    "staff": {
+      "confidence": "low",
+      "inputs": [
+        { "id": "E8", "kind": "answer" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": []
+    },
+    "variableCost": {
+      "confidence": "high",
+      "inputs": [
+        { "id": "F3", "kind": "answer" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": { "currency": "DZD", "minor": "80000" }
+    },
+    "yearlyGrowth": {
+      "confidence": "low",
+      "inputs": [
+        { "id": "F6.2", "kind": "answer" }
+      ],
+      "source": "user",
+      "validated": false,
+      "value": "1/1"
+    }
+  },
+  "parameters": [
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "engine.horizon_months", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": 36
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "growth.upper_bound_yearly", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": "1/4"
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "growth.founder_share", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": "1/2"
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "growth.year3_share_of_year2", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": "1/2"
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "seasonality.peak_factor", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": "3/2"
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "payment.cash", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": [
+        { "delayMonths": 0, "share": "1/1" }
+      ]
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "payment.credit", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": [
+        { "delayMonths": 1, "share": "1/1" }
+      ]
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "payment.instalments", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": [
+        { "delayMonths": 0, "share": "1/3" },
+        { "delayMonths": 1, "share": "1/3" },
+        { "delayMonths": 2, "share": "1/3" }
+      ]
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "payment.deposit", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": [
+        { "delayMonths": 0, "share": "1/2" },
+        { "delayMonths": 1, "share": "1/2" }
+      ]
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "inflation.yearly", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": null
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "scenario.conservative.sales_factor", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": "3/5"
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "scenario.optimistic.sales_factor", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": "13/10"
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "scenario.conservative.vc_factor", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": "11/10"
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "scenario.optimistic.vc_factor", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": "19/20"
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "scenario.conservative.launch_delay_months", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": 3
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "pricing.penetration_floor_factor", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": "11/10"
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "unit_economics.ltv_cac_minimum", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": "3/1"
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "fx.cogs_shocks", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": ["-1/5", "-1/10", "1/10", "1/5"]
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "scenario.tornado_swing", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": "1/5"
+    }
+  ],
+  "pricing": {
+    "band": {
+      "confidence": "high",
+      "inputs": [
+        { "id": "D4", "kind": "answer" },
+        { "id": "T7.band", "kind": "rule" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": {
+        "max": { "currency": "DZD", "minor": "220000" },
+        "median": { "currency": "DZD", "minor": "200000" },
+        "min": { "currency": "DZD", "minor": "180000" }
+      }
+    },
+    "floor": {
+      "confidence": "low",
+      "inputs": [
+        { "id": "F3", "kind": "answer" },
+        { "id": "F4", "kind": "answer" },
+        { "id": "E8", "kind": "answer" },
+        { "id": "F4.1", "kind": "answer" },
+        { "id": "T9.operating_costs", "kind": "rule" },
+        { "id": "F6", "kind": "answer" },
+        { "id": "D7", "kind": "answer" },
+        { "id": "E7", "kind": "answer" },
+        { "id": "F6.2", "kind": "answer" },
+        { "id": "T9.units", "kind": "rule" },
+        { "id": "T7.floor", "kind": "rule" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": { "currency": "DZD", "minor": "146667" }
+    },
+    "gaps": [],
+    "market": {
+      "confidence": "high",
+      "inputs": [
+        { "id": "D4", "kind": "answer" },
+        { "id": "T7.market", "kind": "rule" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": { "currency": "DZD", "minor": "200000" }
+    },
+    "penetration": {
+      "confidence": "low",
+      "inputs": [
+        { "id": "F3", "kind": "answer" },
+        { "id": "F4", "kind": "answer" },
+        { "id": "E8", "kind": "answer" },
+        { "id": "F4.1", "kind": "answer" },
+        { "id": "T9.operating_costs", "kind": "rule" },
+        { "id": "F6", "kind": "answer" },
+        { "id": "D7", "kind": "answer" },
+        { "id": "E7", "kind": "answer" },
+        { "id": "F6.2", "kind": "answer" },
+        { "id": "T9.units", "kind": "rule" },
+        { "id": "T7.floor", "kind": "rule" },
+        { "id": "D4", "kind": "answer" },
+        { "id": "pricing.penetration_floor_factor", "kind": "default" },
+        { "id": "T7.penetration", "kind": "rule" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": { "currency": "DZD", "minor": "180000" }
+    },
+    "premium": null,
+    "premiumAllowed": false
+  },
+  "projection": {
+    "calendar": {
+      "horizonMonths": 36,
+      "months": [
+        {
+          "calendar": { "month": 11, "year": 2026 },
+          "index": 1,
+          "year": 1
+        },
+        {
+          "calendar": { "month": 12, "year": 2026 },
+          "index": 2,
+          "year": 1
+        },
+        {
+          "calendar": { "month": 1, "year": 2027 },
+          "index": 3,
+          "year": 1
+        },
+        {
+          "calendar": { "month": 2, "year": 2027 },
+          "index": 4,
+          "year": 1
+        },
+        {
+          "calendar": { "month": 3, "year": 2027 },
+          "index": 5,
+          "year": 1
+        },
+        {
+          "calendar": { "month": 4, "year": 2027 },
+          "index": 6,
+          "year": 1
+        },
+        {
+          "calendar": { "month": 5, "year": 2027 },
+          "index": 7,
+          "year": 1
+        },
+        {
+          "calendar": { "month": 6, "year": 2027 },
+          "index": 8,
+          "year": 1
+        },
+        {
+          "calendar": { "month": 7, "year": 2027 },
+          "index": 9,
+          "year": 1
+        },
+        {
+          "calendar": { "month": 8, "year": 2027 },
+          "index": 10,
+          "year": 1
+        },
+        {
+          "calendar": { "month": 9, "year": 2027 },
+          "index": 11,
+          "year": 1
+        },
+        {
+          "calendar": { "month": 10, "year": 2027 },
+          "index": 12,
+          "year": 1
+        },
+        {
+          "calendar": { "month": 11, "year": 2027 },
+          "index": 13,
+          "year": 2
+        },
+        {
+          "calendar": { "month": 12, "year": 2027 },
+          "index": 14,
+          "year": 2
+        },
+        {
+          "calendar": { "month": 1, "year": 2028 },
+          "index": 15,
+          "year": 2
+        },
+        {
+          "calendar": { "month": 2, "year": 2028 },
+          "index": 16,
+          "year": 2
+        },
+        {
+          "calendar": { "month": 3, "year": 2028 },
+          "index": 17,
+          "year": 2
+        },
+        {
+          "calendar": { "month": 4, "year": 2028 },
+          "index": 18,
+          "year": 2
+        },
+        {
+          "calendar": { "month": 5, "year": 2028 },
+          "index": 19,
+          "year": 2
+        },
+        {
+          "calendar": { "month": 6, "year": 2028 },
+          "index": 20,
+          "year": 2
+        },
+        {
+          "calendar": { "month": 7, "year": 2028 },
+          "index": 21,
+          "year": 2
+        },
+        {
+          "calendar": { "month": 8, "year": 2028 },
+          "index": 22,
+          "year": 2
+        },
+        {
+          "calendar": { "month": 9, "year": 2028 },
+          "index": 23,
+          "year": 2
+        },
+        {
+          "calendar": { "month": 10, "year": 2028 },
+          "index": 24,
+          "year": 2
+        },
+        {
+          "calendar": { "month": 11, "year": 2028 },
+          "index": 25,
+          "year": 3
+        },
+        {
+          "calendar": { "month": 12, "year": 2028 },
+          "index": 26,
+          "year": 3
+        },
+        {
+          "calendar": { "month": 1, "year": 2029 },
+          "index": 27,
+          "year": 3
+        },
+        {
+          "calendar": { "month": 2, "year": 2029 },
+          "index": 28,
+          "year": 3
+        },
+        {
+          "calendar": { "month": 3, "year": 2029 },
+          "index": 29,
+          "year": 3
+        },
+        {
+          "calendar": { "month": 4, "year": 2029 },
+          "index": 30,
+          "year": 3
+        },
+        {
+          "calendar": { "month": 5, "year": 2029 },
+          "index": 31,
+          "year": 3
+        },
+        {
+          "calendar": { "month": 6, "year": 2029 },
+          "index": 32,
+          "year": 3
+        },
+        {
+          "calendar": { "month": 7, "year": 2029 },
+          "index": 33,
+          "year": 3
+        },
+        {
+          "calendar": { "month": 8, "year": 2029 },
+          "index": 34,
+          "year": 3
+        },
+        {
+          "calendar": { "month": 9, "year": 2029 },
+          "index": 35,
+          "year": 3
+        },
+        {
+          "calendar": { "month": 10, "year": 2029 },
+          "index": 36,
+          "year": 3
+        }
+      ],
+      "periods": [
+        {
+          "end": { "month": 11, "year": 2026 },
+          "firstMonth": 1,
+          "index": 1,
+          "kind": "month",
+          "lastMonth": 1,
+          "start": { "month": 11, "year": 2026 },
+          "year": 1
+        },
+        {
+          "end": { "month": 12, "year": 2026 },
+          "firstMonth": 2,
+          "index": 2,
+          "kind": "month",
+          "lastMonth": 2,
+          "start": { "month": 12, "year": 2026 },
+          "year": 1
+        },
+        {
+          "end": { "month": 1, "year": 2027 },
+          "firstMonth": 3,
+          "index": 3,
+          "kind": "month",
+          "lastMonth": 3,
+          "start": { "month": 1, "year": 2027 },
+          "year": 1
+        },
+        {
+          "end": { "month": 2, "year": 2027 },
+          "firstMonth": 4,
+          "index": 4,
+          "kind": "month",
+          "lastMonth": 4,
+          "start": { "month": 2, "year": 2027 },
+          "year": 1
+        },
+        {
+          "end": { "month": 3, "year": 2027 },
+          "firstMonth": 5,
+          "index": 5,
+          "kind": "month",
+          "lastMonth": 5,
+          "start": { "month": 3, "year": 2027 },
+          "year": 1
+        },
+        {
+          "end": { "month": 4, "year": 2027 },
+          "firstMonth": 6,
+          "index": 6,
+          "kind": "month",
+          "lastMonth": 6,
+          "start": { "month": 4, "year": 2027 },
+          "year": 1
+        },
+        {
+          "end": { "month": 5, "year": 2027 },
+          "firstMonth": 7,
+          "index": 7,
+          "kind": "month",
+          "lastMonth": 7,
+          "start": { "month": 5, "year": 2027 },
+          "year": 1
+        },
+        {
+          "end": { "month": 6, "year": 2027 },
+          "firstMonth": 8,
+          "index": 8,
+          "kind": "month",
+          "lastMonth": 8,
+          "start": { "month": 6, "year": 2027 },
+          "year": 1
+        },
+        {
+          "end": { "month": 7, "year": 2027 },
+          "firstMonth": 9,
+          "index": 9,
+          "kind": "month",
+          "lastMonth": 9,
+          "start": { "month": 7, "year": 2027 },
+          "year": 1
+        },
+        {
+          "end": { "month": 8, "year": 2027 },
+          "firstMonth": 10,
+          "index": 10,
+          "kind": "month",
+          "lastMonth": 10,
+          "start": { "month": 8, "year": 2027 },
+          "year": 1
+        },
+        {
+          "end": { "month": 9, "year": 2027 },
+          "firstMonth": 11,
+          "index": 11,
+          "kind": "month",
+          "lastMonth": 11,
+          "start": { "month": 9, "year": 2027 },
+          "year": 1
+        },
+        {
+          "end": { "month": 10, "year": 2027 },
+          "firstMonth": 12,
+          "index": 12,
+          "kind": "month",
+          "lastMonth": 12,
+          "start": { "month": 10, "year": 2027 },
+          "year": 1
+        },
+        {
+          "end": { "month": 1, "year": 2028 },
+          "firstMonth": 13,
+          "index": 13,
+          "kind": "quarter",
+          "lastMonth": 15,
+          "start": { "month": 11, "year": 2027 },
+          "year": 2
+        },
+        {
+          "end": { "month": 4, "year": 2028 },
+          "firstMonth": 16,
+          "index": 14,
+          "kind": "quarter",
+          "lastMonth": 18,
+          "start": { "month": 2, "year": 2028 },
+          "year": 2
+        },
+        {
+          "end": { "month": 7, "year": 2028 },
+          "firstMonth": 19,
+          "index": 15,
+          "kind": "quarter",
+          "lastMonth": 21,
+          "start": { "month": 5, "year": 2028 },
+          "year": 2
+        },
+        {
+          "end": { "month": 10, "year": 2028 },
+          "firstMonth": 22,
+          "index": 16,
+          "kind": "quarter",
+          "lastMonth": 24,
+          "start": { "month": 8, "year": 2028 },
+          "year": 2
+        },
+        {
+          "end": { "month": 1, "year": 2029 },
+          "firstMonth": 25,
+          "index": 17,
+          "kind": "quarter",
+          "lastMonth": 27,
+          "start": { "month": 11, "year": 2028 },
+          "year": 3
+        },
+        {
+          "end": { "month": 4, "year": 2029 },
+          "firstMonth": 28,
+          "index": 18,
+          "kind": "quarter",
+          "lastMonth": 30,
+          "start": { "month": 2, "year": 2029 },
+          "year": 3
+        },
+        {
+          "end": { "month": 7, "year": 2029 },
+          "firstMonth": 31,
+          "index": 19,
+          "kind": "quarter",
+          "lastMonth": 33,
+          "start": { "month": 5, "year": 2029 },
+          "year": 3
+        },
+        {
+          "end": { "month": 10, "year": 2029 },
+          "firstMonth": 34,
+          "index": 20,
+          "kind": "quarter",
+          "lastMonth": 36,
+          "start": { "month": 8, "year": 2029 },
+          "year": 3
+        }
+      ],
+      "reference": "2026-10-05"
+    },
+    "capped": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
+    "cogs": {
+      "byPeriod": [
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "1600000" },
+        { "currency": "DZD", "minor": "3200000" },
+        { "currency": "DZD", "minor": "4800000" },
+        { "currency": "DZD", "minor": "6400000" },
+        { "currency": "DZD", "minor": "8000000" },
+        { "currency": "DZD", "minor": "8000000" },
+        { "currency": "DZD", "minor": "8000000" },
+        { "currency": "DZD", "minor": "8000000" },
+        { "currency": "DZD", "minor": "8000000" },
+        { "currency": "DZD", "minor": "8000000" },
+        { "currency": "DZD", "minor": "8000000" },
+        { "currency": "DZD", "minor": "26960000" },
+        { "currency": "DZD", "minor": "32000000" },
+        { "currency": "DZD", "minor": "38160000" },
+        { "currency": "DZD", "minor": "45360000" },
+        { "currency": "DZD", "minor": "53920000" },
+        { "currency": "DZD", "minor": "64160000" },
+        { "currency": "DZD", "minor": "76240000" },
+        { "currency": "DZD", "minor": "90720000" }
+      ],
+      "monthly": [
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "1600000" },
+        { "currency": "DZD", "minor": "3200000" },
+        { "currency": "DZD", "minor": "4800000" },
+        { "currency": "DZD", "minor": "6400000" },
+        { "currency": "DZD", "minor": "8000000" },
+        { "currency": "DZD", "minor": "8000000" },
+        { "currency": "DZD", "minor": "8000000" },
+        { "currency": "DZD", "minor": "8000000" },
+        { "currency": "DZD", "minor": "8000000" },
+        { "currency": "DZD", "minor": "8000000" },
+        { "currency": "DZD", "minor": "8000000" },
+        { "currency": "DZD", "minor": "8480000" },
+        { "currency": "DZD", "minor": "8960000" },
+        { "currency": "DZD", "minor": "9520000" },
+        { "currency": "DZD", "minor": "10080000" },
+        { "currency": "DZD", "minor": "10640000" },
+        { "currency": "DZD", "minor": "11280000" },
+        { "currency": "DZD", "minor": "12000000" },
+        { "currency": "DZD", "minor": "12720000" },
+        { "currency": "DZD", "minor": "13440000" },
+        { "currency": "DZD", "minor": "14240000" },
+        { "currency": "DZD", "minor": "15120000" },
+        { "currency": "DZD", "minor": "16000000" },
+        { "currency": "DZD", "minor": "16960000" },
+        { "currency": "DZD", "minor": "17920000" },
+        { "currency": "DZD", "minor": "19040000" },
+        { "currency": "DZD", "minor": "20160000" },
+        { "currency": "DZD", "minor": "21360000" },
+        { "currency": "DZD", "minor": "22640000" },
+        { "currency": "DZD", "minor": "24000000" },
+        { "currency": "DZD", "minor": "25360000" },
+        { "currency": "DZD", "minor": "26880000" },
+        { "currency": "DZD", "minor": "28480000" },
+        { "currency": "DZD", "minor": "30240000" },
+        { "currency": "DZD", "minor": "32000000" }
+      ],
+      "provenance": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "T9.cogs", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false
+      }
+    },
+    "currency": "DZD",
+    "fixedCosts": {
+      "byPeriod": [
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "12000000" },
+        { "currency": "DZD", "minor": "12000000" },
+        { "currency": "DZD", "minor": "12000000" },
+        { "currency": "DZD", "minor": "12000000" },
+        { "currency": "DZD", "minor": "12000000" },
+        { "currency": "DZD", "minor": "12000000" },
+        { "currency": "DZD", "minor": "12000000" },
+        { "currency": "DZD", "minor": "12000000" }
+      ],
+      "monthly": [
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "4000000" }
+      ],
+      "provenance": {
+        "confidence": "high",
+        "inputs": [
+          { "id": "F4", "kind": "answer" }
+        ],
+        "source": "user",
+        "validated": true
+      }
+    },
+    "grossProfit": {
+      "byPeriod": [
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "2400000" },
+        { "currency": "DZD", "minor": "4800000" },
+        { "currency": "DZD", "minor": "7200000" },
+        { "currency": "DZD", "minor": "9600000" },
+        { "currency": "DZD", "minor": "12000000" },
+        { "currency": "DZD", "minor": "12000000" },
+        { "currency": "DZD", "minor": "12000000" },
+        { "currency": "DZD", "minor": "12000000" },
+        { "currency": "DZD", "minor": "12000000" },
+        { "currency": "DZD", "minor": "12000000" },
+        { "currency": "DZD", "minor": "12000000" },
+        { "currency": "DZD", "minor": "40440000" },
+        { "currency": "DZD", "minor": "48000000" },
+        { "currency": "DZD", "minor": "57240000" },
+        { "currency": "DZD", "minor": "68040000" },
+        { "currency": "DZD", "minor": "80880000" },
+        { "currency": "DZD", "minor": "96240000" },
+        { "currency": "DZD", "minor": "114360000" },
+        { "currency": "DZD", "minor": "136080000" }
+      ],
+      "monthly": [
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "2400000" },
+        { "currency": "DZD", "minor": "4800000" },
+        { "currency": "DZD", "minor": "7200000" },
+        { "currency": "DZD", "minor": "9600000" },
+        { "currency": "DZD", "minor": "12000000" },
+        { "currency": "DZD", "minor": "12000000" },
+        { "currency": "DZD", "minor": "12000000" },
+        { "currency": "DZD", "minor": "12000000" },
+        { "currency": "DZD", "minor": "12000000" },
+        { "currency": "DZD", "minor": "12000000" },
+        { "currency": "DZD", "minor": "12000000" },
+        { "currency": "DZD", "minor": "12720000" },
+        { "currency": "DZD", "minor": "13440000" },
+        { "currency": "DZD", "minor": "14280000" },
+        { "currency": "DZD", "minor": "15120000" },
+        { "currency": "DZD", "minor": "15960000" },
+        { "currency": "DZD", "minor": "16920000" },
+        { "currency": "DZD", "minor": "18000000" },
+        { "currency": "DZD", "minor": "19080000" },
+        { "currency": "DZD", "minor": "20160000" },
+        { "currency": "DZD", "minor": "21360000" },
+        { "currency": "DZD", "minor": "22680000" },
+        { "currency": "DZD", "minor": "24000000" },
+        { "currency": "DZD", "minor": "25440000" },
+        { "currency": "DZD", "minor": "26880000" },
+        { "currency": "DZD", "minor": "28560000" },
+        { "currency": "DZD", "minor": "30240000" },
+        { "currency": "DZD", "minor": "32040000" },
+        { "currency": "DZD", "minor": "33960000" },
+        { "currency": "DZD", "minor": "36000000" },
+        { "currency": "DZD", "minor": "38040000" },
+        { "currency": "DZD", "minor": "40320000" },
+        { "currency": "DZD", "minor": "42720000" },
+        { "currency": "DZD", "minor": "45360000" },
+        { "currency": "DZD", "minor": "48000000" }
+      ],
+      "provenance": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "F1", "kind": "answer" },
+          { "id": "T9.revenue", "kind": "rule" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "T9.cogs", "kind": "rule" },
+          { "id": "T9.gross_profit", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false
+      }
+    },
+    "marketing": {
+      "byPeriod": [
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "3000000" },
+        { "currency": "DZD", "minor": "3000000" },
+        { "currency": "DZD", "minor": "3000000" },
+        { "currency": "DZD", "minor": "3000000" },
+        { "currency": "DZD", "minor": "3000000" },
+        { "currency": "DZD", "minor": "3000000" },
+        { "currency": "DZD", "minor": "3000000" },
+        { "currency": "DZD", "minor": "3000000" }
+      ],
+      "monthly": [
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" },
+        { "currency": "DZD", "minor": "1000000" }
+      ],
+      "provenance": {
+        "confidence": "medium",
+        "inputs": [
+          { "id": "F4.1", "kind": "answer" }
+        ],
+        "source": "user",
+        "validated": true
+      }
+    },
+    "notes": [
+      { "code": "staff_unset", "questionId": "E8", "state": "missing" },
+      { "code": "seasonality_unset", "questionId": "D7", "state": "unknown" },
+      { "code": "capacity_unlimited", "questionId": "E7", "state": "missing" },
+      { "code": "inflation_not_applied" }
+    ],
+    "operatingCosts": {
+      "byPeriod": [
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "15000000" },
+        { "currency": "DZD", "minor": "15000000" },
+        { "currency": "DZD", "minor": "15000000" },
+        { "currency": "DZD", "minor": "15000000" },
+        { "currency": "DZD", "minor": "15000000" },
+        { "currency": "DZD", "minor": "15000000" },
+        { "currency": "DZD", "minor": "15000000" },
+        { "currency": "DZD", "minor": "15000000" }
+      ],
+      "monthly": [
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" },
+        { "currency": "DZD", "minor": "5000000" }
+      ],
+      "provenance": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "F4", "kind": "answer" },
+          { "id": "E8", "kind": "answer" },
+          { "id": "F4.1", "kind": "answer" },
+          { "id": "T9.operating_costs", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false
+      }
+    },
+    "operatingProfit": {
+      "byPeriod": [
+        { "currency": "DZD", "minor": "-5000000" },
+        { "currency": "DZD", "minor": "-2600000" },
+        { "currency": "DZD", "minor": "-200000" },
+        { "currency": "DZD", "minor": "2200000" },
+        { "currency": "DZD", "minor": "4600000" },
+        { "currency": "DZD", "minor": "7000000" },
+        { "currency": "DZD", "minor": "7000000" },
+        { "currency": "DZD", "minor": "7000000" },
+        { "currency": "DZD", "minor": "7000000" },
+        { "currency": "DZD", "minor": "7000000" },
+        { "currency": "DZD", "minor": "7000000" },
+        { "currency": "DZD", "minor": "7000000" },
+        { "currency": "DZD", "minor": "25440000" },
+        { "currency": "DZD", "minor": "33000000" },
+        { "currency": "DZD", "minor": "42240000" },
+        { "currency": "DZD", "minor": "53040000" },
+        { "currency": "DZD", "minor": "65880000" },
+        { "currency": "DZD", "minor": "81240000" },
+        { "currency": "DZD", "minor": "99360000" },
+        { "currency": "DZD", "minor": "121080000" }
+      ],
+      "monthly": [
+        { "currency": "DZD", "minor": "-5000000" },
+        { "currency": "DZD", "minor": "-2600000" },
+        { "currency": "DZD", "minor": "-200000" },
+        { "currency": "DZD", "minor": "2200000" },
+        { "currency": "DZD", "minor": "4600000" },
+        { "currency": "DZD", "minor": "7000000" },
+        { "currency": "DZD", "minor": "7000000" },
+        { "currency": "DZD", "minor": "7000000" },
+        { "currency": "DZD", "minor": "7000000" },
+        { "currency": "DZD", "minor": "7000000" },
+        { "currency": "DZD", "minor": "7000000" },
+        { "currency": "DZD", "minor": "7000000" },
+        { "currency": "DZD", "minor": "7720000" },
+        { "currency": "DZD", "minor": "8440000" },
+        { "currency": "DZD", "minor": "9280000" },
+        { "currency": "DZD", "minor": "10120000" },
+        { "currency": "DZD", "minor": "10960000" },
+        { "currency": "DZD", "minor": "11920000" },
+        { "currency": "DZD", "minor": "13000000" },
+        { "currency": "DZD", "minor": "14080000" },
+        { "currency": "DZD", "minor": "15160000" },
+        { "currency": "DZD", "minor": "16360000" },
+        { "currency": "DZD", "minor": "17680000" },
+        { "currency": "DZD", "minor": "19000000" },
+        { "currency": "DZD", "minor": "20440000" },
+        { "currency": "DZD", "minor": "21880000" },
+        { "currency": "DZD", "minor": "23560000" },
+        { "currency": "DZD", "minor": "25240000" },
+        { "currency": "DZD", "minor": "27040000" },
+        { "currency": "DZD", "minor": "28960000" },
+        { "currency": "DZD", "minor": "31000000" },
+        { "currency": "DZD", "minor": "33040000" },
+        { "currency": "DZD", "minor": "35320000" },
+        { "currency": "DZD", "minor": "37720000" },
+        { "currency": "DZD", "minor": "40360000" },
+        { "currency": "DZD", "minor": "43000000" }
+      ],
+      "provenance": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "F1", "kind": "answer" },
+          { "id": "T9.revenue", "kind": "rule" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "T9.cogs", "kind": "rule" },
+          { "id": "T9.gross_profit", "kind": "rule" },
+          { "id": "F4", "kind": "answer" },
+          { "id": "E8", "kind": "answer" },
+          { "id": "F4.1", "kind": "answer" },
+          { "id": "T9.operating_costs", "kind": "rule" },
+          { "id": "T9.operating_profit", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false
+      }
+    },
+    "payroll": {
+      "byPeriod": [
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" }
+      ],
+      "monthly": [
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "0" }
+      ],
+      "provenance": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "E8", "kind": "answer" }
+        ],
+        "source": "assumption",
+        "validated": false
+      }
+    },
+    "revenue": {
+      "byPeriod": [
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "8000000" },
+        { "currency": "DZD", "minor": "12000000" },
+        { "currency": "DZD", "minor": "16000000" },
+        { "currency": "DZD", "minor": "20000000" },
+        { "currency": "DZD", "minor": "20000000" },
+        { "currency": "DZD", "minor": "20000000" },
+        { "currency": "DZD", "minor": "20000000" },
+        { "currency": "DZD", "minor": "20000000" },
+        { "currency": "DZD", "minor": "20000000" },
+        { "currency": "DZD", "minor": "20000000" },
+        { "currency": "DZD", "minor": "67400000" },
+        { "currency": "DZD", "minor": "80000000" },
+        { "currency": "DZD", "minor": "95400000" },
+        { "currency": "DZD", "minor": "113400000" },
+        { "currency": "DZD", "minor": "134800000" },
+        { "currency": "DZD", "minor": "160400000" },
+        { "currency": "DZD", "minor": "190600000" },
+        { "currency": "DZD", "minor": "226800000" }
+      ],
+      "monthly": [
+        { "currency": "DZD", "minor": "0" },
+        { "currency": "DZD", "minor": "4000000" },
+        { "currency": "DZD", "minor": "8000000" },
+        { "currency": "DZD", "minor": "12000000" },
+        { "currency": "DZD", "minor": "16000000" },
+        { "currency": "DZD", "minor": "20000000" },
+        { "currency": "DZD", "minor": "20000000" },
+        { "currency": "DZD", "minor": "20000000" },
+        { "currency": "DZD", "minor": "20000000" },
+        { "currency": "DZD", "minor": "20000000" },
+        { "currency": "DZD", "minor": "20000000" },
+        { "currency": "DZD", "minor": "20000000" },
+        { "currency": "DZD", "minor": "21200000" },
+        { "currency": "DZD", "minor": "22400000" },
+        { "currency": "DZD", "minor": "23800000" },
+        { "currency": "DZD", "minor": "25200000" },
+        { "currency": "DZD", "minor": "26600000" },
+        { "currency": "DZD", "minor": "28200000" },
+        { "currency": "DZD", "minor": "30000000" },
+        { "currency": "DZD", "minor": "31800000" },
+        { "currency": "DZD", "minor": "33600000" },
+        { "currency": "DZD", "minor": "35600000" },
+        { "currency": "DZD", "minor": "37800000" },
+        { "currency": "DZD", "minor": "40000000" },
+        { "currency": "DZD", "minor": "42400000" },
+        { "currency": "DZD", "minor": "44800000" },
+        { "currency": "DZD", "minor": "47600000" },
+        { "currency": "DZD", "minor": "50400000" },
+        { "currency": "DZD", "minor": "53400000" },
+        { "currency": "DZD", "minor": "56600000" },
+        { "currency": "DZD", "minor": "60000000" },
+        { "currency": "DZD", "minor": "63400000" },
+        { "currency": "DZD", "minor": "67200000" },
+        { "currency": "DZD", "minor": "71200000" },
+        { "currency": "DZD", "minor": "75600000" },
+        { "currency": "DZD", "minor": "80000000" }
+      ],
+      "provenance": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "F1", "kind": "answer" },
+          { "id": "T9.revenue", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false
+      }
+    },
+    "seasonality": {
+      "factors": ["1/1", "1/1", "1/1", "1/1", "1/1", "1/1", "1/1", "1/1", "1/1", "1/1", "1/1", "1/1"],
+      "kind": "none"
+    },
+    "units": {
+      "byPeriod": [
+        "0",
+        "20",
+        "40",
+        "60",
+        "80",
+        "100",
+        "100",
+        "100",
+        "100",
+        "100",
+        "100",
+        "100",
+        "337",
+        "400",
+        "477",
+        "567",
+        "674",
+        "802",
+        "953",
+        "1134"
+      ],
+      "monthly": [
+        "0",
+        "20",
+        "40",
+        "60",
+        "80",
+        "100",
+        "100",
+        "100",
+        "100",
+        "100",
+        "100",
+        "100",
+        "106",
+        "112",
+        "119",
+        "126",
+        "133",
+        "141",
+        "150",
+        "159",
+        "168",
+        "178",
+        "189",
+        "200",
+        "212",
+        "224",
+        "238",
+        "252",
+        "267",
+        "283",
+        "300",
+        "317",
+        "336",
+        "356",
+        "378",
+        "400"
+      ],
+      "provenance": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "T9.units", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false
+      }
+    },
+    "yearlyGrowth": {
+      "confidence": "low",
+      "inputs": [
+        { "id": "F6.2", "kind": "answer" }
+      ],
+      "source": "user",
+      "validated": false,
+      "value": ["1/1", "1/1"]
+    }
+  },
+  "scenarios": {
+    "base": {
+      "breakEvenMonth": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "F1", "kind": "answer" },
+          { "id": "T9.revenue", "kind": "rule" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "T9.cogs", "kind": "rule" },
+          { "id": "T9.gross_profit", "kind": "rule" },
+          { "id": "F4", "kind": "answer" },
+          { "id": "E8", "kind": "answer" },
+          { "id": "F4.1", "kind": "answer" },
+          { "id": "T9.operating_costs", "kind": "rule" },
+          { "id": "T9.operating_profit", "kind": "rule" },
+          { "id": "T10.scenario", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false,
+        "value": 4
+      },
+      "firstYearOperatingProfit": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "F1", "kind": "answer" },
+          { "id": "T9.revenue", "kind": "rule" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "T9.cogs", "kind": "rule" },
+          { "id": "T9.gross_profit", "kind": "rule" },
+          { "id": "F4", "kind": "answer" },
+          { "id": "E8", "kind": "answer" },
+          { "id": "F4.1", "kind": "answer" },
+          { "id": "T9.operating_costs", "kind": "rule" },
+          { "id": "T9.operating_profit", "kind": "rule" },
+          { "id": "T10.scenario", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false,
+        "value": { "currency": "DZD", "minor": "48000000" }
+      },
+      "funding": {
+        "need": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "F7", "kind": "answer" },
+            { "id": "payment.deposit", "kind": "default" },
+            { "id": "T9.cash_receipts", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "fixture.dz.sole.turnover_levy", "kind": "country_pack_item" },
+            { "id": "G1", "kind": "answer" },
+            { "id": "T9.tax_due", "kind": "rule" },
+            { "id": "T9.tax_paid", "kind": "rule" },
+            { "id": "T9.net_cash", "kind": "rule" },
+            { "id": "F5", "kind": "answer" },
+            { "id": "T9.cumulative_cash", "kind": "rule" },
+            { "id": "T9.funding_need", "kind": "rule" },
+            { "id": "T10.scenario", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": { "currency": "DZD", "minor": "41800000" }
+        },
+        "status": "ok"
+      },
+      "kind": "base",
+      "launchDelayMonths": 0,
+      "salesMultiplier": "1/1",
+      "vcMultiplier": "1/1"
+    },
+    "conservative": {
+      "breakEvenMonth": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "T9.sales_multiplier", "kind": "rule" },
+          { "id": "T9.launch_delay", "kind": "rule" },
+          { "id": "F1", "kind": "answer" },
+          { "id": "T9.revenue", "kind": "rule" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "T9.cogs", "kind": "rule" },
+          { "id": "T9.cogs_multiplier", "kind": "rule" },
+          { "id": "T9.gross_profit", "kind": "rule" },
+          { "id": "F4", "kind": "answer" },
+          { "id": "E8", "kind": "answer" },
+          { "id": "F4.1", "kind": "answer" },
+          { "id": "T9.operating_costs", "kind": "rule" },
+          { "id": "T9.operating_profit", "kind": "rule" },
+          { "id": "scenario.conservative.sales_factor", "kind": "default" },
+          { "id": "scenario.conservative.vc_factor", "kind": "default" },
+          { "id": "scenario.conservative.launch_delay_months", "kind": "default" },
+          { "id": "T10.scenario", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false,
+        "value": 8
+      },
+      "firstYearOperatingProfit": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "T9.sales_multiplier", "kind": "rule" },
+          { "id": "T9.launch_delay", "kind": "rule" },
+          { "id": "F1", "kind": "answer" },
+          { "id": "T9.revenue", "kind": "rule" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "T9.cogs", "kind": "rule" },
+          { "id": "T9.cogs_multiplier", "kind": "rule" },
+          { "id": "T9.gross_profit", "kind": "rule" },
+          { "id": "F4", "kind": "answer" },
+          { "id": "E8", "kind": "answer" },
+          { "id": "F4.1", "kind": "answer" },
+          { "id": "T9.operating_costs", "kind": "rule" },
+          { "id": "T9.operating_profit", "kind": "rule" },
+          { "id": "scenario.conservative.sales_factor", "kind": "default" },
+          { "id": "scenario.conservative.vc_factor", "kind": "default" },
+          { "id": "scenario.conservative.launch_delay_months", "kind": "default" },
+          { "id": "T10.scenario", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false,
+        "value": { "currency": "DZD", "minor": "-19680000" }
+      },
+      "funding": {
+        "need": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "T9.sales_multiplier", "kind": "rule" },
+            { "id": "T9.launch_delay", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "F7", "kind": "answer" },
+            { "id": "payment.deposit", "kind": "default" },
+            { "id": "T9.cash_receipts", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.cogs_multiplier", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "fixture.dz.sole.turnover_levy", "kind": "country_pack_item" },
+            { "id": "G1", "kind": "answer" },
+            { "id": "T9.tax_due", "kind": "rule" },
+            { "id": "T9.tax_paid", "kind": "rule" },
+            { "id": "T9.net_cash", "kind": "rule" },
+            { "id": "F5", "kind": "answer" },
+            { "id": "T9.cumulative_cash", "kind": "rule" },
+            { "id": "T9.funding_need", "kind": "rule" },
+            { "id": "scenario.conservative.sales_factor", "kind": "default" },
+            { "id": "scenario.conservative.vc_factor", "kind": "default" },
+            { "id": "scenario.conservative.launch_delay_months", "kind": "default" },
+            { "id": "T10.scenario", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": { "currency": "DZD", "minor": "61360000" }
+        },
+        "status": "ok"
+      },
+      "kind": "conservative",
+      "launchDelayMonths": 3,
+      "salesMultiplier": "3/5",
+      "vcMultiplier": "11/10"
+    },
+    "optimistic": {
+      "breakEvenMonth": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "T9.sales_multiplier", "kind": "rule" },
+          { "id": "F1", "kind": "answer" },
+          { "id": "T9.revenue", "kind": "rule" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "T9.cogs", "kind": "rule" },
+          { "id": "T9.cogs_multiplier", "kind": "rule" },
+          { "id": "T9.gross_profit", "kind": "rule" },
+          { "id": "F4", "kind": "answer" },
+          { "id": "E8", "kind": "answer" },
+          { "id": "F4.1", "kind": "answer" },
+          { "id": "T9.operating_costs", "kind": "rule" },
+          { "id": "T9.operating_profit", "kind": "rule" },
+          { "id": "scenario.optimistic.sales_factor", "kind": "default" },
+          { "id": "scenario.optimistic.vc_factor", "kind": "default" },
+          { "id": "T10.scenario", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false,
+        "value": 3
+      },
+      "firstYearOperatingProfit": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "T9.sales_multiplier", "kind": "rule" },
+          { "id": "F1", "kind": "answer" },
+          { "id": "T9.revenue", "kind": "rule" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "T9.cogs", "kind": "rule" },
+          { "id": "T9.cogs_multiplier", "kind": "rule" },
+          { "id": "T9.gross_profit", "kind": "rule" },
+          { "id": "F4", "kind": "answer" },
+          { "id": "E8", "kind": "answer" },
+          { "id": "F4.1", "kind": "answer" },
+          { "id": "T9.operating_costs", "kind": "rule" },
+          { "id": "T9.operating_profit", "kind": "rule" },
+          { "id": "scenario.optimistic.sales_factor", "kind": "default" },
+          { "id": "scenario.optimistic.vc_factor", "kind": "default" },
+          { "id": "T10.scenario", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false,
+        "value": { "currency": "DZD", "minor": "85080000" }
+      },
+      "funding": {
+        "need": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "T9.sales_multiplier", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "F7", "kind": "answer" },
+            { "id": "payment.deposit", "kind": "default" },
+            { "id": "T9.cash_receipts", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.cogs_multiplier", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "fixture.dz.sole.turnover_levy", "kind": "country_pack_item" },
+            { "id": "G1", "kind": "answer" },
+            { "id": "T9.tax_due", "kind": "rule" },
+            { "id": "T9.tax_paid", "kind": "rule" },
+            { "id": "T9.net_cash", "kind": "rule" },
+            { "id": "F5", "kind": "answer" },
+            { "id": "T9.cumulative_cash", "kind": "rule" },
+            { "id": "T9.funding_need", "kind": "rule" },
+            { "id": "scenario.optimistic.sales_factor", "kind": "default" },
+            { "id": "scenario.optimistic.vc_factor", "kind": "default" },
+            { "id": "T10.scenario", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": { "currency": "DZD", "minor": "40528000" }
+        },
+        "status": "ok"
+      },
+      "kind": "optimistic",
+      "launchDelayMonths": 0,
+      "salesMultiplier": "13/10",
+      "vcMultiplier": "19/20"
+    }
+  },
+  "tornado": {
+    "change": {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "scenario.tornado_swing", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": "1/5"
+    },
+    "rows": [
+      {
+        "atHigh": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "T9.price_multiplier", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "scenario.tornado_swing", "kind": "default" },
+            { "id": "T10.tornado", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": { "currency": "DZD", "minor": "84000000" }
+        },
+        "atLow": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "T9.price_multiplier", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "scenario.tornado_swing", "kind": "default" },
+            { "id": "T10.tornado", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": { "currency": "DZD", "minor": "12000000" }
+        },
+        "swing": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "T9.price_multiplier", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "scenario.tornado_swing", "kind": "default" },
+            { "id": "T10.tornado", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": { "currency": "DZD", "minor": "72000000" }
+        },
+        "variable": "price"
+      },
+      {
+        "atHigh": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "T9.sales_multiplier", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "scenario.tornado_swing", "kind": "default" },
+            { "id": "T10.tornado", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": { "currency": "DZD", "minor": "69600000" }
+        },
+        "atLow": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "T9.sales_multiplier", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "scenario.tornado_swing", "kind": "default" },
+            { "id": "T10.tornado", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": { "currency": "DZD", "minor": "26400000" }
+        },
+        "swing": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "T9.sales_multiplier", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "scenario.tornado_swing", "kind": "default" },
+            { "id": "T10.tornado", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": { "currency": "DZD", "minor": "43200000" }
+        },
+        "variable": "sales"
+      },
+      {
+        "atHigh": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.cogs_multiplier", "kind": "rule" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "scenario.tornado_swing", "kind": "default" },
+            { "id": "T10.tornado", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": { "currency": "DZD", "minor": "33600000" }
+        },
+        "atLow": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.cogs_multiplier", "kind": "rule" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "scenario.tornado_swing", "kind": "default" },
+            { "id": "T10.tornado", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": { "currency": "DZD", "minor": "62400000" }
+        },
+        "swing": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.cogs_multiplier", "kind": "rule" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "scenario.tornado_swing", "kind": "default" },
+            { "id": "T10.tornado", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": { "currency": "DZD", "minor": "28800000" }
+        },
+        "variable": "vc"
+      },
+      {
+        "atHigh": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "T9.fixed_cost_multiplier", "kind": "rule" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "scenario.tornado_swing", "kind": "default" },
+            { "id": "T10.tornado", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": { "currency": "DZD", "minor": "36000000" }
+        },
+        "atLow": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "T9.fixed_cost_multiplier", "kind": "rule" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "scenario.tornado_swing", "kind": "default" },
+            { "id": "T10.tornado", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": { "currency": "DZD", "minor": "60000000" }
+        },
+        "swing": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "T9.fixed_cost_multiplier", "kind": "rule" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "scenario.tornado_swing", "kind": "default" },
+            { "id": "T10.tornado", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": { "currency": "DZD", "minor": "24000000" }
+        },
+        "variable": "fixed_costs"
+      }
+    ],
+    "top": {
+      "confidence": "low",
+      "inputs": [
+        { "id": "F6", "kind": "answer" },
+        { "id": "D7", "kind": "answer" },
+        { "id": "E7", "kind": "answer" },
+        { "id": "F6.2", "kind": "answer" },
+        { "id": "T9.units", "kind": "rule" },
+        { "id": "F1", "kind": "answer" },
+        { "id": "T9.revenue", "kind": "rule" },
+        { "id": "T9.price_multiplier", "kind": "rule" },
+        { "id": "F3", "kind": "answer" },
+        { "id": "T9.cogs", "kind": "rule" },
+        { "id": "T9.gross_profit", "kind": "rule" },
+        { "id": "F4", "kind": "answer" },
+        { "id": "E8", "kind": "answer" },
+        { "id": "F4.1", "kind": "answer" },
+        { "id": "T9.operating_costs", "kind": "rule" },
+        { "id": "T9.operating_profit", "kind": "rule" },
+        { "id": "scenario.tornado_swing", "kind": "default" },
+        { "id": "T10.tornado", "kind": "rule" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": "price"
+    }
+  },
+  "unitEconomics": {
+    "breakEvenMonth": {
+      "confidence": "low",
+      "inputs": [
+        { "id": "F6", "kind": "answer" },
+        { "id": "D7", "kind": "answer" },
+        { "id": "E7", "kind": "answer" },
+        { "id": "F6.2", "kind": "answer" },
+        { "id": "T9.units", "kind": "rule" },
+        { "id": "F1", "kind": "answer" },
+        { "id": "T9.revenue", "kind": "rule" },
+        { "id": "F3", "kind": "answer" },
+        { "id": "T9.cogs", "kind": "rule" },
+        { "id": "T9.gross_profit", "kind": "rule" },
+        { "id": "F4", "kind": "answer" },
+        { "id": "E8", "kind": "answer" },
+        { "id": "F4.1", "kind": "answer" },
+        { "id": "T9.operating_costs", "kind": "rule" },
+        { "id": "T9.operating_profit", "kind": "rule" },
+        { "id": "T8.break_even_month", "kind": "rule" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": 4
+    },
+    "breakEvenRevenue": {
+      "confidence": "low",
+      "inputs": [
+        { "id": "F4", "kind": "answer" },
+        { "id": "E8", "kind": "answer" },
+        { "id": "F4.1", "kind": "answer" },
+        { "id": "T9.operating_costs", "kind": "rule" },
+        { "id": "T8.fixed_cost", "kind": "rule" },
+        { "id": "F1", "kind": "answer" },
+        { "id": "F3", "kind": "answer" },
+        { "id": "T8.contribution_margin", "kind": "rule" },
+        { "id": "T8.break_even_revenue", "kind": "rule" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": { "currency": "DZD", "minor": "8333333" }
+    },
+    "breakEvenUnits": {
+      "confidence": "low",
+      "inputs": [
+        { "id": "F4", "kind": "answer" },
+        { "id": "E8", "kind": "answer" },
+        { "id": "F4.1", "kind": "answer" },
+        { "id": "T9.operating_costs", "kind": "rule" },
+        { "id": "T8.fixed_cost", "kind": "rule" },
+        { "id": "F1", "kind": "answer" },
+        { "id": "F3", "kind": "answer" },
+        { "id": "T8.contribution_margin", "kind": "rule" },
+        { "id": "T8.break_even_units", "kind": "rule" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": "42"
+    },
+    "contributionMargin": {
+      "confidence": "high",
+      "inputs": [
+        { "id": "F1", "kind": "answer" },
+        { "id": "F3", "kind": "answer" },
+        { "id": "T8.contribution_margin", "kind": "rule" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": { "currency": "DZD", "minor": "120000" }
+    },
+    "contributionMarginRate": {
+      "confidence": "high",
+      "inputs": [
+        { "id": "F1", "kind": "answer" },
+        { "id": "F3", "kind": "answer" },
+        { "id": "T8.contribution_margin", "kind": "rule" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": "3/5"
+    },
+    "fixedCost": {
+      "confidence": "low",
+      "inputs": [
+        { "id": "F4", "kind": "answer" },
+        { "id": "E8", "kind": "answer" },
+        { "id": "F4.1", "kind": "answer" },
+        { "id": "T9.operating_costs", "kind": "rule" },
+        { "id": "T8.fixed_cost", "kind": "rule" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": { "currency": "DZD", "minor": "5000000" }
+    },
+    "status": "ok",
+    "subscription": null
+  }
+}

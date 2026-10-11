@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex">
+<title>مراجعة المحرّك الحسابي</title>
+<style>
+:root{color-scheme:light dark;--bg:#ffffff;--fg:#0a0a0a;--muted:#4d4d4d;--line:#b5b5b5;--soft:#f1f1f1;--gold:#d4a537;--chip:#000000;--teal:#1fa3c7;--link:#0a0a0a;--ring:#000000}
+@media (prefers-color-scheme:dark){:root{--bg:#000000;--fg:#f2f2f2;--muted:#b8b8b8;--line:#3d3d3d;--soft:#141414;--link:#1fa3c7;--ring:#000000}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:1rem/1.85 Tajawal,Cairo,"Segoe UI",Tahoma,"Noto Sans Arabic","Noto Naskh Arabic",system-ui,sans-serif}
+.page{max-inline-size:62rem;margin-inline:auto;padding-inline:1rem;padding-block:1rem 3rem}
+h1{font-size:1.9rem;line-height:1.45;margin-block:1.5rem .5rem}
+h2{font-size:1.5rem;line-height:1.5;margin-block:3rem 1rem;padding-block-start:.75rem;border-block-start:3px solid var(--fg)}
+h3{font-size:1.15rem;line-height:1.6;margin-block:2rem .5rem}
+p,li,dd{max-inline-size:70ch;overflow-wrap:anywhere}
+.lead{font-size:1.1rem}
+.sentence{font-size:1.1rem}
+.banner{border-inline-start:.4rem solid var(--fg);background:var(--soft);padding:.75rem 1rem;margin-block:1.25rem}
+a{color:var(--link);text-decoration:underline;text-decoration-color:var(--teal);text-decoration-thickness:.15em;text-underline-offset:.25em}
+:focus-visible{outline:3px solid var(--teal);outline-offset:2px;box-shadow:0 0 0 2px var(--ring)}
+.skip{position:absolute;inset-inline-start:1rem;inset-block-start:-4rem;background:var(--bg);color:var(--fg);padding:.5rem 1rem;border:2px solid var(--fg)}
+.skip:focus{inset-block-start:.5rem}
+nav ul,.plain{list-style:none;margin:0;padding:0}
+nav li{display:inline-block;margin-inline-end:1.25rem}
+.plain li{padding-block:.35rem;border-block-end:1px solid var(--line)}
+table{inline-size:100%;border-collapse:collapse;margin-block:1rem 1.5rem;font-size:.95rem}
+caption{text-align:start;font-weight:700;padding-block-end:.5rem}
+th{text-align:start;font-weight:700}
+thead th{border-block-end:2px solid var(--fg);padding:.5rem}
+td,tbody th{border-block-end:1px solid var(--line);padding:.6rem .5rem;vertical-align:top;font-variant-numeric:tabular-nums}
+.key{background:var(--chip);color:var(--gold);border:1px solid var(--gold);padding:.05em .5em;font-weight:700;white-space:nowrap}
+.mark{font-weight:700;white-space:nowrap}
+.mark.bad{text-decoration:underline wavy}
+.sev{margin-inline-end:.35rem}
+.prov{color:var(--muted);font-size:.9rem}
+.inputs{display:grid;grid-template-columns:minmax(0,16rem) minmax(0,1fr);gap:.35rem 1.25rem;margin:0}
+.inputs dt{font-weight:700}
+.inputs dd{margin:0}
+code{font-family:ui-monospace,Consolas,monospace;direction:ltr;unicode-bidi:isolate}
+footer{margin-block-start:3rem;padding-block-start:1rem;border-block-start:1px solid var(--line);color:var(--muted)}
+@media (max-width:42em){
+.inputs{grid-template-columns:minmax(0,1fr)}
+.inputs dd{margin-block-end:.6rem}
+table.stack thead{position:absolute;inline-size:1px;block-size:1px;overflow:hidden;clip-path:inset(50%)}
+table.stack tr{display:block;padding-block:.6rem;border-block-end:1px solid var(--line)}
+table.stack td,table.stack tbody th{display:block;border:0;padding:.15rem 0}
+table.stack td::before{content:attr(data-label);display:block;color:var(--muted);font-size:.85rem}
+h1{font-size:1.6rem}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">انتقل إلى المحتوى</a>
+<div class="page">
+<header>
+<h1>مراجعة المحرّك الحسابي: ثلاثة مشاريع نموذجية</h1>
+<p class="lead">هذه وثيقة للمالك وليست جزءًا من التطبيق. تعرض ما يحسبه المحرّك الحسابي (Engine) في نسخته <bdi dir="ltr">1.0.0</bdi> لثلاثة مشاريع نموذجية، ولكل رقم رئيسي حسابه اليدوي بجانبه وعلامة تقول هل يطابقه المحرّك. كل رقم هنا من حساب حتمي: المحرّك لا يكتب رقمًا ولا يستعين بنموذج لغوي.</p>
+</header>
+<main id="main">
+<p class="banner" role="note">هذه مشاريع نموذجية وليست حقيقية. قواعد الضرائب فيها تجريبية غير موثّقة، ومصدرها عنوان وهمي، ولا تعني أي نسبة حقيقية. ولا نصيحة مالية أو ضريبية في هذه الصفحة. ولن يرى المؤسسون أي رقم من المحرّك قبل المرحلة <bdi dir="ltr">M5</bdi>.</p>
+<nav aria-label="المشاريع"><ul><li><a href="#jo-service-subscription">خدمة برمجية بالاشتراك الشهري</a></li>
+<li><a href="#jo-home-ecommerce">متجر إلكتروني منزلي للبضائع المستوردة</a></li>
+<li><a href="#dz-auto-entrepreneur">مقاول ذاتي يبيع أكلات منزلية في الجزائر</a></li></ul></nav>
+<section id="how" aria-labelledby="how-title">
+<h2 id="how-title">كيف تقرأ كل مشروع</h2>
+<p>يبدأ كل مشروع بجملة تصفه، ثم المدخلات بالكلمات كما أجاب المؤسس، ثم جدول الأرقام الرئيسية: الرقم، وحسابه اليدوي، وما أخرجه المحرّك، وهل يتطابقان. بعد ذلك السيناريوهات الثلاثة (Scenarios) ومخطط الحساسية (Tornado) الذي يرتّب المتغيّرات بحسب أثرها على ربح السنة الأولى، ثم اختبار العملة الأجنبية (FX test) إن وُجد، ثم التنبيهات التي ظهرت وما افترضه المحرّك لأن إجابة ناقصة. الأرقام المقصودة بالنظر مكتوبة بخط عريض ذهبي على أسود.</p>
+</section>
+<section id="jo-service-subscription" aria-labelledby="jo-service-subscription-title">
+<h2 id="jo-service-subscription-title"><bdi dir="ltr">1</bdi>. خدمة برمجية بالاشتراك الشهري</h2>
+<p class="sentence">شركة أردنية صغيرة تبيع خدمة برمجية باشتراك شهري قيمته <bdi dir="ltr">30</bdi> د.أ، وتبدأ بلا مشتركين ثم تصل إلى <bdi dir="ltr">200</bdi> مشترك في الشهر السادس وتثبت عليه.</p>
+<h3>المدخلات بالكلمات</h3>
+<dl class="inputs"><dt>سعر البيع للوحدة (<bdi dir="ltr">F1</bdi>)</dt><dd><bdi dir="ltr">30</bdi> د.أ</dd>
+<dt>نموذج التسعير (<bdi dir="ltr">F2</bdi>)</dt><dd>اشتراك</dd>
+<dt>نسبة تسرّب المشتركين شهريًا (<bdi dir="ltr">F2.1</bdi>)</dt><dd><bdi dir="ltr">5%</bdi></dd>
+<dt>التكلفة المتغيرة للوحدة (<bdi dir="ltr">F3</bdi>)</dt><dd>الاستضافة والخدمات السحابية: <bdi dir="ltr">4</bdi> د.أ، دعم العملاء: <bdi dir="ltr">2</bdi> د.أ. المجموع <bdi dir="ltr">6</bdi> د.أ</dd>
+<dt>التكاليف الثابتة الشهرية (<bdi dir="ltr">F4</bdi>)</dt><dd>إيجار المكتب: <bdi dir="ltr">1,200</bdi> د.أ، البرمجيات والاشتراكات: <bdi dir="ltr">800</bdi> د.أ. المجموع <bdi dir="ltr">2,000</bdi> د.أ</dd>
+<dt>ميزانية التسويق الشهرية (<bdi dir="ltr">F4.1</bdi>)</dt><dd><bdi dir="ltr">600</bdi> د.أ</dd>
+<dt>الموظفون (<bdi dir="ltr">E8</bdi>)</dt><dd>مطوّر برمجيات: <bdi dir="ltr">1,500</bdi> د.أ شهريًا من الشهر <bdi dir="ltr">4</bdi></dd>
+<dt>تكاليف التأسيس (<bdi dir="ltr">F5</bdi>)</dt><dd>المعدات: <bdi dir="ltr">7,000</bdi> د.أ، التسجيل والاستشارة القانونية: <bdi dir="ltr">3,000</bdi> د.أ، إطلاق المنتج: <bdi dir="ltr">2,000</bdi> د.أ. المجموع <bdi dir="ltr">12,000</bdi> د.أ</dd>
+<dt>المبيعات المتوقعة بالوحدات (<bdi dir="ltr">F6</bdi>)</dt><dd>الشهر <bdi dir="ltr">1</bdi>: <bdi dir="ltr">0</bdi>، الشهر <bdi dir="ltr">6</bdi>: <bdi dir="ltr">200</bdi>، الشهر <bdi dir="ltr">12</bdi>: <bdi dir="ltr">200</bdi> وحدة</dd>
+<dt>النمو السنوي بعد السنة الأولى (<bdi dir="ltr">F6.2</bdi>)</dt><dd><bdi dir="ltr">0%</bdi></dd>
+<dt>الموسمية (<bdi dir="ltr">D7</bdi>)</dt><dd>غير موسمي</dd>
+<dt>الطاقة القصوى شهريًا (<bdi dir="ltr">E7</bdi>)</dt><dd>لم يُجَب</dd>
+<dt>طريقة دفع العميل (<bdi dir="ltr">F7</bdi>)</dt><dd>نقدًا عند الشراء</dd>
+<dt>أسعار المنافسين (<bdi dir="ltr">D4</bdi>)</dt><dd>منافس أ: <bdi dir="ltr">35</bdi> د.أ، منافس ب: <bdi dir="ltr">28</bdi> د.أ، منافس ج: <bdi dir="ltr">32</bdi> د.أ، منافس د: غير معروف</dd>
+<dt>حصة التكاليف المرتبطة بالاستيراد (<bdi dir="ltr">D6</bdi>)</dt><dd>لا</dd>
+<dt>الشكل القانوني (<bdi dir="ltr">G1</bdi>)</dt><dd>شركة</dd>
+<dt>رأس المال المتاح (<bdi dir="ltr">A5</bdi>)</dt><dd>من <bdi dir="ltr">8,000</bdi> د.أ إلى <bdi dir="ltr">15,000</bdi> د.أ</dd>
+<dt>المدة التي يتحمّلها بلا دخل (<bdi dir="ltr">A7</bdi>)</dt><dd>أقل من <bdi dir="ltr">3</bdi> أشهر</dd>
+<dt>أطول مدة مقبولة حتى التعادل (<bdi dir="ltr">H5</bdi>)</dt><dd>خلال <bdi dir="ltr">12</bdi> شهرًا</dd></dl>
+<h3>الأرقام الرئيسية</h3>
+<table class="stack">
+<caption>الأرقام الرئيسية، كل رقم بجانب حسابه اليدوي</caption>
+<thead><tr><th scope="col">الرقم</th><th scope="col">الحساب اليدوي</th><th scope="col">ناتج المحرّك</th><th scope="col">المطابقة</th></tr></thead>
+<tbody><tr><th scope="row" data-label="الرقم">إيراد السنة الأولى</th><td data-label="الحساب اليدوي">المشتركون في الأشهر <bdi dir="ltr">1</bdi> إلى <bdi dir="ltr">6</bdi>: <bdi dir="ltr">0 + 40 + 80 + 120 + 160 + 200 = 600</bdi>، وفي الأشهر <bdi dir="ltr">7</bdi> إلى <bdi dir="ltr">12</bdi>: <bdi dir="ltr">200 × 6 = 1,200</bdi>؛ المجموع <bdi dir="ltr">1,800</bdi> اشتراك شهري. <bdi dir="ltr">1,800 × 30 = 54,000</bdi> د.أ</td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">54,000</bdi> د.أ</strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="الرقم">ربح التشغيل قبل الضريبة في السنة الأولى</th><td data-label="الحساب اليدوي">الإيراد <bdi dir="ltr">54,000</bdi> − التكلفة المتغيرة <bdi dir="ltr">(1,800 × 6 = 10,800)</bdi> − التكاليف الثابتة <bdi dir="ltr">(2,000 × 12 = 24,000)</bdi> − التسويق <bdi dir="ltr">(600 × 12 = 7,200)</bdi> − راتب المطوّر لتسعة أشهر <bdi dir="ltr">(1,500 × 9 = 13,500) = −1,500</bdi> د.أ، أي خسارة</td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">-1,500</bdi> د.أ</strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="الرقم">هامش المساهمة للوحدة (CM)</th><td data-label="الحساب اليدوي"><bdi dir="ltr">30 − 6 = 24</bdi> د.أ</td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">24</bdi> د.أ</strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="الرقم">نسبة هامش المساهمة (CM%)</th><td data-label="الحساب اليدوي"><bdi dir="ltr">24 ÷ 30 = 80%</bdi></td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">80%</bdi></strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="الرقم">نقطة التعادل بالوحدات (BE units)</th><td data-label="الحساب اليدوي">التكلفة الثابتة الكاملة في الشهر <bdi dir="ltr">12 = 2,000 + 600 + 1,500 = 4,100</bdi>؛ <bdi dir="ltr">4,100 ÷ 24 = 170.83</bdi>، وتُقرَّب إلى أعلى: <bdi dir="ltr">171</bdi> اشتراكًا</td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">171</bdi> وحدة</strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="الرقم">إيراد التعادل الشهري (BE revenue)</th><td data-label="الحساب اليدوي"><bdi dir="ltr">4,100 ÷ 0.8 = 5,125</bdi> د.أ</td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">5,125</bdi> د.أ</strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="الرقم">شهر التعادل (BE month)</th><td data-label="الحساب اليدوي">ربح الشهر <bdi dir="ltr">5</bdi>: <bdi dir="ltr">160 × 24 − 4,100 = −260</bdi> (خسارة)، وربح الشهر <bdi dir="ltr">6</bdi>: <bdi dir="ltr">200 × 24 − 4,100 = 700</bdi> (أول شهر غير سالب)</td><td data-label="ناتج المحرّك"><strong class="key">الشهر <bdi dir="ltr">6</bdi></strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="الرقم">ضريبة السنة الأولى (قاعدة تجريبية)</th><td data-label="الحساب اليدوي">الشركة: <bdi dir="ltr">20%</bdi> من الربح، والربح سالب فالأساس صفر. <bdi dir="ltr">0</bdi> د.أ</td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">0</bdi> د.أ</strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="الرقم">احتياج التمويل</th><td data-label="الحساب اليدوي">التأسيس <bdi dir="ltr">12,000</bdi>؛ خسائر الأشهر <bdi dir="ltr">1</bdi> إلى <bdi dir="ltr">5</bdi>: <bdi dir="ltr">2,600 + 1,640 + 680 + 1,220 + 260 = 6,400</bdi>. أدنى رصيد تراكمي <bdi dir="ltr">−12,000 − 6,400 = −18,400</bdi> د.أ</td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">18,400</bdi> د.أ</strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="الرقم">شهر أدنى رصيد</th><td data-label="الحساب اليدوي">بعد الشهر <bdi dir="ltr">5</bdi> يصير الربح الشهري <bdi dir="ltr">700</bdi> فيبدأ الرصيد بالصعود</td><td data-label="ناتج المحرّك"><strong class="key">الشهر <bdi dir="ltr">5</bdi></strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="الرقم">مدة الاسترداد (Payback) بالأشهر</th><td data-label="الحساب اليدوي">من الشهر <bdi dir="ltr">6</bdi> يربح المشروع <bdi dir="ltr">700</bdi> كل شهر، وضريبة السنة الثانية <bdi dir="ltr">(20% × 8,400 = 1,680)</bdi> تُدفع في الشهر <bdi dir="ltr">28</bdi>. رصيد الشهر <bdi dir="ltr">34 = −18,400 + 700 × 29 − 1,680 = 220</bdi>، وهو أول رصيد غير سالب يبقى كذلك</td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">34</bdi> شهرًا</strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="الرقم">قيمة العميل على مدى عمره (LTV)</th><td data-label="الحساب اليدوي">التسرّب <bdi dir="ltr">5%</bdi> شهريًا: <bdi dir="ltr">24 ÷ 0.05 = 480</bdi> د.أ</td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">480</bdi> د.أ</strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="الرقم">تكلفة اكتساب العميل (CAC)</th><td data-label="الحساب اليدوي">عملاء الشهر <bdi dir="ltr">12</bdi> الجدد = <bdi dir="ltr">200 − 200 × 0.95 = 10</bdi>؛ <bdi dir="ltr">600 ÷ 10 = 60</bdi> د.أ</td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">60</bdi> د.أ</strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="الرقم">نسبة LTV إلى CAC</th><td data-label="الحساب اليدوي"><bdi dir="ltr">480 ÷ 60 = 8</bdi></td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">8</bdi></strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="الرقم">سعر الحدّ الأدنى (<bdi dir="ltr">T7</bdi>)</th><td data-label="الحساب اليدوي"><bdi dir="ltr">6 + 44,700 ÷ 1,800 = 30.833</bdi> د.أ، والسعر <bdi dir="ltr">30</bdi> أقل منه</td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">30.833</bdi> د.أ</strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr></tbody>
+</table>
+<h3>السيناريوهات وحساسية الربح</h3>
+<table class="stack">
+<caption>السيناريوهات الثلاثة (<bdi dir="ltr">T10</bdi>)، يعاد فيها الإسقاط والضريبة والتدفق النقدي</caption>
+<thead><tr><th scope="col">السيناريو</th><th scope="col">الافتراضات</th><th scope="col">شهر التعادل</th><th scope="col">احتياج التمويل</th><th scope="col">ربح السنة الأولى</th></tr></thead>
+<tbody><tr><th scope="row" data-label="السيناريو">متحفّظ (Conservative)</th><td data-label="الافتراضات">المبيعات × <bdi dir="ltr">0.6</bdi>، والتكلفة المتغيرة × <bdi dir="ltr">1.1</bdi>، وتأخير الإطلاق <bdi dir="ltr">3</bdi> أشهر.</td><td data-label="شهر التعادل">لا تعادل خلال <bdi dir="ltr">36</bdi> شهرًا</td><td data-label="احتياج التمويل"><strong class="key"><bdi dir="ltr">70,860</bdi> د.أ</strong></td><td data-label="ربح السنة الأولى"><strong class="key"><bdi dir="ltr">-27,852</bdi> د.أ</strong></td></tr>
+<tr><th scope="row" data-label="السيناريو">الأساس (Base)</th><td data-label="الافتراضات">أرقام المؤسس كما أدخلها.</td><td data-label="شهر التعادل">الشهر <bdi dir="ltr">6</bdi></td><td data-label="احتياج التمويل"><strong class="key"><bdi dir="ltr">18,400</bdi> د.أ</strong></td><td data-label="ربح السنة الأولى"><strong class="key"><bdi dir="ltr">-1,500</bdi> د.أ</strong></td></tr>
+<tr><th scope="row" data-label="السيناريو">متفائل (Optimistic)</th><td data-label="الافتراضات">المبيعات × <bdi dir="ltr">1.3</bdi>، والتكلفة المتغيرة × <bdi dir="ltr">0.95</bdi>.</td><td data-label="شهر التعادل">الشهر <bdi dir="ltr">5</bdi></td><td data-label="احتياج التمويل"><strong class="key"><bdi dir="ltr">16,318.4</bdi> د.أ</strong></td><td data-label="ربح السنة الأولى"><strong class="key"><bdi dir="ltr">12,162</bdi> د.أ</strong></td></tr></tbody>
+</table>
+<table class="stack">
+<caption>حساسية ربح السنة الأولى (Tornado): كل متغيّر وحده يتحرك <bdi dir="ltr">20%</bdi> نزولًا وصعودًا</caption>
+<thead><tr><th scope="col">المتغيّر</th><th scope="col">الترتيب</th><th scope="col">عند <bdi dir="ltr">−20%</bdi></th><th scope="col">عند <bdi dir="ltr">+20%</bdi></th><th scope="col">الفرق</th></tr></thead>
+<tbody><tr><th scope="row" data-label="المتغيّر">السعر (P) (أول تجربة مقترحة)</th><td data-label="الترتيب"><bdi dir="ltr">1</bdi></td><td data-label="عند −20%"><bdi dir="ltr">-12,300</bdi> د.أ</td><td data-label="عند +20%"><bdi dir="ltr">9,300</bdi> د.أ</td><td data-label="الفرق"><strong class="key"><bdi dir="ltr">21,600</bdi> د.أ</strong></td></tr>
+<tr><th scope="row" data-label="المتغيّر">التكاليف الثابتة (FC)</th><td data-label="الترتيب"><bdi dir="ltr">2</bdi></td><td data-label="عند −20%"><bdi dir="ltr">7,440</bdi> د.أ</td><td data-label="عند +20%"><bdi dir="ltr">-10,440</bdi> د.أ</td><td data-label="الفرق"><strong class="key"><bdi dir="ltr">17,880</bdi> د.أ</strong></td></tr>
+<tr><th scope="row" data-label="المتغيّر">المبيعات</th><td data-label="الترتيب"><bdi dir="ltr">3</bdi></td><td data-label="عند −20%"><bdi dir="ltr">-10,140</bdi> د.أ</td><td data-label="عند +20%"><bdi dir="ltr">7,140</bdi> د.أ</td><td data-label="الفرق"><strong class="key"><bdi dir="ltr">17,280</bdi> د.أ</strong></td></tr>
+<tr><th scope="row" data-label="المتغيّر">التكلفة المتغيرة (VC)</th><td data-label="الترتيب"><bdi dir="ltr">4</bdi></td><td data-label="عند −20%"><bdi dir="ltr">660</bdi> د.أ</td><td data-label="عند +20%"><bdi dir="ltr">-3,660</bdi> د.أ</td><td data-label="الفرق"><strong class="key"><bdi dir="ltr">4,320</bdi> د.أ</strong></td></tr></tbody>
+</table>
+<h3>التنبيهات التي ظهرت</h3>
+<ul class="plain"><li><strong class="sev sev-warning">تحذير</strong> التعادل (<bdi dir="ltr">6</bdi> أشهر) بعد المدة التي يتحمّلها المؤسس بلا دخل (<bdi dir="ltr">3</bdi> أشهر). <span class="prov">افتراض، الثقة منخفضة، غير مؤكَّد.</span></li>
+<li><strong class="sev sev-warning">تحذير</strong> السعر (<bdi dir="ltr">30</bdi> د.أ) أقل من سعر الحدّ الأدنى (<bdi dir="ltr">30.833</bdi> د.أ). <span class="prov">افتراض، الثقة منخفضة، غير مؤكَّد.</span></li>
+<li><strong class="sev sev-note">ملاحظة</strong> تكاليف التأسيس (<bdi dir="ltr">12,000</bdi> د.أ) فوق أدنى رأس مال متاح (<bdi dir="ltr">8,000</bdi> د.أ) وتحت أقصاه (<bdi dir="ltr">15,000</bdi> د.أ). <span class="prov">من المؤسس، الثقة عالية، مؤكَّد.</span></li></ul>
+<h3>ما قرأه المحرّك على غير ظاهره</h3>
+<ul class="plain"><li>الطاقة القصوى (<bdi dir="ltr">E7</bdi>) لم تُحدَّد فلا سقف لعدد الوحدات.</li>
+<li>لم يُطبَّق تضخم على التكاليف لأنه لا توجد نسبة موثّقة بمصدرها.</li>
+<li>ضريبة السنة الأخيرة تُدفع بعد الشهر <bdi dir="ltr">36</bdi> فلم تدخل في الحساب.</li></ul>
+</section>
+<section id="jo-home-ecommerce" aria-labelledby="jo-home-ecommerce-title">
+<h2 id="jo-home-ecommerce-title"><bdi dir="ltr">2</bdi>. متجر إلكتروني منزلي للبضائع المستوردة</h2>
+<p class="sentence">متجر إلكتروني يُدار من المنزل في الأردن ويبيع بضاعة مستوردة بسعر <bdi dir="ltr">40</bdi> د.أ للقطعة، وموسمه في نوفمبر وديسمبر، ويقبل الدفع على ثلاث دفعات.</p>
+<h3>المدخلات بالكلمات</h3>
+<dl class="inputs"><dt>سعر البيع للوحدة (<bdi dir="ltr">F1</bdi>)</dt><dd><bdi dir="ltr">40</bdi> د.أ</dd>
+<dt>نموذج التسعير (<bdi dir="ltr">F2</bdi>)</dt><dd>سعر ثابت</dd>
+<dt>نسبة تسرّب المشتركين شهريًا (<bdi dir="ltr">F2.1</bdi>)</dt><dd>لم يُجَب</dd>
+<dt>التكلفة المتغيرة للوحدة (<bdi dir="ltr">F3</bdi>)</dt><dd>سعر شراء البضاعة: <bdi dir="ltr">22</bdi> د.أ، الشحن والتغليف: <bdi dir="ltr">3</bdi> د.أ. المجموع <bdi dir="ltr">25</bdi> د.أ</dd>
+<dt>التكاليف الثابتة الشهرية (<bdi dir="ltr">F4</bdi>)</dt><dd>غرفة التخزين: <bdi dir="ltr">700</bdi> د.أ، الإنترنت والأدوات: <bdi dir="ltr">200</bdi> د.أ. المجموع <bdi dir="ltr">900</bdi> د.أ</dd>
+<dt>ميزانية التسويق الشهرية (<bdi dir="ltr">F4.1</bdi>)</dt><dd><bdi dir="ltr">300</bdi> د.أ</dd>
+<dt>الموظفون (<bdi dir="ltr">E8</bdi>)</dt><dd>لم يُجَب</dd>
+<dt>تكاليف التأسيس (<bdi dir="ltr">F5</bdi>)</dt><dd>الموقع الإلكتروني: <bdi dir="ltr">3,000</bdi> د.أ، المخزون الأول: <bdi dir="ltr">5,000</bdi> د.أ، التصوير والعرض: <bdi dir="ltr">1,000</bdi> د.أ. المجموع <bdi dir="ltr">9,000</bdi> د.أ</dd>
+<dt>المبيعات المتوقعة بالوحدات (<bdi dir="ltr">F6</bdi>)</dt><dd>الشهر <bdi dir="ltr">1</bdi>: <bdi dir="ltr">150</bdi>، الشهر <bdi dir="ltr">6</bdi>: <bdi dir="ltr">90</bdi>، الشهر <bdi dir="ltr">12</bdi>: <bdi dir="ltr">90</bdi> وحدة</dd>
+<dt>النمو السنوي بعد السنة الأولى (<bdi dir="ltr">F6.2</bdi>)</dt><dd>لم يُجَب</dd>
+<dt>الموسمية (<bdi dir="ltr">D7</bdi>)</dt><dd>موسمي، وذروته في نوفمبر وديسمبر</dd>
+<dt>الطاقة القصوى شهريًا (<bdi dir="ltr">E7</bdi>)</dt><dd><bdi dir="ltr">200</bdi> وحدة</dd>
+<dt>طريقة دفع العميل (<bdi dir="ltr">F7</bdi>)</dt><dd>بالتقسيط</dd>
+<dt>أسعار المنافسين (<bdi dir="ltr">D4</bdi>)</dt><dd>متجر أ: <bdi dir="ltr">45</bdi> د.أ، متجر ب: <bdi dir="ltr">42</bdi> د.أ، متجر ج: <bdi dir="ltr">38</bdi> د.أ</dd>
+<dt>حصة التكاليف المرتبطة بالاستيراد (<bdi dir="ltr">D6</bdi>)</dt><dd>نعم، <bdi dir="ltr">60%</bdi> من التكاليف</dd>
+<dt>الشكل القانوني (<bdi dir="ltr">G1</bdi>)</dt><dd>لم أقرّر بعد</dd>
+<dt>رأس المال المتاح (<bdi dir="ltr">A5</bdi>)</dt><dd>من <bdi dir="ltr">3,000</bdi> د.أ إلى <bdi dir="ltr">6,000</bdi> د.أ</dd>
+<dt>المدة التي يتحمّلها بلا دخل (<bdi dir="ltr">A7</bdi>)</dt><dd>أكثر من <bdi dir="ltr">12</bdi> شهرًا</dd>
+<dt>أطول مدة مقبولة حتى التعادل (<bdi dir="ltr">H5</bdi>)</dt><dd>خلال <bdi dir="ltr">6</bdi> أشهر</dd></dl>
+<h3>الأرقام الرئيسية</h3>
+<table class="stack">
+<caption>الأرقام الرئيسية، كل رقم بجانب حسابه اليدوي</caption>
+<thead><tr><th scope="col">الرقم</th><th scope="col">الحساب اليدوي</th><th scope="col">ناتج المحرّك</th><th scope="col">المطابقة</th></tr></thead>
+<tbody><tr><th scope="row" data-label="الرقم">إيراد السنة الأولى</th><td data-label="الحساب اليدوي">شهرا الذروة (نوفمبر وديسمبر): <bdi dir="ltr">150 × 40 = 6,000</bdi> لكل شهر؛ و<bdi dir="ltr">10</bdi> أشهر عادية: <bdi dir="ltr">90 × 40 = 3,600</bdi> لكل شهر. <bdi dir="ltr">2 × 6,000 + 10 × 3,600 = 48,000</bdi> د.أ</td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">48,000</bdi> د.أ</strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="الرقم">ربح التشغيل قبل الضريبة في السنة الأولى</th><td data-label="الحساب اليدوي">الإيراد <bdi dir="ltr">48,000</bdi> − التكلفة المتغيرة لـ <bdi dir="ltr">1,200</bdi> وحدة <bdi dir="ltr">(1,200 × 25 = 30,000)</bdi> − التكاليف الثابتة والتسويق <bdi dir="ltr">((900 + 300) × 12 = 14,400) = 3,600</bdi> د.أ</td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">3,600</bdi> د.أ</strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="الرقم">هامش المساهمة للوحدة (CM)</th><td data-label="الحساب اليدوي"><bdi dir="ltr">40 − 25 = 15</bdi> د.أ</td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">15</bdi> د.أ</strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="الرقم">نسبة هامش المساهمة (CM%)</th><td data-label="الحساب اليدوي"><bdi dir="ltr">15 ÷ 40 = 37.5%</bdi></td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">37.5%</bdi></strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="الرقم">نقطة التعادل بالوحدات (BE units)</th><td data-label="الحساب اليدوي"><bdi dir="ltr">1,200 ÷ 15 = 80</bdi> وحدة بالضبط</td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">80</bdi> وحدة</strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="الرقم">إيراد التعادل الشهري (BE revenue)</th><td data-label="الحساب اليدوي"><bdi dir="ltr">1,200 ÷ 0.375 = 3,200</bdi> د.أ</td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">3,200</bdi> د.أ</strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="الرقم">شهر التعادل (BE month)</th><td data-label="الحساب اليدوي">ربح الشهر <bdi dir="ltr">1</bdi>: <bdi dir="ltr">150 × 15 − 1,200 = 1,050</bdi>، وهو غير سالب</td><td data-label="ناتج المحرّك"><strong class="key">الشهر <bdi dir="ltr">1</bdi></strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="الرقم">ضريبة السنة الأولى (قاعدة تجريبية)</th><td data-label="الحساب اليدوي">الشكل القانوني غير محسوم فيُفترض صاحب منشأة فردية: <bdi dir="ltr">10% × 3,600 = 360</bdi> د.أ</td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">360</bdi> د.أ</strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="الرقم">احتياج التمويل</th><td data-label="الحساب اليدوي">التأسيس <bdi dir="ltr">9,000</bdi>. بالتقسيط يصل في الشهر <bdi dir="ltr">1</bdi> ثلث مبيعاته فقط: <bdi dir="ltr">2,000 − 4,950 = −2,950</bdi>، وفي الشهر <bdi dir="ltr">2</bdi>: <bdi dir="ltr">4,000 − 4,950 = −950</bdi>. أدنى رصيد <bdi dir="ltr">−9,000 − 2,950 − 950 = −12,900</bdi> د.أ</td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">12,900</bdi> د.أ</strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="الرقم">شهر أدنى رصيد</th><td data-label="الحساب اليدوي">في الشهر <bdi dir="ltr">3</bdi> يصل <bdi dir="ltr">5,200</bdi> ويزيد على المصروف <bdi dir="ltr">3,450</bdi> فيصعد الرصيد</td><td data-label="ناتج المحرّك"><strong class="key">الشهر <bdi dir="ltr">2</bdi></strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="الرقم">مدة الاسترداد (Payback) بالأشهر</th><td data-label="الحساب اليدوي">رصيد الشهر <bdi dir="ltr">36</bdi> ما زال <bdi dir="ltr">−2,520</bdi> د.أ، أي أن التأسيس لا يُسترد خلال ثلاث سنوات</td><td data-label="ناتج المحرّك"><strong class="key">لا يُسترد خلال <bdi dir="ltr">36</bdi> شهرًا</strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="الرقم">سعر الحدّ الأدنى (<bdi dir="ltr">T7</bdi>)</th><td data-label="الحساب اليدوي"><bdi dir="ltr">25 + 14,400 ÷ 1,200 = 37</bdi> د.أ، والسعر <bdi dir="ltr">40</bdi> فوقه</td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">37</bdi> د.أ</strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr></tbody>
+</table>
+<h3>السيناريوهات وحساسية الربح</h3>
+<table class="stack">
+<caption>السيناريوهات الثلاثة (<bdi dir="ltr">T10</bdi>)، يعاد فيها الإسقاط والضريبة والتدفق النقدي</caption>
+<thead><tr><th scope="col">السيناريو</th><th scope="col">الافتراضات</th><th scope="col">شهر التعادل</th><th scope="col">احتياج التمويل</th><th scope="col">ربح السنة الأولى</th></tr></thead>
+<tbody><tr><th scope="row" data-label="السيناريو">متحفّظ (Conservative)</th><td data-label="الافتراضات">المبيعات × <bdi dir="ltr">0.6</bdi>، والتكلفة المتغيرة × <bdi dir="ltr">1.1</bdi>، وتأخير الإطلاق <bdi dir="ltr">3</bdi> أشهر.</td><td data-label="شهر التعادل">لا تعادل خلال <bdi dir="ltr">36</bdi> شهرًا</td><td data-label="احتياج التمويل"><strong class="key"><bdi dir="ltr">29,385</bdi> د.أ</strong></td><td data-label="ربح السنة الأولى"><strong class="key"><bdi dir="ltr">-7,425</bdi> د.أ</strong></td></tr>
+<tr><th scope="row" data-label="السيناريو">الأساس (Base)</th><td data-label="الافتراضات">أرقام المؤسس كما أدخلها.</td><td data-label="شهر التعادل">الشهر <bdi dir="ltr">1</bdi></td><td data-label="احتياج التمويل"><strong class="key"><bdi dir="ltr">12,900</bdi> د.أ</strong></td><td data-label="ربح السنة الأولى"><strong class="key"><bdi dir="ltr">3,600</bdi> د.أ</strong></td></tr>
+<tr><th scope="row" data-label="السيناريو">متفائل (Optimistic)</th><td data-label="الافتراضات">المبيعات × <bdi dir="ltr">1.3</bdi>، والتكلفة المتغيرة × <bdi dir="ltr">0.95</bdi>.</td><td data-label="شهر التعادل">الشهر <bdi dir="ltr">1</bdi></td><td data-label="احتياج التمويل"><strong class="key"><bdi dir="ltr">12,862.5</bdi> د.أ</strong></td><td data-label="ربح السنة الأولى"><strong class="key"><bdi dir="ltr">10,950</bdi> د.أ</strong></td></tr></tbody>
+</table>
+<table class="stack">
+<caption>حساسية ربح السنة الأولى (Tornado): كل متغيّر وحده يتحرك <bdi dir="ltr">20%</bdi> نزولًا وصعودًا</caption>
+<thead><tr><th scope="col">المتغيّر</th><th scope="col">الترتيب</th><th scope="col">عند <bdi dir="ltr">−20%</bdi></th><th scope="col">عند <bdi dir="ltr">+20%</bdi></th><th scope="col">الفرق</th></tr></thead>
+<tbody><tr><th scope="row" data-label="المتغيّر">السعر (P) (أول تجربة مقترحة)</th><td data-label="الترتيب"><bdi dir="ltr">1</bdi></td><td data-label="عند −20%"><bdi dir="ltr">-6,000</bdi> د.أ</td><td data-label="عند +20%"><bdi dir="ltr">13,200</bdi> د.أ</td><td data-label="الفرق"><strong class="key"><bdi dir="ltr">19,200</bdi> د.أ</strong></td></tr>
+<tr><th scope="row" data-label="المتغيّر">التكلفة المتغيرة (VC)</th><td data-label="الترتيب"><bdi dir="ltr">2</bdi></td><td data-label="عند −20%"><bdi dir="ltr">9,600</bdi> د.أ</td><td data-label="عند +20%"><bdi dir="ltr">-2,400</bdi> د.أ</td><td data-label="الفرق"><strong class="key"><bdi dir="ltr">12,000</bdi> د.أ</strong></td></tr>
+<tr><th scope="row" data-label="المتغيّر">المبيعات</th><td data-label="الترتيب"><bdi dir="ltr">3</bdi></td><td data-label="عند −20%"><bdi dir="ltr">0</bdi> د.أ</td><td data-label="عند +20%"><bdi dir="ltr">7,200</bdi> د.أ</td><td data-label="الفرق"><strong class="key"><bdi dir="ltr">7,200</bdi> د.أ</strong></td></tr>
+<tr><th scope="row" data-label="المتغيّر">التكاليف الثابتة (FC)</th><td data-label="الترتيب"><bdi dir="ltr">4</bdi></td><td data-label="عند −20%"><bdi dir="ltr">6,480</bdi> د.أ</td><td data-label="عند +20%"><bdi dir="ltr">720</bdi> د.أ</td><td data-label="الفرق"><strong class="key"><bdi dir="ltr">5,760</bdi> د.أ</strong></td></tr></tbody>
+</table>
+<h3>اختبار العملة الأجنبية (FX test)</h3>
+<p><bdi dir="ltr">60%</bdi> من التكاليف مرتبطة بالاستيراد. كل صدمة تغيّر هذه الحصة وحدها من تكلفة البضاعة، فيتغيّر معامل التكلفة بمقدار الحصة × الصدمة.</p>
+<table class="stack">
+<caption>أثر تغيّر سعر العملة على تكلفة البضاعة</caption>
+<thead><tr><th scope="col">الصدمة</th><th scope="col">معامل التكلفة المتغيرة</th><th scope="col">شهر التعادل</th><th scope="col">احتياج التمويل</th><th scope="col">ربح السنة الأولى</th></tr></thead>
+<tbody><tr><th scope="row" data-label="الصدمة"><bdi dir="ltr">-20%</bdi></th><td data-label="معامل التكلفة المتغيرة">× <bdi dir="ltr">0.88</bdi></td><td data-label="شهر التعادل">الشهر <bdi dir="ltr">1</bdi></td><td data-label="احتياج التمويل"><strong class="key"><bdi dir="ltr">12,000</bdi> د.أ</strong></td><td data-label="ربح السنة الأولى"><strong class="key"><bdi dir="ltr">7,200</bdi> د.أ</strong></td></tr>
+<tr><th scope="row" data-label="الصدمة"><bdi dir="ltr">-10%</bdi></th><td data-label="معامل التكلفة المتغيرة">× <bdi dir="ltr">0.94</bdi></td><td data-label="شهر التعادل">الشهر <bdi dir="ltr">1</bdi></td><td data-label="احتياج التمويل"><strong class="key"><bdi dir="ltr">12,450</bdi> د.أ</strong></td><td data-label="ربح السنة الأولى"><strong class="key"><bdi dir="ltr">5,400</bdi> د.أ</strong></td></tr>
+<tr><th scope="row" data-label="الصدمة"><bdi dir="ltr">+10%</bdi></th><td data-label="معامل التكلفة المتغيرة">× <bdi dir="ltr">1.06</bdi></td><td data-label="شهر التعادل">الشهر <bdi dir="ltr">1</bdi></td><td data-label="احتياج التمويل"><strong class="key"><bdi dir="ltr">13,350</bdi> د.أ</strong></td><td data-label="ربح السنة الأولى"><strong class="key"><bdi dir="ltr">1,800</bdi> د.أ</strong></td></tr>
+<tr><th scope="row" data-label="الصدمة"><bdi dir="ltr">+20%</bdi></th><td data-label="معامل التكلفة المتغيرة">× <bdi dir="ltr">1.12</bdi></td><td data-label="شهر التعادل">الشهر <bdi dir="ltr">1</bdi></td><td data-label="احتياج التمويل"><strong class="key"><bdi dir="ltr">13,800</bdi> د.أ</strong></td><td data-label="ربح السنة الأولى"><strong class="key"><bdi dir="ltr">0</bdi> د.أ</strong></td></tr></tbody>
+</table>
+<h3>طرق الدفع الأربع على المتجر نفسه</h3>
+<p>المشروع نفسه يُشغَّل بكل خيار من خيارات السؤال <bdi dir="ltr">F7</bdi>، فيظهر كيف يغيّر توقيت التحصيل احتياج التمويل والاسترداد. الخيار المعتمد في الملف الذهبي هو التقسيط.</p>
+<table class="stack">
+<caption>أثر طريقة دفع العميل (<bdi dir="ltr">F7</bdi>)</caption>
+<thead><tr><th scope="col">طريقة الدفع</th><th scope="col">احتياج التمويل</th><th scope="col">شهر أدنى رصيد</th><th scope="col">الاسترداد</th><th scope="col">الحساب اليدوي</th><th scope="col">المطابقة</th></tr></thead>
+<tbody><tr><th scope="row" data-label="طريقة الدفع">نقدًا عند الشراء</th><td data-label="احتياج التمويل"><strong class="key"><bdi dir="ltr">9,000</bdi> د.أ</strong></td><td data-label="شهر أدنى رصيد">الشهر <bdi dir="ltr">0</bdi></td><td data-label="الاسترداد"><bdi dir="ltr">29</bdi> شهرًا</td><td data-label="الحساب اليدوي">كل بيع يُحصَّل في شهره فيكون الربح الشهري هو التدفق: <bdi dir="ltr">1,050</bdi> في الذروة و<bdi dir="ltr">150</bdi> في غيرها. أدنى رصيد هو التأسيس <bdi dir="ltr">−9,000</bdi> في الشهر <bdi dir="ltr">0</bdi>. بعد ضريبتي السنتين الأوليين (<bdi dir="ltr">360</bdi> في الشهر <bdi dir="ltr">16</bdi> و<bdi dir="ltr">360</bdi> في الشهر <bdi dir="ltr">28</bdi>) يبلغ الرصيد الصفر أو أكثر لأول مرة في الشهر <bdi dir="ltr">27 (+90)</bdi> ثم تعيده ضريبة الشهر <bdi dir="ltr">28</bdi> إلى <bdi dir="ltr">−120</bdi>، فيبقى غير سالب من الشهر <bdi dir="ltr">29</bdi></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="طريقة الدفع">بالآجل (بعد شهر)</th><td data-label="احتياج التمويل"><strong class="key"><bdi dir="ltr">13,950</bdi> د.أ</strong></td><td data-label="شهر أدنى رصيد">الشهر <bdi dir="ltr">1</bdi></td><td data-label="الاسترداد">لا يُسترد خلال <bdi dir="ltr">36</bdi> شهرًا</td><td data-label="الحساب اليدوي">التحصيل بعد شهر: في الشهر <bdi dir="ltr">1</bdi> لا يصل شيء فيكون <bdi dir="ltr">0 − 4,950</bdi>، فيهبط الرصيد إلى <bdi dir="ltr">−9,000 − 4,950 = −13,950</bdi> د.أ، ويبقى سالبًا في الشهر <bdi dir="ltr">36 (−2,520)</bdi></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="طريقة الدفع">بالتقسيط (ثلاث دفعات)</th><td data-label="احتياج التمويل"><strong class="key"><bdi dir="ltr">12,900</bdi> د.أ</strong></td><td data-label="شهر أدنى رصيد">الشهر <bdi dir="ltr">2</bdi></td><td data-label="الاسترداد">لا يُسترد خلال <bdi dir="ltr">36</bdi> شهرًا</td><td data-label="الحساب اليدوي">ثلاث دفعات: الحساب في جدول الأرقام الرئيسية أعلاه (<bdi dir="ltr">12,900</bdi> د.أ في الشهر <bdi dir="ltr">2</bdi>)</td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="طريقة الدفع">دفعة مقدّمة والباقي بعد شهر</th><td data-label="احتياج التمويل"><strong class="key"><bdi dir="ltr">10,950</bdi> د.أ</strong></td><td data-label="شهر أدنى رصيد">الشهر <bdi dir="ltr">1</bdi></td><td data-label="الاسترداد">لا يُسترد خلال <bdi dir="ltr">36</bdi> شهرًا</td><td data-label="الحساب اليدوي">نصف عند البيع والنصف في الشهر التالي: الشهر <bdi dir="ltr">1</bdi> يصل <bdi dir="ltr">3,000</bdi> فيكون <bdi dir="ltr">3,000 − 4,950 = −1,950</bdi> ويهبط الرصيد إلى <bdi dir="ltr">−10,950</bdi> د.أ، ويبقى سالبًا في الشهر <bdi dir="ltr">36 (−720)</bdi></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr></tbody>
+</table>
+<h3>التنبيهات التي ظهرت</h3>
+<ul class="plain"><li><strong class="sev sev-warning">تحذير</strong> تكاليف التأسيس (<bdi dir="ltr">9,000</bdi> د.أ) أعلى من أقصى رأس مال متاح (<bdi dir="ltr">6,000</bdi> د.أ). <span class="prov">من المؤسس، الثقة متوسطة، مؤكَّد.</span></li></ul>
+<h3>ما قرأه المحرّك على غير ظاهره</h3>
+<ul class="plain"><li>خطة الموظفين (<bdi dir="ltr">E8</bdi>) لم تُحدَّد فلا رواتب في الحساب.</li>
+<li>النمو السنوي (<bdi dir="ltr">F6.2</bdi>) لم يُحدَّد فقدّره المحرّك من مبيعات الشهرين <bdi dir="ltr">6</bdi> و<bdi dir="ltr">12</bdi>.</li>
+<li>الشكل القانوني (<bdi dir="ltr">G1</bdi>) غير محسوم فافترض المحرّك صاحب منشأة فردية.</li>
+<li>لم يُطبَّق تضخم على التكاليف لأنه لا توجد نسبة موثّقة بمصدرها.</li>
+<li>جزء من النقد يصل بعد الشهر <bdi dir="ltr">36</bdi> فلم يدخل في الحساب.</li>
+<li>ضريبة السنة الأخيرة تُدفع بعد الشهر <bdi dir="ltr">36</bdi> فلم تدخل في الحساب.</li></ul>
+</section>
+<section id="dz-auto-entrepreneur" aria-labelledby="dz-auto-entrepreneur-title">
+<h2 id="dz-auto-entrepreneur-title"><bdi dir="ltr">3</bdi>. مقاول ذاتي يبيع أكلات منزلية في الجزائر</h2>
+<p class="sentence">مقاول ذاتي في الجزائر يبيع علبة أكل منزلي بسعر <bdi dir="ltr">2,000</bdi> DZD، ويضاعف مبيعاته كل سنة بعد السنة الأولى، فيتجاوز في السنة الثالثة سقف النظام المبسّط.</p>
+<h3>المدخلات بالكلمات</h3>
+<dl class="inputs"><dt>سعر البيع للوحدة (<bdi dir="ltr">F1</bdi>)</dt><dd><bdi dir="ltr">2,000</bdi> DZD</dd>
+<dt>نموذج التسعير (<bdi dir="ltr">F2</bdi>)</dt><dd>سعر ثابت</dd>
+<dt>نسبة تسرّب المشتركين شهريًا (<bdi dir="ltr">F2.1</bdi>)</dt><dd>لم يُجَب</dd>
+<dt>التكلفة المتغيرة للوحدة (<bdi dir="ltr">F3</bdi>)</dt><dd>مواد التحضير: <bdi dir="ltr">650</bdi> DZD، التغليف والتوصيل: <bdi dir="ltr">150</bdi> DZD. المجموع <bdi dir="ltr">800</bdi> DZD</dd>
+<dt>التكاليف الثابتة الشهرية (<bdi dir="ltr">F4</bdi>)</dt><dd>إيجار المطبخ: <bdi dir="ltr">30,000</bdi> DZD، الكهرباء والاتصالات: <bdi dir="ltr">10,000</bdi> DZD. المجموع <bdi dir="ltr">40,000</bdi> DZD</dd>
+<dt>ميزانية التسويق الشهرية (<bdi dir="ltr">F4.1</bdi>)</dt><dd><bdi dir="ltr">10,000</bdi> DZD</dd>
+<dt>الموظفون (<bdi dir="ltr">E8</bdi>)</dt><dd>لم يُجَب</dd>
+<dt>تكاليف التأسيس (<bdi dir="ltr">F5</bdi>)</dt><dd>تجهيزات المطبخ: <bdi dir="ltr">220,000</bdi> DZD، التسجيل كمقاول ذاتي: <bdi dir="ltr">30,000</bdi> DZD، مخزون أولي وتغليف: <bdi dir="ltr">50,000</bdi> DZD. المجموع <bdi dir="ltr">300,000</bdi> DZD</dd>
+<dt>المبيعات المتوقعة بالوحدات (<bdi dir="ltr">F6</bdi>)</dt><dd>الشهر <bdi dir="ltr">1</bdi>: <bdi dir="ltr">0</bdi>، الشهر <bdi dir="ltr">6</bdi>: <bdi dir="ltr">100</bdi>، الشهر <bdi dir="ltr">12</bdi>: <bdi dir="ltr">100</bdi> وحدة</dd>
+<dt>النمو السنوي بعد السنة الأولى (<bdi dir="ltr">F6.2</bdi>)</dt><dd><bdi dir="ltr">100%</bdi></dd>
+<dt>الموسمية (<bdi dir="ltr">D7</bdi>)</dt><dd>لا أعرف</dd>
+<dt>الطاقة القصوى شهريًا (<bdi dir="ltr">E7</bdi>)</dt><dd>لم يُجَب</dd>
+<dt>طريقة دفع العميل (<bdi dir="ltr">F7</bdi>)</dt><dd>دفعة مقدّمة والباقي لاحقًا</dd>
+<dt>أسعار المنافسين (<bdi dir="ltr">D4</bdi>)</dt><dd>منافس أ: <bdi dir="ltr">2,200</bdi> DZD، منافس ب: <bdi dir="ltr">1,800</bdi> DZD</dd>
+<dt>حصة التكاليف المرتبطة بالاستيراد (<bdi dir="ltr">D6</bdi>)</dt><dd>لا</dd>
+<dt>الشكل القانوني (<bdi dir="ltr">G1</bdi>)</dt><dd>منشأة فردية</dd>
+<dt>رأس المال المتاح (<bdi dir="ltr">A5</bdi>)</dt><dd>من <bdi dir="ltr">200,000</bdi> DZD إلى <bdi dir="ltr">400,000</bdi> DZD</dd>
+<dt>المدة التي يتحمّلها بلا دخل (<bdi dir="ltr">A7</bdi>)</dt><dd>من <bdi dir="ltr">3</bdi> إلى <bdi dir="ltr">6</bdi> أشهر</dd>
+<dt>أطول مدة مقبولة حتى التعادل (<bdi dir="ltr">H5</bdi>)</dt><dd>خلال <bdi dir="ltr">6</bdi> أشهر</dd></dl>
+<h3>الأرقام الرئيسية</h3>
+<table class="stack">
+<caption>الأرقام الرئيسية، كل رقم بجانب حسابه اليدوي</caption>
+<thead><tr><th scope="col">الرقم</th><th scope="col">الحساب اليدوي</th><th scope="col">ناتج المحرّك</th><th scope="col">المطابقة</th></tr></thead>
+<tbody><tr><th scope="row" data-label="الرقم">إيراد السنة الأولى</th><td data-label="الحساب اليدوي">الوحدات في الأشهر <bdi dir="ltr">1</bdi> إلى <bdi dir="ltr">6</bdi>: <bdi dir="ltr">0 + 20 + 40 + 60 + 80 + 100 = 300</bdi>، وفي الأشهر <bdi dir="ltr">7</bdi> إلى <bdi dir="ltr">12</bdi>: <bdi dir="ltr">100 × 6 = 600</bdi>؛ المجموع <bdi dir="ltr">900</bdi> علبة. <bdi dir="ltr">900 × 2,000 = 1,800,000</bdi> DZD</td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">1,800,000</bdi> DZD</strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="الرقم">ربح التشغيل قبل الضريبة في السنة الأولى</th><td data-label="الحساب اليدوي">الإيراد <bdi dir="ltr">1,800,000</bdi> − التكلفة المتغيرة <bdi dir="ltr">(900 × 800 = 720,000)</bdi> − التكاليف الثابتة والتسويق <bdi dir="ltr">((40,000 + 10,000) × 12 = 600,000) = 480,000</bdi> DZD</td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">480,000</bdi> DZD</strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="الرقم">هامش المساهمة للوحدة (CM)</th><td data-label="الحساب اليدوي"><bdi dir="ltr">2,000 − 800 = 1,200</bdi> DZD</td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">1,200</bdi> DZD</strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="الرقم">نسبة هامش المساهمة (CM%)</th><td data-label="الحساب اليدوي"><bdi dir="ltr">1,200 ÷ 2,000 = 60%</bdi></td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">60%</bdi></strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="الرقم">نقطة التعادل بالوحدات (BE units)</th><td data-label="الحساب اليدوي"><bdi dir="ltr">50,000 ÷ 1,200 = 41.67</bdi>، وتُقرَّب إلى أعلى: <bdi dir="ltr">42</bdi> علبة</td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">42</bdi> وحدة</strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="الرقم">إيراد التعادل الشهري (BE revenue)</th><td data-label="الحساب اليدوي"><bdi dir="ltr">50,000 ÷ 0.6 = 83,333.33</bdi> DZD</td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">83,333.33</bdi> DZD</strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="الرقم">شهر التعادل (BE month)</th><td data-label="الحساب اليدوي">ربح الشهر <bdi dir="ltr">3</bdi>: <bdi dir="ltr">40 × 1,200 − 50,000 = −2,000</bdi> (خسارة)، وربح الشهر <bdi dir="ltr">4</bdi>: <bdi dir="ltr">60 × 1,200 − 50,000 = 22,000</bdi></td><td data-label="ناتج المحرّك"><strong class="key">الشهر <bdi dir="ltr">4</bdi></strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="الرقم">ضريبة السنة الأولى (قاعدة تجريبية بقيم SPEC)</th><td data-label="الحساب اليدوي"><bdi dir="ltr">0.5% × 1,800,000 = 9,000</bdi> وهو أقل من الحدّ الأدنى <bdi dir="ltr">10,000</bdi>، فيُدفع الحدّ الأدنى: <bdi dir="ltr">10,000</bdi> DZD</td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">10,000</bdi> DZD</strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="الرقم">احتياج التمويل</th><td data-label="الحساب اليدوي">التأسيس <bdi dir="ltr">300,000</bdi>. صافي النقد في الأشهر <bdi dir="ltr">1</bdi> إلى <bdi dir="ltr">3</bdi>: <bdi dir="ltr">−50,000</bdi> و<bdi dir="ltr">−46,000</bdi> و<bdi dir="ltr">−22,000</bdi> (نصف المبيع يصل في شهره والنصف في التالي). أدنى رصيد <bdi dir="ltr">−300,000 − 118,000 = −418,000</bdi> DZD</td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">418,000</bdi> DZD</strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="الرقم">شهر أدنى رصيد</th><td data-label="الحساب اليدوي">في الشهر <bdi dir="ltr">4</bdi> يصير صافي النقد موجبًا (<bdi dir="ltr">+2,000</bdi>)</td><td data-label="ناتج المحرّك"><strong class="key">الشهر <bdi dir="ltr">3</bdi></strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="الرقم">مدة الاسترداد (Payback) بالأشهر</th><td data-label="الحساب اليدوي">صافي النقد بعد الشهر <bdi dir="ltr">3</bdi>: <bdi dir="ltr">+2,000</bdi> و<bdi dir="ltr">+26,000</bdi> و<bdi dir="ltr">+50,000</bdi> ثم <bdi dir="ltr">+70,000</bdi> كل شهر. رصيد الشهر <bdi dir="ltr">10 = −60,000</bdi>، ورصيد الشهر <bdi dir="ltr">11 = +10,000</bdi>، ويبقى موجبًا بعده</td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">11</bdi> شهرًا</strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="الرقم">سعر الحدّ الأدنى (<bdi dir="ltr">T7</bdi>)</th><td data-label="الحساب اليدوي"><bdi dir="ltr">800 + 600,000 ÷ 900 = 1,466.67</bdi> DZD، والسعر <bdi dir="ltr">2,000</bdi> فوقه</td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">1,466.67</bdi> DZD</strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="الرقم">مبيعات السنة الثانية</th><td data-label="الحساب اليدوي">يرتفع المستوى من <bdi dir="ltr">100</bdi> إلى <bdi dir="ltr">200</bdi> (نمو <bdi dir="ltr">100%</bdi>) بنسبة ثابتة كل شهر. الوحدات <bdi dir="ltr">106</bdi> و<bdi dir="ltr">112</bdi> و<bdi dir="ltr">119</bdi> و<bdi dir="ltr">126</bdi> و<bdi dir="ltr">133</bdi> و<bdi dir="ltr">141</bdi> و<bdi dir="ltr">150</bdi> و<bdi dir="ltr">159</bdi> و<bdi dir="ltr">168</bdi> و<bdi dir="ltr">178</bdi> و<bdi dir="ltr">189</bdi> و<bdi dir="ltr">200</bdi>، أي <bdi dir="ltr">1,781</bdi> وحدة. <bdi dir="ltr">1,781 × 2,000 = 3,562,000</bdi> DZD، تحت السقف</td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">3,562,000</bdi> DZD</strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr>
+<tr><th scope="row" data-label="الرقم">مبيعات السنة الثالثة</th><td data-label="الحساب اليدوي">يرتفع المستوى من <bdi dir="ltr">200</bdi> إلى <bdi dir="ltr">400</bdi>. الوحدات <bdi dir="ltr">212</bdi> و<bdi dir="ltr">224</bdi> و<bdi dir="ltr">238</bdi> و<bdi dir="ltr">252</bdi> و<bdi dir="ltr">267</bdi> و<bdi dir="ltr">283</bdi> و<bdi dir="ltr">300</bdi> و<bdi dir="ltr">317</bdi> و<bdi dir="ltr">336</bdi> و<bdi dir="ltr">356</bdi> و<bdi dir="ltr">378</bdi> و<bdi dir="ltr">400</bdi>، أي <bdi dir="ltr">3,563</bdi> وحدة. <bdi dir="ltr">3,563 × 2,000 = 7,126,000</bdi> DZD، فوق سقف <bdi dir="ltr">5,000,000</bdi></td><td data-label="ناتج المحرّك"><strong class="key"><bdi dir="ltr">7,126,000</bdi> DZD</strong></td><td data-label="المطابقة"><span class="mark">✓ مطابق</span></td></tr></tbody>
+</table>
+<h3>السيناريوهات وحساسية الربح</h3>
+<table class="stack">
+<caption>السيناريوهات الثلاثة (<bdi dir="ltr">T10</bdi>)، يعاد فيها الإسقاط والضريبة والتدفق النقدي</caption>
+<thead><tr><th scope="col">السيناريو</th><th scope="col">الافتراضات</th><th scope="col">شهر التعادل</th><th scope="col">احتياج التمويل</th><th scope="col">ربح السنة الأولى</th></tr></thead>
+<tbody><tr><th scope="row" data-label="السيناريو">متحفّظ (Conservative)</th><td data-label="الافتراضات">المبيعات × <bdi dir="ltr">0.6</bdi>، والتكلفة المتغيرة × <bdi dir="ltr">1.1</bdi>، وتأخير الإطلاق <bdi dir="ltr">3</bdi> أشهر.</td><td data-label="شهر التعادل">الشهر <bdi dir="ltr">8</bdi></td><td data-label="احتياج التمويل"><strong class="key"><bdi dir="ltr">613,600</bdi> DZD</strong></td><td data-label="ربح السنة الأولى"><strong class="key"><bdi dir="ltr">-196,800</bdi> DZD</strong></td></tr>
+<tr><th scope="row" data-label="السيناريو">الأساس (Base)</th><td data-label="الافتراضات">أرقام المؤسس كما أدخلها.</td><td data-label="شهر التعادل">الشهر <bdi dir="ltr">4</bdi></td><td data-label="احتياج التمويل"><strong class="key"><bdi dir="ltr">418,000</bdi> DZD</strong></td><td data-label="ربح السنة الأولى"><strong class="key"><bdi dir="ltr">480,000</bdi> DZD</strong></td></tr>
+<tr><th scope="row" data-label="السيناريو">متفائل (Optimistic)</th><td data-label="الافتراضات">المبيعات × <bdi dir="ltr">1.3</bdi>، والتكلفة المتغيرة × <bdi dir="ltr">0.95</bdi>.</td><td data-label="شهر التعادل">الشهر <bdi dir="ltr">3</bdi></td><td data-label="احتياج التمويل"><strong class="key"><bdi dir="ltr">405,280</bdi> DZD</strong></td><td data-label="ربح السنة الأولى"><strong class="key"><bdi dir="ltr">850,800</bdi> DZD</strong></td></tr></tbody>
+</table>
+<table class="stack">
+<caption>حساسية ربح السنة الأولى (Tornado): كل متغيّر وحده يتحرك <bdi dir="ltr">20%</bdi> نزولًا وصعودًا</caption>
+<thead><tr><th scope="col">المتغيّر</th><th scope="col">الترتيب</th><th scope="col">عند <bdi dir="ltr">−20%</bdi></th><th scope="col">عند <bdi dir="ltr">+20%</bdi></th><th scope="col">الفرق</th></tr></thead>
+<tbody><tr><th scope="row" data-label="المتغيّر">السعر (P) (أول تجربة مقترحة)</th><td data-label="الترتيب"><bdi dir="ltr">1</bdi></td><td data-label="عند −20%"><bdi dir="ltr">120,000</bdi> DZD</td><td data-label="عند +20%"><bdi dir="ltr">840,000</bdi> DZD</td><td data-label="الفرق"><strong class="key"><bdi dir="ltr">720,000</bdi> DZD</strong></td></tr>
+<tr><th scope="row" data-label="المتغيّر">المبيعات</th><td data-label="الترتيب"><bdi dir="ltr">2</bdi></td><td data-label="عند −20%"><bdi dir="ltr">264,000</bdi> DZD</td><td data-label="عند +20%"><bdi dir="ltr">696,000</bdi> DZD</td><td data-label="الفرق"><strong class="key"><bdi dir="ltr">432,000</bdi> DZD</strong></td></tr>
+<tr><th scope="row" data-label="المتغيّر">التكلفة المتغيرة (VC)</th><td data-label="الترتيب"><bdi dir="ltr">3</bdi></td><td data-label="عند −20%"><bdi dir="ltr">624,000</bdi> DZD</td><td data-label="عند +20%"><bdi dir="ltr">336,000</bdi> DZD</td><td data-label="الفرق"><strong class="key"><bdi dir="ltr">288,000</bdi> DZD</strong></td></tr>
+<tr><th scope="row" data-label="المتغيّر">التكاليف الثابتة (FC)</th><td data-label="الترتيب"><bdi dir="ltr">4</bdi></td><td data-label="عند −20%"><bdi dir="ltr">600,000</bdi> DZD</td><td data-label="عند +20%"><bdi dir="ltr">360,000</bdi> DZD</td><td data-label="الفرق"><strong class="key"><bdi dir="ltr">240,000</bdi> DZD</strong></td></tr></tbody>
+</table>
+<h3>التنبيهات التي ظهرت</h3>
+<ul class="plain"><li><strong class="sev sev-warning">تحذير</strong> مبيعات السنة <bdi dir="ltr">3</bdi> (<bdi dir="ltr">7,126,000</bdi> DZD) تتجاوز سقف نظام fixture_auto_entrepreneur (<bdi dir="ltr">5,000,000</bdi> DZD). <span class="prov">افتراض، الثقة منخفضة، غير مؤكَّد.</span></li>
+<li><strong class="sev sev-note">ملاحظة</strong> تكاليف التأسيس (<bdi dir="ltr">300,000</bdi> DZD) فوق أدنى رأس مال متاح (<bdi dir="ltr">200,000</bdi> DZD) وتحت أقصاه (<bdi dir="ltr">400,000</bdi> DZD). <span class="prov">من المؤسس، الثقة عالية، مؤكَّد.</span></li></ul>
+<h3>ما قرأه المحرّك على غير ظاهره</h3>
+<ul class="plain"><li>خطة الموظفين (<bdi dir="ltr">E8</bdi>) لم تُحدَّد فلا رواتب في الحساب.</li>
+<li>الموسمية (<bdi dir="ltr">D7</bdi>) لم تُحدَّد فاعتُبر الطلب غير موسمي.</li>
+<li>الطاقة القصوى (<bdi dir="ltr">E7</bdi>) لم تُحدَّد فلا سقف لعدد الوحدات.</li>
+<li>لم يُطبَّق تضخم على التكاليف لأنه لا توجد نسبة موثّقة بمصدرها.</li>
+<li>جزء من النقد يصل بعد الشهر <bdi dir="ltr">36</bdi> فلم يدخل في الحساب.</li>
+<li>ضريبة السنة الأخيرة تُدفع بعد الشهر <bdi dir="ltr">36</bdi> فلم تدخل في الحساب.</li></ul>
+</section>
+<section id="assumptions" aria-labelledby="assumptions-title">
+<h2 id="assumptions-title">افتراضات المحرّك</h2>
+<p>هذه قيم افتراضية يعتمدها المحرّك حين لا تقول الأسئلة غير ذلك. كلها افتراضات غير مؤكَّدة، وليست حقائق عن سوق أو قانون، ويمكن تغيير أي منها. جداول تحصيل طرق الدفع الأربع: نقدًا في الشهر نفسه، وبالآجل بعد شهر، وبالتقسيط ثلاث دفعات متساوية في الشهر نفسه وبعده بشهر وبشهرين، والدفعة المقدّمة نصفان في الشهر نفسه وبعد شهر.</p>
+<table class="stack">
+<caption>الافتراضات التي استُخدمت في الأرقام أعلاه</caption>
+<thead><tr><th scope="col">الافتراض</th><th scope="col">القيمة</th><th scope="col">الحالة</th></tr></thead>
+<tbody><tr><th scope="row" data-label="الافتراض">أفق الإسقاط</th><td data-label="القيمة"><bdi dir="ltr">36</bdi> شهرًا</td><td data-label="الحالة">افتراض، الثقة متوسطة، غير مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الافتراض">سقف تقدير النمو السنوي</th><td data-label="القيمة"><bdi dir="ltr">25%</bdi></td><td data-label="الحالة">افتراض، الثقة متوسطة، غير مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الافتراض">حصة نمو المؤسس التي يحتفظ بها التقدير</th><td data-label="القيمة"><bdi dir="ltr">50%</bdi></td><td data-label="الحالة">افتراض، الثقة متوسطة، غير مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الافتراض">حصة السنة الثالثة من نمو السنة الثانية</th><td data-label="القيمة"><bdi dir="ltr">50%</bdi></td><td data-label="الحالة">افتراض، الثقة متوسطة، غير مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الافتراض">معامل شهر الذروة</th><td data-label="القيمة">× <bdi dir="ltr">1.5</bdi></td><td data-label="الحالة">افتراض، الثقة متوسطة، غير مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الافتراض">التضخم السنوي للتكاليف</th><td data-label="القيمة">غير مطبّق: لا نسبة موثّقة</td><td data-label="الحالة">افتراض، الثقة متوسطة، غير مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الافتراض">السيناريو المتحفّظ: مضاعف المبيعات</th><td data-label="القيمة">× <bdi dir="ltr">0.6</bdi></td><td data-label="الحالة">افتراض، الثقة متوسطة، غير مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الافتراض">السيناريو المتفائل: مضاعف المبيعات</th><td data-label="القيمة">× <bdi dir="ltr">1.3</bdi></td><td data-label="الحالة">افتراض، الثقة متوسطة، غير مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الافتراض">السيناريو المتحفّظ: مضاعف التكلفة المتغيرة</th><td data-label="القيمة">× <bdi dir="ltr">1.1</bdi></td><td data-label="الحالة">افتراض، الثقة متوسطة، غير مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الافتراض">السيناريو المتفائل: مضاعف التكلفة المتغيرة</th><td data-label="القيمة">× <bdi dir="ltr">0.95</bdi></td><td data-label="الحالة">افتراض، الثقة متوسطة، غير مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الافتراض">السيناريو المتحفّظ: تأخير الإطلاق</th><td data-label="القيمة"><bdi dir="ltr">3</bdi> أشهر</td><td data-label="الحالة">افتراض، الثقة متوسطة، غير مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الافتراض">معامل سعر الاختراق فوق الحدّ الأدنى</th><td data-label="القيمة">× <bdi dir="ltr">1.1</bdi></td><td data-label="الحالة">افتراض، الثقة متوسطة، غير مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الافتراض">أدنى نسبة مقبولة بين LTV وCAC</th><td data-label="القيمة"><bdi dir="ltr">3</bdi></td><td data-label="الحالة">افتراض، الثقة متوسطة، غير مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الافتراض">صدمات تكلفة المستورد في اختبار العملة</th><td data-label="القيمة"><bdi dir="ltr">-20%</bdi>، <bdi dir="ltr">-10%</bdi>، <bdi dir="ltr">10%</bdi>، <bdi dir="ltr">20%</bdi></td><td data-label="الحالة">افتراض، الثقة متوسطة، غير مؤكَّد</td></tr>
+<tr><th scope="row" data-label="الافتراض">مدى حركة كل متغيّر في مخطط الحساسية</th><td data-label="القيمة"><bdi dir="ltr">20%</bdi></td><td data-label="الحالة">افتراض، الثقة متوسطة، غير مؤكَّد</td></tr></tbody>
+</table>
+</section>
+</main>
+<footer>
+<p>وُلّدت هذه الصفحة من الاختبارات ومن ملفات packages/engine/golden، ولا تُعدَّل يدويًا. لإعادة توليدها بعد تغيير مقصود في صيغة: <code>UPDATE_GOLDEN=1 pnpm --filter @sbn/engine test</code></p>
+</footer>
+</div>
+</body>
+</html>

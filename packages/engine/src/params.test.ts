@@ -36,6 +36,7 @@ describe('documented defaults', () => {
       parseRate('0.1'),
       parseRate('0.2'),
     ]); // SPEC T9, D-214
+    expect(p.tornadoSwing.value).toEqual(parseRate('0.2')); // SPEC T10, D-217
   });
 
   it('times the cash of each F7 option (D-187)', () => {
@@ -189,6 +190,8 @@ describe('overrides', () => {
       'an FX shock that was not built with makeRate',
       { fxShocks: defaultFigure('f', [{ num: 2n, den: 4n }]) },
     ],
+    ['a zero tornado swing', { tornadoSwing: defaultFigure('t', ZERO_RATE) }],
+    ['a tornado swing above 100%', { tornadoSwing: defaultFigure('t', parseRate('1.1')) }],
     ['a negative launch delay', { conservativeLaunchDelayMonths: defaultFigure('d', -1) }],
     ['a fractional launch delay', { conservativeLaunchDelayMonths: defaultFigure('d', 1.5) }],
     ['a launch delay beyond 120', { conservativeLaunchDelayMonths: defaultFigure('d', 121) }],

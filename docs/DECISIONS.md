@@ -40,7 +40,7 @@ A decision may sit under several topics. A new decision joins its topics in the 
   D-080, D-081, D-088, D-129, D-180, D-186.
 - **Diagnostic and question bank:** D-072, D-102, D-104, D-105, D-106, D-108, D-110 to D-119, D-129,
   D-149, D-156 to D-161, D-163, D-165, D-167, D-182, D-183, D-197 to D-199.
-- **Calculation engine:** D-178 to D-190, D-193 to D-196, D-200 to D-216.
+- **Calculation engine:** D-178 to D-190, D-193 to D-196, D-200 to D-224.
 - **AI and cost:** D-062, D-071, D-072, D-073, D-082, D-103, D-107, D-119 to D-124, D-143, D-146 to
   D-152, D-155, D-183, D-191.
 - **Privacy, consent and security:** D-013, D-016, D-040, D-041, D-061, D-062, D-074, D-077,
@@ -1027,4 +1027,174 @@ The owner approved all recommendations offered before the M2 plan.
   the status of `TaxRule`.
 - **Reason:** The same composition as `analyseEconomics` (D-190) keeps the run function a thin
   caller, and a typed contract for the table now saves a migration later.
+- **Status:** Active
+
+### D-217 (2026-10-11): The projection adjustments and the launch delay
+
+- **Decision:** `projectOperatingLines` takes one exact `ProjectionAdjustments` object
+  (`ProjectionOptions` stays as an alias): a sales multiplier, a price multiplier, a COGS multiplier
+  (D-214, unchanged), a fixed-cost multiplier and a launch delay in months. A missing option or one at
+  its identity (1, or 0 months) leaves every result and every provenance exactly as before, which the
+  existing tests prove; a negative multiplier or a delay that is not a whole number of months stops
+  the run with `invalid_param`. The sales multiplier is applied to the unrounded level times the
+  seasonal factor, and the product is rounded once to whole units, half away from zero (D-179); E7's
+  capacity still cuts the result, so a scenario cannot sell more than the business can serve. The
+  price multiplier scales each monthly revenue line (units times price, rounded once). The
+  fixed-cost multiplier scales D-182's full fixed cost, which is F4, the payroll of the staff who
+  have started and the F4.1 marketing, each rounded once on its monthly line together with the
+  inflation. The launch delay shifts the whole units series, seasonality included, later by that
+  many months: the first months sell nothing, the last months of the series fall beyond the horizon
+  and are dropped, and the capacity flags move with the units. Fixed costs, payroll and marketing
+  start as planned, and the set-up costs stay in month 0 (D-189). Each adjustment in use is listed as
+  a rule (`T9.sales_multiplier`, `T9.price_multiplier`, `T9.fixed_cost_multiplier`,
+  `T9.launch_delay`) in the inputs of the lines it changes, and in the lines built on them.
+- **Reason:** SPEC §4 T10 and D-189. Rounding the units once, before the cut to capacity, keeps a
+  scenario's units whole and within E7. Moving the seasons with the sales is the simplest reading of
+  "shift the sales later", and the delayed launch then meets the seasons of its own months (this is
+  listed for the owner in open question #93).
+- **Status:** Active
+
+### D-218 (2026-10-11): The scenarios and the tornado of T10
+
+- **Decision:** `scenarioAnalysis(input, context, params)` in `packages/engine/src/scenarios.ts`
+  reruns the projection, the tax of the context and the cash flow, and not the FX test, for three
+  scenarios. The conservative scenario multiplies the units by `scenario.conservative.sales_factor`
+  (0.6) and the variable cost by `scenario.conservative.vc_factor` (1.1) and delays the launch by
+  `scenario.conservative.launch_delay_months` (3), all together; the base scenario is the founder's
+  numbers; the optimistic scenario uses `scenario.optimistic.sales_factor` (1.3) and
+  `scenario.optimistic.vc_factor` (0.95) with no delay. Each reports the break-even month (the one
+  function T8 and the FX test use, D-207, null when no month of the horizon reaches it), the funding
+  need (D-215; `not_calculable` with the F5 reason when the cash flow is, D-213) and the operating
+  profit before tax of projection year 1. `tornadoAnalysis(input, params)` moves the price, the
+  variable cost, the sales and the fixed cost each alone by minus and plus `scenario.tornado_swing`
+  (20%, a new engine parameter) and reads the same year-1 operating profit before tax at each end.
+  The fixed cost is D-182's full fixed cost (F4, the payroll of the staff who have started and F4.1).
+  The swing of a variable is the absolute difference between its two ends; the rows are ranked by
+  it, widest first, and equal swings keep the order price, VC, sales, fixed costs. The top variable
+  (the first T18 experiment) is the widest one, and null when no variable moves the profit. Every
+  figure lists the parameters it used as assumptions (source `assumption`, validated false) and the
+  rule `T10.scenario` or `T10.tornado`.
+- **Reason:** SPEC §4 T10 and D-189. The year-1 profit before tax is the measure SPEC names; tax
+  is left out of the tornado so that a rule that is only a fixture does not decide the ranking, and
+  the funding need of a scenario still includes it through the cash flow. The hand-checked vector
+  of the tests is a flat curve of 400 units, price 10, VC 4 and fixed costs 1,000.
+- **Status:** Active
+
+### D-219 (2026-10-11): The canonical serialiser
+
+- **Decision:** `canonicalJson(value)` and `serialiseRun(run)` in `packages/engine/src/serialise.ts`
+  write a value as stable JSON text: a `bigint` as its decimal digits in a string, a rate (an
+  object of exactly a `num` and a `den` bigint) as `"numerator/denominator"` in a string, keys
+  sorted by their UTF-16 code units (no locale), a key whose value is `undefined` left out, and one
+  newline at the end. Containers that hold only scalars stay on one line when they fit in 100
+  characters, the rest are written one entry to a line with two spaces of indent. Only whole
+  numbers are written: a float, NaN, a class instance, a function or a symbol stops with the new
+  error code `unserialisable`. There is no parser and no input hash: M5 stores the text and reads
+  the run from its inputs again.
+- **Reason:** The golden files and the stored tool runs of M5 must be byte-stable on any machine, so
+  nothing may depend on a locale, a time zone, `Intl` or floating point.
+- **Status:** Active
+
+### D-220 (2026-10-11): The run function and its merged alerts
+
+- **Decision:** `runEngine(answers, provenance, project, tax, overrides, pricingOptions)` in
+  `packages/engine/src/run.ts` is the one entry point M5 calls. It makes the engine parameters
+  (`createEngineParams`, so an override out of its range throws `invalid_param` first), reads the
+  answers (`engineInputFrom`) and returns either `not_calculable` with the adapter's reasons or
+  `ok` with an `EngineRun`: the `ENGINE_VERSION`, the input and its notes, the parameters used
+  (`listEngineParams`), the operating projection, T8, T7, the cash analysis (tax, cash flow with
+  its funding need and payback, FX test; without the alerts, which are in the one list below), the
+  scenarios, the tornado and `alerts`. `alerts` holds the alerts of T8 and T7 (D-210) and of the tax
+  engine (D-211), each once, each marked `origin: 'economics'` or `'tax'`, ordered block, then
+  warning, then note, each group by alert code in plain code-unit order, and alerts of the same
+  code in the order they were raised (the sort is stable): the economics alerts first, then the tax
+  alerts by year. `mergeAlerts` is exported for M5. The run is pure and deterministic: the same
+  arguments give a deeply equal result, and a test proves it. `cash.tax.alerts` is the tax view's
+  own copy of the tax alerts and appears in the serialised run; a reader takes the alerts from
+  `alerts` only and never merges `cash.tax.alerts` into it again.
+- **Reason:** D-216 asked the run function to merge the two lists once. A fixed order lets the report
+  and the mentor branch on the list and keeps the golden files stable.
+- **Status:** Active
+
+### D-221 (2026-10-11): ENGINE_VERSION 1.0.0
+
+- **Decision:** `ENGINE_VERSION` is `1.0.0` and lives in `packages/engine/src/version.ts` (so that
+  the run function can read it without a cycle through `index.ts`, which still exports it). It is
+  the engine M4 completes: T7, T8, T9 with its tax, cash flow and FX test, T10, and the run
+  function. A search of the repository for `0.1.0` finds it outside `packages/engine` only in
+  `docs/DECISIONS.md` (D-196 and D-216, which say it stays 0.1.0 until this version) and nowhere in
+  code. From now on it is bumped whenever an output can change, and the golden files show the
+  change as a diff.
+- **Reason:** D-178 and D-216.
+- **Status:** Active
+
+### D-222 (2026-10-11): The golden projects and golden files
+
+- **Decision:** Three golden projects are fixtures in `packages/engine/src/golden-projects.ts`: a
+  Jordanian software service sold as a monthly subscription (JOD; F2 subscription, F2.1 churn, F4.1
+  marketing, a payroll in E8, LTV and CAC; paid in cash; a company), a Jordanian home e-commerce shop
+  (JOD; imported goods so that D6 gives an FX test; a seasonal D7; G1 not sure, so its tax figures
+  are assumptions; paid in three instalments) and an Algerian auto-entrepreneur (DZD; the SPEC §7
+  levy of 0.5% of turnover with a minimum of 10,000 and a ceiling of 5,000,000, unverified; turnover
+  crosses the ceiling in year 3 only; paid by deposit). Each is answers with provenance, a project
+  context, a tax context and the reference date 2026-10-05. Their inputs are round: a flat, linear
+  or exactly doubling curve, so that every headline number has a hand computation written next to
+  it (year-1 revenue and operating profit, the contribution margin, break-even units, revenue and
+  month, the tax of year 1, the funding need and its month, the payback, and LTV, CAC and the price
+  floor where they exist), and `golden.test.ts` asserts that the engine equals it. The shop is also
+  run under each of the four F7 options with hand-checked funding need, month and payback, so
+  together the fixtures use cash, credit, instalments and deposit, and both payback outcomes
+  (recovered within three years in projects 1 and 3, not within three years in project 2). The tax
+  rules of the fixtures are artificial: source `https://example.invalid/fixture`, status
+  `unverified`, no verification date, and a name that says fixture; the Jordanian rates are made up
+  and imply no real rate (CLAUDE.md rules 8 and 9). The scenarios, the tornado, the FX test, the
+  alerts and the minimum and ceiling of the Algerian levy are pinned in the same test. The whole
+  `EngineRun` serialised (D-219) is `packages/engine/golden/<name>.json`. The golden test compares
+  the engine's text with the file; when the environment variable `UPDATE_GOLDEN` is set it rewrites
+  the file instead (`UPDATE_GOLDEN=1 pnpm --filter @sbn/engine test`), so that a changed formula
+  shows as a diff to read and accept on purpose. The test throws when `UPDATE_GOLDEN` is set while
+  `CI` is set, so a rewrite can never hide a changed number in a workflow. The golden files and the
+  review page are listed
+  in `.prettierignore`, and ESLint does not lint JSON or HTML.
+- **Reason:** CLAUDE.md §8.3 and §9 (M4: golden-file tests for three sample projects), D-178. A test
+  that rewrites its own expectation by default would hide a change, so the rewrite is explicit.
+- **Status:** Active
+
+### D-223 (2026-10-11): The owner review page
+
+- **Decision:** `docs/engine-review/index.html` is one self-contained HTML file rendered from the
+  three golden runs by the pure function `renderReviewPage` in `packages/engine/src/review-page.ts`.
+  It is a document for the owner, not an app route: nothing in `apps/web` changes, and founders see
+  no engine figure before M5. It is Modern Standard Arabic, right to left, with the English term in
+  parentheses at its first use, Western digits and arithmetic isolated in `bdi`, the currency label
+  after the number (`د.أ` for JOD, the ISO code DZD where no symbol is agreed), the brand colours
+  only (black, gold for the key numbers on a black chip, teal for focus and link underlines), light
+  and dark themes through CSS tokens, WCAG 2.2 AA contrast (checked in a test), a visible focus
+  ring, tables that stack at 360 px, no script and no request to anywhere. For each project it
+  shows one sentence, the founder's inputs in words, the headline numbers each next to its hand
+  computation and a mark that the engine agrees, the three scenarios, the ranked tornado, the FX
+  table and the four payment options where the project has them, the alerts that fired with their
+  reason and provenance, and what the engine read differently from the answers; it ends with the
+  engine's assumptions and opens with a banner saying these are sample projects with unverified
+  fixture tax rules and no advice. The golden test compares the file with the render, and
+  `UPDATE_GOLDEN` rewrites it, like the golden files. A bracket without its partner inside a
+  number run stays outside the isolate, so a pair of brackets is never split between the left-to-right
+  isolate and the right-to-left text (a test checks every isolate on the page).
+- **Reason:** D-178: the owner reviews the engine's numbers and wording before M5 puts any of it in
+  front of a founder.
+- **Status:** Active
+
+### D-224 (2026-10-11): Smaller decisions of the last M4 pull request
+
+- **Decision:** `packages/engine/tsconfig.json` now has `types: ["node"]` (like `packages/ai`) so
+  that the golden test can read and write files. Because the type checker no longer refuses Node
+  built-ins, the ESLint rule for the engine's source files (everything but `*.test.ts`) now bans
+  every built-in module by its exact name, taken from `node:module`, and the Node-only globals
+  `Buffer`, `require`, `__dirname`, `__filename`, `setImmediate` and `queueMicrotask`, besides the
+  bans it already had. The error code `unserialisable` joins `EngineErrorCode`. `golden-projects.ts` and `review-page.ts` sit in `src` so
+  that they are tested and covered, and are not exported from `index.ts`: they are fixtures and a
+  document, not engine API. A new engine parameter, `scenario.tornado_swing`, is listed by
+  `listEngineParams` after `fx.cogs_shocks`.
+- **Reason:** Keeping the fixtures next to the code they test keeps the coverage gate honest, and
+  keeping them out of the public surface keeps M5 from depending on them.
 - **Status:** Active

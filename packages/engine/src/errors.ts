@@ -9,7 +9,8 @@ export type EngineErrorCode =
   | 'unsafe_integer'
   | 'division_by_zero'
   | 'empty_input'
-  | 'length_mismatch';
+  | 'length_mismatch'
+  | 'unserialisable';
 
 /**
  * The one error the engine throws. A calculation never continues with a guessed value: bad input

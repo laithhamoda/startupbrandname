@@ -1,0 +1,3375 @@
+{
+  "alerts": [
+    {
+      "code": "break_even_month_above_runway",
+      "confidence": "low",
+      "inputs": [
+        { "id": "F6", "kind": "answer" },
+        { "id": "D7", "kind": "answer" },
+        { "id": "E7", "kind": "answer" },
+        { "id": "F6.2", "kind": "answer" },
+        { "id": "T9.units", "kind": "rule" },
+        { "id": "F1", "kind": "answer" },
+        { "id": "T9.revenue", "kind": "rule" },
+        { "id": "F3", "kind": "answer" },
+        { "id": "T9.cogs", "kind": "rule" },
+        { "id": "T9.gross_profit", "kind": "rule" },
+        { "id": "F4", "kind": "answer" },
+        { "id": "E8", "kind": "answer" },
+        { "id": "F4.1", "kind": "answer" },
+        { "id": "T9.operating_costs", "kind": "rule" },
+        { "id": "T9.operating_profit", "kind": "rule" },
+        { "id": "T8.break_even_month", "kind": "rule" },
+        { "id": "A7", "kind": "answer" },
+        { "id": "alert.break_even_month_above_runway", "kind": "rule" }
+      ],
+      "limit": { "kind": "months", "months": 3 },
+      "measured": { "kind": "months", "months": 6 },
+      "origin": "economics",
+      "severity": "warning",
+      "source": "assumption",
+      "validated": false
+    },
+    {
+      "code": "price_below_floor",
+      "confidence": "low",
+      "inputs": [
+        { "id": "F1", "kind": "answer" },
+        { "id": "F3", "kind": "answer" },
+        { "id": "F4", "kind": "answer" },
+        { "id": "E8", "kind": "answer" },
+        { "id": "F4.1", "kind": "answer" },
+        { "id": "T9.operating_costs", "kind": "rule" },
+        { "id": "F6", "kind": "answer" },
+        { "id": "D7", "kind": "answer" },
+        { "id": "E7", "kind": "answer" },
+        { "id": "F6.2", "kind": "answer" },
+        { "id": "T9.units", "kind": "rule" },
+        { "id": "T7.floor", "kind": "rule" },
+        { "id": "alert.price_below_floor", "kind": "rule" }
+      ],
+      "limit": {
+        "kind": "money",
+        "money": { "currency": "JOD", "minor": "30833" }
+      },
+      "measured": {
+        "kind": "money",
+        "money": { "currency": "JOD", "minor": "30000" }
+      },
+      "origin": "economics",
+      "severity": "warning",
+      "source": "assumption",
+      "validated": false
+    },
+    {
+      "code": "setup_costs_within_capital_range",
+      "confidence": "high",
+      "inputs": [
+        { "id": "F5", "kind": "answer" },
+        { "id": "A5", "kind": "answer" },
+        { "id": "alert.setup_costs_within_capital_range", "kind": "rule" }
+      ],
+      "limit": {
+        "kind": "money",
+        "money": { "currency": "JOD", "minor": "15000000" }
+      },
+      "lowerLimit": {
+        "kind": "money",
+        "money": { "currency": "JOD", "minor": "8000000" }
+      },
+      "measured": {
+        "kind": "money",
+        "money": { "currency": "JOD", "minor": "12000000" }
+      },
+      "origin": "economics",
+      "severity": "note",
+      "source": "user",
+      "validated": true
+    }
+  ],
+  "cash": {
+    "cashFlow": {
+      "cogsPaid": {
+        "byPeriod": [
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "240000" },
+          { "currency": "JOD", "minor": "480000" },
+          { "currency": "JOD", "minor": "720000" },
+          { "currency": "JOD", "minor": "960000" },
+          { "currency": "JOD", "minor": "1200000" },
+          { "currency": "JOD", "minor": "1200000" },
+          { "currency": "JOD", "minor": "1200000" },
+          { "currency": "JOD", "minor": "1200000" },
+          { "currency": "JOD", "minor": "1200000" },
+          { "currency": "JOD", "minor": "1200000" },
+          { "currency": "JOD", "minor": "1200000" },
+          { "currency": "JOD", "minor": "3600000" },
+          { "currency": "JOD", "minor": "3600000" },
+          { "currency": "JOD", "minor": "3600000" },
+          { "currency": "JOD", "minor": "3600000" },
+          { "currency": "JOD", "minor": "3600000" },
+          { "currency": "JOD", "minor": "3600000" },
+          { "currency": "JOD", "minor": "3600000" },
+          { "currency": "JOD", "minor": "3600000" }
+        ],
+        "monthly": [
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "240000" },
+          { "currency": "JOD", "minor": "480000" },
+          { "currency": "JOD", "minor": "720000" },
+          { "currency": "JOD", "minor": "960000" },
+          { "currency": "JOD", "minor": "1200000" },
+          { "currency": "JOD", "minor": "1200000" },
+          { "currency": "JOD", "minor": "1200000" },
+          { "currency": "JOD", "minor": "1200000" },
+          { "currency": "JOD", "minor": "1200000" },
+          { "currency": "JOD", "minor": "1200000" },
+          { "currency": "JOD", "minor": "1200000" },
+          { "currency": "JOD", "minor": "1200000" },
+          { "currency": "JOD", "minor": "1200000" },
+          { "currency": "JOD", "minor": "1200000" },
+          { "currency": "JOD", "minor": "1200000" },
+          { "currency": "JOD", "minor": "1200000" },
+          { "currency": "JOD", "minor": "1200000" },
+          { "currency": "JOD", "minor": "1200000" },
+          { "currency": "JOD", "minor": "1200000" },
+          { "currency": "JOD", "minor": "1200000" },
+          { "currency": "JOD", "minor": "1200000" },
+          { "currency": "JOD", "minor": "1200000" },
+          { "currency": "JOD", "minor": "1200000" },
+          { "currency": "JOD", "minor": "1200000" },
+          { "currency": "JOD", "minor": "1200000" },
+          { "currency": "JOD", "minor": "1200000" },
+          { "currency": "JOD", "minor": "1200000" },
+          { "currency": "JOD", "minor": "1200000" },
+          { "currency": "JOD", "minor": "1200000" },
+          { "currency": "JOD", "minor": "1200000" },
+          { "currency": "JOD", "minor": "1200000" },
+          { "currency": "JOD", "minor": "1200000" },
+          { "currency": "JOD", "minor": "1200000" },
+          { "currency": "JOD", "minor": "1200000" },
+          { "currency": "JOD", "minor": "1200000" }
+        ],
+        "provenance": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false
+        }
+      },
+      "cumulative": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "F1", "kind": "answer" },
+          { "id": "T9.revenue", "kind": "rule" },
+          { "id": "F7", "kind": "answer" },
+          { "id": "payment.cash", "kind": "default" },
+          { "id": "T9.cash_receipts", "kind": "rule" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "T9.cogs", "kind": "rule" },
+          { "id": "F4", "kind": "answer" },
+          { "id": "E8", "kind": "answer" },
+          { "id": "F4.1", "kind": "answer" },
+          { "id": "T9.operating_costs", "kind": "rule" },
+          { "id": "fixture.jo.company.profit_tax", "kind": "country_pack_item" },
+          { "id": "G1", "kind": "answer" },
+          { "id": "T9.gross_profit", "kind": "rule" },
+          { "id": "T9.operating_profit", "kind": "rule" },
+          { "id": "T9.tax_due", "kind": "rule" },
+          { "id": "T9.tax_paid", "kind": "rule" },
+          { "id": "T9.net_cash", "kind": "rule" },
+          { "id": "F5", "kind": "answer" },
+          { "id": "T9.cumulative_cash", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false,
+        "value": [
+          { "currency": "JOD", "minor": "-12000000" },
+          { "currency": "JOD", "minor": "-14600000" },
+          { "currency": "JOD", "minor": "-16240000" },
+          { "currency": "JOD", "minor": "-16920000" },
+          { "currency": "JOD", "minor": "-18140000" },
+          { "currency": "JOD", "minor": "-18400000" },
+          { "currency": "JOD", "minor": "-17700000" },
+          { "currency": "JOD", "minor": "-17000000" },
+          { "currency": "JOD", "minor": "-16300000" },
+          { "currency": "JOD", "minor": "-15600000" },
+          { "currency": "JOD", "minor": "-14900000" },
+          { "currency": "JOD", "minor": "-14200000" },
+          { "currency": "JOD", "minor": "-13500000" },
+          { "currency": "JOD", "minor": "-12800000" },
+          { "currency": "JOD", "minor": "-12100000" },
+          { "currency": "JOD", "minor": "-11400000" },
+          { "currency": "JOD", "minor": "-10700000" },
+          { "currency": "JOD", "minor": "-10000000" },
+          { "currency": "JOD", "minor": "-9300000" },
+          { "currency": "JOD", "minor": "-8600000" },
+          { "currency": "JOD", "minor": "-7900000" },
+          { "currency": "JOD", "minor": "-7200000" },
+          { "currency": "JOD", "minor": "-6500000" },
+          { "currency": "JOD", "minor": "-5800000" },
+          { "currency": "JOD", "minor": "-5100000" },
+          { "currency": "JOD", "minor": "-4400000" },
+          { "currency": "JOD", "minor": "-3700000" },
+          { "currency": "JOD", "minor": "-3000000" },
+          { "currency": "JOD", "minor": "-3980000" },
+          { "currency": "JOD", "minor": "-3280000" },
+          { "currency": "JOD", "minor": "-2580000" },
+          { "currency": "JOD", "minor": "-1880000" },
+          { "currency": "JOD", "minor": "-1180000" },
+          { "currency": "JOD", "minor": "-480000" },
+          { "currency": "JOD", "minor": "220000" },
+          { "currency": "JOD", "minor": "920000" },
+          { "currency": "JOD", "minor": "1620000" }
+        ]
+      },
+      "currency": "JOD",
+      "fundingNeed": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "F1", "kind": "answer" },
+          { "id": "T9.revenue", "kind": "rule" },
+          { "id": "F7", "kind": "answer" },
+          { "id": "payment.cash", "kind": "default" },
+          { "id": "T9.cash_receipts", "kind": "rule" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "T9.cogs", "kind": "rule" },
+          { "id": "F4", "kind": "answer" },
+          { "id": "E8", "kind": "answer" },
+          { "id": "F4.1", "kind": "answer" },
+          { "id": "T9.operating_costs", "kind": "rule" },
+          { "id": "fixture.jo.company.profit_tax", "kind": "country_pack_item" },
+          { "id": "G1", "kind": "answer" },
+          { "id": "T9.gross_profit", "kind": "rule" },
+          { "id": "T9.operating_profit", "kind": "rule" },
+          { "id": "T9.tax_due", "kind": "rule" },
+          { "id": "T9.tax_paid", "kind": "rule" },
+          { "id": "T9.net_cash", "kind": "rule" },
+          { "id": "F5", "kind": "answer" },
+          { "id": "T9.cumulative_cash", "kind": "rule" },
+          { "id": "T9.funding_need", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false,
+        "value": { "currency": "JOD", "minor": "18400000" }
+      },
+      "lowest": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "F1", "kind": "answer" },
+          { "id": "T9.revenue", "kind": "rule" },
+          { "id": "F7", "kind": "answer" },
+          { "id": "payment.cash", "kind": "default" },
+          { "id": "T9.cash_receipts", "kind": "rule" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "T9.cogs", "kind": "rule" },
+          { "id": "F4", "kind": "answer" },
+          { "id": "E8", "kind": "answer" },
+          { "id": "F4.1", "kind": "answer" },
+          { "id": "T9.operating_costs", "kind": "rule" },
+          { "id": "fixture.jo.company.profit_tax", "kind": "country_pack_item" },
+          { "id": "G1", "kind": "answer" },
+          { "id": "T9.gross_profit", "kind": "rule" },
+          { "id": "T9.operating_profit", "kind": "rule" },
+          { "id": "T9.tax_due", "kind": "rule" },
+          { "id": "T9.tax_paid", "kind": "rule" },
+          { "id": "T9.net_cash", "kind": "rule" },
+          { "id": "F5", "kind": "answer" },
+          { "id": "T9.cumulative_cash", "kind": "rule" },
+          { "id": "T9.funding_need", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false,
+        "value": {
+          "cumulative": { "currency": "JOD", "minor": "-18400000" },
+          "month": 5
+        }
+      },
+      "netCash": {
+        "byPeriod": [
+          { "currency": "JOD", "minor": "-2600000" },
+          { "currency": "JOD", "minor": "-1640000" },
+          { "currency": "JOD", "minor": "-680000" },
+          { "currency": "JOD", "minor": "-1220000" },
+          { "currency": "JOD", "minor": "-260000" },
+          { "currency": "JOD", "minor": "700000" },
+          { "currency": "JOD", "minor": "700000" },
+          { "currency": "JOD", "minor": "700000" },
+          { "currency": "JOD", "minor": "700000" },
+          { "currency": "JOD", "minor": "700000" },
+          { "currency": "JOD", "minor": "700000" },
+          { "currency": "JOD", "minor": "700000" },
+          { "currency": "JOD", "minor": "2100000" },
+          { "currency": "JOD", "minor": "2100000" },
+          { "currency": "JOD", "minor": "2100000" },
+          { "currency": "JOD", "minor": "2100000" },
+          { "currency": "JOD", "minor": "2100000" },
+          { "currency": "JOD", "minor": "420000" },
+          { "currency": "JOD", "minor": "2100000" },
+          { "currency": "JOD", "minor": "2100000" }
+        ],
+        "monthly": [
+          { "currency": "JOD", "minor": "-2600000" },
+          { "currency": "JOD", "minor": "-1640000" },
+          { "currency": "JOD", "minor": "-680000" },
+          { "currency": "JOD", "minor": "-1220000" },
+          { "currency": "JOD", "minor": "-260000" },
+          { "currency": "JOD", "minor": "700000" },
+          { "currency": "JOD", "minor": "700000" },
+          { "currency": "JOD", "minor": "700000" },
+          { "currency": "JOD", "minor": "700000" },
+          { "currency": "JOD", "minor": "700000" },
+          { "currency": "JOD", "minor": "700000" },
+          { "currency": "JOD", "minor": "700000" },
+          { "currency": "JOD", "minor": "700000" },
+          { "currency": "JOD", "minor": "700000" },
+          { "currency": "JOD", "minor": "700000" },
+          { "currency": "JOD", "minor": "700000" },
+          { "currency": "JOD", "minor": "700000" },
+          { "currency": "JOD", "minor": "700000" },
+          { "currency": "JOD", "minor": "700000" },
+          { "currency": "JOD", "minor": "700000" },
+          { "currency": "JOD", "minor": "700000" },
+          { "currency": "JOD", "minor": "700000" },
+          { "currency": "JOD", "minor": "700000" },
+          { "currency": "JOD", "minor": "700000" },
+          { "currency": "JOD", "minor": "700000" },
+          { "currency": "JOD", "minor": "700000" },
+          { "currency": "JOD", "minor": "700000" },
+          { "currency": "JOD", "minor": "-980000" },
+          { "currency": "JOD", "minor": "700000" },
+          { "currency": "JOD", "minor": "700000" },
+          { "currency": "JOD", "minor": "700000" },
+          { "currency": "JOD", "minor": "700000" },
+          { "currency": "JOD", "minor": "700000" },
+          { "currency": "JOD", "minor": "700000" },
+          { "currency": "JOD", "minor": "700000" },
+          { "currency": "JOD", "minor": "700000" }
+        ],
+        "provenance": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "F7", "kind": "answer" },
+            { "id": "payment.cash", "kind": "default" },
+            { "id": "T9.cash_receipts", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "fixture.jo.company.profit_tax", "kind": "country_pack_item" },
+            { "id": "G1", "kind": "answer" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "T9.tax_due", "kind": "rule" },
+            { "id": "T9.tax_paid", "kind": "rule" },
+            { "id": "T9.net_cash", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false
+        }
+      },
+      "notes": [
+        { "code": "tax_after_horizon" }
+      ],
+      "operatingCostsPaid": {
+        "byPeriod": [
+          { "currency": "JOD", "minor": "2600000" },
+          { "currency": "JOD", "minor": "2600000" },
+          { "currency": "JOD", "minor": "2600000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "12300000" },
+          { "currency": "JOD", "minor": "12300000" },
+          { "currency": "JOD", "minor": "12300000" },
+          { "currency": "JOD", "minor": "12300000" },
+          { "currency": "JOD", "minor": "12300000" },
+          { "currency": "JOD", "minor": "12300000" },
+          { "currency": "JOD", "minor": "12300000" },
+          { "currency": "JOD", "minor": "12300000" }
+        ],
+        "monthly": [
+          { "currency": "JOD", "minor": "2600000" },
+          { "currency": "JOD", "minor": "2600000" },
+          { "currency": "JOD", "minor": "2600000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" },
+          { "currency": "JOD", "minor": "4100000" }
+        ],
+        "provenance": {
+          "confidence": "high",
+          "inputs": [
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" }
+          ],
+          "source": "user",
+          "validated": true
+        }
+      },
+      "payback": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "F1", "kind": "answer" },
+          { "id": "T9.revenue", "kind": "rule" },
+          { "id": "F7", "kind": "answer" },
+          { "id": "payment.cash", "kind": "default" },
+          { "id": "T9.cash_receipts", "kind": "rule" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "T9.cogs", "kind": "rule" },
+          { "id": "F4", "kind": "answer" },
+          { "id": "E8", "kind": "answer" },
+          { "id": "F4.1", "kind": "answer" },
+          { "id": "T9.operating_costs", "kind": "rule" },
+          { "id": "fixture.jo.company.profit_tax", "kind": "country_pack_item" },
+          { "id": "G1", "kind": "answer" },
+          { "id": "T9.gross_profit", "kind": "rule" },
+          { "id": "T9.operating_profit", "kind": "rule" },
+          { "id": "T9.tax_due", "kind": "rule" },
+          { "id": "T9.tax_paid", "kind": "rule" },
+          { "id": "T9.net_cash", "kind": "rule" },
+          { "id": "F5", "kind": "answer" },
+          { "id": "T9.cumulative_cash", "kind": "rule" },
+          { "id": "T9.payback", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false,
+        "value": 34
+      },
+      "paymentTiming": {
+        "confidence": "medium",
+        "inputs": [
+          { "id": "payment.cash", "kind": "default" }
+        ],
+        "source": "assumption",
+        "validated": false,
+        "value": [
+          { "delayMonths": 0, "share": "1/1" }
+        ]
+      },
+      "receipts": {
+        "byPeriod": [
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "1200000" },
+          { "currency": "JOD", "minor": "2400000" },
+          { "currency": "JOD", "minor": "3600000" },
+          { "currency": "JOD", "minor": "4800000" },
+          { "currency": "JOD", "minor": "6000000" },
+          { "currency": "JOD", "minor": "6000000" },
+          { "currency": "JOD", "minor": "6000000" },
+          { "currency": "JOD", "minor": "6000000" },
+          { "currency": "JOD", "minor": "6000000" },
+          { "currency": "JOD", "minor": "6000000" },
+          { "currency": "JOD", "minor": "6000000" },
+          { "currency": "JOD", "minor": "18000000" },
+          { "currency": "JOD", "minor": "18000000" },
+          { "currency": "JOD", "minor": "18000000" },
+          { "currency": "JOD", "minor": "18000000" },
+          { "currency": "JOD", "minor": "18000000" },
+          { "currency": "JOD", "minor": "18000000" },
+          { "currency": "JOD", "minor": "18000000" },
+          { "currency": "JOD", "minor": "18000000" }
+        ],
+        "monthly": [
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "1200000" },
+          { "currency": "JOD", "minor": "2400000" },
+          { "currency": "JOD", "minor": "3600000" },
+          { "currency": "JOD", "minor": "4800000" },
+          { "currency": "JOD", "minor": "6000000" },
+          { "currency": "JOD", "minor": "6000000" },
+          { "currency": "JOD", "minor": "6000000" },
+          { "currency": "JOD", "minor": "6000000" },
+          { "currency": "JOD", "minor": "6000000" },
+          { "currency": "JOD", "minor": "6000000" },
+          { "currency": "JOD", "minor": "6000000" },
+          { "currency": "JOD", "minor": "6000000" },
+          { "currency": "JOD", "minor": "6000000" },
+          { "currency": "JOD", "minor": "6000000" },
+          { "currency": "JOD", "minor": "6000000" },
+          { "currency": "JOD", "minor": "6000000" },
+          { "currency": "JOD", "minor": "6000000" },
+          { "currency": "JOD", "minor": "6000000" },
+          { "currency": "JOD", "minor": "6000000" },
+          { "currency": "JOD", "minor": "6000000" },
+          { "currency": "JOD", "minor": "6000000" },
+          { "currency": "JOD", "minor": "6000000" },
+          { "currency": "JOD", "minor": "6000000" },
+          { "currency": "JOD", "minor": "6000000" },
+          { "currency": "JOD", "minor": "6000000" },
+          { "currency": "JOD", "minor": "6000000" },
+          { "currency": "JOD", "minor": "6000000" },
+          { "currency": "JOD", "minor": "6000000" },
+          { "currency": "JOD", "minor": "6000000" },
+          { "currency": "JOD", "minor": "6000000" },
+          { "currency": "JOD", "minor": "6000000" },
+          { "currency": "JOD", "minor": "6000000" },
+          { "currency": "JOD", "minor": "6000000" },
+          { "currency": "JOD", "minor": "6000000" },
+          { "currency": "JOD", "minor": "6000000" }
+        ],
+        "provenance": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "F7", "kind": "answer" },
+            { "id": "payment.cash", "kind": "default" },
+            { "id": "T9.cash_receipts", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false
+        }
+      },
+      "receiptsAfterHorizon": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "F1", "kind": "answer" },
+          { "id": "T9.revenue", "kind": "rule" },
+          { "id": "F7", "kind": "answer" },
+          { "id": "payment.cash", "kind": "default" },
+          { "id": "T9.cash_receipts", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false,
+        "value": { "currency": "JOD", "minor": "0" }
+      },
+      "setupCosts": {
+        "confidence": "high",
+        "inputs": [
+          { "id": "F5", "kind": "answer" }
+        ],
+        "source": "user",
+        "validated": true,
+        "value": { "currency": "JOD", "minor": "12000000" }
+      },
+      "status": "ok",
+      "taxAfterHorizon": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "fixture.jo.company.profit_tax", "kind": "country_pack_item" },
+          { "id": "G1", "kind": "answer" },
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "F1", "kind": "answer" },
+          { "id": "T9.revenue", "kind": "rule" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "T9.cogs", "kind": "rule" },
+          { "id": "T9.gross_profit", "kind": "rule" },
+          { "id": "F4", "kind": "answer" },
+          { "id": "E8", "kind": "answer" },
+          { "id": "F4.1", "kind": "answer" },
+          { "id": "T9.operating_costs", "kind": "rule" },
+          { "id": "T9.operating_profit", "kind": "rule" },
+          { "id": "T9.tax_due", "kind": "rule" },
+          { "id": "T9.tax_paid", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false,
+        "value": { "currency": "JOD", "minor": "1680000" }
+      },
+      "taxIncluded": true,
+      "taxPaid": {
+        "byPeriod": [
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "1680000" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" }
+        ],
+        "monthly": [
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "1680000" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" },
+          { "currency": "JOD", "minor": "0" }
+        ],
+        "provenance": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "fixture.jo.company.profit_tax", "kind": "country_pack_item" },
+            { "id": "G1", "kind": "answer" },
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "T9.tax_due", "kind": "rule" },
+            { "id": "T9.tax_paid", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false
+        }
+      }
+    },
+    "fxTest": null,
+    "tax": {
+      "alerts": [],
+      "legalForm": "company",
+      "legalFormAssumed": false,
+      "regime": "fixture_regime_company",
+      "status": "calculated",
+      "years": [
+        {
+          "charges": [
+            {
+              "base": { "currency": "JOD", "minor": "0" },
+              "basis": "profit",
+              "due": {
+                "confidence": "low",
+                "inputs": [
+                  { "id": "fixture.jo.company.profit_tax", "kind": "country_pack_item" },
+                  { "id": "G1", "kind": "answer" },
+                  { "id": "F6", "kind": "answer" },
+                  { "id": "D7", "kind": "answer" },
+                  { "id": "E7", "kind": "answer" },
+                  { "id": "F6.2", "kind": "answer" },
+                  { "id": "T9.units", "kind": "rule" },
+                  { "id": "F1", "kind": "answer" },
+                  { "id": "T9.revenue", "kind": "rule" },
+                  { "id": "F3", "kind": "answer" },
+                  { "id": "T9.cogs", "kind": "rule" },
+                  { "id": "T9.gross_profit", "kind": "rule" },
+                  { "id": "F4", "kind": "answer" },
+                  { "id": "E8", "kind": "answer" },
+                  { "id": "F4.1", "kind": "answer" },
+                  { "id": "T9.operating_costs", "kind": "rule" },
+                  { "id": "T9.operating_profit", "kind": "rule" },
+                  { "id": "T9.tax_due", "kind": "rule" }
+                ],
+                "source": "assumption",
+                "validated": false,
+                "value": { "currency": "JOD", "minor": "0" }
+              },
+              "kind": "tax",
+              "levy": "fixture_profit_tax",
+              "minimumApplied": false,
+              "paymentMonth": 16,
+              "ruleId": "fixture.jo.company.profit_tax"
+            }
+          ],
+          "profit": { "currency": "JOD", "minor": "-1500000" },
+          "total": {
+            "confidence": "low",
+            "inputs": [
+              { "id": "fixture.jo.company.profit_tax", "kind": "country_pack_item" },
+              { "id": "G1", "kind": "answer" },
+              { "id": "F6", "kind": "answer" },
+              { "id": "D7", "kind": "answer" },
+              { "id": "E7", "kind": "answer" },
+              { "id": "F6.2", "kind": "answer" },
+              { "id": "T9.units", "kind": "rule" },
+              { "id": "F1", "kind": "answer" },
+              { "id": "T9.revenue", "kind": "rule" },
+              { "id": "F3", "kind": "answer" },
+              { "id": "T9.cogs", "kind": "rule" },
+              { "id": "T9.gross_profit", "kind": "rule" },
+              { "id": "F4", "kind": "answer" },
+              { "id": "E8", "kind": "answer" },
+              { "id": "F4.1", "kind": "answer" },
+              { "id": "T9.operating_costs", "kind": "rule" },
+              { "id": "T9.operating_profit", "kind": "rule" },
+              { "id": "T9.tax_due", "kind": "rule" },
+              { "id": "T9.tax_year_total", "kind": "rule" }
+            ],
+            "source": "assumption",
+            "validated": false,
+            "value": { "currency": "JOD", "minor": "0" }
+          },
+          "turnover": { "currency": "JOD", "minor": "54000000" },
+          "year": 1
+        },
+        {
+          "charges": [
+            {
+              "base": { "currency": "JOD", "minor": "8400000" },
+              "basis": "profit",
+              "due": {
+                "confidence": "low",
+                "inputs": [
+                  { "id": "fixture.jo.company.profit_tax", "kind": "country_pack_item" },
+                  { "id": "G1", "kind": "answer" },
+                  { "id": "F6", "kind": "answer" },
+                  { "id": "D7", "kind": "answer" },
+                  { "id": "E7", "kind": "answer" },
+                  { "id": "F6.2", "kind": "answer" },
+                  { "id": "T9.units", "kind": "rule" },
+                  { "id": "F1", "kind": "answer" },
+                  { "id": "T9.revenue", "kind": "rule" },
+                  { "id": "F3", "kind": "answer" },
+                  { "id": "T9.cogs", "kind": "rule" },
+                  { "id": "T9.gross_profit", "kind": "rule" },
+                  { "id": "F4", "kind": "answer" },
+                  { "id": "E8", "kind": "answer" },
+                  { "id": "F4.1", "kind": "answer" },
+                  { "id": "T9.operating_costs", "kind": "rule" },
+                  { "id": "T9.operating_profit", "kind": "rule" },
+                  { "id": "T9.tax_due", "kind": "rule" }
+                ],
+                "source": "assumption",
+                "validated": false,
+                "value": { "currency": "JOD", "minor": "1680000" }
+              },
+              "kind": "tax",
+              "levy": "fixture_profit_tax",
+              "minimumApplied": false,
+              "paymentMonth": 28,
+              "ruleId": "fixture.jo.company.profit_tax"
+            }
+          ],
+          "profit": { "currency": "JOD", "minor": "8400000" },
+          "total": {
+            "confidence": "low",
+            "inputs": [
+              { "id": "fixture.jo.company.profit_tax", "kind": "country_pack_item" },
+              { "id": "G1", "kind": "answer" },
+              { "id": "F6", "kind": "answer" },
+              { "id": "D7", "kind": "answer" },
+              { "id": "E7", "kind": "answer" },
+              { "id": "F6.2", "kind": "answer" },
+              { "id": "T9.units", "kind": "rule" },
+              { "id": "F1", "kind": "answer" },
+              { "id": "T9.revenue", "kind": "rule" },
+              { "id": "F3", "kind": "answer" },
+              { "id": "T9.cogs", "kind": "rule" },
+              { "id": "T9.gross_profit", "kind": "rule" },
+              { "id": "F4", "kind": "answer" },
+              { "id": "E8", "kind": "answer" },
+              { "id": "F4.1", "kind": "answer" },
+              { "id": "T9.operating_costs", "kind": "rule" },
+              { "id": "T9.operating_profit", "kind": "rule" },
+              { "id": "T9.tax_due", "kind": "rule" },
+              { "id": "T9.tax_year_total", "kind": "rule" }
+            ],
+            "source": "assumption",
+            "validated": false,
+            "value": { "currency": "JOD", "minor": "1680000" }
+          },
+          "turnover": { "currency": "JOD", "minor": "72000000" },
+          "year": 2
+        },
+        {
+          "charges": [
+            {
+              "base": { "currency": "JOD", "minor": "8400000" },
+              "basis": "profit",
+              "due": {
+                "confidence": "low",
+                "inputs": [
+                  { "id": "fixture.jo.company.profit_tax", "kind": "country_pack_item" },
+                  { "id": "G1", "kind": "answer" },
+                  { "id": "F6", "kind": "answer" },
+                  { "id": "D7", "kind": "answer" },
+                  { "id": "E7", "kind": "answer" },
+                  { "id": "F6.2", "kind": "answer" },
+                  { "id": "T9.units", "kind": "rule" },
+                  { "id": "F1", "kind": "answer" },
+                  { "id": "T9.revenue", "kind": "rule" },
+                  { "id": "F3", "kind": "answer" },
+                  { "id": "T9.cogs", "kind": "rule" },
+                  { "id": "T9.gross_profit", "kind": "rule" },
+                  { "id": "F4", "kind": "answer" },
+                  { "id": "E8", "kind": "answer" },
+                  { "id": "F4.1", "kind": "answer" },
+                  { "id": "T9.operating_costs", "kind": "rule" },
+                  { "id": "T9.operating_profit", "kind": "rule" },
+                  { "id": "T9.tax_due", "kind": "rule" }
+                ],
+                "source": "assumption",
+                "validated": false,
+                "value": { "currency": "JOD", "minor": "1680000" }
+              },
+              "kind": "tax",
+              "levy": "fixture_profit_tax",
+              "minimumApplied": false,
+              "paymentMonth": 40,
+              "ruleId": "fixture.jo.company.profit_tax"
+            }
+          ],
+          "profit": { "currency": "JOD", "minor": "8400000" },
+          "total": {
+            "confidence": "low",
+            "inputs": [
+              { "id": "fixture.jo.company.profit_tax", "kind": "country_pack_item" },
+              { "id": "G1", "kind": "answer" },
+              { "id": "F6", "kind": "answer" },
+              { "id": "D7", "kind": "answer" },
+              { "id": "E7", "kind": "answer" },
+              { "id": "F6.2", "kind": "answer" },
+              { "id": "T9.units", "kind": "rule" },
+              { "id": "F1", "kind": "answer" },
+              { "id": "T9.revenue", "kind": "rule" },
+              { "id": "F3", "kind": "answer" },
+              { "id": "T9.cogs", "kind": "rule" },
+              { "id": "T9.gross_profit", "kind": "rule" },
+              { "id": "F4", "kind": "answer" },
+              { "id": "E8", "kind": "answer" },
+              { "id": "F4.1", "kind": "answer" },
+              { "id": "T9.operating_costs", "kind": "rule" },
+              { "id": "T9.operating_profit", "kind": "rule" },
+              { "id": "T9.tax_due", "kind": "rule" },
+              { "id": "T9.tax_year_total", "kind": "rule" }
+            ],
+            "source": "assumption",
+            "validated": false,
+            "value": { "currency": "JOD", "minor": "1680000" }
+          },
+          "turnover": { "currency": "JOD", "minor": "72000000" },
+          "year": 3
+        }
+      ]
+    }
+  },
+  "engineVersion": "1.0.0",
+  "input": {
+    "breakEvenTarget": {
+      "confidence": "high",
+      "inputs": [
+        { "id": "H5", "kind": "answer" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": { "kind": "within", "months": 12 }
+    },
+    "capacity": {
+      "confidence": "low",
+      "inputs": [
+        { "id": "E7", "kind": "answer" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": null
+    },
+    "capital": {
+      "confidence": "high",
+      "inputs": [
+        { "id": "A5", "kind": "answer" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": {
+        "max": { "currency": "JOD", "minor": "15000000" },
+        "min": { "currency": "JOD", "minor": "8000000" }
+      }
+    },
+    "churn": {
+      "confidence": "low",
+      "inputs": [
+        { "id": "F2.1", "kind": "answer" }
+      ],
+      "source": "user",
+      "validated": false,
+      "value": "1/20"
+    },
+    "competitorPrices": {
+      "confidence": "high",
+      "inputs": [
+        { "id": "D4", "kind": "answer" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": [
+        {
+          "name": "منافس أ",
+          "price": { "currency": "JOD", "minor": "35000" }
+        },
+        {
+          "name": "منافس ب",
+          "price": { "currency": "JOD", "minor": "28000" }
+        },
+        {
+          "name": "منافس ج",
+          "price": { "currency": "JOD", "minor": "32000" }
+        },
+        { "name": "منافس د", "price": null }
+      ]
+    },
+    "country": "JO",
+    "currency": "JOD",
+    "fixedCosts": {
+      "confidence": "high",
+      "inputs": [
+        { "id": "F4", "kind": "answer" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": { "currency": "JOD", "minor": "2000000" }
+    },
+    "foreignShare": {
+      "confidence": "high",
+      "inputs": [
+        { "id": "D6", "kind": "answer" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": null
+    },
+    "legalForm": {
+      "confidence": "high",
+      "inputs": [
+        { "id": "G1", "kind": "answer" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": "company"
+    },
+    "marketing": {
+      "confidence": "high",
+      "inputs": [
+        { "id": "F4.1", "kind": "answer" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": { "currency": "JOD", "minor": "600000" }
+    },
+    "mode": "full",
+    "notes": [
+      { "code": "capacity_unlimited", "questionId": "E7", "state": "missing" }
+    ],
+    "paymentOption": {
+      "confidence": "high",
+      "inputs": [
+        { "id": "F7", "kind": "answer" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": "cash"
+    },
+    "peakMonths": {
+      "confidence": "high",
+      "inputs": [
+        { "id": "D7", "kind": "answer" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": []
+    },
+    "price": {
+      "confidence": "high",
+      "inputs": [
+        { "id": "F1", "kind": "answer" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": { "currency": "JOD", "minor": "30000" }
+    },
+    "pricingModel": {
+      "confidence": "high",
+      "inputs": [
+        { "id": "F2", "kind": "answer" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": "subscription"
+    },
+    "referenceDate": "2026-10-05",
+    "runway": {
+      "confidence": "high",
+      "inputs": [
+        { "id": "A7", "kind": "answer" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": { "kind": "within", "months": 3 }
+    },
+    "sales": {
+      "confidence": "high",
+      "inputs": [
+        { "id": "F6", "kind": "answer" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": { "month1": "0/1", "month12": "200/1", "month6": "200/1" }
+    },
+    "setupCosts": {
+      "confidence": "high",
+      "inputs": [
+        { "id": "F5", "kind": "answer" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": { "currency": "JOD", "minor": "12000000" }
+    },
+    "staff": {
+      "confidence": "high",
+      "inputs": [
+        { "id": "E8", "kind": "answer" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": [
+        {
+          "monthlyCost": { "currency": "JOD", "minor": "1500000" },
+          "role": "مطوّر برمجيات",
+          "startMonth": 4
+        }
+      ]
+    },
+    "variableCost": {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "F3", "kind": "answer" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": { "currency": "JOD", "minor": "6000" }
+    },
+    "yearlyGrowth": {
+      "confidence": "high",
+      "inputs": [
+        { "id": "F6.2", "kind": "answer" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": "0/1"
+    }
+  },
+  "parameters": [
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "engine.horizon_months", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": 36
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "growth.upper_bound_yearly", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": "1/4"
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "growth.founder_share", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": "1/2"
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "growth.year3_share_of_year2", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": "1/2"
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "seasonality.peak_factor", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": "3/2"
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "payment.cash", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": [
+        { "delayMonths": 0, "share": "1/1" }
+      ]
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "payment.credit", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": [
+        { "delayMonths": 1, "share": "1/1" }
+      ]
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "payment.instalments", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": [
+        { "delayMonths": 0, "share": "1/3" },
+        { "delayMonths": 1, "share": "1/3" },
+        { "delayMonths": 2, "share": "1/3" }
+      ]
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "payment.deposit", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": [
+        { "delayMonths": 0, "share": "1/2" },
+        { "delayMonths": 1, "share": "1/2" }
+      ]
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "inflation.yearly", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": null
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "scenario.conservative.sales_factor", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": "3/5"
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "scenario.optimistic.sales_factor", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": "13/10"
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "scenario.conservative.vc_factor", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": "11/10"
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "scenario.optimistic.vc_factor", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": "19/20"
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "scenario.conservative.launch_delay_months", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": 3
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "pricing.penetration_floor_factor", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": "11/10"
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "unit_economics.ltv_cac_minimum", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": "3/1"
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "fx.cogs_shocks", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": ["-1/5", "-1/10", "1/10", "1/5"]
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "scenario.tornado_swing", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": "1/5"
+    }
+  ],
+  "pricing": {
+    "band": {
+      "confidence": "high",
+      "inputs": [
+        { "id": "D4", "kind": "answer" },
+        { "id": "T7.band", "kind": "rule" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": {
+        "max": { "currency": "JOD", "minor": "35000" },
+        "median": { "currency": "JOD", "minor": "32000" },
+        "min": { "currency": "JOD", "minor": "28000" }
+      }
+    },
+    "floor": {
+      "confidence": "low",
+      "inputs": [
+        { "id": "F3", "kind": "answer" },
+        { "id": "F4", "kind": "answer" },
+        { "id": "E8", "kind": "answer" },
+        { "id": "F4.1", "kind": "answer" },
+        { "id": "T9.operating_costs", "kind": "rule" },
+        { "id": "F6", "kind": "answer" },
+        { "id": "D7", "kind": "answer" },
+        { "id": "E7", "kind": "answer" },
+        { "id": "F6.2", "kind": "answer" },
+        { "id": "T9.units", "kind": "rule" },
+        { "id": "T7.floor", "kind": "rule" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": { "currency": "JOD", "minor": "30833" }
+    },
+    "gaps": [],
+    "market": {
+      "confidence": "high",
+      "inputs": [
+        { "id": "D4", "kind": "answer" },
+        { "id": "T7.market", "kind": "rule" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": { "currency": "JOD", "minor": "32000" }
+    },
+    "penetration": {
+      "confidence": "low",
+      "inputs": [
+        { "id": "F3", "kind": "answer" },
+        { "id": "F4", "kind": "answer" },
+        { "id": "E8", "kind": "answer" },
+        { "id": "F4.1", "kind": "answer" },
+        { "id": "T9.operating_costs", "kind": "rule" },
+        { "id": "F6", "kind": "answer" },
+        { "id": "D7", "kind": "answer" },
+        { "id": "E7", "kind": "answer" },
+        { "id": "F6.2", "kind": "answer" },
+        { "id": "T9.units", "kind": "rule" },
+        { "id": "T7.floor", "kind": "rule" },
+        { "id": "D4", "kind": "answer" },
+        { "id": "pricing.penetration_floor_factor", "kind": "default" },
+        { "id": "T7.penetration", "kind": "rule" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": { "currency": "JOD", "minor": "33917" }
+    },
+    "premium": null,
+    "premiumAllowed": false
+  },
+  "projection": {
+    "calendar": {
+      "horizonMonths": 36,
+      "months": [
+        {
+          "calendar": { "month": 11, "year": 2026 },
+          "index": 1,
+          "year": 1
+        },
+        {
+          "calendar": { "month": 12, "year": 2026 },
+          "index": 2,
+          "year": 1
+        },
+        {
+          "calendar": { "month": 1, "year": 2027 },
+          "index": 3,
+          "year": 1
+        },
+        {
+          "calendar": { "month": 2, "year": 2027 },
+          "index": 4,
+          "year": 1
+        },
+        {
+          "calendar": { "month": 3, "year": 2027 },
+          "index": 5,
+          "year": 1
+        },
+        {
+          "calendar": { "month": 4, "year": 2027 },
+          "index": 6,
+          "year": 1
+        },
+        {
+          "calendar": { "month": 5, "year": 2027 },
+          "index": 7,
+          "year": 1
+        },
+        {
+          "calendar": { "month": 6, "year": 2027 },
+          "index": 8,
+          "year": 1
+        },
+        {
+          "calendar": { "month": 7, "year": 2027 },
+          "index": 9,
+          "year": 1
+        },
+        {
+          "calendar": { "month": 8, "year": 2027 },
+          "index": 10,
+          "year": 1
+        },
+        {
+          "calendar": { "month": 9, "year": 2027 },
+          "index": 11,
+          "year": 1
+        },
+        {
+          "calendar": { "month": 10, "year": 2027 },
+          "index": 12,
+          "year": 1
+        },
+        {
+          "calendar": { "month": 11, "year": 2027 },
+          "index": 13,
+          "year": 2
+        },
+        {
+          "calendar": { "month": 12, "year": 2027 },
+          "index": 14,
+          "year": 2
+        },
+        {
+          "calendar": { "month": 1, "year": 2028 },
+          "index": 15,
+          "year": 2
+        },
+        {
+          "calendar": { "month": 2, "year": 2028 },
+          "index": 16,
+          "year": 2
+        },
+        {
+          "calendar": { "month": 3, "year": 2028 },
+          "index": 17,
+          "year": 2
+        },
+        {
+          "calendar": { "month": 4, "year": 2028 },
+          "index": 18,
+          "year": 2
+        },
+        {
+          "calendar": { "month": 5, "year": 2028 },
+          "index": 19,
+          "year": 2
+        },
+        {
+          "calendar": { "month": 6, "year": 2028 },
+          "index": 20,
+          "year": 2
+        },
+        {
+          "calendar": { "month": 7, "year": 2028 },
+          "index": 21,
+          "year": 2
+        },
+        {
+          "calendar": { "month": 8, "year": 2028 },
+          "index": 22,
+          "year": 2
+        },
+        {
+          "calendar": { "month": 9, "year": 2028 },
+          "index": 23,
+          "year": 2
+        },
+        {
+          "calendar": { "month": 10, "year": 2028 },
+          "index": 24,
+          "year": 2
+        },
+        {
+          "calendar": { "month": 11, "year": 2028 },
+          "index": 25,
+          "year": 3
+        },
+        {
+          "calendar": { "month": 12, "year": 2028 },
+          "index": 26,
+          "year": 3
+        },
+        {
+          "calendar": { "month": 1, "year": 2029 },
+          "index": 27,
+          "year": 3
+        },
+        {
+          "calendar": { "month": 2, "year": 2029 },
+          "index": 28,
+          "year": 3
+        },
+        {
+          "calendar": { "month": 3, "year": 2029 },
+          "index": 29,
+          "year": 3
+        },
+        {
+          "calendar": { "month": 4, "year": 2029 },
+          "index": 30,
+          "year": 3
+        },
+        {
+          "calendar": { "month": 5, "year": 2029 },
+          "index": 31,
+          "year": 3
+        },
+        {
+          "calendar": { "month": 6, "year": 2029 },
+          "index": 32,
+          "year": 3
+        },
+        {
+          "calendar": { "month": 7, "year": 2029 },
+          "index": 33,
+          "year": 3
+        },
+        {
+          "calendar": { "month": 8, "year": 2029 },
+          "index": 34,
+          "year": 3
+        },
+        {
+          "calendar": { "month": 9, "year": 2029 },
+          "index": 35,
+          "year": 3
+        },
+        {
+          "calendar": { "month": 10, "year": 2029 },
+          "index": 36,
+          "year": 3
+        }
+      ],
+      "periods": [
+        {
+          "end": { "month": 11, "year": 2026 },
+          "firstMonth": 1,
+          "index": 1,
+          "kind": "month",
+          "lastMonth": 1,
+          "start": { "month": 11, "year": 2026 },
+          "year": 1
+        },
+        {
+          "end": { "month": 12, "year": 2026 },
+          "firstMonth": 2,
+          "index": 2,
+          "kind": "month",
+          "lastMonth": 2,
+          "start": { "month": 12, "year": 2026 },
+          "year": 1
+        },
+        {
+          "end": { "month": 1, "year": 2027 },
+          "firstMonth": 3,
+          "index": 3,
+          "kind": "month",
+          "lastMonth": 3,
+          "start": { "month": 1, "year": 2027 },
+          "year": 1
+        },
+        {
+          "end": { "month": 2, "year": 2027 },
+          "firstMonth": 4,
+          "index": 4,
+          "kind": "month",
+          "lastMonth": 4,
+          "start": { "month": 2, "year": 2027 },
+          "year": 1
+        },
+        {
+          "end": { "month": 3, "year": 2027 },
+          "firstMonth": 5,
+          "index": 5,
+          "kind": "month",
+          "lastMonth": 5,
+          "start": { "month": 3, "year": 2027 },
+          "year": 1
+        },
+        {
+          "end": { "month": 4, "year": 2027 },
+          "firstMonth": 6,
+          "index": 6,
+          "kind": "month",
+          "lastMonth": 6,
+          "start": { "month": 4, "year": 2027 },
+          "year": 1
+        },
+        {
+          "end": { "month": 5, "year": 2027 },
+          "firstMonth": 7,
+          "index": 7,
+          "kind": "month",
+          "lastMonth": 7,
+          "start": { "month": 5, "year": 2027 },
+          "year": 1
+        },
+        {
+          "end": { "month": 6, "year": 2027 },
+          "firstMonth": 8,
+          "index": 8,
+          "kind": "month",
+          "lastMonth": 8,
+          "start": { "month": 6, "year": 2027 },
+          "year": 1
+        },
+        {
+          "end": { "month": 7, "year": 2027 },
+          "firstMonth": 9,
+          "index": 9,
+          "kind": "month",
+          "lastMonth": 9,
+          "start": { "month": 7, "year": 2027 },
+          "year": 1
+        },
+        {
+          "end": { "month": 8, "year": 2027 },
+          "firstMonth": 10,
+          "index": 10,
+          "kind": "month",
+          "lastMonth": 10,
+          "start": { "month": 8, "year": 2027 },
+          "year": 1
+        },
+        {
+          "end": { "month": 9, "year": 2027 },
+          "firstMonth": 11,
+          "index": 11,
+          "kind": "month",
+          "lastMonth": 11,
+          "start": { "month": 9, "year": 2027 },
+          "year": 1
+        },
+        {
+          "end": { "month": 10, "year": 2027 },
+          "firstMonth": 12,
+          "index": 12,
+          "kind": "month",
+          "lastMonth": 12,
+          "start": { "month": 10, "year": 2027 },
+          "year": 1
+        },
+        {
+          "end": { "month": 1, "year": 2028 },
+          "firstMonth": 13,
+          "index": 13,
+          "kind": "quarter",
+          "lastMonth": 15,
+          "start": { "month": 11, "year": 2027 },
+          "year": 2
+        },
+        {
+          "end": { "month": 4, "year": 2028 },
+          "firstMonth": 16,
+          "index": 14,
+          "kind": "quarter",
+          "lastMonth": 18,
+          "start": { "month": 2, "year": 2028 },
+          "year": 2
+        },
+        {
+          "end": { "month": 7, "year": 2028 },
+          "firstMonth": 19,
+          "index": 15,
+          "kind": "quarter",
+          "lastMonth": 21,
+          "start": { "month": 5, "year": 2028 },
+          "year": 2
+        },
+        {
+          "end": { "month": 10, "year": 2028 },
+          "firstMonth": 22,
+          "index": 16,
+          "kind": "quarter",
+          "lastMonth": 24,
+          "start": { "month": 8, "year": 2028 },
+          "year": 2
+        },
+        {
+          "end": { "month": 1, "year": 2029 },
+          "firstMonth": 25,
+          "index": 17,
+          "kind": "quarter",
+          "lastMonth": 27,
+          "start": { "month": 11, "year": 2028 },
+          "year": 3
+        },
+        {
+          "end": { "month": 4, "year": 2029 },
+          "firstMonth": 28,
+          "index": 18,
+          "kind": "quarter",
+          "lastMonth": 30,
+          "start": { "month": 2, "year": 2029 },
+          "year": 3
+        },
+        {
+          "end": { "month": 7, "year": 2029 },
+          "firstMonth": 31,
+          "index": 19,
+          "kind": "quarter",
+          "lastMonth": 33,
+          "start": { "month": 5, "year": 2029 },
+          "year": 3
+        },
+        {
+          "end": { "month": 10, "year": 2029 },
+          "firstMonth": 34,
+          "index": 20,
+          "kind": "quarter",
+          "lastMonth": 36,
+          "start": { "month": 8, "year": 2029 },
+          "year": 3
+        }
+      ],
+      "reference": "2026-10-05"
+    },
+    "capped": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
+    "cogs": {
+      "byPeriod": [
+        { "currency": "JOD", "minor": "0" },
+        { "currency": "JOD", "minor": "240000" },
+        { "currency": "JOD", "minor": "480000" },
+        { "currency": "JOD", "minor": "720000" },
+        { "currency": "JOD", "minor": "960000" },
+        { "currency": "JOD", "minor": "1200000" },
+        { "currency": "JOD", "minor": "1200000" },
+        { "currency": "JOD", "minor": "1200000" },
+        { "currency": "JOD", "minor": "1200000" },
+        { "currency": "JOD", "minor": "1200000" },
+        { "currency": "JOD", "minor": "1200000" },
+        { "currency": "JOD", "minor": "1200000" },
+        { "currency": "JOD", "minor": "3600000" },
+        { "currency": "JOD", "minor": "3600000" },
+        { "currency": "JOD", "minor": "3600000" },
+        { "currency": "JOD", "minor": "3600000" },
+        { "currency": "JOD", "minor": "3600000" },
+        { "currency": "JOD", "minor": "3600000" },
+        { "currency": "JOD", "minor": "3600000" },
+        { "currency": "JOD", "minor": "3600000" }
+      ],
+      "monthly": [
+        { "currency": "JOD", "minor": "0" },
+        { "currency": "JOD", "minor": "240000" },
+        { "currency": "JOD", "minor": "480000" },
+        { "currency": "JOD", "minor": "720000" },
+        { "currency": "JOD", "minor": "960000" },
+        { "currency": "JOD", "minor": "1200000" },
+        { "currency": "JOD", "minor": "1200000" },
+        { "currency": "JOD", "minor": "1200000" },
+        { "currency": "JOD", "minor": "1200000" },
+        { "currency": "JOD", "minor": "1200000" },
+        { "currency": "JOD", "minor": "1200000" },
+        { "currency": "JOD", "minor": "1200000" },
+        { "currency": "JOD", "minor": "1200000" },
+        { "currency": "JOD", "minor": "1200000" },
+        { "currency": "JOD", "minor": "1200000" },
+        { "currency": "JOD", "minor": "1200000" },
+        { "currency": "JOD", "minor": "1200000" },
+        { "currency": "JOD", "minor": "1200000" },
+        { "currency": "JOD", "minor": "1200000" },
+        { "currency": "JOD", "minor": "1200000" },
+        { "currency": "JOD", "minor": "1200000" },
+        { "currency": "JOD", "minor": "1200000" },
+        { "currency": "JOD", "minor": "1200000" },
+        { "currency": "JOD", "minor": "1200000" },
+        { "currency": "JOD", "minor": "1200000" },
+        { "currency": "JOD", "minor": "1200000" },
+        { "currency": "JOD", "minor": "1200000" },
+        { "currency": "JOD", "minor": "1200000" },
+        { "currency": "JOD", "minor": "1200000" },
+        { "currency": "JOD", "minor": "1200000" },
+        { "currency": "JOD", "minor": "1200000" },
+        { "currency": "JOD", "minor": "1200000" },
+        { "currency": "JOD", "minor": "1200000" },
+        { "currency": "JOD", "minor": "1200000" },
+        { "currency": "JOD", "minor": "1200000" },
+        { "currency": "JOD", "minor": "1200000" }
+      ],
+      "provenance": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "T9.cogs", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false
+      }
+    },
+    "currency": "JOD",
+    "fixedCosts": {
+      "byPeriod": [
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" }
+      ],
+      "monthly": [
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" },
+        { "currency": "JOD", "minor": "2000000" }
+      ],
+      "provenance": {
+        "confidence": "high",
+        "inputs": [
+          { "id": "F4", "kind": "answer" }
+        ],
+        "source": "user",
+        "validated": true
+      }
+    },
+    "grossProfit": {
+      "byPeriod": [
+        { "currency": "JOD", "minor": "0" },
+        { "currency": "JOD", "minor": "960000" },
+        { "currency": "JOD", "minor": "1920000" },
+        { "currency": "JOD", "minor": "2880000" },
+        { "currency": "JOD", "minor": "3840000" },
+        { "currency": "JOD", "minor": "4800000" },
+        { "currency": "JOD", "minor": "4800000" },
+        { "currency": "JOD", "minor": "4800000" },
+        { "currency": "JOD", "minor": "4800000" },
+        { "currency": "JOD", "minor": "4800000" },
+        { "currency": "JOD", "minor": "4800000" },
+        { "currency": "JOD", "minor": "4800000" },
+        { "currency": "JOD", "minor": "14400000" },
+        { "currency": "JOD", "minor": "14400000" },
+        { "currency": "JOD", "minor": "14400000" },
+        { "currency": "JOD", "minor": "14400000" },
+        { "currency": "JOD", "minor": "14400000" },
+        { "currency": "JOD", "minor": "14400000" },
+        { "currency": "JOD", "minor": "14400000" },
+        { "currency": "JOD", "minor": "14400000" }
+      ],
+      "monthly": [
+        { "currency": "JOD", "minor": "0" },
+        { "currency": "JOD", "minor": "960000" },
+        { "currency": "JOD", "minor": "1920000" },
+        { "currency": "JOD", "minor": "2880000" },
+        { "currency": "JOD", "minor": "3840000" },
+        { "currency": "JOD", "minor": "4800000" },
+        { "currency": "JOD", "minor": "4800000" },
+        { "currency": "JOD", "minor": "4800000" },
+        { "currency": "JOD", "minor": "4800000" },
+        { "currency": "JOD", "minor": "4800000" },
+        { "currency": "JOD", "minor": "4800000" },
+        { "currency": "JOD", "minor": "4800000" },
+        { "currency": "JOD", "minor": "4800000" },
+        { "currency": "JOD", "minor": "4800000" },
+        { "currency": "JOD", "minor": "4800000" },
+        { "currency": "JOD", "minor": "4800000" },
+        { "currency": "JOD", "minor": "4800000" },
+        { "currency": "JOD", "minor": "4800000" },
+        { "currency": "JOD", "minor": "4800000" },
+        { "currency": "JOD", "minor": "4800000" },
+        { "currency": "JOD", "minor": "4800000" },
+        { "currency": "JOD", "minor": "4800000" },
+        { "currency": "JOD", "minor": "4800000" },
+        { "currency": "JOD", "minor": "4800000" },
+        { "currency": "JOD", "minor": "4800000" },
+        { "currency": "JOD", "minor": "4800000" },
+        { "currency": "JOD", "minor": "4800000" },
+        { "currency": "JOD", "minor": "4800000" },
+        { "currency": "JOD", "minor": "4800000" },
+        { "currency": "JOD", "minor": "4800000" },
+        { "currency": "JOD", "minor": "4800000" },
+        { "currency": "JOD", "minor": "4800000" },
+        { "currency": "JOD", "minor": "4800000" },
+        { "currency": "JOD", "minor": "4800000" },
+        { "currency": "JOD", "minor": "4800000" },
+        { "currency": "JOD", "minor": "4800000" }
+      ],
+      "provenance": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "F1", "kind": "answer" },
+          { "id": "T9.revenue", "kind": "rule" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "T9.cogs", "kind": "rule" },
+          { "id": "T9.gross_profit", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false
+      }
+    },
+    "marketing": {
+      "byPeriod": [
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "1800000" },
+        { "currency": "JOD", "minor": "1800000" },
+        { "currency": "JOD", "minor": "1800000" },
+        { "currency": "JOD", "minor": "1800000" },
+        { "currency": "JOD", "minor": "1800000" },
+        { "currency": "JOD", "minor": "1800000" },
+        { "currency": "JOD", "minor": "1800000" },
+        { "currency": "JOD", "minor": "1800000" }
+      ],
+      "monthly": [
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" },
+        { "currency": "JOD", "minor": "600000" }
+      ],
+      "provenance": {
+        "confidence": "high",
+        "inputs": [
+          { "id": "F4.1", "kind": "answer" }
+        ],
+        "source": "user",
+        "validated": true
+      }
+    },
+    "notes": [
+      { "code": "capacity_unlimited", "questionId": "E7", "state": "missing" },
+      { "code": "inflation_not_applied" }
+    ],
+    "operatingCosts": {
+      "byPeriod": [
+        { "currency": "JOD", "minor": "2600000" },
+        { "currency": "JOD", "minor": "2600000" },
+        { "currency": "JOD", "minor": "2600000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "12300000" },
+        { "currency": "JOD", "minor": "12300000" },
+        { "currency": "JOD", "minor": "12300000" },
+        { "currency": "JOD", "minor": "12300000" },
+        { "currency": "JOD", "minor": "12300000" },
+        { "currency": "JOD", "minor": "12300000" },
+        { "currency": "JOD", "minor": "12300000" },
+        { "currency": "JOD", "minor": "12300000" }
+      ],
+      "monthly": [
+        { "currency": "JOD", "minor": "2600000" },
+        { "currency": "JOD", "minor": "2600000" },
+        { "currency": "JOD", "minor": "2600000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" },
+        { "currency": "JOD", "minor": "4100000" }
+      ],
+      "provenance": {
+        "confidence": "high",
+        "inputs": [
+          { "id": "F4", "kind": "answer" },
+          { "id": "E8", "kind": "answer" },
+          { "id": "F4.1", "kind": "answer" },
+          { "id": "T9.operating_costs", "kind": "rule" }
+        ],
+        "source": "user",
+        "validated": true
+      }
+    },
+    "operatingProfit": {
+      "byPeriod": [
+        { "currency": "JOD", "minor": "-2600000" },
+        { "currency": "JOD", "minor": "-1640000" },
+        { "currency": "JOD", "minor": "-680000" },
+        { "currency": "JOD", "minor": "-1220000" },
+        { "currency": "JOD", "minor": "-260000" },
+        { "currency": "JOD", "minor": "700000" },
+        { "currency": "JOD", "minor": "700000" },
+        { "currency": "JOD", "minor": "700000" },
+        { "currency": "JOD", "minor": "700000" },
+        { "currency": "JOD", "minor": "700000" },
+        { "currency": "JOD", "minor": "700000" },
+        { "currency": "JOD", "minor": "700000" },
+        { "currency": "JOD", "minor": "2100000" },
+        { "currency": "JOD", "minor": "2100000" },
+        { "currency": "JOD", "minor": "2100000" },
+        { "currency": "JOD", "minor": "2100000" },
+        { "currency": "JOD", "minor": "2100000" },
+        { "currency": "JOD", "minor": "2100000" },
+        { "currency": "JOD", "minor": "2100000" },
+        { "currency": "JOD", "minor": "2100000" }
+      ],
+      "monthly": [
+        { "currency": "JOD", "minor": "-2600000" },
+        { "currency": "JOD", "minor": "-1640000" },
+        { "currency": "JOD", "minor": "-680000" },
+        { "currency": "JOD", "minor": "-1220000" },
+        { "currency": "JOD", "minor": "-260000" },
+        { "currency": "JOD", "minor": "700000" },
+        { "currency": "JOD", "minor": "700000" },
+        { "currency": "JOD", "minor": "700000" },
+        { "currency": "JOD", "minor": "700000" },
+        { "currency": "JOD", "minor": "700000" },
+        { "currency": "JOD", "minor": "700000" },
+        { "currency": "JOD", "minor": "700000" },
+        { "currency": "JOD", "minor": "700000" },
+        { "currency": "JOD", "minor": "700000" },
+        { "currency": "JOD", "minor": "700000" },
+        { "currency": "JOD", "minor": "700000" },
+        { "currency": "JOD", "minor": "700000" },
+        { "currency": "JOD", "minor": "700000" },
+        { "currency": "JOD", "minor": "700000" },
+        { "currency": "JOD", "minor": "700000" },
+        { "currency": "JOD", "minor": "700000" },
+        { "currency": "JOD", "minor": "700000" },
+        { "currency": "JOD", "minor": "700000" },
+        { "currency": "JOD", "minor": "700000" },
+        { "currency": "JOD", "minor": "700000" },
+        { "currency": "JOD", "minor": "700000" },
+        { "currency": "JOD", "minor": "700000" },
+        { "currency": "JOD", "minor": "700000" },
+        { "currency": "JOD", "minor": "700000" },
+        { "currency": "JOD", "minor": "700000" },
+        { "currency": "JOD", "minor": "700000" },
+        { "currency": "JOD", "minor": "700000" },
+        { "currency": "JOD", "minor": "700000" },
+        { "currency": "JOD", "minor": "700000" },
+        { "currency": "JOD", "minor": "700000" },
+        { "currency": "JOD", "minor": "700000" }
+      ],
+      "provenance": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "F1", "kind": "answer" },
+          { "id": "T9.revenue", "kind": "rule" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "T9.cogs", "kind": "rule" },
+          { "id": "T9.gross_profit", "kind": "rule" },
+          { "id": "F4", "kind": "answer" },
+          { "id": "E8", "kind": "answer" },
+          { "id": "F4.1", "kind": "answer" },
+          { "id": "T9.operating_costs", "kind": "rule" },
+          { "id": "T9.operating_profit", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false
+      }
+    },
+    "payroll": {
+      "byPeriod": [
+        { "currency": "JOD", "minor": "0" },
+        { "currency": "JOD", "minor": "0" },
+        { "currency": "JOD", "minor": "0" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "4500000" },
+        { "currency": "JOD", "minor": "4500000" },
+        { "currency": "JOD", "minor": "4500000" },
+        { "currency": "JOD", "minor": "4500000" },
+        { "currency": "JOD", "minor": "4500000" },
+        { "currency": "JOD", "minor": "4500000" },
+        { "currency": "JOD", "minor": "4500000" },
+        { "currency": "JOD", "minor": "4500000" }
+      ],
+      "monthly": [
+        { "currency": "JOD", "minor": "0" },
+        { "currency": "JOD", "minor": "0" },
+        { "currency": "JOD", "minor": "0" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" },
+        { "currency": "JOD", "minor": "1500000" }
+      ],
+      "provenance": {
+        "confidence": "high",
+        "inputs": [
+          { "id": "E8", "kind": "answer" }
+        ],
+        "source": "user",
+        "validated": true
+      }
+    },
+    "revenue": {
+      "byPeriod": [
+        { "currency": "JOD", "minor": "0" },
+        { "currency": "JOD", "minor": "1200000" },
+        { "currency": "JOD", "minor": "2400000" },
+        { "currency": "JOD", "minor": "3600000" },
+        { "currency": "JOD", "minor": "4800000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "18000000" },
+        { "currency": "JOD", "minor": "18000000" },
+        { "currency": "JOD", "minor": "18000000" },
+        { "currency": "JOD", "minor": "18000000" },
+        { "currency": "JOD", "minor": "18000000" },
+        { "currency": "JOD", "minor": "18000000" },
+        { "currency": "JOD", "minor": "18000000" },
+        { "currency": "JOD", "minor": "18000000" }
+      ],
+      "monthly": [
+        { "currency": "JOD", "minor": "0" },
+        { "currency": "JOD", "minor": "1200000" },
+        { "currency": "JOD", "minor": "2400000" },
+        { "currency": "JOD", "minor": "3600000" },
+        { "currency": "JOD", "minor": "4800000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" },
+        { "currency": "JOD", "minor": "6000000" }
+      ],
+      "provenance": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "F1", "kind": "answer" },
+          { "id": "T9.revenue", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false
+      }
+    },
+    "seasonality": {
+      "factors": ["1/1", "1/1", "1/1", "1/1", "1/1", "1/1", "1/1", "1/1", "1/1", "1/1", "1/1", "1/1"],
+      "kind": "none"
+    },
+    "units": {
+      "byPeriod": [
+        "0",
+        "40",
+        "80",
+        "120",
+        "160",
+        "200",
+        "200",
+        "200",
+        "200",
+        "200",
+        "200",
+        "200",
+        "600",
+        "600",
+        "600",
+        "600",
+        "600",
+        "600",
+        "600",
+        "600"
+      ],
+      "monthly": [
+        "0",
+        "40",
+        "80",
+        "120",
+        "160",
+        "200",
+        "200",
+        "200",
+        "200",
+        "200",
+        "200",
+        "200",
+        "200",
+        "200",
+        "200",
+        "200",
+        "200",
+        "200",
+        "200",
+        "200",
+        "200",
+        "200",
+        "200",
+        "200",
+        "200",
+        "200",
+        "200",
+        "200",
+        "200",
+        "200",
+        "200",
+        "200",
+        "200",
+        "200",
+        "200",
+        "200"
+      ],
+      "provenance": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "T9.units", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false
+      }
+    },
+    "yearlyGrowth": {
+      "confidence": "high",
+      "inputs": [
+        { "id": "F6.2", "kind": "answer" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": ["0/1", "0/1"]
+    }
+  },
+  "scenarios": {
+    "base": {
+      "breakEvenMonth": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "F1", "kind": "answer" },
+          { "id": "T9.revenue", "kind": "rule" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "T9.cogs", "kind": "rule" },
+          { "id": "T9.gross_profit", "kind": "rule" },
+          { "id": "F4", "kind": "answer" },
+          { "id": "E8", "kind": "answer" },
+          { "id": "F4.1", "kind": "answer" },
+          { "id": "T9.operating_costs", "kind": "rule" },
+          { "id": "T9.operating_profit", "kind": "rule" },
+          { "id": "T10.scenario", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false,
+        "value": 6
+      },
+      "firstYearOperatingProfit": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "F1", "kind": "answer" },
+          { "id": "T9.revenue", "kind": "rule" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "T9.cogs", "kind": "rule" },
+          { "id": "T9.gross_profit", "kind": "rule" },
+          { "id": "F4", "kind": "answer" },
+          { "id": "E8", "kind": "answer" },
+          { "id": "F4.1", "kind": "answer" },
+          { "id": "T9.operating_costs", "kind": "rule" },
+          { "id": "T9.operating_profit", "kind": "rule" },
+          { "id": "T10.scenario", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false,
+        "value": { "currency": "JOD", "minor": "-1500000" }
+      },
+      "funding": {
+        "need": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "F7", "kind": "answer" },
+            { "id": "payment.cash", "kind": "default" },
+            { "id": "T9.cash_receipts", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "fixture.jo.company.profit_tax", "kind": "country_pack_item" },
+            { "id": "G1", "kind": "answer" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "T9.tax_due", "kind": "rule" },
+            { "id": "T9.tax_paid", "kind": "rule" },
+            { "id": "T9.net_cash", "kind": "rule" },
+            { "id": "F5", "kind": "answer" },
+            { "id": "T9.cumulative_cash", "kind": "rule" },
+            { "id": "T9.funding_need", "kind": "rule" },
+            { "id": "T10.scenario", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": { "currency": "JOD", "minor": "18400000" }
+        },
+        "status": "ok"
+      },
+      "kind": "base",
+      "launchDelayMonths": 0,
+      "salesMultiplier": "1/1",
+      "vcMultiplier": "1/1"
+    },
+    "conservative": {
+      "breakEvenMonth": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "T9.sales_multiplier", "kind": "rule" },
+          { "id": "T9.launch_delay", "kind": "rule" },
+          { "id": "F1", "kind": "answer" },
+          { "id": "T9.revenue", "kind": "rule" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "T9.cogs", "kind": "rule" },
+          { "id": "T9.cogs_multiplier", "kind": "rule" },
+          { "id": "T9.gross_profit", "kind": "rule" },
+          { "id": "F4", "kind": "answer" },
+          { "id": "E8", "kind": "answer" },
+          { "id": "F4.1", "kind": "answer" },
+          { "id": "T9.operating_costs", "kind": "rule" },
+          { "id": "T9.operating_profit", "kind": "rule" },
+          { "id": "scenario.conservative.sales_factor", "kind": "default" },
+          { "id": "scenario.conservative.vc_factor", "kind": "default" },
+          { "id": "scenario.conservative.launch_delay_months", "kind": "default" },
+          { "id": "T10.scenario", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false,
+        "value": null
+      },
+      "firstYearOperatingProfit": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "T9.sales_multiplier", "kind": "rule" },
+          { "id": "T9.launch_delay", "kind": "rule" },
+          { "id": "F1", "kind": "answer" },
+          { "id": "T9.revenue", "kind": "rule" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "T9.cogs", "kind": "rule" },
+          { "id": "T9.cogs_multiplier", "kind": "rule" },
+          { "id": "T9.gross_profit", "kind": "rule" },
+          { "id": "F4", "kind": "answer" },
+          { "id": "E8", "kind": "answer" },
+          { "id": "F4.1", "kind": "answer" },
+          { "id": "T9.operating_costs", "kind": "rule" },
+          { "id": "T9.operating_profit", "kind": "rule" },
+          { "id": "scenario.conservative.sales_factor", "kind": "default" },
+          { "id": "scenario.conservative.vc_factor", "kind": "default" },
+          { "id": "scenario.conservative.launch_delay_months", "kind": "default" },
+          { "id": "T10.scenario", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false,
+        "value": { "currency": "JOD", "minor": "-27852000" }
+      },
+      "funding": {
+        "need": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "T9.sales_multiplier", "kind": "rule" },
+            { "id": "T9.launch_delay", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "F7", "kind": "answer" },
+            { "id": "payment.cash", "kind": "default" },
+            { "id": "T9.cash_receipts", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.cogs_multiplier", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "fixture.jo.company.profit_tax", "kind": "country_pack_item" },
+            { "id": "G1", "kind": "answer" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "T9.tax_due", "kind": "rule" },
+            { "id": "T9.tax_paid", "kind": "rule" },
+            { "id": "T9.net_cash", "kind": "rule" },
+            { "id": "F5", "kind": "answer" },
+            { "id": "T9.cumulative_cash", "kind": "rule" },
+            { "id": "T9.funding_need", "kind": "rule" },
+            { "id": "scenario.conservative.sales_factor", "kind": "default" },
+            { "id": "scenario.conservative.vc_factor", "kind": "default" },
+            { "id": "scenario.conservative.launch_delay_months", "kind": "default" },
+            { "id": "T10.scenario", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": { "currency": "JOD", "minor": "70860000" }
+        },
+        "status": "ok"
+      },
+      "kind": "conservative",
+      "launchDelayMonths": 3,
+      "salesMultiplier": "3/5",
+      "vcMultiplier": "11/10"
+    },
+    "optimistic": {
+      "breakEvenMonth": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "T9.sales_multiplier", "kind": "rule" },
+          { "id": "F1", "kind": "answer" },
+          { "id": "T9.revenue", "kind": "rule" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "T9.cogs", "kind": "rule" },
+          { "id": "T9.cogs_multiplier", "kind": "rule" },
+          { "id": "T9.gross_profit", "kind": "rule" },
+          { "id": "F4", "kind": "answer" },
+          { "id": "E8", "kind": "answer" },
+          { "id": "F4.1", "kind": "answer" },
+          { "id": "T9.operating_costs", "kind": "rule" },
+          { "id": "T9.operating_profit", "kind": "rule" },
+          { "id": "scenario.optimistic.sales_factor", "kind": "default" },
+          { "id": "scenario.optimistic.vc_factor", "kind": "default" },
+          { "id": "T10.scenario", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false,
+        "value": 5
+      },
+      "firstYearOperatingProfit": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "T9.sales_multiplier", "kind": "rule" },
+          { "id": "F1", "kind": "answer" },
+          { "id": "T9.revenue", "kind": "rule" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "T9.cogs", "kind": "rule" },
+          { "id": "T9.cogs_multiplier", "kind": "rule" },
+          { "id": "T9.gross_profit", "kind": "rule" },
+          { "id": "F4", "kind": "answer" },
+          { "id": "E8", "kind": "answer" },
+          { "id": "F4.1", "kind": "answer" },
+          { "id": "T9.operating_costs", "kind": "rule" },
+          { "id": "T9.operating_profit", "kind": "rule" },
+          { "id": "scenario.optimistic.sales_factor", "kind": "default" },
+          { "id": "scenario.optimistic.vc_factor", "kind": "default" },
+          { "id": "T10.scenario", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false,
+        "value": { "currency": "JOD", "minor": "12162000" }
+      },
+      "funding": {
+        "need": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "T9.sales_multiplier", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "F7", "kind": "answer" },
+            { "id": "payment.cash", "kind": "default" },
+            { "id": "T9.cash_receipts", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.cogs_multiplier", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "fixture.jo.company.profit_tax", "kind": "country_pack_item" },
+            { "id": "G1", "kind": "answer" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "T9.tax_due", "kind": "rule" },
+            { "id": "T9.tax_paid", "kind": "rule" },
+            { "id": "T9.net_cash", "kind": "rule" },
+            { "id": "F5", "kind": "answer" },
+            { "id": "T9.cumulative_cash", "kind": "rule" },
+            { "id": "T9.funding_need", "kind": "rule" },
+            { "id": "scenario.optimistic.sales_factor", "kind": "default" },
+            { "id": "scenario.optimistic.vc_factor", "kind": "default" },
+            { "id": "T10.scenario", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": { "currency": "JOD", "minor": "16318400" }
+        },
+        "status": "ok"
+      },
+      "kind": "optimistic",
+      "launchDelayMonths": 0,
+      "salesMultiplier": "13/10",
+      "vcMultiplier": "19/20"
+    }
+  },
+  "tornado": {
+    "change": {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "scenario.tornado_swing", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": "1/5"
+    },
+    "rows": [
+      {
+        "atHigh": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "T9.price_multiplier", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "scenario.tornado_swing", "kind": "default" },
+            { "id": "T10.tornado", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": { "currency": "JOD", "minor": "9300000" }
+        },
+        "atLow": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "T9.price_multiplier", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "scenario.tornado_swing", "kind": "default" },
+            { "id": "T10.tornado", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": { "currency": "JOD", "minor": "-12300000" }
+        },
+        "swing": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "T9.price_multiplier", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "scenario.tornado_swing", "kind": "default" },
+            { "id": "T10.tornado", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": { "currency": "JOD", "minor": "21600000" }
+        },
+        "variable": "price"
+      },
+      {
+        "atHigh": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "T9.fixed_cost_multiplier", "kind": "rule" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "scenario.tornado_swing", "kind": "default" },
+            { "id": "T10.tornado", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": { "currency": "JOD", "minor": "-10440000" }
+        },
+        "atLow": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "T9.fixed_cost_multiplier", "kind": "rule" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "scenario.tornado_swing", "kind": "default" },
+            { "id": "T10.tornado", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": { "currency": "JOD", "minor": "7440000" }
+        },
+        "swing": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "T9.fixed_cost_multiplier", "kind": "rule" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "scenario.tornado_swing", "kind": "default" },
+            { "id": "T10.tornado", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": { "currency": "JOD", "minor": "17880000" }
+        },
+        "variable": "fixed_costs"
+      },
+      {
+        "atHigh": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "T9.sales_multiplier", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "scenario.tornado_swing", "kind": "default" },
+            { "id": "T10.tornado", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": { "currency": "JOD", "minor": "7140000" }
+        },
+        "atLow": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "T9.sales_multiplier", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "scenario.tornado_swing", "kind": "default" },
+            { "id": "T10.tornado", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": { "currency": "JOD", "minor": "-10140000" }
+        },
+        "swing": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "T9.sales_multiplier", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "scenario.tornado_swing", "kind": "default" },
+            { "id": "T10.tornado", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": { "currency": "JOD", "minor": "17280000" }
+        },
+        "variable": "sales"
+      },
+      {
+        "atHigh": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.cogs_multiplier", "kind": "rule" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "scenario.tornado_swing", "kind": "default" },
+            { "id": "T10.tornado", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": { "currency": "JOD", "minor": "-3660000" }
+        },
+        "atLow": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.cogs_multiplier", "kind": "rule" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "scenario.tornado_swing", "kind": "default" },
+            { "id": "T10.tornado", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": { "currency": "JOD", "minor": "660000" }
+        },
+        "swing": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.cogs_multiplier", "kind": "rule" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "scenario.tornado_swing", "kind": "default" },
+            { "id": "T10.tornado", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": { "currency": "JOD", "minor": "4320000" }
+        },
+        "variable": "vc"
+      }
+    ],
+    "top": {
+      "confidence": "low",
+      "inputs": [
+        { "id": "F6", "kind": "answer" },
+        { "id": "D7", "kind": "answer" },
+        { "id": "E7", "kind": "answer" },
+        { "id": "F6.2", "kind": "answer" },
+        { "id": "T9.units", "kind": "rule" },
+        { "id": "F1", "kind": "answer" },
+        { "id": "T9.revenue", "kind": "rule" },
+        { "id": "T9.price_multiplier", "kind": "rule" },
+        { "id": "F3", "kind": "answer" },
+        { "id": "T9.cogs", "kind": "rule" },
+        { "id": "T9.gross_profit", "kind": "rule" },
+        { "id": "F4", "kind": "answer" },
+        { "id": "E8", "kind": "answer" },
+        { "id": "F4.1", "kind": "answer" },
+        { "id": "T9.operating_costs", "kind": "rule" },
+        { "id": "T9.operating_profit", "kind": "rule" },
+        { "id": "scenario.tornado_swing", "kind": "default" },
+        { "id": "T10.tornado", "kind": "rule" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": "price"
+    }
+  },
+  "unitEconomics": {
+    "breakEvenMonth": {
+      "confidence": "low",
+      "inputs": [
+        { "id": "F6", "kind": "answer" },
+        { "id": "D7", "kind": "answer" },
+        { "id": "E7", "kind": "answer" },
+        { "id": "F6.2", "kind": "answer" },
+        { "id": "T9.units", "kind": "rule" },
+        { "id": "F1", "kind": "answer" },
+        { "id": "T9.revenue", "kind": "rule" },
+        { "id": "F3", "kind": "answer" },
+        { "id": "T9.cogs", "kind": "rule" },
+        { "id": "T9.gross_profit", "kind": "rule" },
+        { "id": "F4", "kind": "answer" },
+        { "id": "E8", "kind": "answer" },
+        { "id": "F4.1", "kind": "answer" },
+        { "id": "T9.operating_costs", "kind": "rule" },
+        { "id": "T9.operating_profit", "kind": "rule" },
+        { "id": "T8.break_even_month", "kind": "rule" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": 6
+    },
+    "breakEvenRevenue": {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "F4", "kind": "answer" },
+        { "id": "E8", "kind": "answer" },
+        { "id": "F4.1", "kind": "answer" },
+        { "id": "T9.operating_costs", "kind": "rule" },
+        { "id": "T8.fixed_cost", "kind": "rule" },
+        { "id": "F1", "kind": "answer" },
+        { "id": "F3", "kind": "answer" },
+        { "id": "T8.contribution_margin", "kind": "rule" },
+        { "id": "T8.break_even_revenue", "kind": "rule" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": { "currency": "JOD", "minor": "5125000" }
+    },
+    "breakEvenUnits": {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "F4", "kind": "answer" },
+        { "id": "E8", "kind": "answer" },
+        { "id": "F4.1", "kind": "answer" },
+        { "id": "T9.operating_costs", "kind": "rule" },
+        { "id": "T8.fixed_cost", "kind": "rule" },
+        { "id": "F1", "kind": "answer" },
+        { "id": "F3", "kind": "answer" },
+        { "id": "T8.contribution_margin", "kind": "rule" },
+        { "id": "T8.break_even_units", "kind": "rule" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": "171"
+    },
+    "contributionMargin": {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "F1", "kind": "answer" },
+        { "id": "F3", "kind": "answer" },
+        { "id": "T8.contribution_margin", "kind": "rule" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": { "currency": "JOD", "minor": "24000" }
+    },
+    "contributionMarginRate": {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "F1", "kind": "answer" },
+        { "id": "F3", "kind": "answer" },
+        { "id": "T8.contribution_margin", "kind": "rule" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": "4/5"
+    },
+    "fixedCost": {
+      "confidence": "high",
+      "inputs": [
+        { "id": "F4", "kind": "answer" },
+        { "id": "E8", "kind": "answer" },
+        { "id": "F4.1", "kind": "answer" },
+        { "id": "T9.operating_costs", "kind": "rule" },
+        { "id": "T8.fixed_cost", "kind": "rule" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": { "currency": "JOD", "minor": "4100000" }
+    },
+    "status": "ok",
+    "subscription": {
+      "arpu": {
+        "confidence": "high",
+        "inputs": [
+          { "id": "F1", "kind": "answer" }
+        ],
+        "source": "user",
+        "validated": true,
+        "value": { "currency": "JOD", "minor": "30000" }
+      },
+      "cac": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "F2.1", "kind": "answer" },
+          { "id": "T8.new_customers", "kind": "rule" },
+          { "id": "F4.1", "kind": "answer" },
+          { "id": "T8.cac", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false,
+        "value": { "currency": "JOD", "minor": "60000" }
+      },
+      "churn": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "F2.1", "kind": "answer" }
+        ],
+        "source": "user",
+        "validated": false,
+        "value": "1/20"
+      },
+      "gaps": [],
+      "ltv": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "F1", "kind": "answer" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "F2.1", "kind": "answer" },
+          { "id": "T8.ltv", "kind": "rule" }
+        ],
+        "source": "user",
+        "validated": false,
+        "value": { "currency": "JOD", "minor": "480000" }
+      },
+      "ltvToCac": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "F1", "kind": "answer" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "F2.1", "kind": "answer" },
+          { "id": "T8.ltv", "kind": "rule" },
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "T8.new_customers", "kind": "rule" },
+          { "id": "F4.1", "kind": "answer" },
+          { "id": "T8.cac", "kind": "rule" },
+          { "id": "T8.ltv_to_cac", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false,
+        "value": "8/1"
+      },
+      "newCustomers": {
+        "confidence": "low",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "F2.1", "kind": "answer" },
+          { "id": "T8.new_customers", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false,
+        "value": "10/1"
+      }
+    }
+  }
+}
