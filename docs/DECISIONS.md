@@ -40,7 +40,7 @@ A decision may sit under several topics. A new decision joins its topics in the 
   D-080, D-081, D-088, D-129, D-180, D-186.
 - **Diagnostic and question bank:** D-072, D-102, D-104, D-105, D-106, D-108, D-110 to D-119, D-129,
   D-149, D-156 to D-161, D-163, D-165, D-167, D-182, D-183, D-197 to D-199.
-- **Calculation engine:** D-178 to D-190, D-193 to D-196, D-200 to D-205.
+- **Calculation engine:** D-178 to D-190, D-193 to D-196, D-200 to D-210.
 - **AI and cost:** D-062, D-071, D-072, D-073, D-082, D-103, D-107, D-119 to D-124, D-143, D-146 to
   D-152, D-155, D-183, D-191.
 - **Privacy, consent and security:** D-013, D-016, D-040, D-041, D-061, D-062, D-074, D-077,
@@ -808,4 +808,90 @@ The owner approved all recommendations offered before the M2 plan.
 - **Reason:** D-183, D-184, D-185 and D-182. Per-line provenance is what the report needs to
   highlight a pivotal low-confidence number (SPEC §6); splitting a series by year would give the
   reader three confidences for one row.
+- **Status:** Active
+
+### D-206 (2026-10-11): What the adapter reads for T8 and T7, and two new parameters
+
+- **Decision:** `engineInputFrom` also reads F2.1 (`churn`, a monthly rate; read only when F2 is
+  "subscription", so a stale answer after F2 changed is ignored), A5 (`capital`, a money range), A7
+  (`runway`) and H5 (`breakEvenTarget`). A7 and H5 become a `MonthLimit`: `within` with the upper
+  bound of the chosen option (A7: 3, 6 or 12; H5: 6, 12, 18, 24 or 36), `unbounded` for the top
+  option ("more than 12 months", "more than 36 months") and `unset` for a missing, unknown or
+  unreadable answer. An unknown or missing F2.1, A5, A7 or H5 is left unset with a note
+  (`churn_unset`, `capital_unset`, `runway_unset`, `break_even_target_unset`) and the figure or
+  alert that needs it is not evaluated. An A5 in another currency than the project's does not stop
+  the run: it is left unset with the note `capital_other_currency` (carrying the currency) and
+  nothing is converted (D-113, D-190); it is the only money amount the adapter reads that way. Two
+  parameters join `EngineParams`: `pricing.penetration_floor_factor` (1.1, SPEC §4) and
+  `unit_economics.ltv_cac_minimum` (3, SPEC §4), so no threshold is a literal in a formula.
+- **Reason:** D-183, D-190, D-200 and CLAUDE.md rule 8: a threshold is configuration. A foreign A5
+  currency is a comparison that cannot be made, not a reason to refuse the whole analysis.
+- **Status:** Active
+
+### D-207 (2026-10-11): The T8 result, its blocked case and the break-even month
+
+- **Decision:** `unitEconomics` returns `blocked` when CM = P - VC is zero or negative: it carries
+  only CM and CM% (null for a zero price), and no break-even, fixed cost, LTV or CAC is computed
+  (SPEC F3); the alert `cm_not_positive` blocks. Otherwise it returns `ok` with CM, CM%, FC (the
+  full fixed cost of month 12 from the projection: F4, the payroll of the staff started by then and
+  F4.1, D-182), `BE_units = ceil(FC / CM)` (whole units, exact), `BE_rev = FC / CM%` (one rounding,
+  half away from zero, to the minor unit) and `BE_month`. `BE_month` is the first month, counted
+  from 1, whose operating profit before tax in the projection of D-205 is zero or more, so that T8
+  and T9 agree. When no month of the 36 reaches it the figure is `null` ("not reached"), never a
+  guess or month 37. A subscription adds the figures of D-208.
+- **Reason:** D-179, D-181, D-182. A null that the report words as "not reached within 36 months"
+  is honest; extrapolating beyond the horizon would invent a number (CLAUDE.md rule 9).
+- **Status:** Active
+
+### D-208 (2026-10-11): LTV, CAC and the new customers of a subscription
+
+- **Decision:** For F2 "subscription", ARPU is the price, LTV is CM / churn (equal to
+  ARPU x CM% / churn), rounded once to the minor unit. The new customers of month 12 are
+  `units(12) - units(11) x (1 - churn)`, an exact number that is not rounded to whole customers;
+  CAC is the F4.1 marketing of month 12 divided by it, rounded once. LTV / CAC is an exact ratio
+  taken from the unrounded values. A figure that cannot be defined is `null` and the result lists
+  the reason in `gaps`: `churn_unset` (F2.1 unknown or missing: no churn, LTV, CAC or ratio),
+  `churn_zero` (no LTV, nobody leaves), `no_new_customers` (the new customers are zero or less: no
+  CAC), `no_marketing` (the budget is zero: CAC is zero and the ratio has no divisor). The LTV / CAC
+  alert needs the ratio and so is silent in every gap.
+- **Reason:** D-183 asked for this definition to be recorded. Month 12 is the steady-state month
+  D-182 uses for the fixed cost, and the churn-adjusted difference is the customers who did not
+  come from the existing base. Not rounding the count avoids a CAC that jumps with a unit.
+- **Status:** Active
+
+### D-209 (2026-10-11): The T7 price positions
+
+- **Decision:** `pricing` returns the floor, the band, the penetration price, the market price and
+  the premium. Floor = VC + (the sum of the fixed costs of months 1 to 12) / (the sum of the units
+  of months 1 to 12), which equals VC plus the ratio of the two averages (D-189); the full fixed
+  cost of D-182 is used and the quotient is rounded once, half away from zero. With no unit in year
+  1 the floor is `null` (`no_units`). The band is the minimum, median and maximum of the known D4
+  prices, in the project currency (a price in another currency is refused by the adapter, D-200;
+  the function throws `currency_mismatch` if one reaches it). Penetration = the larger of
+  floor x `pricing.penetration_floor_factor` and the minimum of D4; market = the median of D4. With
+  no known D4 price the band, penetration and market are `null` (`no_competitor_prices`) and the
+  floor still works. The premium is the top of the band, offered only when the caller passes
+  `premiumAllowed: true` (default false) to say the D5 answer passed rule R5; the engine does not
+  run R5 and the premium lists R5 among its inputs.
+- **Reason:** D-189 and SPEC §4. The question bank owns R5, so the engine takes its verdict as an
+  input instead of duplicating the rule.
+- **Status:** Active
+
+### D-210 (2026-10-11): The alerts of T8 and T7
+
+- **Decision:** `economicsAlerts` returns typed alerts (code, severity, the measured value, the
+  limit, an optional lower limit and the provenance of the inputs), never text, in this order:
+  `cm_not_positive` (block); `break_even_units_above_capacity` (warning, BE_units above E7);
+  `break_even_month_above_target` (warning, against H5) and `break_even_month_above_runway`
+  (warning, against A7); `setup_costs_above_capital` (warning, F5 above A5's maximum: the H3
+  funding alert) and `setup_costs_within_capital_range` (note, F5 above A5's minimum and not above
+  its maximum); `price_below_floor` (warning, F1 below the floor); `ltv_to_cac_below_minimum`
+  (warning, the ratio below `unit_economics.ltv_cac_minimum`). A limit is checked only when it is
+  surely exceeded (D-190): a break-even month above the bucket's upper bound raises it, and so does
+  a break-even not reached in the 36 months when the bound is inside the horizon (the measured
+  value is then `months_after` 36); a top bucket and an unset answer have no bound and raise
+  nothing. While the contribution margin is not positive no alert that needs a break-even is
+  evaluated. F5 and A5 are compared only in the same currency.
+- **Reason:** D-190 and SPEC §4: the report and the mentor branch on a code and word the sentence
+  in the user's language, and an alert must never overstate what the answers prove.
 - **Status:** Active
