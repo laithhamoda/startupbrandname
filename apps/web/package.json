@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@sbn/ai": "workspace:*",
+    "@sbn/engine": "workspace:*",
     "@sbn/question-bank": "workspace:*",
     "@supabase/ssr": "0.12.7",
     "@supabase/supabase-js": "2.117.2",

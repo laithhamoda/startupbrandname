@@ -11,6 +11,9 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run --coverage"
   },
+  "dependencies": {
+    "@sbn/question-bank": "workspace:*"
+  },
   "devDependencies": {
     "fast-check": "4.10.2"
   }
