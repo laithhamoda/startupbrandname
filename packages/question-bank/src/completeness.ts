@@ -20,12 +20,16 @@ export const STAR_WEIGHT = 2;
 export const SUMMARY_THRESHOLD = 40;
 export const FULL_THRESHOLD = 80;
 
-/** Needed for the full report besides the score (SPEC §3), each with a real value (D-110). */
+/**
+ * Needed for the full report besides the score (SPEC §3), each with a real value (D-110). F6, the
+ * sales forecast, joins them in M5 (D-232): the projection cannot run without it.
+ */
 export const FULL_REPORT_QUESTIONS = [
   'F1',
   'F3',
   'F4',
   'F5',
+  'F6',
 ] as const satisfies readonly QuestionId[];
 
 /**
@@ -41,7 +45,7 @@ export interface Completeness {
   /** Share of each axis answered, 0 to 1. */
   byAxis: Readonly<Record<Axis, number>>;
   gate: Gate;
-  /** Of F1, F3, F4, F5: those still without the value the full report needs. */
+  /** Of F1, F3, F4, F5, F6: those still without the value the full report needs. */
   missingForFull: QuestionId[];
   /** Unanswered questions, those that raise the score most first. */
   next: QuestionId[];
@@ -64,7 +68,7 @@ export function questionGain(question: Question): number {
 const isAnswered = (answers: Answers, id: QuestionId) => answers[id] !== undefined;
 
 /**
- * F3, F4 and F5 need real values. F1 may be «لا أعرف» when at least one competitor price is
+ * F3, F4, F5 and F6 need real values. F1 may be «لا أعرف» when at least one competitor price is
  * known, since the engine then derives a price range from D4 (SPEC F1).
  */
 function hasRealValue(answers: Answers, id: (typeof FULL_REPORT_QUESTIONS)[number]): boolean {
