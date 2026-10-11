@@ -240,7 +240,7 @@ const subscription: GoldenProject = {
     {
       id: 'profit_y1',
       label: 'ربح التشغيل قبل الضريبة في السنة الأولى',
-      hand: 'الإيراد 54,000 − التكلفة المتغيرة (1,800 × 6 = 10,800) − التكاليف الثابتة (2,000 × 12 = 24,000) − التسويق (600 × 12 = 7,200) − راتب المطوّر (1,500 × 9 أشهر = 13,500) = −1,500 د.أ، أي خسارة',
+      hand: 'الإيراد 54,000 − التكلفة المتغيرة (1,800 × 6 = 10,800) − التكاليف الثابتة (2,000 × 12 = 24,000) − التسويق (600 × 12 = 7,200) − راتب المطوّر لتسعة أشهر (1,500 × 9 = 13,500) = −1,500 د.أ، أي خسارة',
       expected: moneyOf(-1_500_000n),
     },
     {
@@ -392,7 +392,7 @@ const ecommerce: GoldenProject = {
     {
       id: 'profit_y1',
       label: 'ربح التشغيل قبل الضريبة في السنة الأولى',
-      hand: 'الإيراد 48,000 − التكلفة المتغيرة (1,200 وحدة × 25 = 30,000) − التكاليف الثابتة والتسويق ((900 + 300) × 12 = 14,400) = 3,600 د.أ',
+      hand: 'الإيراد 48,000 − التكلفة المتغيرة لـ 1,200 وحدة (1,200 × 25 = 30,000) − التكاليف الثابتة والتسويق ((900 + 300) × 12 = 14,400) = 3,600 د.أ',
       expected: moneyOf(3_600_000n),
     },
     {
@@ -733,4 +733,25 @@ export function sameValue(a: Expected, b: Expected): boolean {
     case 'rate':
       return b.kind === 'rate' && compareRates(a.rate, b.rate) === 0;
   }
+}
+
+/** What the engine gave when a project was run under one of its F7 variants. */
+export interface PaymentVariantResult {
+  readonly row: PaymentVariantRow;
+  readonly fundingNeed: bigint;
+  readonly fundingMonth: number;
+  readonly payback: number | null;
+}
+
+/** Runs a project under each of its F7 variants and reads the funding need and the payback. */
+export function paymentVariantResults(project: GoldenProject): readonly PaymentVariantResult[] {
+  return project.paymentVariants.map((row) => {
+    const flow = okCashFlow(runWithPayment(project, row.option));
+    return {
+      row,
+      fundingNeed: flow.fundingNeed.value.minor,
+      fundingMonth: flow.lowest.value.month,
+      payback: flow.payback.value,
+    };
+  });
 }

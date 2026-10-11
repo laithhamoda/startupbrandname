@@ -1,4 +1,5 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import {
@@ -12,6 +13,7 @@ import {
   type GoldenProject,
 } from './golden-projects';
 import { makeMoney } from './money';
+import { goldenReviewEntries, renderReviewPage } from './review-page';
 import { makeRate } from './rate';
 import type { EngineRun } from './run';
 import { serialiseRun } from './serialise';
@@ -25,6 +27,9 @@ import type { ScenarioResult } from './scenarios';
  */
 
 const GOLDEN_DIR = fileURLToPath(new URL('../golden/', import.meta.url));
+const REVIEW_PAGE = fileURLToPath(
+  new URL('../../../docs/engine-review/index.html', import.meta.url),
+);
 
 /** True when the run should rewrite the golden files instead of comparing with them. */
 const updating = (): boolean => {
@@ -35,7 +40,7 @@ const updating = (): boolean => {
 /** Compares `text` with the file, or writes the file when UPDATE_GOLDEN is set. */
 export function matchFile(path: string, text: string): void {
   if (updating()) {
-    mkdirSync(fileURLToPath(new URL('.', `file://${path}`)), { recursive: true });
+    mkdirSync(dirname(path), { recursive: true });
     writeFileSync(path, text, 'utf8');
     return;
   }
@@ -490,5 +495,15 @@ describe('the helpers of the golden fixtures', () => {
       },
     });
     expect(() => headlineValue(loss, 'cm')).toThrow(/T8 is blocked/);
+  });
+});
+
+/*
+ * The owner review page (D-223) is rendered from the same runs and compared like a golden file:
+ * a changed formula changes the numbers on the page, and the diff shows it.
+ */
+describe('the owner review page', () => {
+  it('is docs/engine-review/index.html', () => {
+    matchFile(REVIEW_PAGE, renderReviewPage(goldenReviewEntries()));
   });
 });
