@@ -234,6 +234,8 @@ const NOTE_WORD: Readonly<Record<EngineNote['code'] | CashFlowNote['code'], stri
   legal_form_assumed_sole: 'الشكل القانوني (G1) غير محسوم فافترض المحرّك صاحب منشأة فردية.',
   foreign_exposure_unset:
     'حصة التكاليف المرتبطة بعملة أجنبية (D6) غير محددة فلا يُجرى اختبار العملة.',
+  financing_unset: 'مصدر التمويل (H3) غير محدد فلا يُطبَّق حاجب احتياج التمويل في القرار.',
+  worry_unset: 'أكبر ما يقلق المؤسس (H6) غير محدد فلا يتصدّر خطة التحقّق.',
   receipts_after_horizon: 'جزء من النقد يصل بعد الشهر {horizon} فلم يدخل في الحساب.',
   tax_after_horizon: 'ضريبة السنة الأخيرة تُدفع بعد الشهر {horizon} فلم تدخل في الحساب.',
   tax_not_calculated: 'لم تُحسب ضريبة، فالتدفق النقدي قبل الضريبة.',

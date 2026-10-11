@@ -1,7 +1,8 @@
-import type { Answers } from '@sbn/question-bank';
+import { getQuestion, type Answers } from '@sbn/question-bank';
 import { describe, expect, it } from 'vitest';
 import {
   engineInputFrom,
+  FINANCING_SOURCES,
   PRICE_FROM_D4_RULE,
   type EngineInput,
   type ProjectContext,
@@ -427,6 +428,8 @@ describe('engineInputFrom: the optional answers and their fallbacks', () => {
       expect.objectContaining({ code: 'break_even_target_unset' }),
       expect.objectContaining({ code: 'legal_form_assumed_sole' }),
       expect.objectContaining({ code: 'foreign_exposure_unset' }),
+      expect.objectContaining({ code: 'financing_unset' }),
+      expect.objectContaining({ code: 'worry_unset' }),
     ]);
   });
 
@@ -720,5 +723,112 @@ describe('engineInputFrom: the legal form (G1) and the foreign-currency share (D
     expect(reasonsOf({ ...basic(), D6: real(value) })).toEqual([
       { code: 'invalid_value', questionId: 'D6', item: undefined },
     ]);
+  });
+});
+
+describe('engineInputFrom: how the project is funded (H3) and the founder worry (H6)', () => {
+  it('knows exactly the six sources the question bank offers for H3', () => {
+    const field = getQuestion('H3').field;
+    expect(field.kind === 'multi' && field.options.map((option) => option.value)).toEqual([
+      ...FINANCING_SOURCES,
+    ]);
+  });
+
+  it.each([
+    [['self'], false],
+    [['family'], false],
+    [['self', 'family'], false],
+    [['loan'], true],
+    [['investor'], true],
+    [['grant'], true],
+    [['competition'], true],
+    [['self', 'loan'], true],
+    [['family', 'self', 'competition', 'grant'], true],
+  ])('reads H3 = %j as outside financing: %s', (values, outside) => {
+    const input = inputOf({ ...basic(), H3: real({ values }) }, allUser('H3'));
+    expect(input.outsideFinancing.value).toBe(outside);
+    expect(input.outsideFinancing).toMatchObject({
+      source: 'user',
+      confidence: 'high',
+      validated: true,
+      inputs: [{ kind: 'answer', id: 'H3' }],
+    });
+    expect(input.notes.some((note) => note.code === 'financing_unset')).toBe(false);
+  });
+
+  it('leaves outside financing unknown (null), with a note, when H3 is missing or unknown', () => {
+    const missing = inputOf(basic());
+    expect(missing.outsideFinancing.value).toBeNull();
+    expect(missing.outsideFinancing).toMatchObject({
+      source: 'assumption',
+      confidence: 'low',
+      validated: false,
+      inputs: [{ kind: 'answer', id: 'H3' }],
+    });
+    expect(missing.notes).toContainEqual({
+      code: 'financing_unset',
+      questionId: 'H3',
+      state: 'missing',
+    });
+    const unknown = inputOf({ ...basic(), H3: UNKNOWN });
+    expect(unknown.outsideFinancing.value).toBeNull();
+    expect(unknown.notes).toContainEqual({
+      code: 'financing_unset',
+      questionId: 'H3',
+      state: 'unknown',
+    });
+  });
+
+  it('counts a picked range as an assumption, like every other answer (D-157)', () => {
+    const input = inputOf(
+      { ...basic(), H3: real({ values: ['loan'] }) },
+      { H3: { ...userHigh, pickedRange: true } },
+    );
+    expect(input.outsideFinancing).toMatchObject({ value: true, source: 'assumption' });
+  });
+
+  it.each([
+    [{ values: ['bank'] }],
+    [{ values: ['self', 'bank'] }],
+    [{ values: [] }],
+    [{ values: ['loan', 'loan'] }],
+    [{ values: ['self'], other: 'a cousin' }],
+    [{ values: [7] }],
+  ])('refuses an H3 the question bank cannot produce: %j', (value) => {
+    expect(reasonsOf({ ...basic(), H3: real(value) })).toEqual([
+      { code: 'invalid_value', questionId: 'H3', item: undefined },
+    ]);
+  });
+
+  it('reads the founder worry (H6) as the raw text, with the provenance stored for it', () => {
+    const text = '  هل سيدفع العملاء هذا السعر؟  ';
+    const input = inputOf({ ...basic(), H6: real(text) }, allUser('H6'));
+    expect(input.worry.value).toBe(text);
+    expect(input.worry).toMatchObject({
+      source: 'user',
+      confidence: 'high',
+      validated: true,
+      inputs: [{ kind: 'answer', id: 'H6' }],
+    });
+    expect(input.notes.some((note) => note.code === 'worry_unset')).toBe(false);
+  });
+
+  it('has no worry (null), with a note, when H6 is missing, unknown or blank', () => {
+    const missing = inputOf(basic());
+    expect(missing.worry.value).toBeNull();
+    expect(missing.worry).toMatchObject({ source: 'assumption', confidence: 'low' });
+    expect(missing.notes).toContainEqual({
+      code: 'worry_unset',
+      questionId: 'H6',
+      state: 'missing',
+    });
+    expect(inputOf({ ...basic(), H6: UNKNOWN }).notes).toContainEqual({
+      code: 'worry_unset',
+      questionId: 'H6',
+      state: 'unknown',
+    });
+    const blank = inputOf({ ...basic(), H6: real('   ') });
+    expect(blank.worry.value).toBeNull();
+    expect(blank.notes).toContainEqual({ code: 'worry_unset', questionId: 'H6', state: 'unknown' });
   });
 });

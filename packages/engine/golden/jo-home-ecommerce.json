@@ -1546,8 +1546,19 @@
     "notes": [
       { "code": "staff_unset", "questionId": "E8", "state": "missing" },
       { "code": "growth_estimated", "questionId": "F6.2", "state": "missing" },
-      { "code": "legal_form_assumed_sole", "questionId": "G1", "state": "unknown" }
+      { "code": "legal_form_assumed_sole", "questionId": "G1", "state": "unknown" },
+      { "code": "financing_unset", "questionId": "H3", "state": "missing" },
+      { "code": "worry_unset", "questionId": "H6", "state": "missing" }
     ],
+    "outsideFinancing": {
+      "confidence": "low",
+      "inputs": [
+        { "id": "H3", "kind": "answer" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": null
+    },
     "paymentOption": {
       "confidence": "high",
       "inputs": [
@@ -1629,6 +1640,15 @@
       "source": "user",
       "validated": true,
       "value": { "currency": "JOD", "minor": "25000" }
+    },
+    "worry": {
+      "confidence": "low",
+      "inputs": [
+        { "id": "H6", "kind": "answer" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": null
     },
     "yearlyGrowth": {
       "confidence": "low",
@@ -2621,6 +2641,8 @@
       { "code": "staff_unset", "questionId": "E8", "state": "missing" },
       { "code": "growth_estimated", "questionId": "F6.2", "state": "missing" },
       { "code": "legal_form_assumed_sole", "questionId": "G1", "state": "unknown" },
+      { "code": "financing_unset", "questionId": "H3", "state": "missing" },
+      { "code": "worry_unset", "questionId": "H6", "state": "missing" },
       { "code": "inflation_not_applied" }
     ],
     "operatingCosts": {

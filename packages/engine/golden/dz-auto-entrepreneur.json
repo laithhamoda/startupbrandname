@@ -993,8 +993,19 @@
     "notes": [
       { "code": "staff_unset", "questionId": "E8", "state": "missing" },
       { "code": "seasonality_unset", "questionId": "D7", "state": "unknown" },
-      { "code": "capacity_unlimited", "questionId": "E7", "state": "missing" }
+      { "code": "capacity_unlimited", "questionId": "E7", "state": "missing" },
+      { "code": "financing_unset", "questionId": "H3", "state": "missing" },
+      { "code": "worry_unset", "questionId": "H6", "state": "missing" }
     ],
+    "outsideFinancing": {
+      "confidence": "low",
+      "inputs": [
+        { "id": "H3", "kind": "answer" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": null
+    },
     "paymentOption": {
       "confidence": "high",
       "inputs": [
@@ -1076,6 +1087,15 @@
       "source": "user",
       "validated": true,
       "value": { "currency": "DZD", "minor": "80000" }
+    },
+    "worry": {
+      "confidence": "low",
+      "inputs": [
+        { "id": "H6", "kind": "answer" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": null
     },
     "yearlyGrowth": {
       "confidence": "low",
@@ -2048,6 +2068,8 @@
       { "code": "staff_unset", "questionId": "E8", "state": "missing" },
       { "code": "seasonality_unset", "questionId": "D7", "state": "unknown" },
       { "code": "capacity_unlimited", "questionId": "E7", "state": "missing" },
+      { "code": "financing_unset", "questionId": "H3", "state": "missing" },
+      { "code": "worry_unset", "questionId": "H6", "state": "missing" },
       { "code": "inflation_not_applied" }
     ],
     "operatingCosts": {

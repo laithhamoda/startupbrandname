@@ -107,7 +107,9 @@ export interface EngineNote {
     | 'runway_unset'
     | 'break_even_target_unset'
     | 'legal_form_assumed_sole'
-    | 'foreign_exposure_unset';
+    | 'foreign_exposure_unset'
+    | 'financing_unset'
+    | 'worry_unset';
   readonly questionId?: StepId;
   readonly state?: 'missing' | 'unknown';
   /** For `capital_other_currency`, the currency A5 was given in. */
@@ -179,6 +181,18 @@ export interface EngineInput {
    * for the last two): there is then no FX test (SPEC T9).
    */
   readonly foreignShare: Figure<Rate | null>;
+  /**
+   * H3: whether any source of the funding comes from outside the founder's circle, that is a loan,
+   * an investor, a grant or a competition prize (D-227, D-247). False when H3 names only savings
+   * and family. Null when H3 is missing or «لا أعرف» (a note says so): the funding blocker of the
+   * verdict is then not applied, because a project must not be stopped over an unanswered question.
+   */
+  readonly outsideFinancing: Figure<boolean | null>;
+  /**
+   * H6: the founder's biggest worry, as the raw text typed; it takes the first place of the
+   * validation plan (D-230). Null when H6 is missing, «لا أعرف» or blank (a note says so).
+   */
+  readonly worry: Figure<string | null>;
   readonly notes: readonly EngineNote[];
 }
 
@@ -209,6 +223,19 @@ export interface NotCalculableReason {
 export type EngineInputResult =
   | { readonly status: 'ok'; readonly input: EngineInput }
   | { readonly status: 'not_calculable'; readonly reasons: readonly NotCalculableReason[] };
+
+/** Every source H3 offers, in the order of the question (the option IDs of the question bank). */
+export const FINANCING_SOURCES = [
+  'self',
+  'family',
+  'loan',
+  'investor',
+  'grant',
+  'competition',
+] as const;
+
+/** The sources of H3 that bring money from outside the founder's circle (D-227). */
+const OUTSIDE_SOURCES: readonly string[] = ['loan', 'investor', 'grant', 'competition'];
 
 /** The upper bound of each A7 option, in months (D-190); the top option has none. */
 const RUNWAY_LIMITS: ReadonlyMap<string, MonthLimit> = new Map<string, MonthLimit>([
@@ -247,6 +274,8 @@ export const PRICE_FROM_D4_RULE = 'F1.d4_median';
  * evaluated; an A5 in another currency is likewise left unset, never converted (D-190, D-206).
  * G1 "not sure yet" (or missing) is the sole proprietor and an unknown or missing D6 means no FX
  * test, each with a note (D-186, D-211); a G1 or D6 the question bank cannot produce stops the run.
+ * An unknown or missing H3 or H6 is left unset (null) with a note, and an H3 the question bank
+ * cannot produce stops the run (D-247).
  * An answer given as a picked range, or without stored provenance, counts as an assumption. Money
  * is converted from major to minor units here, once (D-179). Every problem is reported, not only
  * the first.
@@ -564,6 +593,34 @@ export function engineInputFrom(
     );
   }
 
+  let outsideFinancing = standIn<boolean | null>('H3', null);
+  const h3 = valueOf(answers, 'H3', 'multi');
+  if (h3 === undefined) {
+    note('financing_unset', 'H3');
+  } else if (
+    h3.other !== undefined ||
+    h3.values.length === 0 ||
+    new Set(h3.values).size !== h3.values.length ||
+    !h3.values.every((source) => (FINANCING_SOURCES as readonly string[]).includes(source))
+  ) {
+    unreadable('H3');
+  } else {
+    outsideFinancing = answered<boolean | null>(
+      'H3',
+      h3.values.some((source) => OUTSIDE_SOURCES.includes(source)),
+    );
+  }
+
+  let worry = standIn<string | null>('H6', null);
+  const h6 = valueOf(answers, 'H6', 'long_text');
+  if (h6 === undefined) {
+    note('worry_unset', 'H6');
+  } else if (h6.trim() === '') {
+    notes.push({ code: 'worry_unset', questionId: 'H6', state: 'unknown' });
+  } else {
+    worry = answered<string | null>('H6', h6);
+  }
+
   if (reasons.length > 0 || !price || !variableCost || !fixedCosts || !sales) {
     return { status: 'not_calculable', reasons };
   }
@@ -593,6 +650,8 @@ export function engineInputFrom(
       breakEvenTarget,
       legalForm,
       foreignShare,
+      outsideFinancing,
+      worry,
       notes,
     },
   };
