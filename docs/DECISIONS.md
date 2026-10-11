@@ -40,7 +40,7 @@ A decision may sit under several topics. A new decision joins its topics in the 
   D-080, D-081, D-088, D-129, D-180, D-186.
 - **Diagnostic and question bank:** D-072, D-102, D-104, D-105, D-106, D-108, D-110 to D-119, D-129,
   D-149, D-156 to D-161, D-163, D-165, D-167, D-182, D-183, D-197 to D-199.
-- **Calculation engine:** D-178 to D-190, D-193 to D-196.
+- **Calculation engine:** D-178 to D-190, D-193 to D-196, D-200 to D-205.
 - **AI and cost:** D-062, D-071, D-072, D-073, D-082, D-103, D-107, D-119 to D-124, D-143, D-146 to
   D-152, D-155, D-183, D-191.
 - **Privacy, consent and security:** D-013, D-016, D-040, D-041, D-061, D-062, D-074, D-077,
@@ -685,4 +685,127 @@ The owner approved all recommendations offered before the M2 plan.
   real answer, «لا أعرف» and no answer apart. Completeness is unchanged: follow-ups never count (D-105).
 - **Reason:** D-183 asks for «لا أعرف» on these three; the engine must tell "the founder does not know"
   from "not asked", since the first uses a fallback with a note and the second a missing input.
+- **Status:** Active
+
+### D-200 (2026-10-11): The adapter from stored answers to the engine input
+
+- **Decision:** `engineInputFrom(answers, provenance, project)` in `packages/engine/src/input.ts` is
+  pure. `answers` is the question bank's `Answers`; `provenance` is the stored source, confidence
+  and validated of each step ID, which the adapter passes on and never works out again; `project`
+  is `{country, currency, mode, referenceDate}`. It returns `ok` with an `EngineInput`, or
+  `not_calculable` with every reason it found, in the order the adapter reads the answers (D4, F1,
+  F3, F4, F4.1, E8, F6, F6.2, D7, E7, F5), each a question ID (null for a project setting), a code
+  and the row at fault: `invalid_project` (a currency the engine does not know, or a reference date
+  that is no date), `missing_answer` and `unknown_answer` (F1, F3, F4 and F6 must be real answers:
+  D-110 names F3 and F4, and F6 is the sales forecast the projection is made of), `currency_mismatch`
+  (an amount outside the project currency, D-180, with the currency found), `invalid_value` (NaN,
+  infinite or negative, or an E7 that is not a whole number) and `no_price` (D-201). F5 is not
+  required here although D-110 names it for the full-report gate: the projection does not use it,
+  so an unknown or missing F5 gives `setupCosts` null and a note `setup_costs_unset`, and pull
+  request 5 (payback and funding need, D-187 and D-188) decides there what that means for the runs
+  that need it. The currency rule covers every amount the adapter reads, including D4, F4.1, E8 and
+  F5, not only those the projection uses: nothing is converted, one rule is easier to explain to a
+  founder than several, and a competitor price in another currency therefore also stops a run that
+  would not have used D4 (the owner may relax this for D4 once T7 exists). F3, F4 and F5 are sums of
+  their items in minor units; F6 and F6.2 are exact rates. A step with no stored provenance counts
+  as an unvalidated low-confidence assumption, a picked range as an assumption (D-157) and «لا
+  أعرف» as D-104 says, all through `figureFromAnswer`. An unknown or missing F4.1 is zero marketing,
+  F6.2 is the engine's estimate (D-205), E7 is no cap, E8 is no staff and D7 is no season, whichever
+  of the two it is: each is an unvalidated low-confidence assumption listed as that answer ID in the
+  figures that use it, with a note `{code, questionId, state: 'missing' | 'unknown'}` that the report
+  can show. D4, F2, F5 and F7 are carried for later pull requests and are null when not answered.
+- **Reason:** D-110, D-180, D-181 and D-183. Treating a missing optional answer like «لا أعرف» keeps
+  one rule for provenance (what the engine did not get from the founder is an assumption, CLAUDE.md
+  rule 2) and one visible note. A quick diagnostic never asks F4.1 or F6.2 (D-198), so its lines
+  carry the assumption honestly rather than looking more certain than they are.
+- **Status:** Active
+
+### D-201 (2026-10-11): An unknown F1 takes the median of the known D4 prices
+
+- **Decision:** When F1 is «لا أعرف», the price is the median of the D4 prices that are known and in
+  the project currency; for an even count it is the mean of the two middle prices, rounded half away
+  from zero to the minor unit. Competitors whose price is unknown are skipped. The price is an
+  assumption of low confidence, not validated, with the inputs F1, D4 and the rule
+  `F1.d4_median`, and a note `price_from_competitors`. Without a known D4 price the result is
+  `no_price`. A D4 price in another currency stops the run (D-200) instead of being skipped, and is
+  then reported as `currency_mismatch` alone, not also as `no_price`. An F1
+  that was never answered is `missing_answer`: the fallback is for «لا أعرف», not for silence.
+- **Reason:** D-110 and SPEC F1 ("unknown → range from D4"). T7 shows the whole band (pull request 4);
+  the projection needs one price, and the middle of what competitors charge is the least arbitrary.
+- **Status:** Active
+
+### D-202 (2026-10-11): Units are whole numbers, and how the capacity cuts them
+
+- **Decision:** A month's units are its level (an exact rate) times its seasonal factor, rounded half
+  away from zero (D-179) to a whole number, then cut to E7 when there is one. A month counts as
+  capped only when the rounded units were above the capacity: 30.3 units against a capacity of 30
+  rounds to 30 and is not a cut. The founder's three points are met exactly: a point is divided by
+  its month's factor before the curve is drawn and multiplied back after, so without a cap months 1,
+  6 and 12 equal F6 whatever D7 says. Revenue and COGS are whole units times minor-unit amounts, so
+  they need no rounding; only a rate (inflation, D-205) rounds, once per month on each line.
+- **Reason:** D-179, D-184. Selling a fraction of a unit is not something a founder can plan;
+  rounding at the last step, not at each step of the curve, keeps the error under half a unit.
+- **Status:** Active
+
+### D-203 (2026-10-11): A yearly rate applied month by month, with integer roots
+
+- **Decision:** Between two positive levels the level changes by one constant monthly factor, the
+  n-th root of their ratio (D-184): five steps from month 1 to 6, six from 6 to 12 and twelve for a
+  year of growth, where the ratio is `1 + yearly rate`. `rateRoot` computes it with `bigint`
+  arithmetic only: the integer n-th root (Newton's method) of the ratio times 10^(18 n), rounded
+  down, so the factor is an exact rate with denominator 10^18 and lies below the true root by less
+  than 10^-18. A step's level is the start times the factor to the power of the step, exact. The
+  last step of each segment is set to the segment's end, not computed, so the three F6 points and
+  every year end (month 24 is month 12 times `1 + g`) are exact. For growth (a root of at least 1)
+  twelve monthly steps fall short of the yearly rate by less than 12 parts in 10^18, which a test
+  checks. For F6 segments the factor can be below 1 and the relative error then grows as it shrinks,
+  but for any realistic ratio a month stays off by far less than a thousandth of a unit, so a rounded
+  unit can differ from the exact result only at an exact half. When one of the two levels is zero
+  the level changes by the same amount each month. No floating point is used anywhere in the curve.
+- **Reason:** D-179 (no binary floating point) and D-184 (a constant monthly rate). A monthly step
+  of `g / 12` would not reach the yearly `g`, and a floating-point root could differ by platform.
+  18 decimals cost microseconds and leave room for any unit count E7 allows (10^8).
+- **Status:** Active
+
+### D-204 (2026-10-11): The seasonal factors
+
+- **Decision:** `seasonalFactors(peakMonths, peakFactor)` gives each peak month (calendar months 1
+  to 12) the engine parameter `seasonality.peak_factor` (3/2) and every other month
+  `(12 - peaks * peakFactor) / (12 - peaks)`, so the twelve factors always add up to exactly 12 and a
+  seasonal year sells what a flat one does. With no peak month, or with all twelve, every factor is
+  1. When `peaks * peakFactor` reaches 12 (eight peak months at 3/2) the other months would get a
+     factor of zero or less, which is no seasonal pattern: every factor is 1, the kind is
+     `too_many_peaks` and the projection adds the note `seasonality_ignored`. A month named twice counts
+     once; a month outside 1 to 12 raises `invalid_param`. Month 1 of the projection is the calendar
+     month after the reference date, so the same factors return in each year on the same calendar
+     months.
+- **Reason:** D-184 gives the peak factor and the "unchanged total" but not what to do when the
+  peaks fill the year. Zero sales in a quarter of the year, on the strength of a tick-box, would be a
+  worse mistake than ignoring the pattern.
+- **Status:** Active
+
+### D-205 (2026-10-11): The growth estimate, the years after 3, and the lines of the projection
+
+- **Decision:** The estimate of D-183 works on the de-seasonalised levels of months 6 and 12. The
+  six-month growth is `L12 / L6 - 1`; the engine keeps `growth.founder_share` (1/2) of it, makes it
+  yearly by squaring `1 + kept growth` (two six-month periods), and holds the result between 0 and
+  `growth.upper_bound_yearly` (25%). If `L6` is zero there is no ratio: a positive `L12` takes the
+  bound and zero stays zero. Year 2 grows by the estimate and year 3 and later by the estimate
+  times `growth.year3_share_of_year2` (1/2); an F6.2 the founder gave applies unchanged to every year
+  after the first, because the share halves the engine's guess, not the founder's number. This
+  clarifies D-183 and D-184 without changing either. `projectOperatingLines(input, params)` returns
+  units, revenue, COGS, gross profit, fixed costs, payroll, marketing, operating costs and operating
+  profit, each with its monthly values, its calendar columns (sums of the months) and its provenance
+  (D-181). A line's provenance covers the whole series, so an unknown F6.2 lowers the confidence of
+  every units, revenue, COGS and profit line, years 2 and 3 included. The same holds for E7 and D7:
+  "no cap" and "no season" are assumptions made for a founder who gave no answer, so units and every
+  line built on them are assumption and low confidence, and the notes `capacity_unlimited` and
+  `seasonality_unset` say why; this is intended, not an oversight. Payroll counts a person from
+  their start month. Inflation applies from year 2 only when the caller's `inflationRate` has a
+  value: the year's factor `(1 + i)^(year - 1)` multiplies COGS (units times the variable cost, one
+  rounding), fixed costs, payroll and marketing, each rounded half away from zero on its own monthly
+  line; the price never rises, and with no rate the note `inflation_not_applied` says so (D-185).
+- **Reason:** D-183, D-184, D-185 and D-182. Per-line provenance is what the report needs to
+  highlight a pivotal low-confidence number (SPEC §6); splitting a series by year would give the
+  reader three confidences for one row.
 - **Status:** Active

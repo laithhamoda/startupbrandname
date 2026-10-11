@@ -1,3 +1,4 @@
+import { isCurrencyCode } from '@sbn/question-bank';
 import { describe, expect, it } from 'vitest';
 import {
   CURRENCY_EXPONENTS,
@@ -8,9 +9,9 @@ import {
 
 /**
  * The codes the app offers: apps/web `currencyOptions` lists `Intl.supportedValuesOf('currency')`,
- * and question-bank `isCurrencyCode` accepts the same set. The engine cannot import either (D-005),
- * so this pins the table to the runtime list they share. Pull request 3 adds a test that imports
- * both packages.
+ * and question-bank `isCurrencyCode` accepts the same set. The engine cannot import from the app
+ * (D-005), so this pins the table to the runtime list they share; the test in apps/web imports the
+ * engine and the app's list, and the check against `isCurrencyCode` below imports the question bank.
  */
 const OFFERED = Intl.supportedValuesOf('currency');
 
@@ -31,6 +32,14 @@ describe('currency exponent table', () => {
       missing,
       `The runtime offers currencies the engine has no exponent for. Add ${missing.join(', ')} with its ISO 4217 exponent to packages/engine/src/currency.ts.`,
     ).toEqual([]);
+  });
+
+  it('agrees with the question bank on which codes are currencies', () => {
+    for (const code of OFFERED) {
+      expect(isCurrencyCode(code), code).toBe(CURRENCY_EXPONENTS.has(code));
+    }
+    expect(isCurrencyCode('ABC')).toBe(false);
+    expect(isKnownCurrency('ABC')).toBe(false);
   });
 
   it('has no malformed code', () => {
