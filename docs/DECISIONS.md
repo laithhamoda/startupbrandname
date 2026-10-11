@@ -816,13 +816,15 @@ The owner approved all recommendations offered before the M2 plan.
   "subscription", so a stale answer after F2 changed is ignored), A5 (`capital`, a money range), A7
   (`runway`) and H5 (`breakEvenTarget`). A7 and H5 become a `MonthLimit`: `within` with the upper
   bound of the chosen option (A7: 3, 6 or 12; H5: 6, 12, 18, 24 or 36), `unbounded` for the top
-  option ("more than 12 months", "more than 36 months") and `unset` for a missing, unknown or
-  unreadable answer. An unknown or missing F2.1, A5, A7 or H5 is left unset with a note
+  option ("more than 12 months", "more than 36 months") and `unset` for a missing or unknown
+  answer. An unknown or missing F2.1, A5, A7 or H5 is left unset with a note
   (`churn_unset`, `capital_unset`, `runway_unset`, `break_even_target_unset`) and the figure or
   alert that needs it is not evaluated. An A5 in another currency than the project's does not stop
   the run: it is left unset with the note `capital_other_currency` (carrying the currency) and
-  nothing is converted (D-113, D-190); it is the only money amount the adapter reads that way. Two
-  parameters join `EngineParams`: `pricing.penetration_floor_factor` (1.1, SPEC §4) and
+  nothing is converted (D-113, D-190); it is the only money amount the adapter reads that way. A
+  value the question bank cannot produce (an A7 or H5 option it does not offer, an F2.1 outside 0
+  to 100%, a negative, non-finite or reversed A5 range) is not a gap: like every other unreadable
+  answer it stops the run with `invalid_value`. Two parameters join `EngineParams`: `pricing.penetration_floor_factor` (1.1, SPEC §4) and
   `unit_economics.ltv_cac_minimum` (3, SPEC §4), so no threshold is a literal in a formula.
 - **Reason:** D-183, D-190, D-200 and CLAUDE.md rule 8: a threshold is configuration. A foreign A5
   currency is a comparison that cannot be made, not a reason to refuse the whole analysis.
@@ -838,7 +840,9 @@ The owner approved all recommendations offered before the M2 plan.
   half away from zero, to the minor unit) and `BE_month`. `BE_month` is the first month, counted
   from 1, whose operating profit before tax in the projection of D-205 is zero or more, so that T8
   and T9 agree. When no month of the 36 reaches it the figure is `null` ("not reached"), never a
-  guess or month 37. A subscription adds the figures of D-208.
+  guess or month 37. A subscription adds the figures of D-208. Limit: because it is the first
+  month at zero or more, a project that falls back into loss later (a hire, a seasonal trough)
+  still has a `BE_month`; the report must show the operating-profit line next to it.
 - **Reason:** D-179, D-181, D-182. A null that the report words as "not reached within 36 months"
   is honest; extrapolating beyond the horizon would invent a number (CLAUDE.md rule 9).
 - **Status:** Active
@@ -868,9 +872,9 @@ The owner approved all recommendations offered before the M2 plan.
   1 the floor is `null` (`no_units`). The band is the minimum, median and maximum of the known D4
   prices, in the project currency (a price in another currency is refused by the adapter, D-200;
   the function throws `currency_mismatch` if one reaches it). Penetration = the larger of
-  floor x `pricing.penetration_floor_factor` and the minimum of D4; market = the median of D4. With
-  no known D4 price the band, penetration and market are `null` (`no_competitor_prices`) and the
-  floor still works. The premium is the top of the band, offered only when the caller passes
+  floor x `pricing.penetration_floor_factor` and the minimum of D4, computed from the exact floor
+  and rounded once, not from the rounded floor; market = the median of D4. With no known D4 price
+  the band, penetration and market are `null` (`no_competitor_prices`) and the floor still works. The premium is the top of the band, offered only when the caller passes
   `premiumAllowed: true` (default false) to say the D5 answer passed rule R5; the engine does not
   run R5 and the premium lists R5 among its inputs.
 - **Reason:** D-189 and SPEC §4. The question bank owns R5, so the engine takes its verdict as an
