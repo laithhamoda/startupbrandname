@@ -1,6 +1,6 @@
 import type { Answers } from '@sbn/question-bank';
 import * as fc from 'fast-check';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import type { AlertCode } from './alerts';
 import type { CriterionId } from './feasibility';
 import { flatAnswers, runFlat, real } from './flat-vector';
@@ -139,6 +139,10 @@ const improvement: fc.Arbitrary<Improvement> = fc.oneof(
     cashOnly: true,
   })),
 );
+
+// 150 runs take about 1 second alone but several when the whole repository's tests run at once
+// (and with coverage), which is more than the default time limit of a test.
+vi.setConfig({ testTimeout: 60_000 });
 
 const PARAMETERS = { seed: 20_261_012, numRuns: 150 } as const;
 
