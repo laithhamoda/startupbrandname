@@ -77,6 +77,45 @@ export type Database = {
         };
         Relationships: [];
       };
+      country_pack_items: {
+        Row: {
+          country_code: string;
+          created_at: string;
+          id: string;
+          key: string;
+          last_verified: string | null;
+          source_domain: string;
+          source_url: string;
+          status: string;
+          updated_at: string;
+          value: NonNullable<Json>;
+        };
+        Insert: {
+          country_code: string;
+          created_at?: string;
+          id?: string;
+          key: string;
+          last_verified?: string | null;
+          source_domain: string;
+          source_url: string;
+          status: string;
+          updated_at?: string;
+          value: NonNullable<Json>;
+        };
+        Update: {
+          country_code?: string;
+          created_at?: string;
+          id?: string;
+          key?: string;
+          last_verified?: string | null;
+          source_domain?: string;
+          source_url?: string;
+          status?: string;
+          updated_at?: string;
+          value?: NonNullable<Json>;
+        };
+        Relationships: [];
+      };
       profiles: {
         Row: {
           country_code: string;
@@ -137,6 +176,53 @@ export type Database = {
         };
         Relationships: [];
       };
+      reports: {
+        Row: {
+          audience: string | null;
+          created_at: string;
+          engine_version: string;
+          id: string;
+          input_hash: string;
+          kind: string;
+          locale: string;
+          pdf_bytes: number;
+          pdf_path: string;
+          project_id: string;
+        };
+        Insert: {
+          audience?: string | null;
+          created_at?: string;
+          engine_version: string;
+          id?: string;
+          input_hash: string;
+          kind: string;
+          locale: string;
+          pdf_bytes: number;
+          pdf_path: string;
+          project_id: string;
+        };
+        Update: {
+          audience?: string | null;
+          created_at?: string;
+          engine_version?: string;
+          id?: string;
+          input_hash?: string;
+          kind?: string;
+          locale?: string;
+          pdf_bytes?: number;
+          pdf_path?: string;
+          project_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'reports_project_id_fkey';
+            columns: ['project_id'];
+            isOneToOne: false;
+            referencedRelation: 'projects';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       settings: {
         Row: {
           key: string;
@@ -152,6 +238,75 @@ export type Database = {
           key?: string;
           updated_at?: string;
           value?: NonNullable<Json>;
+        };
+        Relationships: [];
+      };
+      tax_rules: {
+        Row: {
+          basis: string;
+          brackets: NonNullable<Json>;
+          ceiling: number | null;
+          country_code: string;
+          created_at: string;
+          currency: string;
+          effective_from: string;
+          fixed_amount: number | null;
+          id: string;
+          kind: string;
+          last_verified: string | null;
+          legal_form: string;
+          levy: string;
+          min_amount: number | null;
+          payment_month: number;
+          rate: string | null;
+          regime: string;
+          source_url: string;
+          status: string;
+          updated_at: string;
+        };
+        Insert: {
+          basis: string;
+          brackets?: NonNullable<Json>;
+          ceiling?: number | null;
+          country_code: string;
+          created_at?: string;
+          currency: string;
+          effective_from: string;
+          fixed_amount?: number | null;
+          id?: string;
+          kind: string;
+          last_verified?: string | null;
+          legal_form: string;
+          levy: string;
+          min_amount?: number | null;
+          payment_month: number;
+          rate?: string | null;
+          regime: string;
+          source_url: string;
+          status: string;
+          updated_at?: string;
+        };
+        Update: {
+          basis?: string;
+          brackets?: NonNullable<Json>;
+          ceiling?: number | null;
+          country_code?: string;
+          created_at?: string;
+          currency?: string;
+          effective_from?: string;
+          fixed_amount?: number | null;
+          id?: string;
+          kind?: string;
+          last_verified?: string | null;
+          legal_form?: string;
+          levy?: string;
+          min_amount?: number | null;
+          payment_month?: number;
+          rate?: string | null;
+          regime?: string;
+          source_url?: string;
+          status?: string;
+          updated_at?: string;
         };
         Relationships: [];
       };
@@ -275,6 +430,30 @@ export type Database = {
           p_tool_id: string;
         };
         Returns: number;
+      };
+      record_engine_run: {
+        Args: {
+          p_engine_version: string;
+          p_input_hash: string;
+          p_output: Json;
+          p_project_id: string;
+          p_tool_id: string;
+        };
+        Returns: number;
+      };
+      record_report: {
+        Args: {
+          p_audience: string;
+          p_engine_version: string;
+          p_input_hash: string;
+          p_kind: string;
+          p_locale: string;
+          p_pdf_bytes: number;
+          p_pdf_path: string;
+          p_project_id: string;
+          p_report_id: string;
+        };
+        Returns: string;
       };
       reserve_ai_run: { Args: Record<PropertyKey, never>; Returns: Json };
       set_crossborder_consent: {
