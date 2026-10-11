@@ -10,7 +10,7 @@ import {
 import type { EngineInput } from './input';
 import { divCeil, divRoundHalfAwayFromZero } from './integer';
 import { makeMoney, subtractMoney, type Money } from './money';
-import type { OperatingProjection } from './projection';
+import { firstProfitableMonth, type OperatingProjection } from './projection';
 import {
   compareRates,
   divideRates,
@@ -236,9 +236,8 @@ export function unitEconomics(input: EngineInput, projection: OperatingProjectio
     [rule(T8_RULES.breakEvenRevenue)],
   );
 
-  const first = projection.operatingProfit.monthly.findIndex((profit) => profit.minor >= 0n);
   const breakEvenMonth = combineFigures(
-    first === -1 ? null : at(projection.calendar.months, first).index,
+    firstProfitableMonth(projection),
     [projection.operatingProfit.provenance],
     [rule(T8_RULES.breakEvenMonth)],
   );

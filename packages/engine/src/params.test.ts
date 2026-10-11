@@ -30,6 +30,12 @@ describe('documented defaults', () => {
     expect(p.inflationRate.value).toBeNull(); // D-185
     expect(p.penetrationFloorFactor.value).toEqual(parseRate('1.1')); // SPEC T7, D-206
     expect(p.ltvCacMinimum.value).toEqual(parseRate('3')); // SPEC T8
+    expect(p.fxShocks.value).toEqual([
+      parseRate('-0.2'),
+      parseRate('-0.1'),
+      parseRate('0.1'),
+      parseRate('0.2'),
+    ]); // SPEC T9, D-214
   });
 
   it('times the cash of each F7 option (D-187)', () => {
@@ -126,6 +132,11 @@ describe('overrides', () => {
     expect(timing).toEqual(DEFAULT_ENGINE_PARAMS);
   });
 
+  it('accepts other FX shocks, down to -100% of the imported cost', () => {
+    const shocks = defaultFigure('f', [parseRate('-1'), ZERO_RATE, parseRate('0.5')]);
+    expect(createEngineParams({ fxShocks: shocks }).fxShocks).toBe(shocks);
+  });
+
   it('accepts a longer horizon and mild deflation', () => {
     expect(createEngineParams({ horizonMonths: defaultFigure('h', 60) }).horizonMonths.value).toBe(
       60,
@@ -163,6 +174,21 @@ describe('overrides', () => {
     ],
     ['a zero LTV / CAC minimum', { ltvCacMinimum: defaultFigure('l', ZERO_RATE) }],
     ['a negative LTV / CAC minimum', { ltvCacMinimum: defaultFigure('l', parseRate('-3')) }],
+    ['no FX shock at all', { fxShocks: defaultFigure('f', []) }],
+    ['an FX shock below -100%', { fxShocks: defaultFigure('f', [parseRate('-1.1')]) }],
+    [
+      'more than ten FX shocks',
+      {
+        fxShocks: defaultFigure(
+          'f',
+          Array.from({ length: 11 }, () => parseRate('0.1')),
+        ),
+      },
+    ],
+    [
+      'an FX shock that was not built with makeRate',
+      { fxShocks: defaultFigure('f', [{ num: 2n, den: 4n }]) },
+    ],
     ['a negative launch delay', { conservativeLaunchDelayMonths: defaultFigure('d', -1) }],
     ['a fractional launch delay', { conservativeLaunchDelayMonths: defaultFigure('d', 1.5) }],
     ['a launch delay beyond 120', { conservativeLaunchDelayMonths: defaultFigure('d', 121) }],

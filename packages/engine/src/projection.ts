@@ -322,3 +322,13 @@ export function projectOperatingLines(
     notes,
   };
 }
+
+/**
+ * The first projection month, from 1, whose operating profit before tax is zero or more; null when
+ * no month of the horizon reaches it (D-207). T8's break-even month and the FX test read it here,
+ * so they agree.
+ */
+export function firstProfitableMonth(projection: OperatingProjection): number | null {
+  const first = projection.operatingProfit.monthly.findIndex((profit) => profit.minor >= 0n);
+  return first === -1 ? null : at(projection.calendar.months, first).index;
+}

@@ -53,6 +53,7 @@ export const PARAM_KEYS = {
   conservativeLaunchDelayMonths: 'scenario.conservative.launch_delay_months',
   penetrationFloorFactor: 'pricing.penetration_floor_factor',
   ltvCacMinimum: 'unit_economics.ltv_cac_minimum',
+  fxShocks: 'fx.cogs_shocks',
 } as const;
 
 /**
@@ -92,6 +93,11 @@ export interface EngineParams {
   readonly penetrationFloorFactor: Figure<Rate>;
   /** T8 alert when LTV / CAC is below this (SPEC §4). Default 3. */
   readonly ltvCacMinimum: Figure<Rate>;
+  /**
+   * The changes in the cost of the imported share that the FX test of T9 tries, as rates:
+   * -20%, -10%, +10% and +20% (SPEC T9, D-214). Each is at least -100%, at most ten of them.
+   */
+  readonly fxShocks: Figure<readonly Rate[]>;
 }
 
 /**
@@ -136,6 +142,12 @@ function defaultParams(): EngineParams {
     conservativeLaunchDelayMonths: defaultFigure(PARAM_KEYS.conservativeLaunchDelayMonths, 3),
     penetrationFloorFactor: defaultFigure(PARAM_KEYS.penetrationFloorFactor, rate('1.1')),
     ltvCacMinimum: defaultFigure(PARAM_KEYS.ltvCacMinimum, rate('3')),
+    fxShocks: defaultFigure(PARAM_KEYS.fxShocks, [
+      rate('-0.2'),
+      rate('-0.1'),
+      rate('0.1'),
+      rate('0.2'),
+    ]),
   };
 }
 
@@ -196,6 +208,16 @@ function requireTiming(key: string, parts: readonly PaymentPart[]): void {
   ensure(compareRates(total, ONE_RATE) === 0, key, 'must have shares that add up to exactly 1');
 }
 
+function requireShocks(key: string, shocks: readonly Rate[]): void {
+  ensure(shocks.length >= 1 && shocks.length <= 10, key, 'needs from 1 to 10 shocks');
+  for (const shock of shocks) requireRate(key, shock);
+  ensure(
+    shocks.every((shock) => compareRates(shock, makeRate(-1n, 1n)) >= 0),
+    key,
+    'needs shocks of -100% or more',
+  );
+}
+
 function validate(params: EngineParams): void {
   for (const [key, figure] of [
     [PARAM_KEYS.growthUpperBound, params.growthUpperBound],
@@ -252,6 +274,7 @@ function validate(params: EngineParams): void {
     'must be at least 1',
   );
   requirePositive(PARAM_KEYS.ltvCacMinimum, params.ltvCacMinimum.value);
+  requireShocks(PARAM_KEYS.fxShocks, params.fxShocks.value);
   requireMonths(
     PARAM_KEYS.conservativeLaunchDelayMonths,
     params.conservativeLaunchDelayMonths.value,
@@ -330,5 +353,6 @@ export function listEngineParams(params: EngineParams): readonly Figure<unknown>
     params.conservativeLaunchDelayMonths,
     params.penetrationFloorFactor,
     params.ltvCacMinimum,
+    params.fxShocks,
   ];
 }

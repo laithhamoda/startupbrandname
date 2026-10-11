@@ -555,6 +555,15 @@ describe('taxAnalysis: the alerts', () => {
     const tax = analyse({ rules: [jordan({ turnoverCeiling: jod(45_000) }), social] });
     expect(tax.alerts.map((alert) => alert.year)).toEqual([2, 3]);
     expect(tax.alerts[0]?.limit).toEqual({ kind: 'money', money: jod(30_000) });
+    // The same when the tax, which comes first, has the lower ceiling.
+    const first = analyse({
+      rules: [
+        jordan({ turnoverCeiling: jod(30_000) }),
+        { ...social, turnoverCeiling: jod(45_000) },
+      ],
+    });
+    expect(first.alerts.map((alert) => alert.year)).toEqual([2, 3]);
+    expect(first.alerts[0]?.limit).toEqual({ kind: 'money', money: jod(30_000) });
   });
 
   it('raises the VAT alert for each year above the threshold the caller gives', () => {

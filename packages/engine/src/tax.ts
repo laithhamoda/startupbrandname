@@ -360,11 +360,9 @@ function regimeRules(
       latest.set(candidate.levy, candidate);
     }
   }
-  const rules = [...latest.values()].sort(
-    (a, b) =>
-      (a.kind === b.kind ? 0 : a.kind === 'tax' ? -1 : 1) ||
-      (a.levy < b.levy ? -1 : a.levy > b.levy ? 1 : 0),
-  );
+  // Taxes before social contributions, then by levy: the result does not depend on the order passed in.
+  const order = (candidate: TaxRule) => `${candidate.kind === 'tax' ? 'a' : 'b'}|${candidate.levy}`;
+  const rules = [...latest.values()].sort((a, b) => (order(a) < order(b) ? -1 : 1));
   const other = rules.find((candidate) => candidate.currency !== input.currency);
   if (other !== undefined)
     return { gap: { code: 'rule_other_currency', currency: other.currency } };
