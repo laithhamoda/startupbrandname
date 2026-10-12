@@ -62,9 +62,11 @@ export {
 } from './figure';
 export {
   DEFAULT_ENGINE_PARAMS,
+  CHANGE_PARAM_KEYS,
   PARAM_KEYS,
   PAYMENT_OPTIONS,
   createEngineParams,
+  listChangeParams,
   listEngineParams,
   type EngineParamOverrides,
   type EngineParams,
@@ -232,5 +234,17 @@ export {
   type ValidationEntry,
   type ValidationPlan,
 } from './validation-plan';
+export {
+  CHANGE_LEVERS,
+  CHANGE_RULES,
+  suggestChanges,
+  type Change,
+  type ChangeLever,
+  type ChangeOutcome,
+  type GoBlocker,
+  type LeverShift,
+  type RethinkItem,
+  type SuggestedChanges,
+} from './changes';
 export { mergeAlerts, runEngine, type EngineRun, type EngineRunResult, type RunAlert } from './run';
 export { canonicalJson, serialiseRun } from './serialise';
