@@ -141,7 +141,7 @@ export const en: ReportMessages = {
       firstYearProfitCaption: 'Operating profit before tax',
     },
     risksTitle: 'Main risks',
-    blocksCaption: 'What blocks Go',
+    blocksCaption: 'Criteria not met',
     blocksColumns: { criterion: 'Criterion', measured: 'Measured', limit: 'Limit' },
     blocksNote: ({ evaluated, total }) =>
       inl`${evaluated} of ${total} criteria were evaluated; a criterion that lacks answers is not counted.`,
@@ -418,6 +418,7 @@ export const en: ReportMessages = {
       cumulativeCashBeforeTax: 'Cumulative cash balance before tax',
     },
     monthHeader: 'Month',
+    itemHeader: 'Item',
     startsFrom: ({ setup }) =>
       inl`The cash balance starts from ${setup}, which is the set-up costs.`,
     legendLowest: ({ month }) =>

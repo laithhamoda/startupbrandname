@@ -139,7 +139,7 @@ export const ar: ReportMessages = {
       firstYearProfitCaption: 'ربح التشغيل قبل الضريبة',
     },
     risksTitle: 'أهم المخاطر',
-    blocksCaption: 'ما الذي يحجب «امضِ»',
+    blocksCaption: 'المعايير التي لم تتحقق',
     blocksColumns: { criterion: 'المعيار', measured: 'المحسوب', limit: 'الحدّ' },
     blocksNote: ({ evaluated, total }) =>
       inl`قُيِّم ${evaluated} من أصل ${total} من المعايير، والمعيار الذي تنقصه إجابات لا يُحتسب.`,
@@ -401,6 +401,7 @@ export const ar: ReportMessages = {
       cumulativeCashBeforeTax: 'الرصيد النقدي التراكمي قبل الضريبة',
     },
     monthHeader: 'الشهر',
+    itemHeader: 'البند',
     startsFrom: ({ setup }) => inl`الرصيد النقدي يبدأ من ${setup}، وهي تكاليف التأسيس.`,
     legendLowest: ({ month }) => inl`أدنى رصيد نقدي في ${month}، وهو احتياج التمويل.`,
     legendBreakEven: ({ term, month }) => inl`${term}: أول شهر يربح فيه التشغيل، وهو ${month}.`,

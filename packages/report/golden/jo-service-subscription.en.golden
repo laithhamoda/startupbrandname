@@ -409,7 +409,7 @@
         {
           "type": "table",
           "caption": [
-            "What blocks Go"
+            "Criteria not met"
           ],
           "headHeader": [
             "Criterion"
@@ -4545,7 +4545,7 @@
             ": by quarter (each quarter is three months)"
           ],
           "headHeader": [
-            "Month"
+            "Item"
           ],
           "columns": [
             {
@@ -5194,7 +5194,7 @@
             ": by quarter (each quarter is three months)"
           ],
           "headHeader": [
-            "Month"
+            "Item"
           ],
           "columns": [
             {

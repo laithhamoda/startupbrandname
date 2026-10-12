@@ -321,6 +321,8 @@ export interface ReportMessages {
       >
     >;
     readonly monthHeader: string;
+    /** The corner of a table whose columns are periods and whose rows are items. */
+    readonly itemHeader: string;
     readonly startsFrom: Template<'setup'>;
     readonly legendLowest: Template<'month'>;
     readonly legendBreakEven: Template<'term' | 'month'>;

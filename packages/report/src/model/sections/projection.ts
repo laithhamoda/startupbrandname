@@ -136,7 +136,7 @@ function laterYearTables(ctx: Ctx, run: EngineRun, flow: OkCashFlow | null): Blo
     tables.push(
       table({
         caption: words.laterYearCaption({ year: ctx.integer(year) }),
-        headHeader: plain(words.monthHeader),
+        headHeader: plain(words.itemHeader),
         columns,
         rows,
       }),

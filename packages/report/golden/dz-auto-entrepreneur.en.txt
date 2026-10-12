@@ -97,7 +97,7 @@ The lowest cash balance is in Month 3; it is the funding need.
 Break-even: the first month operations make a profit, which is Month 4.
 Payback period: the capital you spent is recovered in Month 11.
 TABLE Year 2: by quarter (each quarter is three months)
-  | Month | Quarter 1 | Quarter 2 | Quarter 3 | Quarter 4 | Year total
+  | Item | Quarter 1 | Quarter 2 | Quarter 3 | Quarter 4 | Year total
   | Revenue | 674,000.00 DZD | 800,000.00 DZD | 954,000.00 DZD | 1,134,000.00 DZD | 3,562,000.00 DZD
   | Cost of sales | 269,600.00 DZD | 320,000.00 DZD | 381,600.00 DZD | 453,600.00 DZD | 1,424,800.00 DZD
   | Operating costs | 150,000.00 DZD | 150,000.00 DZD | 150,000.00 DZD | 150,000.00 DZD | 600,000.00 DZD
@@ -105,7 +105,7 @@ TABLE Year 2: by quarter (each quarter is three months)
   | Net cash | 225,400.00 DZD | 308,000.00 DZD | 395,400.00 DZD | 498,400.00 DZD | 1,427,200.00 DZD
   | Cumulative cash balance | 305,400.00 DZD | 613,400.00 DZD | 1,008,800.00 DZD | 1,507,200.00 DZD | —
 TABLE Year 3: by quarter (each quarter is three months)
-  | Month | Quarter 1 | Quarter 2 | Quarter 3 | Quarter 4 | Year total
+  | Item | Quarter 1 | Quarter 2 | Quarter 3 | Quarter 4 | Year total
   | Revenue | 1,348,000.00 DZD | 1,604,000.00 DZD | 1,906,000.00 DZD | 2,268,000.00 DZD | 7,126,000.00 DZD
   | Cost of sales | 539,200.00 DZD | 641,600.00 DZD | 762,400.00 DZD | 907,200.00 DZD | 2,850,400.00 DZD
   | Operating costs | 150,000.00 DZD | 150,000.00 DZD | 150,000.00 DZD | 150,000.00 DZD | 600,000.00 DZD

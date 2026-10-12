@@ -18,7 +18,7 @@ Main risks:
 - The price (30.000 JOD) is below the lowest price that covers your costs (30.833 JOD).
 - Break-even (6 months) comes after the time you can go without income (3 months).
 - Set-up costs (12,000.000 JOD) are above your smallest available capital (8,000.000 JOD) and below your largest (15,000.000 JOD).
-TABLE What blocks Go
+TABLE Criteria not met
   | Criterion | Measured | Limit
   | Break-even within the time you can go without income | Month 6 | within 3 months
   | Funding need within your largest available capital | 18,400.000 JOD | 15,000.000 JOD
@@ -118,7 +118,7 @@ The lowest cash balance is in Month 5; it is the funding need.
 Break-even: the first month operations make a profit, which is Month 6.
 Payback period: the capital you spent is recovered in Month 34.
 TABLE Year 2: by quarter (each quarter is three months)
-  | Month | Quarter 1 | Quarter 2 | Quarter 3 | Quarter 4 | Year total
+  | Item | Quarter 1 | Quarter 2 | Quarter 3 | Quarter 4 | Year total
   | Revenue | 18,000.000 JOD | 18,000.000 JOD | 18,000.000 JOD | 18,000.000 JOD | 72,000.000 JOD
   | Cost of sales | 3,600.000 JOD | 3,600.000 JOD | 3,600.000 JOD | 3,600.000 JOD | 14,400.000 JOD
   | Operating costs | 12,300.000 JOD | 12,300.000 JOD | 12,300.000 JOD | 12,300.000 JOD | 49,200.000 JOD
@@ -126,7 +126,7 @@ TABLE Year 2: by quarter (each quarter is three months)
   | Net cash | 2,100.000 JOD | 2,100.000 JOD | 2,100.000 JOD | 2,100.000 JOD | 8,400.000 JOD
   | Cumulative cash balance | −11,400.000 JOD | −9,300.000 JOD | −7,200.000 JOD | −5,100.000 JOD | —
 TABLE Year 3: by quarter (each quarter is three months)
-  | Month | Quarter 1 | Quarter 2 | Quarter 3 | Quarter 4 | Year total
+  | Item | Quarter 1 | Quarter 2 | Quarter 3 | Quarter 4 | Year total
   | Revenue | 18,000.000 JOD | 18,000.000 JOD | 18,000.000 JOD | 18,000.000 JOD | 72,000.000 JOD
   | Cost of sales | 3,600.000 JOD | 3,600.000 JOD | 3,600.000 JOD | 3,600.000 JOD | 14,400.000 JOD
   | Operating costs | 12,300.000 JOD | 12,300.000 JOD | 12,300.000 JOD | 12,300.000 JOD | 49,200.000 JOD

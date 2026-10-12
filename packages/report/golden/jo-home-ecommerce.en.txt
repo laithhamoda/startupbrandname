@@ -17,7 +17,7 @@ Year-one operating profit: 3,600.000 JOD (Operating profit before tax)
 Main risks:
 - The funding need (12,900.000 JOD) exceeds your largest available capital (6,000.000 JOD) by more than the multiple 2, and you named no outside funding source.
 - Set-up costs (9,000.000 JOD) exceed your largest available capital (6,000.000 JOD).
-TABLE What blocks Go
+TABLE Criteria not met
   | Criterion | Measured | Limit
   | Funding need within your largest available capital | 12,900.000 JOD | 6,000.000 JOD
   | Set-up costs within your largest available capital | 9,000.000 JOD | 6,000.000 JOD
@@ -108,7 +108,7 @@ The lowest cash balance is in Month 2; it is the funding need.
 Break-even: the first month operations make a profit, which is Month 1.
 Payback period: the capital you spent is not recovered within 36 months on the current numbers.
 TABLE Year 2: by quarter (each quarter is three months)
-  | Month | Quarter 1 | Quarter 2 | Quarter 3 | Quarter 4 | Year total
+  | Item | Quarter 1 | Quarter 2 | Quarter 3 | Quarter 4 | Year total
   | Revenue | 15,600.000 JOD | 10,800.000 JOD | 10,800.000 JOD | 10,800.000 JOD | 48,000.000 JOD
   | Cost of sales | 9,750.000 JOD | 6,750.000 JOD | 6,750.000 JOD | 6,750.000 JOD | 30,000.000 JOD
   | Operating costs | 3,600.000 JOD | 3,600.000 JOD | 3,600.000 JOD | 3,600.000 JOD | 14,400.000 JOD
@@ -116,7 +116,7 @@ TABLE Year 2: by quarter (each quarter is three months)
   | Net cash | 1,450.000 JOD | 890.000 JOD | 450.000 JOD | 450.000 JOD | 3,240.000 JOD
   | Cumulative cash balance | −7,550.000 JOD | −6,660.000 JOD | −6,210.000 JOD | −5,760.000 JOD | —
 TABLE Year 3: by quarter (each quarter is three months)
-  | Month | Quarter 1 | Quarter 2 | Quarter 3 | Quarter 4 | Year total
+  | Item | Quarter 1 | Quarter 2 | Quarter 3 | Quarter 4 | Year total
   | Revenue | 15,600.000 JOD | 10,800.000 JOD | 10,800.000 JOD | 10,800.000 JOD | 48,000.000 JOD
   | Cost of sales | 9,750.000 JOD | 6,750.000 JOD | 6,750.000 JOD | 6,750.000 JOD | 30,000.000 JOD
   | Operating costs | 3,600.000 JOD | 3,600.000 JOD | 3,600.000 JOD | 3,600.000 JOD | 14,400.000 JOD
