@@ -11,24 +11,24 @@ Every number in this report is calculated by the engine with fixed formulas and 
 This report is addressed to a prospective investor, so it opens with what matters most to one: first-year profit, then the break-even month, then the funding you need.
 VERDICT Revise  | No criterion blocks. 6 of 10 feasibility criteria pass (60%), which is below the Go line (75%). We found changes to your numbers (3) that take the project to Go. The score is not a probability of success; it is the share of criteria that pass.
 Feasibility criteria met: 6 of 10. The Go line is at 75%.
-Year-one operating profit: −1,500.000 د.أ (Operating profit before tax)
+Year-one operating profit: −1,500.000 JOD (Operating profit before tax)
 Break-even month: Month 6 (Break-even: the first month income covers costs)
-Funding need: 18,400.000 د.أ (Lowest cash balance, in Month 5)
+Funding need: 18,400.000 JOD (Lowest cash balance, in Month 5)
 Main risks:
-- The price (30.000 د.أ) is below the lowest price that covers your costs (30.833 د.أ).
+- The price (30.000 JOD) is below the lowest price that covers your costs (30.833 JOD).
 - Break-even (6 months) comes after the time you can go without income (3 months).
-- Set-up costs (12,000.000 د.أ) are above your smallest available capital (8,000.000 د.أ) and below your largest (15,000.000 د.أ).
+- Set-up costs (12,000.000 JOD) are above your smallest available capital (8,000.000 JOD) and below your largest (15,000.000 JOD).
 TABLE What blocks Go
   | Criterion | Measured | Limit
   | Break-even within the time you can go without income | Month 6 | within 3 months
-  | Funding need within your largest available capital | 18,400.000 د.أ | 15,000.000 د.أ
-  | The price is not below the lowest price that covers costs | 30.000 د.أ | 30.833 د.أ
+  | Funding need within your largest available capital | 18,400.000 JOD | 15,000.000 JOD
+  | The price is not below the lowest price that covers costs | 30.000 JOD | 30.833 JOD
   | Break-even in the conservative scenario | no break-even within 36 months | within 36 months
 10 of 11 criteria were evaluated; a criterion that lacks answers is not counted.
 TABLE Changes to your numbers that bring the project closer to Go
   | Change | Now | Suggested | Change | Result
   | Lower the fixed costs | 100% | 73.8% | −26.2% | Go · 8 of 10 // Relative to your current estimate
-  | Raise the price | 30.000 د.أ | 38.500 د.أ | +28.33% | Go · 8 of 10 // Above the highest competitor (35.000 د.أ): your offer needs a measurable difference.
+  | Raise the price | 30.000 JOD | 38.500 JOD | +28.33% | Go · 8 of 10 // Above the highest competitor (35.000 JOD): your offer needs a measurable difference.
   | Raise sales | 100% | 140% | +40% | Go · 8 of 10 // Relative to your current forecast
 Overall confidence in your answers is High (5 of 5 key answers are sound).
 ## Project card
@@ -40,8 +40,8 @@ Overall confidence in your answers is High (5 of 5 key answers are sound).
 - Sector: Information and communication
 - Project type: Digital product
 - Pricing model: Subscription
-- Selling price: 30.000 د.أ
-- Available capital: from 8,000.000 د.أ to 15,000.000 د.أ
+- Selling price: 30.000 JOD
+- Available capital: from 8,000.000 JOD to 15,000.000 JOD
 - Goal of the project: A company that can scale
 ## Business model canvases
 Each cell shows your own words as you wrote them, with their source and level of confidence; the platform writes no text for you.
@@ -50,102 +50,102 @@ CANVAS Business Model Canvas
   Value propositions: منصة برمجية تدير حجوزات العيادات الصغيرة باشتراك شهري.
   Channels: You have not yet answered the question behind this cell.
   Customer relationships: You have not yet answered the question behind this cell.
-  Revenue streams: 30 د.أ / Subscription / Cash on purchase
+  Revenue streams: 30 JOD / Subscription / Cash on purchase
   Key resources: An office
   Key activities: You have not yet answered the question behind this cell.
   Key partners: شريك مؤسس
-  Cost structure: 4 د.أ / 2 د.أ / 1200 د.أ / 800 د.أ / 600 د.أ / 7000 د.أ / 3000 د.أ / 2000 د.أ / 1500 د.أ
-    Total fixed costs per month: 2,000.000 د.أ
-    Variable cost per unit: 6.000 د.أ
-    Total set-up costs: 12,000.000 د.أ
+  Cost structure: 4 JOD / 2 JOD / 1200 JOD / 800 JOD / 600 JOD / 7000 JOD / 3000 JOD / 2000 JOD / 1500 JOD
+    Total fixed costs per month: 2,000.000 JOD
+    Variable cost per unit: 6.000 JOD
+    Total set-up costs: 12,000.000 JOD
 CANVAS Lean Canvas
   Customer segments: You have not yet answered the question behind this cell.
   Problem: You have not yet answered the question behind this cell.
   Unique value proposition: منصة برمجية تدير حجوزات العيادات الصغيرة باشتراك شهري.
   Solution: منصة برمجية تدير حجوزات العيادات الصغيرة باشتراك شهري.
   Channels: You have not yet answered the question behind this cell.
-  Revenue streams: 30 د.أ / Subscription / Cash on purchase
-  Cost structure: 4 د.أ / 2 د.أ / 1200 د.أ / 800 د.أ / 600 د.أ / 7000 د.أ / 3000 د.أ / 2000 د.أ / 1500 د.أ
-    Total fixed costs per month: 2,000.000 د.أ
-    Variable cost per unit: 6.000 د.أ
-    Total set-up costs: 12,000.000 د.أ
+  Revenue streams: 30 JOD / Subscription / Cash on purchase
+  Cost structure: 4 JOD / 2 JOD / 1200 JOD / 800 JOD / 600 JOD / 7000 JOD / 3000 JOD / 2000 JOD / 1500 JOD
+    Total fixed costs per month: 2,000.000 JOD
+    Variable cost per unit: 6.000 JOD
+    Total set-up costs: 12,000.000 JOD
   Key metrics: You have not yet answered the question behind this cell.
   Unfair advantage: You have not yet answered the question behind this cell.
 ## Pricing and unit economics
 TABLE Unit economics and break-even
   | Item | Value
-  | Selling price per unit | 30.000 د.أ
-  | Variable cost per unit | 6.000 د.أ
-  | Fixed costs you entered, per month | 2,000.000 د.أ
-  | Contribution margin per unit | 24.000 د.أ
+  | Selling price per unit | 30.000 JOD
+  | Variable cost per unit | 6.000 JOD
+  | Fixed costs you entered, per month | 2,000.000 JOD
+  | Contribution margin per unit | 24.000 JOD
   | Margin rate | 80%
-  | Total fixed costs per month as the engine counts them | 4,100.000 د.أ
+  | Total fixed costs per month as the engine counts them | 4,100.000 JOD
   | Break-even units per month | 171
-  | Break-even revenue per month | 5,125.000 د.أ
+  | Break-even revenue per month | 5,125.000 JOD
   | Break-even month | Month 6
 You gave no maximum monthly capacity, so break-even units are not compared with one.
 TABLE Subscription measures
   | Item | Value
-  | Average revenue per subscriber per month | 30.000 د.أ
+  | Average revenue per subscriber per month | 30.000 JOD
   | Monthly churn | 5%
-  | Customer lifetime value (LTV) | 480.000 د.أ
+  | Customer lifetime value (LTV) | 480.000 JOD
   | New subscribers per month | 10
-  | Customer acquisition cost (CAC) | 60.000 د.أ
+  | Customer acquisition cost (CAC) | 60.000 JOD
   | Customer value to acquisition cost | 8
 TABLE Price positions in the market
   | Item | Value
-  | Price floor | 30.833 د.أ
-  | Lowest competitor price | 28.000 د.أ
-  | Median competitor price | 32.000 د.أ
-  | Highest competitor price | 35.000 د.أ
-  | Penetration price | 33.917 د.أ
-  | Market price | 32.000 د.أ
+  | Price floor | 30.833 JOD
+  | Lowest competitor price | 28.000 JOD
+  | Median competitor price | 32.000 JOD
+  | Highest competitor price | 35.000 JOD
+  | Penetration price | 33.917 JOD
+  | Market price | 32.000 JOD
 A premium price needs a measurable difference in your offer, and your answer does not show one yet.
 ## Financial projection
 Revenue is collected in cash in the same month. Figures are before tax unless stated otherwise.
 TABLE Year one, month by month
   | Month | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | Year total
   | Units sold | 0 | 40 | 80 | 120 | 160 | 200 | 200 | 200 | 200 | 200 | 200 | 200 | 1,800
-  | Revenue | 0.000 د.أ | 1,200.000 د.أ | 2,400.000 د.أ | 3,600.000 د.أ | 4,800.000 د.أ | 6,000.000 د.أ | 6,000.000 د.أ | 6,000.000 د.أ | 6,000.000 د.أ | 6,000.000 د.أ | 6,000.000 د.أ | 6,000.000 د.أ | 54,000.000 د.أ
-  | Cost of sales | 0.000 د.أ | 240.000 د.أ | 480.000 د.أ | 720.000 د.أ | 960.000 د.أ | 1,200.000 د.أ | 1,200.000 د.أ | 1,200.000 د.أ | 1,200.000 د.أ | 1,200.000 د.أ | 1,200.000 د.أ | 1,200.000 د.أ | 10,800.000 د.أ
-  | Gross profit | 0.000 د.أ | 960.000 د.أ | 1,920.000 د.أ | 2,880.000 د.أ | 3,840.000 د.أ | 4,800.000 د.أ | 4,800.000 د.أ | 4,800.000 د.أ | 4,800.000 د.أ | 4,800.000 د.أ | 4,800.000 د.أ | 4,800.000 د.أ | 43,200.000 د.أ
-  | Operating costs | 2,600.000 د.أ | 2,600.000 د.أ | 2,600.000 د.أ | 4,100.000 د.أ | 4,100.000 د.أ | 4,100.000 د.أ | 4,100.000 د.أ | 4,100.000 د.أ | 4,100.000 د.أ | 4,100.000 د.أ | 4,100.000 د.أ | 4,100.000 د.أ | 44,700.000 د.أ
-  | Operating profit | −2,600.000 د.أ | −1,640.000 د.أ | −680.000 د.أ | −1,220.000 د.أ | −260.000 د.أ | 700.000 د.أ | 700.000 د.أ | 700.000 د.أ | 700.000 د.أ | 700.000 د.أ | 700.000 د.أ | 700.000 د.أ | −1,500.000 د.أ
-  | Net cash | −2,600.000 د.أ | −1,640.000 د.أ | −680.000 د.أ | −1,220.000 د.أ | −260.000 د.أ | 700.000 د.أ | 700.000 د.أ | 700.000 د.أ | 700.000 د.أ | 700.000 د.أ | 700.000 د.أ | 700.000 د.أ | −1,500.000 د.أ
-  | Cumulative cash balance | −14,600.000 د.أ | −16,240.000 د.أ | −16,920.000 د.أ | −18,140.000 د.أ | −18,400.000 د.أ [lowest_cash] | −17,700.000 د.أ | −17,000.000 د.أ | −16,300.000 د.أ | −15,600.000 د.أ | −14,900.000 د.أ | −14,200.000 د.أ | −13,500.000 د.أ | −13,500.000 د.أ
-The cash balance starts from −12,000.000 د.أ, which is the set-up costs.
+  | Revenue | 0.000 JOD | 1,200.000 JOD | 2,400.000 JOD | 3,600.000 JOD | 4,800.000 JOD | 6,000.000 JOD | 6,000.000 JOD | 6,000.000 JOD | 6,000.000 JOD | 6,000.000 JOD | 6,000.000 JOD | 6,000.000 JOD | 54,000.000 JOD
+  | Cost of sales | 0.000 JOD | 240.000 JOD | 480.000 JOD | 720.000 JOD | 960.000 JOD | 1,200.000 JOD | 1,200.000 JOD | 1,200.000 JOD | 1,200.000 JOD | 1,200.000 JOD | 1,200.000 JOD | 1,200.000 JOD | 10,800.000 JOD
+  | Gross profit | 0.000 JOD | 960.000 JOD | 1,920.000 JOD | 2,880.000 JOD | 3,840.000 JOD | 4,800.000 JOD | 4,800.000 JOD | 4,800.000 JOD | 4,800.000 JOD | 4,800.000 JOD | 4,800.000 JOD | 4,800.000 JOD | 43,200.000 JOD
+  | Operating costs | 2,600.000 JOD | 2,600.000 JOD | 2,600.000 JOD | 4,100.000 JOD | 4,100.000 JOD | 4,100.000 JOD | 4,100.000 JOD | 4,100.000 JOD | 4,100.000 JOD | 4,100.000 JOD | 4,100.000 JOD | 4,100.000 JOD | 44,700.000 JOD
+  | Operating profit | −2,600.000 JOD | −1,640.000 JOD | −680.000 JOD | −1,220.000 JOD | −260.000 JOD | 700.000 JOD | 700.000 JOD | 700.000 JOD | 700.000 JOD | 700.000 JOD | 700.000 JOD | 700.000 JOD | −1,500.000 JOD
+  | Net cash | −2,600.000 JOD | −1,640.000 JOD | −680.000 JOD | −1,220.000 JOD | −260.000 JOD | 700.000 JOD | 700.000 JOD | 700.000 JOD | 700.000 JOD | 700.000 JOD | 700.000 JOD | 700.000 JOD | −1,500.000 JOD
+  | Cumulative cash balance | −14,600.000 JOD | −16,240.000 JOD | −16,920.000 JOD | −18,140.000 JOD | −18,400.000 JOD [lowest_cash] | −17,700.000 JOD | −17,000.000 JOD | −16,300.000 JOD | −15,600.000 JOD | −14,900.000 JOD | −14,200.000 JOD | −13,500.000 JOD | −13,500.000 JOD
+The cash balance starts from −12,000.000 JOD, which is the set-up costs.
 The lowest cash balance is in Month 5; it is the funding need.
 Break-even: the first month operations make a profit, which is Month 6.
 Payback period: the capital you spent is recovered in Month 34.
 TABLE Year 2: by quarter (each quarter is three months)
   | Month | Quarter 1 | Quarter 2 | Quarter 3 | Quarter 4 | Year total
-  | Revenue | 18,000.000 د.أ | 18,000.000 د.أ | 18,000.000 د.أ | 18,000.000 د.أ | 72,000.000 د.أ
-  | Cost of sales | 3,600.000 د.أ | 3,600.000 د.أ | 3,600.000 د.أ | 3,600.000 د.أ | 14,400.000 د.أ
-  | Operating costs | 12,300.000 د.أ | 12,300.000 د.أ | 12,300.000 د.أ | 12,300.000 د.أ | 49,200.000 د.أ
-  | Operating profit | 2,100.000 د.أ | 2,100.000 د.أ | 2,100.000 د.أ | 2,100.000 د.أ | 8,400.000 د.أ
-  | Net cash | 2,100.000 د.أ | 2,100.000 د.أ | 2,100.000 د.أ | 2,100.000 د.أ | 8,400.000 د.أ
-  | Cumulative cash balance | −11,400.000 د.أ | −9,300.000 د.أ | −7,200.000 د.أ | −5,100.000 د.أ | —
+  | Revenue | 18,000.000 JOD | 18,000.000 JOD | 18,000.000 JOD | 18,000.000 JOD | 72,000.000 JOD
+  | Cost of sales | 3,600.000 JOD | 3,600.000 JOD | 3,600.000 JOD | 3,600.000 JOD | 14,400.000 JOD
+  | Operating costs | 12,300.000 JOD | 12,300.000 JOD | 12,300.000 JOD | 12,300.000 JOD | 49,200.000 JOD
+  | Operating profit | 2,100.000 JOD | 2,100.000 JOD | 2,100.000 JOD | 2,100.000 JOD | 8,400.000 JOD
+  | Net cash | 2,100.000 JOD | 2,100.000 JOD | 2,100.000 JOD | 2,100.000 JOD | 8,400.000 JOD
+  | Cumulative cash balance | −11,400.000 JOD | −9,300.000 JOD | −7,200.000 JOD | −5,100.000 JOD | —
 TABLE Year 3: by quarter (each quarter is three months)
   | Month | Quarter 1 | Quarter 2 | Quarter 3 | Quarter 4 | Year total
-  | Revenue | 18,000.000 د.أ | 18,000.000 د.أ | 18,000.000 د.أ | 18,000.000 د.أ | 72,000.000 د.أ
-  | Cost of sales | 3,600.000 د.أ | 3,600.000 د.أ | 3,600.000 د.أ | 3,600.000 د.أ | 14,400.000 د.أ
-  | Operating costs | 12,300.000 د.أ | 12,300.000 د.أ | 12,300.000 د.أ | 12,300.000 د.أ | 49,200.000 د.أ
-  | Operating profit | 2,100.000 د.أ | 2,100.000 د.أ | 2,100.000 د.أ | 2,100.000 د.أ | 8,400.000 د.أ
-  | Net cash | 2,100.000 د.أ | 420.000 د.أ | 2,100.000 د.أ | 2,100.000 د.أ | 6,720.000 د.أ
-  | Cumulative cash balance | −3,000.000 د.أ | −2,580.000 د.أ | −480.000 د.أ | 1,620.000 د.أ | —
+  | Revenue | 18,000.000 JOD | 18,000.000 JOD | 18,000.000 JOD | 18,000.000 JOD | 72,000.000 JOD
+  | Cost of sales | 3,600.000 JOD | 3,600.000 JOD | 3,600.000 JOD | 3,600.000 JOD | 14,400.000 JOD
+  | Operating costs | 12,300.000 JOD | 12,300.000 JOD | 12,300.000 JOD | 12,300.000 JOD | 49,200.000 JOD
+  | Operating profit | 2,100.000 JOD | 2,100.000 JOD | 2,100.000 JOD | 2,100.000 JOD | 8,400.000 JOD
+  | Net cash | 2,100.000 JOD | 420.000 JOD | 2,100.000 JOD | 2,100.000 JOD | 6,720.000 JOD
+  | Cumulative cash balance | −3,000.000 JOD | −2,580.000 JOD | −480.000 JOD | 1,620.000 JOD | —
 ## Scenarios and sensitivity
 TABLE The three scenarios
   |  | Conservative | Base | Optimistic
   | Assumptions | Sales × 0.6, variable cost × 1.1, launch delayed by 3 months | Your numbers as entered | Sales × 1.3, variable cost × 0.95
   | Break-even month | no break-even within 36 months | Month 6 | Month 5
-  | Funding need | 70,860.000 د.أ | 18,400.000 د.أ | 16,318.400 د.أ
-  | Year-one operating profit | −27,852.000 د.أ | −1,500.000 د.أ | 12,162.000 د.أ
+  | Funding need | 70,860.000 JOD | 18,400.000 JOD | 16,318.400 JOD
+  | Year-one operating profit | −27,852.000 JOD | −1,500.000 JOD | 12,162.000 JOD
 TABLE Sensitivity analysis: the four numbers ranked by their effect on year-one profit, each moved 20% up and down
   | Number | Year-one profit at the low end | Year-one profit at the high end | Swing
-  | Price | −12,300.000 د.أ | 9,300.000 د.أ | 21,600.000 د.أ
-  | Fixed costs | 7,440.000 د.أ | −10,440.000 د.أ | 17,880.000 د.أ
-  | Sales | −10,140.000 د.أ | 7,140.000 د.أ | 17,280.000 د.أ
-  | Variable cost | 660.000 د.أ | −3,660.000 د.أ | 4,320.000 د.أ
+  | Price | −12,300.000 JOD | 9,300.000 JOD | 21,600.000 JOD
+  | Fixed costs | 7,440.000 JOD | −10,440.000 JOD | 17,880.000 JOD
+  | Sales | −10,140.000 JOD | 7,140.000 JOD | 17,280.000 JOD
+  | Variable cost | 660.000 JOD | −3,660.000 JOD | 4,320.000 JOD
 The number at the top of the table is the one most worth testing before you spend.
 ## Legal path and financing
 Registration and licensing steps:
@@ -157,13 +157,13 @@ Some pack items (2) are not available yet, so these steps do not cover everythin
 Tax was calculated in the projection under the “fixture_regime_company” regime.
 TABLE Tax calculated for each year
   | Year | Revenue | Operating profit | Tax
-  | Year 1 | 54,000.000 د.أ | −1,500.000 د.أ | 0.000 د.أ
-  | Year 2 | 72,000.000 د.أ | 8,400.000 د.أ | 1,680.000 د.أ
-  | Year 3 | 72,000.000 د.أ | 8,400.000 د.أ | 1,680.000 د.أ
+  | Year 1 | 54,000.000 JOD | −1,500.000 JOD | 0.000 JOD
+  | Year 2 | 72,000.000 JOD | 8,400.000 JOD | 1,680.000 JOD
+  | Year 3 | 72,000.000 JOD | 8,400.000 JOD | 1,680.000 JOD
 (adviser) We recommend consulting a tax adviser in your country before any decision.
 LINK Income and Sales Tax Department https://example.invalid/jo/tax
 Financing:
-- The funding need (18,400.000 د.أ) is above the largest capital you named (15,000.000 د.أ): the difference needs an outside source or a change in your numbers.
+- The funding need (18,400.000 JOD) is above the largest capital you named (15,000.000 JOD): the difference needs an outside source or a change in your numbers.
 - Outside funding sources you chose: An investor.
 ## Validation plan
 A test plan of 30 days: test the most important assumptions before you spend on them, ranked by how much each moves your profit and how confident you are in it.
@@ -174,13 +174,13 @@ Your own worry:
 - If it fails: Ask an expert in your field before you go on.
 - Cost: Your time
 Test 2:
-- Why: Your price is 30.000 د.أ. Changing it by 20% moves year-one profit by 21,600.000 د.أ. Your confidence in it is High.
+- Why: Your price is 30.000 JOD. Changing it by 20% moves year-one profit by 21,600.000 JOD. Your confidence in it is High.
 - The test: Offer the product or service at this price to prospective customers and record who actually agrees to pay.
 - Success line: The share of those you ask who actually agree to pay, not those who merely like the offer. This is the protocol’s default description; you set the number you will accept before you start.
 - If it fails: Try a second price on a new group.
 - Cost: Your time
 Test 3:
-- Why: Your fixed costs are 2,000.000 د.أ a month. Changing them by 20% moves year-one profit by 17,880.000 د.أ. Your confidence in them is High.
+- Why: Your fixed costs are 2,000.000 JOD a month. Changing them by 20% moves year-one profit by 17,880.000 JOD. Your confidence in them is High.
 - The test: Ask for a written quote for each fixed item.
 - Success line: The quotes together do not exceed your estimate of the fixed costs. This is the protocol’s default description; you set the number you will accept before you start.
 - If it fails: Cut the item or postpone it.
@@ -199,9 +199,9 @@ TABLE Numbers that are assumptions or have low confidence
   | Number | Value | Source | Confidence | Confirmed
   | Maximum capacity | — | Assumption | Low | Not confirmed
   | Churn | 5% | From your answers | Low | Not confirmed
-  | Funding need | 18,400.000 د.أ | Assumption | Low | Not confirmed
+  | Funding need | 18,400.000 JOD | Assumption | Low | Not confirmed
   | Break-even month | Month 6 | Assumption | Low | Not confirmed
-  | Year-one operating profit | −1,500.000 د.أ | Assumption | Low | Not confirmed
+  | Year-one operating profit | −1,500.000 JOD | Assumption | Low | Not confirmed
 Engine notes on your answers:
 - The maximum capacity was not given, so there is no cap on units.
 - No inflation was applied to costs because no rate with a documented source exists.

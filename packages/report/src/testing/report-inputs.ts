@@ -23,7 +23,10 @@ import type { ReportInput } from '../model/types';
 const real = (value: unknown) => ({ status: 'answered' as const, value });
 const userHigh = { source: 'user', confidence: 'high', validated: true } as const;
 
-/** What a founder says about the project besides the numbers: who, what, for whom, where, goal. */
+/**
+ * What a founder says about the project besides the numbers: who, what, for whom, where, goal. The
+ * currency label is the Arabic one; the English report is given the ISO code, as the web would.
+ */
 const IDENTITY: Readonly<
   Record<GoldenName, { readonly answers: Answers; readonly currencyLabel: string }>
 > = {
@@ -239,7 +242,8 @@ export function goldenReportInput(name: GoldenName, options: GoldenReportOptions
       title: project.title,
       countryCode: project.context.country,
       currency: project.context.currency,
-      currencyLabel: IDENTITY[name].currencyLabel,
+      currencyLabel:
+        options.locale === 'ar' ? IDENTITY[name].currencyLabel : project.context.currency,
     },
     answers: answers as Answers,
     provenance: provenance as GoldenProject['provenance'],

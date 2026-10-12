@@ -7,7 +7,7 @@
   "meta": {
     "title": "مقاول ذاتي يبيع أكلات منزلية في الجزائر",
     "countryCode": "DZ",
-    "currencyLabel": "د.ج",
+    "currencyLabel": "DZD",
     "issuedOn": "2026-10-12",
     "engineVersion": "1.1.0",
     "inputHash": null,
@@ -287,7 +287,10 @@
                   {
                     "n": "418,000.00"
                   },
-                  " د.ج"
+                  " ",
+                  {
+                    "l": "DZD"
+                  }
                 ],
                 "provenance": {
                   "source": "assumption",
@@ -313,7 +316,10 @@
                   {
                     "n": "480,000.00"
                   },
-                  " د.ج"
+                  " ",
+                  {
+                    "l": "DZD"
+                  }
                 ],
                 "provenance": {
                   "source": "assumption",
@@ -345,7 +351,11 @@
               {
                 "n": "7,126,000.00"
               },
-              " د.ج) exceeds the ceiling of the ",
+              " ",
+              {
+                "l": "DZD"
+              },
+              ") exceeds the ceiling of the ",
               {
                 "l": "fixture_auto_entrepreneur"
               },
@@ -353,22 +363,38 @@
               {
                 "n": "5,000,000.00"
               },
-              " د.ج)."
+              " ",
+              {
+                "l": "DZD"
+              },
+              ")."
             ],
             [
               "Set-up costs (",
               {
                 "n": "300,000.00"
               },
-              " د.ج) are above your smallest available capital (",
+              " ",
+              {
+                "l": "DZD"
+              },
+              ") are above your smallest available capital (",
               {
                 "n": "200,000.00"
               },
-              " د.ج) and below your largest (",
+              " ",
+              {
+                "l": "DZD"
+              },
+              ") and below your largest (",
               {
                 "n": "400,000.00"
               },
-              " د.ج)."
+              " ",
+              {
+                "l": "DZD"
+              },
+              ")."
             ],
             [
               "Your own worry: “هل يستمر الطلب على الأكل المنزلي خارج المناسبات؟”."
@@ -549,7 +575,10 @@
                   {
                     "n": "2,000.00"
                   },
-                  " د.ج"
+                  " ",
+                  {
+                    "l": "DZD"
+                  }
                 ],
                 "provenance": {
                   "source": "user",
@@ -573,11 +602,18 @@
                   {
                     "n": "200,000.00"
                   },
-                  " د.ج to ",
+                  " ",
+                  {
+                    "l": "DZD"
+                  },
+                  " to ",
                   {
                     "n": "400,000.00"
                   },
-                  " د.ج"
+                  " ",
+                  {
+                    "l": "DZD"
+                  }
                 ],
                 "provenance": {
                   "source": "user",
@@ -697,7 +733,7 @@
                   "key": "F1",
                   "questionId": "F1",
                   "label": null,
-                  "text": "2000 د.ج",
+                  "text": "2000 DZD",
                   "provenance": {
                     "source": "user",
                     "confidence": "high",
@@ -779,7 +815,7 @@
                   "key": "F3:0",
                   "questionId": "F3",
                   "label": "مواد التحضير",
-                  "text": "650 د.ج",
+                  "text": "650 DZD",
                   "provenance": {
                     "source": "user",
                     "confidence": "high",
@@ -791,7 +827,7 @@
                   "key": "F3:1",
                   "questionId": "F3",
                   "label": "التغليف والتوصيل",
-                  "text": "150 د.ج",
+                  "text": "150 DZD",
                   "provenance": {
                     "source": "user",
                     "confidence": "high",
@@ -803,7 +839,7 @@
                   "key": "F4:0",
                   "questionId": "F4",
                   "label": "إيجار المطبخ",
-                  "text": "30000 د.ج",
+                  "text": "30000 DZD",
                   "provenance": {
                     "source": "user",
                     "confidence": "high",
@@ -815,7 +851,7 @@
                   "key": "F4:1",
                   "questionId": "F4",
                   "label": "الكهرباء والاتصالات",
-                  "text": "10000 د.ج",
+                  "text": "10000 DZD",
                   "provenance": {
                     "source": "user",
                     "confidence": "high",
@@ -827,7 +863,7 @@
                   "key": "F4.1",
                   "questionId": "F4.1",
                   "label": null,
-                  "text": "10000 د.ج",
+                  "text": "10000 DZD",
                   "provenance": {
                     "source": "user",
                     "confidence": "medium",
@@ -839,7 +875,7 @@
                   "key": "F5:0",
                   "questionId": "F5",
                   "label": "تجهيزات المطبخ",
-                  "text": "220000 د.ج",
+                  "text": "220000 DZD",
                   "provenance": {
                     "source": "user",
                     "confidence": "high",
@@ -851,7 +887,7 @@
                   "key": "F5:1",
                   "questionId": "F5",
                   "label": "التسجيل كمقاول ذاتي",
-                  "text": "30000 د.ج",
+                  "text": "30000 DZD",
                   "provenance": {
                     "source": "user",
                     "confidence": "high",
@@ -863,7 +899,7 @@
                   "key": "F5:2",
                   "questionId": "F5",
                   "label": "مخزون أولي وتغليف",
-                  "text": "50000 د.ج",
+                  "text": "50000 DZD",
                   "provenance": {
                     "source": "user",
                     "confidence": "high",
@@ -883,7 +919,10 @@
                       {
                         "n": "40,000.00"
                       },
-                      " د.ج"
+                      " ",
+                      {
+                        "l": "DZD"
+                      }
                     ],
                     "provenance": {
                       "source": "user",
@@ -903,7 +942,10 @@
                       {
                         "n": "800.00"
                       },
-                      " د.ج"
+                      " ",
+                      {
+                        "l": "DZD"
+                      }
                     ],
                     "provenance": {
                       "source": "user",
@@ -923,7 +965,10 @@
                       {
                         "n": "300,000.00"
                       },
-                      " د.ج"
+                      " ",
+                      {
+                        "l": "DZD"
+                      }
                     ],
                     "provenance": {
                       "source": "user",
@@ -1018,7 +1063,7 @@
                   "key": "F1",
                   "questionId": "F1",
                   "label": null,
-                  "text": "2000 د.ج",
+                  "text": "2000 DZD",
                   "provenance": {
                     "source": "user",
                     "confidence": "high",
@@ -1062,7 +1107,7 @@
                   "key": "F3:0",
                   "questionId": "F3",
                   "label": "مواد التحضير",
-                  "text": "650 د.ج",
+                  "text": "650 DZD",
                   "provenance": {
                     "source": "user",
                     "confidence": "high",
@@ -1074,7 +1119,7 @@
                   "key": "F3:1",
                   "questionId": "F3",
                   "label": "التغليف والتوصيل",
-                  "text": "150 د.ج",
+                  "text": "150 DZD",
                   "provenance": {
                     "source": "user",
                     "confidence": "high",
@@ -1086,7 +1131,7 @@
                   "key": "F4:0",
                   "questionId": "F4",
                   "label": "إيجار المطبخ",
-                  "text": "30000 د.ج",
+                  "text": "30000 DZD",
                   "provenance": {
                     "source": "user",
                     "confidence": "high",
@@ -1098,7 +1143,7 @@
                   "key": "F4:1",
                   "questionId": "F4",
                   "label": "الكهرباء والاتصالات",
-                  "text": "10000 د.ج",
+                  "text": "10000 DZD",
                   "provenance": {
                     "source": "user",
                     "confidence": "high",
@@ -1110,7 +1155,7 @@
                   "key": "F4.1",
                   "questionId": "F4.1",
                   "label": null,
-                  "text": "10000 د.ج",
+                  "text": "10000 DZD",
                   "provenance": {
                     "source": "user",
                     "confidence": "medium",
@@ -1122,7 +1167,7 @@
                   "key": "F5:0",
                   "questionId": "F5",
                   "label": "تجهيزات المطبخ",
-                  "text": "220000 د.ج",
+                  "text": "220000 DZD",
                   "provenance": {
                     "source": "user",
                     "confidence": "high",
@@ -1134,7 +1179,7 @@
                   "key": "F5:1",
                   "questionId": "F5",
                   "label": "التسجيل كمقاول ذاتي",
-                  "text": "30000 د.ج",
+                  "text": "30000 DZD",
                   "provenance": {
                     "source": "user",
                     "confidence": "high",
@@ -1146,7 +1191,7 @@
                   "key": "F5:2",
                   "questionId": "F5",
                   "label": "مخزون أولي وتغليف",
-                  "text": "50000 د.ج",
+                  "text": "50000 DZD",
                   "provenance": {
                     "source": "user",
                     "confidence": "high",
@@ -1166,7 +1211,10 @@
                       {
                         "n": "40,000.00"
                       },
-                      " د.ج"
+                      " ",
+                      {
+                        "l": "DZD"
+                      }
                     ],
                     "provenance": {
                       "source": "user",
@@ -1186,7 +1234,10 @@
                       {
                         "n": "800.00"
                       },
-                      " د.ج"
+                      " ",
+                      {
+                        "l": "DZD"
+                      }
                     ],
                     "provenance": {
                       "source": "user",
@@ -1206,7 +1257,10 @@
                       {
                         "n": "300,000.00"
                       },
-                      " د.ج"
+                      " ",
+                      {
+                        "l": "DZD"
+                      }
                     ],
                     "provenance": {
                       "source": "user",
@@ -1276,7 +1330,10 @@
                     {
                       "n": "2,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "user",
@@ -1299,7 +1356,10 @@
                     {
                       "n": "800.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "user",
@@ -1322,7 +1382,10 @@
                     {
                       "n": "40,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "user",
@@ -1345,7 +1408,10 @@
                     {
                       "n": "1,200.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "user",
@@ -1390,7 +1456,10 @@
                     {
                       "n": "50,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -1435,7 +1504,10 @@
                     {
                       "n": "83,333.33"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -1510,7 +1582,10 @@
                     {
                       "n": "1,466.67"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -1533,7 +1608,10 @@
                     {
                       "n": "1,800.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "user",
@@ -1556,7 +1634,10 @@
                     {
                       "n": "2,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "user",
@@ -1579,7 +1660,10 @@
                     {
                       "n": "2,200.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "user",
@@ -1602,7 +1686,10 @@
                     {
                       "n": "1,800.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -1625,7 +1712,10 @@
                     {
                       "n": "2,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "user",
@@ -2000,7 +2090,10 @@
                     {
                       "n": "0.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2015,7 +2108,10 @@
                     {
                       "n": "40,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2030,7 +2126,10 @@
                     {
                       "n": "80,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2045,7 +2144,10 @@
                     {
                       "n": "120,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2060,7 +2162,10 @@
                     {
                       "n": "160,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2075,7 +2180,10 @@
                     {
                       "n": "200,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2090,7 +2198,10 @@
                     {
                       "n": "200,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2105,7 +2216,10 @@
                     {
                       "n": "200,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2120,7 +2234,10 @@
                     {
                       "n": "200,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2135,7 +2252,10 @@
                     {
                       "n": "200,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2150,7 +2270,10 @@
                     {
                       "n": "200,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2165,7 +2288,10 @@
                     {
                       "n": "200,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2180,7 +2306,10 @@
                     {
                       "n": "1,800,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2203,7 +2332,10 @@
                     {
                       "n": "0.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2218,7 +2350,10 @@
                     {
                       "n": "16,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2233,7 +2368,10 @@
                     {
                       "n": "32,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2248,7 +2386,10 @@
                     {
                       "n": "48,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2263,7 +2404,10 @@
                     {
                       "n": "64,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2278,7 +2422,10 @@
                     {
                       "n": "80,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2293,7 +2440,10 @@
                     {
                       "n": "80,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2308,7 +2458,10 @@
                     {
                       "n": "80,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2323,7 +2476,10 @@
                     {
                       "n": "80,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2338,7 +2494,10 @@
                     {
                       "n": "80,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2353,7 +2512,10 @@
                     {
                       "n": "80,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2368,7 +2530,10 @@
                     {
                       "n": "80,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2383,7 +2548,10 @@
                     {
                       "n": "720,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2406,7 +2574,10 @@
                     {
                       "n": "0.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2421,7 +2592,10 @@
                     {
                       "n": "24,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2436,7 +2610,10 @@
                     {
                       "n": "48,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2451,7 +2628,10 @@
                     {
                       "n": "72,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2466,7 +2646,10 @@
                     {
                       "n": "96,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2481,7 +2664,10 @@
                     {
                       "n": "120,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2496,7 +2682,10 @@
                     {
                       "n": "120,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2511,7 +2700,10 @@
                     {
                       "n": "120,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2526,7 +2718,10 @@
                     {
                       "n": "120,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2541,7 +2736,10 @@
                     {
                       "n": "120,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2556,7 +2754,10 @@
                     {
                       "n": "120,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2571,7 +2772,10 @@
                     {
                       "n": "120,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2586,7 +2790,10 @@
                     {
                       "n": "1,080,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2609,7 +2816,10 @@
                     {
                       "n": "50,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2624,7 +2834,10 @@
                     {
                       "n": "50,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2639,7 +2852,10 @@
                     {
                       "n": "50,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2654,7 +2870,10 @@
                     {
                       "n": "50,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2669,7 +2888,10 @@
                     {
                       "n": "50,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2684,7 +2906,10 @@
                     {
                       "n": "50,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2699,7 +2924,10 @@
                     {
                       "n": "50,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2714,7 +2942,10 @@
                     {
                       "n": "50,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2729,7 +2960,10 @@
                     {
                       "n": "50,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2744,7 +2978,10 @@
                     {
                       "n": "50,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2759,7 +2996,10 @@
                     {
                       "n": "50,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2774,7 +3014,10 @@
                     {
                       "n": "50,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2789,7 +3032,10 @@
                     {
                       "n": "600,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2812,7 +3058,10 @@
                     {
                       "n": "−50,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2827,7 +3076,10 @@
                     {
                       "n": "−26,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2842,7 +3094,10 @@
                     {
                       "n": "−2,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2857,7 +3112,10 @@
                     {
                       "n": "22,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2872,7 +3130,10 @@
                     {
                       "n": "46,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2887,7 +3148,10 @@
                     {
                       "n": "70,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2902,7 +3166,10 @@
                     {
                       "n": "70,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2917,7 +3184,10 @@
                     {
                       "n": "70,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2932,7 +3202,10 @@
                     {
                       "n": "70,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2947,7 +3220,10 @@
                     {
                       "n": "70,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2962,7 +3238,10 @@
                     {
                       "n": "70,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2977,7 +3256,10 @@
                     {
                       "n": "70,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -2992,7 +3274,10 @@
                     {
                       "n": "480,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3015,7 +3300,10 @@
                     {
                       "n": "−50,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3030,7 +3318,10 @@
                     {
                       "n": "−46,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3045,7 +3336,10 @@
                     {
                       "n": "−22,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3060,7 +3354,10 @@
                     {
                       "n": "2,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3075,7 +3372,10 @@
                     {
                       "n": "26,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3090,7 +3390,10 @@
                     {
                       "n": "50,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3105,7 +3408,10 @@
                     {
                       "n": "70,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3120,7 +3426,10 @@
                     {
                       "n": "70,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3135,7 +3444,10 @@
                     {
                       "n": "70,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3150,7 +3462,10 @@
                     {
                       "n": "70,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3165,7 +3480,10 @@
                     {
                       "n": "70,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3180,7 +3498,10 @@
                     {
                       "n": "70,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3195,7 +3516,10 @@
                     {
                       "n": "380,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3218,7 +3542,10 @@
                     {
                       "n": "−350,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3233,7 +3560,10 @@
                     {
                       "n": "−396,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3248,7 +3578,10 @@
                     {
                       "n": "−418,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3263,7 +3596,10 @@
                     {
                       "n": "−416,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3278,7 +3614,10 @@
                     {
                       "n": "−390,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3293,7 +3632,10 @@
                     {
                       "n": "−340,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3308,7 +3650,10 @@
                     {
                       "n": "−270,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3323,7 +3668,10 @@
                     {
                       "n": "−200,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3338,7 +3686,10 @@
                     {
                       "n": "−130,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3353,7 +3704,10 @@
                     {
                       "n": "−60,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3368,7 +3722,10 @@
                     {
                       "n": "10,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3383,7 +3740,10 @@
                     {
                       "n": "80,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3398,7 +3758,10 @@
                     {
                       "n": "80,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3421,7 +3784,11 @@
             {
               "n": "−300,000.00"
             },
-            " د.ج, which is the set-up costs."
+            " ",
+            {
+              "l": "DZD"
+            },
+            ", which is the set-up costs."
           ]
         },
         {
@@ -3532,7 +3899,10 @@
                     {
                       "n": "674,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3547,7 +3917,10 @@
                     {
                       "n": "800,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3562,7 +3935,10 @@
                     {
                       "n": "954,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3577,7 +3953,10 @@
                     {
                       "n": "1,134,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3592,7 +3971,10 @@
                     {
                       "n": "3,562,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3615,7 +3997,10 @@
                     {
                       "n": "269,600.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3630,7 +4015,10 @@
                     {
                       "n": "320,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3645,7 +4033,10 @@
                     {
                       "n": "381,600.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3660,7 +4051,10 @@
                     {
                       "n": "453,600.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3675,7 +4069,10 @@
                     {
                       "n": "1,424,800.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3698,7 +4095,10 @@
                     {
                       "n": "150,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3713,7 +4113,10 @@
                     {
                       "n": "150,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3728,7 +4131,10 @@
                     {
                       "n": "150,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3743,7 +4149,10 @@
                     {
                       "n": "150,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3758,7 +4167,10 @@
                     {
                       "n": "600,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3781,7 +4193,10 @@
                     {
                       "n": "254,400.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3796,7 +4211,10 @@
                     {
                       "n": "330,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3811,7 +4229,10 @@
                     {
                       "n": "422,400.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3826,7 +4247,10 @@
                     {
                       "n": "530,400.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3841,7 +4265,10 @@
                     {
                       "n": "1,537,200.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3864,7 +4291,10 @@
                     {
                       "n": "225,400.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3879,7 +4309,10 @@
                     {
                       "n": "308,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3894,7 +4327,10 @@
                     {
                       "n": "395,400.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3909,7 +4345,10 @@
                     {
                       "n": "498,400.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3924,7 +4363,10 @@
                     {
                       "n": "1,427,200.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3947,7 +4389,10 @@
                     {
                       "n": "305,400.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3962,7 +4407,10 @@
                     {
                       "n": "613,400.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3977,7 +4425,10 @@
                     {
                       "n": "1,008,800.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -3992,7 +4443,10 @@
                     {
                       "n": "1,507,200.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4094,7 +4548,10 @@
                     {
                       "n": "1,348,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4109,7 +4566,10 @@
                     {
                       "n": "1,604,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4124,7 +4584,10 @@
                     {
                       "n": "1,906,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4139,7 +4602,10 @@
                     {
                       "n": "2,268,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4154,7 +4620,10 @@
                     {
                       "n": "7,126,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4177,7 +4646,10 @@
                     {
                       "n": "539,200.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4192,7 +4664,10 @@
                     {
                       "n": "641,600.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4207,7 +4682,10 @@
                     {
                       "n": "762,400.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4222,7 +4700,10 @@
                     {
                       "n": "907,200.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4237,7 +4718,10 @@
                     {
                       "n": "2,850,400.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4260,7 +4744,10 @@
                     {
                       "n": "150,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4275,7 +4762,10 @@
                     {
                       "n": "150,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4290,7 +4780,10 @@
                     {
                       "n": "150,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4305,7 +4798,10 @@
                     {
                       "n": "150,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4320,7 +4816,10 @@
                     {
                       "n": "600,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4343,7 +4842,10 @@
                     {
                       "n": "658,800.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4358,7 +4860,10 @@
                     {
                       "n": "812,400.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4373,7 +4878,10 @@
                     {
                       "n": "993,600.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4388,7 +4896,10 @@
                     {
                       "n": "1,210,800.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4403,7 +4914,10 @@
                     {
                       "n": "3,675,600.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4426,7 +4940,10 @@
                     {
                       "n": "602,990.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4441,7 +4958,10 @@
                     {
                       "n": "767,400.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4456,7 +4976,10 @@
                     {
                       "n": "940,600.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4471,7 +4994,10 @@
                     {
                       "n": "1,146,800.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4486,7 +5012,10 @@
                     {
                       "n": "3,457,790.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4509,7 +5038,10 @@
                     {
                       "n": "2,110,190.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4524,7 +5056,10 @@
                     {
                       "n": "2,877,590.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4539,7 +5074,10 @@
                     {
                       "n": "3,818,190.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4554,7 +5092,10 @@
                     {
                       "n": "4,964,990.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4745,7 +5286,10 @@
                     {
                       "n": "613,600.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4760,7 +5304,10 @@
                     {
                       "n": "418,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4775,7 +5322,10 @@
                     {
                       "n": "405,280.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4798,7 +5348,10 @@
                     {
                       "n": "−196,800.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4813,7 +5366,10 @@
                     {
                       "n": "480,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4828,7 +5384,10 @@
                     {
                       "n": "850,800.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4894,7 +5453,10 @@
                     {
                       "n": "120,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4909,7 +5471,10 @@
                     {
                       "n": "840,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4924,7 +5489,10 @@
                     {
                       "n": "720,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4947,7 +5515,10 @@
                     {
                       "n": "264,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4962,7 +5533,10 @@
                     {
                       "n": "696,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -4977,7 +5551,10 @@
                     {
                       "n": "432,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -5000,7 +5577,10 @@
                     {
                       "n": "624,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -5015,7 +5595,10 @@
                     {
                       "n": "336,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -5030,7 +5613,10 @@
                     {
                       "n": "288,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -5053,7 +5639,10 @@
                     {
                       "n": "600,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -5068,7 +5657,10 @@
                     {
                       "n": "360,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -5083,7 +5675,10 @@
                     {
                       "n": "240,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -5232,7 +5827,10 @@
                     {
                       "n": "1,800,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": null,
                   "lowConfidence": false,
@@ -5243,7 +5841,10 @@
                     {
                       "n": "480,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": null,
                   "lowConfidence": false,
@@ -5254,7 +5855,10 @@
                     {
                       "n": "10,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -5280,7 +5884,10 @@
                     {
                       "n": "3,562,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": null,
                   "lowConfidence": false,
@@ -5291,7 +5898,10 @@
                     {
                       "n": "1,537,200.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": null,
                   "lowConfidence": false,
@@ -5302,7 +5912,10 @@
                     {
                       "n": "17,810.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -5328,7 +5941,10 @@
                     {
                       "n": "7,126,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": null,
                   "lowConfidence": false,
@@ -5339,7 +5955,10 @@
                     {
                       "n": "3,675,600.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": null,
                   "lowConfidence": false,
@@ -5350,7 +5969,10 @@
                     {
                       "n": "35,630.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -5391,11 +6013,19 @@
               {
                 "n": "418,000.00"
               },
-              " د.ج) is above the largest capital you named (",
+              " ",
+              {
+                "l": "DZD"
+              },
+              ") is above the largest capital you named (",
               {
                 "n": "400,000.00"
               },
-              " د.ج): the difference needs an outside source or a change in your numbers."
+              " ",
+              {
+                "l": "DZD"
+              },
+              "): the difference needs an outside source or a change in your numbers."
             ],
             [
               "You chose no outside funding source."
@@ -5525,7 +6155,11 @@
                   {
                     "n": "432,000.00"
                   },
-                  " د.ج. Your confidence in it is Medium."
+                  " ",
+                  {
+                    "l": "DZD"
+                  },
+                  ". Your confidence in it is Medium."
                 ],
                 "provenance": {
                   "source": "user",
@@ -5624,7 +6258,11 @@
                   {
                     "n": "2,000.00"
                   },
-                  " د.ج. Changing it by ",
+                  " ",
+                  {
+                    "l": "DZD"
+                  },
+                  ". Changing it by ",
                   {
                     "n": "20%"
                   },
@@ -5632,7 +6270,11 @@
                   {
                     "n": "720,000.00"
                   },
-                  " د.ج. Your confidence in it is High."
+                  " ",
+                  {
+                    "l": "DZD"
+                  },
+                  ". Your confidence in it is High."
                 ],
                 "provenance": {
                   "source": "user",
@@ -6177,7 +6819,10 @@
                     {
                       "n": "418,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
@@ -6271,7 +6916,10 @@
                     {
                       "n": "480,000.00"
                     },
-                    " د.ج"
+                    " ",
+                    {
+                      "l": "DZD"
+                    }
                   ],
                   "provenance": {
                     "source": "assumption",
