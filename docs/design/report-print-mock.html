@@ -1,0 +1,351 @@
+<title>نموذج صفحات التقرير</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap">
+<style>
+/* Layout idea: the page is a quiet desk (neutral ground) on which four white A4 sheets lie in order;
+   each sheet is drawn at true A4 proportion with the print stylesheet's own rules, then scaled to fit. */
+:root{
+  --bg:#E3E6E9;--fg:#14181B;--muted:#4C535A;--line:#BEC4CA;--link:#0B6E8A;--panel:#EEF0F2;
+  --font-head:'Cairo','Tajawal',system-ui,sans-serif;
+  --font-body:'Tajawal','Cairo',system-ui,sans-serif;
+  /* paper: fixed, the report is printed on white in either theme */
+  --p-black:#000000;--p-gold:#D4A537;--p-teal:#1FA3C7;--p-gold-ink:#8C6A12;--p-teal-ink:#0B6E8A;
+  --p-ink:#141414;--p-muted:#4D4D4D;--p-rule:#D6D6D6;--p-paper:#FFFFFF;--p-wash:#F4F2EC;
+  --k-p:1;--k-l:1;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg:#0B0C0D;--fg:#E8EBED;--muted:#A6ADB3;--line:#2C3136;--link:#63C4DE;--panel:#151719;color-scheme:dark}
+}
+:root[data-theme="dark"]{--bg:#0B0C0D;--fg:#E8EBED;--muted:#A6ADB3;--line:#2C3136;--link:#63C4DE;--panel:#151719;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body)}
+
+/* ---- the page around the sheets ---- */
+.app{max-width:1240px;margin-inline:auto;padding-inline:16px;padding-block:32px 64px;font-size:16px;line-height:1.85}
+.app *{box-sizing:border-box}
+.top,.ask{max-width:794px;margin-inline:auto}
+.top h1{font:700 30px/1.4 var(--font-head);margin:0 0 8px;text-wrap:balance}
+.lede{max-width:64ch;color:var(--muted);margin:0 0 14px}
+.how{max-width:64ch;margin:0;padding-inline-start:20px;color:var(--fg)}
+.how li{margin-block-end:4px}
+.plate{margin-block:44px 0}
+.cap{display:flex;gap:10px;align-items:baseline;color:var(--muted);font-size:14px;margin:0 0 10px}
+.cap b{color:var(--fg);font-family:var(--font-head);font-weight:600}
+.frame{position:relative;margin-inline:auto;overflow:hidden;border:1px solid var(--line);width:calc(var(--w) * var(--k));height:calc(var(--h) * var(--k))}
+.plate[data-kind="p"] .frame{--w:793.7px;--h:1122.5px;--k:var(--k-p)}
+.plate[data-kind="l"] .frame{--w:1122.5px;--h:793.7px;--k:var(--k-l)}
+.sheet{position:absolute;inset-block-start:0;inset-inline-start:0;transform-origin:100% 0;transform:scale(var(--k))}
+.ask{margin-block:56px 0;padding-block-start:20px;border-block-start:1px solid var(--line)}
+.ask h2{font:700 20px/1.5 var(--font-head);margin:0 0 8px}
+.ask ul{margin:0;padding-inline-start:20px}
+.ask li{margin-block-end:8px}
+.ask p{color:var(--muted);margin-block:14px 0}
+
+/* ---- the sheets: the print stylesheet of packages/report, scoped ---- */
+.sheet{box-sizing:border-box;width:210mm;height:297mm;padding:24mm 18mm 22mm;background:var(--p-paper);color:var(--p-ink);
+  font-family:var(--font-body);font-size:11pt;line-height:1.9;font-weight:400;overflow:hidden;text-align:start;
+  -webkit-print-color-adjust:exact;print-color-adjust:exact;font-kerning:normal;text-rendering:geometricPrecision}
+.sheet.wide{width:297mm;height:210mm;padding:22mm 18mm 20mm}
+.sheet *,.sheet *::before,.sheet *::after{box-sizing:border-box}
+.sheet bdi{unicode-bidi:isolate}
+.sheet h1,.sheet h2,.sheet h3{font-family:var(--font-head);margin:0;line-height:1.5}
+.sheet h1{font-weight:700;font-size:21pt;margin-block-end:8pt}
+.sheet h2{font-weight:700;font-size:14pt;margin-block:11pt 3pt}
+.sheet h2.first{margin-block-start:0}
+.sheet h3{font-weight:600;font-size:11.5pt;margin-block:10pt 2pt}
+.sheet p{margin:0 0 7pt}
+.sheet .lead{max-inline-size:150mm;line-height:1.75}
+.sheet strong,.sheet b{font-weight:700}
+.sheet sup{font-size:.6em;line-height:0;vertical-align:super;margin-inline-start:1pt}
+.sheet .note{font-size:9.5pt;color:var(--p-muted);max-inline-size:170mm}
+
+.rh{position:absolute;inset-inline:18mm;inset-block-start:10mm;display:flex;justify-content:space-between;gap:12pt;
+  font:600 8.5pt/1.4 var(--font-head);color:var(--p-muted);padding-block-end:3pt;border-block-end:.5pt solid var(--p-rule)}
+.rf{position:absolute;inset-inline:18mm;inset-block-end:9mm;display:flex;justify-content:space-between;gap:12pt;font-size:8pt;color:var(--p-muted)}
+.rf .pg{font-family:var(--font-head);font-weight:600}
+
+/* cover */
+.cover-sheet{padding-block-end:0}
+.cover{display:flex;flex-direction:column;justify-content:space-between;block-size:100%;border-block-start:3pt solid var(--p-gold);padding-block:14mm 0}
+.cover .brand{font:600 12pt var(--font-head)}
+.cover .kind{font:600 13pt var(--font-head);color:var(--p-muted);margin:0 0 6mm}
+.cover h1{font-size:34pt;line-height:1.35;margin:0 0 6mm;max-inline-size:170mm;text-wrap:balance}
+.cover .subtitle{font-size:15pt;color:var(--p-muted);max-inline-size:120mm;text-wrap:balance}
+.cover .bottom{padding-block-end:12mm}
+.facts{display:grid;grid-template-columns:repeat(4,1fr);margin:0;border-block-start:1pt solid var(--p-ink)}
+.facts div{padding-block:7pt 0;padding-inline-end:10pt}
+.facts dt{font-size:9pt;color:var(--p-muted);line-height:1.6}
+.facts dd{margin:0;font:600 11pt/1.6 var(--font-head)}
+.cover .promise{font-size:9.5pt;color:var(--p-muted);margin-block:16pt 0;max-inline-size:125mm;line-height:1.7}
+
+/* verdict slab: true black, gold verdict, white text */
+.slab{background:var(--p-black);color:var(--p-gold);padding:14pt 20pt 12pt;margin-block:8pt 12pt}
+.slab .label{font-size:10pt;color:var(--p-paper);margin-block-end:2pt}
+.slab .verdict{font:700 26pt/1.4 var(--font-head)}
+.slab .reason{color:var(--p-paper);font-size:11pt;margin:4pt 0 11pt;max-inline-size:150mm}
+.meter{position:relative}
+.meter .cells{display:flex;gap:3pt}
+.meter i{flex:1;block-size:6pt;border:.75pt solid rgba(255,255,255,.55)}
+.meter i.on{background:var(--p-paper);border-color:var(--p-paper)}
+.meter .tick{position:absolute;inset-block:-4pt;inset-inline-start:75%;inline-size:1.5pt;background:var(--p-gold)}
+.slab .mcap{color:var(--p-paper);font-size:9pt;margin:7pt 0 0;line-height:1.5}
+
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10pt;margin-block:6pt 12pt}
+.kpi{border-block-start:1pt solid var(--p-rule);padding-block:6pt 0}
+.kpi .value{font:700 18pt/1.4 var(--font-head);color:var(--p-gold-ink)}
+.kpi .caption{font-size:9.5pt;color:var(--p-muted);line-height:1.6}
+
+/* tables */
+.sheet .tbl{inline-size:100%;border-collapse:collapse;font-size:10pt;margin-block:4pt 8pt}
+.sheet .tbl caption{caption-side:top;text-align:start;font:700 10pt var(--font-head);padding-block-end:4pt}
+.sheet .tbl th,.sheet .tbl td{padding:3pt 7pt;border-block-end:.5pt solid var(--p-rule);vertical-align:baseline;text-align:start;line-height:1.5}
+.sheet .tbl thead th{font-weight:700;border-block-end:1pt solid var(--p-ink);background:var(--p-wash)}
+.sheet .tbl tbody th{font-weight:400}
+.sheet .tbl .num{direction:ltr;text-align:end;font-variant-numeric:tabular-nums lining-nums;white-space:nowrap}
+.sheet .tbl .hc{text-align:center}
+.sheet .tbl .strong{font-weight:700}
+.sheet .tbl .sub{display:block;font-size:8.5pt;color:var(--p-muted);line-height:1.5}
+.sheet .tbl.changes td:last-child,.sheet .tbl.changes th:last-child{white-space:nowrap}
+.sheet .tbl.small{font-size:9pt}
+.sheet .tbl.small th,.sheet .tbl.small td{padding:2.5pt 7pt}
+.sheet .tbl.dense{font-size:8pt;margin-block:2pt 6pt}
+.sheet .tbl.dense th,.sheet .tbl.dense td{padding:2pt 3pt;line-height:1.5}
+.sheet .tbl.dense tbody th{font-weight:700;inline-size:34mm}
+.sheet .tbl.dense thead th.span{text-align:center}
+.sheet .tbl.dense tbody .tot{background:var(--p-wash);font-weight:700}
+.sheet .tbl.dense td.dash{text-align:center}
+.sheet .tbl.dense .g{visibility:hidden}
+.sheet .tbl.dense thead th.be{border-block-start:2.5pt solid var(--p-gold)}
+.sheet .tbl.dense td.low{background:var(--p-wash);color:var(--p-gold-ink);font-weight:700;outline:1pt solid var(--p-gold-ink);outline-offset:-1pt}
+.sheet .tbl.q-tbl tbody th{inline-size:48mm}
+.sheet .legend2{display:flex;gap:22pt;flex-wrap:wrap;margin-block:0 4pt;font-size:8.5pt;max-inline-size:none}
+.swatch{display:inline-block;inline-size:9pt;block-size:9pt;vertical-align:-1pt;margin-inline-end:4pt}
+.swatch.low{background:var(--p-wash);outline:1pt solid var(--p-gold-ink);outline-offset:-1pt}
+.swatch.be{background:var(--p-wash);border-block-start:2.5pt solid var(--p-gold)}
+
+/* the line every report carries about tax */
+.taxbox{border-block:1pt solid var(--p-ink);padding-block:5pt;margin-block:6pt 0;font-size:9pt;line-height:1.65}
+.taxbox .slot{color:var(--p-teal-ink);border-block-end:.75pt dotted var(--p-teal-ink)}
+.taxbox .chip{display:inline-block;border:.75pt solid var(--p-ink);padding:0 5pt;font-size:8pt;font-weight:700;margin-inline-start:4pt;line-height:1.5}
+.sheet .taxbox{margin-block:8pt 0}
+
+/* validation plan */
+.exp{display:grid;grid-template-columns:34mm 1fr;column-gap:8mm;padding-block:7pt 3pt;border-block-start:1pt solid var(--p-ink)}
+.exp .who .ord{display:block;font:700 20pt/1.1 var(--font-head)}
+.exp .who h3{margin:2pt 0 3pt;font-size:12pt}
+.exp .who .cost{display:block;font-size:8.5pt;color:var(--p-muted);line-height:1.5}
+.exp .what p{margin:0 0 3pt;font-size:10pt;line-height:1.75;max-inline-size:122mm}
+.exp .what .why{color:var(--p-muted)}
+.exp .user-text{border-inline-start:2pt solid var(--p-rule);padding-inline-start:10pt;margin:0 0 5pt;font-size:11.5pt;line-height:1.7;max-inline-size:122mm}
+.plain{unicode-bidi:plaintext}
+.fills{display:grid;grid-template-columns:1fr 1fr;column-gap:12pt;margin-block-start:3pt}
+.fill{display:flex;align-items:baseline;gap:6pt;font-size:9pt;color:var(--p-muted);margin-block-start:3pt}
+.fill i{flex:1;border-block-end:.75pt dotted var(--p-muted);block-size:1.1em;min-inline-size:10mm}
+.fill.dec{grid-column:1 / -1}
+.fill.dec b{font-weight:500;color:var(--p-ink)}
+.mth{margin-block:12pt 2pt}
+
+</style>
+<div class="app" dir="rtl" lang="ar">
+<header class="top">
+  <h1>نموذج صفحات التقرير</h1>
+  <p class="lede">أربع صفحات من تقرير مشروع تجريبي، بالشكل الذي سيُطبع به التقرير (PDF) حين نبنيه في الخطوة <bdi>5</bdi>. المشروع مأخوذ من اختبارات المحرك، لكن كل رقم فيه محسوب فعلًا. النصوص مسوّدة تُصاغ نهائيًا عند البناء.</p>
+  <ul class="how">
+    <li>الذهبي للحكم وللأرقام الرئيسية فقط، والأسود لشريط الحكم وخطوط الغلاف، والأزرق للروابط.</li>
+    <li>الأرقام غربية (<bdi>0</bdi> إلى <bdi>9</bdi>) والعملة بعد الرقم: <bdi>250</bdi> د.أ.</li>
+    <li>الصفحة <bdi>3</bdi> أفقية، لأن جدول اثني عشر شهرًا لا يتسع في عرض الصفحة العمودية.</li>
+  </ul>
+</header>
+
+<main>
+
+<section class="plate" data-kind="p">
+  <p class="cap"><b>الصفحة <bdi>1</bdi></b> الغلاف</p>
+  <div class="frame"><div class="sheet cover-sheet">
+    <div class="cover">
+      <div class="brand"><bdi dir="ltr">Startup Brand Name</bdi></div>
+      <div>
+        <p class="kind">تقرير نموذج العمل التجاري</p>
+        <h1>خدمة برمجية بالاشتراك الشهري</h1>
+        <p class="subtitle">تحليل مبنيّ على أرقامك: الجدوى والتمويل ونقطة التعادل وخطة التحقق.</p>
+      </div>
+      <div class="bottom">
+        <dl class="facts">
+          <div><dt>الدولة</dt><dd>الأردن</dd></div>
+          <div><dt>عملة التقرير</dt><dd>دينار أردني (<bdi>JOD</bdi>)</dd></div>
+          <div><dt>تاريخ الإصدار</dt><dd><bdi>2026-10-12</bdi></dd></div>
+          <div><dt>نسخة المحرك</dt><dd><bdi>1.1.0</bdi></dd></div>
+        </dl>
+        <p class="promise">كل رقم في هذا التقرير يحسبه المحرك بمعادلات ثابتة ويحمل مصدره ومستوى ثقته. لا يكتب نموذج لغوي أي رقم.</p>
+      </div>
+    </div>
+  </div></div>
+</section>
+
+<section class="plate" data-kind="p">
+  <p class="cap"><b>الصفحة <bdi>2</bdi></b> الملخص التنفيذي</p>
+  <div class="frame"><div class="sheet">
+    <div class="rh"><span>خدمة برمجية بالاشتراك الشهري</span><span>الملخص التنفيذي</span></div>
+    <h1>الملخص التنفيذي</h1>
+    <div class="slab">
+      <div class="label">الحكم</div>
+      <div class="verdict">عدّل</div>
+      <p class="reason">يتحقق <bdi>6</bdi> من <bdi>10</bdi> من معايير الجدوى (<bdi>60%</bdi>)، وخط «امضِ» <bdi>75%</bdi>. لا يوجد معيار حاجب، وثلاثة تغييرات في أرقامك تصل بالمشروع إلى «امضِ».</p>
+      <div class="meter" role="img" aria-label="6 من 10 معايير تتحقق، وخط امضِ عند 75%"><div class="cells"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div><span class="tick"></span></div>
+      <p class="mcap">معايير الجدوى المتحققة: <bdi>6</bdi> من <bdi>10</bdi>. الخط الذهبي: حدّ «امضِ» عند <bdi>75%</bdi>.</p>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><div class="value">الشهر <bdi>6</bdi><sup>*</sup></div><div class="caption">نقطة التعادل (Break-even): أول شهر يغطي فيه الدخل التكاليف</div></div>
+      <div class="kpi"><div class="value"><bdi>18,400.000</bdi> د.أ<sup>*</sup></div><div class="caption">احتياج التمويل (أدنى رصيد، الشهر <bdi>5</bdi>)</div></div>
+      <div class="kpi"><div class="value"><bdi>32</bdi> شهرًا<sup>*</sup></div><div class="caption">مدة استرداد رأس المال (Payback)</div></div>
+    </div>
+    <p class="lead">يبقى لك <bdi>24.000</bdi> د.أ من كل اشتراك بعد التكلفة المتغيرة (هامش المساهمة <bdi>80%</bdi>)، فيغطي المشروع تكاليفه الثابتة البالغة <bdi>4,100.000</bdi> د.أ شهريًا عند <bdi>171</bdi> مشتركًا. المشكلة في التمويل لا في الهامش: تكاليف التأسيس (<bdi>12,000.000</bdi> د.أ) وخسائر الأشهر الأولى ترفعان احتياج التمويل إلى <bdi>18,400.000</bdi> د.أ، وهو أعلى من أقصى رأس مال ذكرتَه (<bdi>15,000.000</bdi> د.أ).</p>
+    <h2>ما الذي يحجب «امضِ»</h2>
+    <table class="tbl">
+      <thead><tr><th scope="col">المعيار</th><th scope="col">المحسوب</th><th scope="col">الحدّ</th></tr></thead>
+      <tbody><tr><th scope="row">التعادل ضمن المدة التي تتحمّلها بلا دخل</th><td>الشهر <bdi>6</bdi></td><td><bdi>3</bdi> أشهر</td></tr>
+<tr><th scope="row">احتياج التمويل ضمن أقصى رأس مال متاح</th><td><bdi>18,400.000</bdi> د.أ</td><td><bdi>15,000.000</bdi> د.أ</td></tr>
+<tr><th scope="row">السعر ليس دون سعر الحدّ الأدنى</th><td><bdi>30.000</bdi> د.أ</td><td><bdi>30.833</bdi> د.أ</td></tr>
+<tr><th scope="row">التعادل في السيناريو المتحفّظ</th><td>لا تعادل خلال <bdi>36</bdi> شهرًا</td><td>ضمن <bdi>36</bdi> شهرًا</td></tr></tbody>
+    </table>
+    <h2>ثلاثة تغييرات، كلٌّ منها وحده يصل بالمشروع إلى «امضِ»</h2>
+    <table class="tbl changes">
+      <thead><tr><th scope="col">التغيير</th><th scope="col">الآن</th><th scope="col">المقترح</th><th scope="col">التغيّر</th><th scope="col">النتيجة</th></tr></thead>
+      <tbody><tr><th scope="row">خفض التكاليف الثابتة<span class="sub">نسبةً إلى تقديرك الحالي</span></th><td class="num"><bdi>100%</bdi></td><td class="num strong"><bdi>73.8%</bdi></td><td class="num"><bdi>−26.2%</bdi></td><td>امضِ · <bdi>8</bdi> من <bdi>10</bdi></td></tr>
+<tr><th scope="row">رفع السعر<span class="sub">أعلى من أعلى منافس (<bdi>35.000</bdi> د.أ): يلزمه فرق قابل للقياس في عرضك</span></th><td class="num"><bdi>30.000</bdi> د.أ</td><td class="num strong"><bdi>38.500</bdi> د.أ</td><td class="num"><bdi>+28.3%</bdi></td><td>امضِ · <bdi>8</bdi> من <bdi>10</bdi></td></tr>
+<tr><th scope="row">زيادة المبيعات<span class="sub">نسبةً إلى توقّعك الحالي</span></th><td class="num"><bdi>100%</bdi></td><td class="num strong"><bdi>140%</bdi></td><td class="num"><bdi>+40%</bdi></td><td>امضِ · <bdi>8</bdi> من <bdi>10</bdi></td></tr></tbody>
+    </table>
+    <p class="note">كل الأرقام قبل الضريبة (الصفحة <bdi>3</bdi>). التغييرات محسوبة بالمحرك نفسه ولا تضمن النتيجة في السوق؛ تُختبر بخطة التحقق (الصفحة <bdi>4</bdi>). الثقة الإجمالية في إجاباتك مرتفعة (<bdi>5</bdi> من <bdi>5</bdi> إجابات محورية سليمة). <sup>*</sup> رقم مبنيّ على افتراض من النظام.</p>
+    <div class="rf"><span>تقرير نموذج العمل · أُصدر في <bdi>2026-10-12</bdi> · المحرك <bdi>1.1.0</bdi></span><span class="pg"><bdi>2</bdi></span></div>
+  </div></div>
+</section>
+
+<section class="plate" data-kind="l">
+  <p class="cap"><b>الصفحة <bdi>3</bdi></b> الإسقاط المالي (صفحة أفقية)</p>
+  <div class="frame"><div class="sheet wide">
+    <div class="rh"><span>خدمة برمجية بالاشتراك الشهري</span><span>الإسقاط المالي</span></div>
+    <h2 class="first">الإسقاط المالي</h2>
+    <p class="note">الأرقام قبل الضريبة. الإيراد يُحصَّل نقدًا في الشهر نفسه كما حدّدتَ طريقة التحصيل. الأشهر تُقرأ من اليمين: الشهر <bdi>1</bdi> أولًا.</p>
+    
+<table class="tbl dense wide-tbl">
+  <caption>السنة الأولى شهرًا بشهر، بالدينار الأردني (د.أ)</caption>
+  <thead>
+    <tr><th scope="col" class="lbl">الشهر</th><th scope="col" class="num"><bdi>1</bdi></th><th scope="col" class="num"><bdi>2</bdi></th><th scope="col" class="num"><bdi>3</bdi></th><th scope="col" class="num"><bdi>4</bdi></th><th scope="col" class="num"><bdi>5</bdi></th><th scope="col" class="num be"><bdi>6</bdi></th><th scope="col" class="num"><bdi>7</bdi></th><th scope="col" class="num"><bdi>8</bdi></th><th scope="col" class="num"><bdi>9</bdi></th><th scope="col" class="num"><bdi>10</bdi></th><th scope="col" class="num"><bdi>11</bdi></th><th scope="col" class="num"><bdi>12</bdi></th><th scope="col" class="hc tot">السنة الأولى</th></tr>
+  </thead>
+  <tbody>
+    <tr><th scope="row">المشتركون (وحدات)</th><td class="num"><bdi>0</bdi><span class="g">.000</span></td><td class="num"><bdi>40</bdi><span class="g">.000</span></td><td class="num"><bdi>80</bdi><span class="g">.000</span></td><td class="num"><bdi>120</bdi><span class="g">.000</span></td><td class="num"><bdi>160</bdi><span class="g">.000</span></td><td class="num"><bdi>200</bdi><span class="g">.000</span></td><td class="num"><bdi>200</bdi><span class="g">.000</span></td><td class="num"><bdi>200</bdi><span class="g">.000</span></td><td class="num"><bdi>200</bdi><span class="g">.000</span></td><td class="num"><bdi>200</bdi><span class="g">.000</span></td><td class="num"><bdi>200</bdi><span class="g">.000</span></td><td class="num"><bdi>200</bdi><span class="g">.000</span></td><td class="num tot"><bdi>1,800</bdi><span class="g">.000</span></td></tr>
+    <tr><th scope="row">الإيرادات</th><td class="num "><bdi>0.000</bdi></td><td class="num "><bdi>1,200.000</bdi></td><td class="num "><bdi>2,400.000</bdi></td><td class="num "><bdi>3,600.000</bdi></td><td class="num "><bdi>4,800.000</bdi></td><td class="num be "><bdi>6,000.000</bdi></td><td class="num "><bdi>6,000.000</bdi></td><td class="num "><bdi>6,000.000</bdi></td><td class="num "><bdi>6,000.000</bdi></td><td class="num "><bdi>6,000.000</bdi></td><td class="num "><bdi>6,000.000</bdi></td><td class="num "><bdi>6,000.000</bdi></td><td class="num tot "><bdi>54,000.000</bdi></td></tr>
+    <tr><th scope="row">تكلفة المبيعات</th><td class="num "><bdi>0.000</bdi></td><td class="num "><bdi>240.000</bdi></td><td class="num "><bdi>480.000</bdi></td><td class="num "><bdi>720.000</bdi></td><td class="num "><bdi>960.000</bdi></td><td class="num be "><bdi>1,200.000</bdi></td><td class="num "><bdi>1,200.000</bdi></td><td class="num "><bdi>1,200.000</bdi></td><td class="num "><bdi>1,200.000</bdi></td><td class="num "><bdi>1,200.000</bdi></td><td class="num "><bdi>1,200.000</bdi></td><td class="num "><bdi>1,200.000</bdi></td><td class="num tot "><bdi>10,800.000</bdi></td></tr>
+    <tr><th scope="row">الربح الإجمالي</th><td class="num "><bdi>0.000</bdi></td><td class="num "><bdi>960.000</bdi></td><td class="num "><bdi>1,920.000</bdi></td><td class="num "><bdi>2,880.000</bdi></td><td class="num "><bdi>3,840.000</bdi></td><td class="num be "><bdi>4,800.000</bdi></td><td class="num "><bdi>4,800.000</bdi></td><td class="num "><bdi>4,800.000</bdi></td><td class="num "><bdi>4,800.000</bdi></td><td class="num "><bdi>4,800.000</bdi></td><td class="num "><bdi>4,800.000</bdi></td><td class="num "><bdi>4,800.000</bdi></td><td class="num tot "><bdi>43,200.000</bdi></td></tr>
+    <tr><th scope="row">التكاليف التشغيلية</th><td class="num "><bdi>2,600.000</bdi></td><td class="num "><bdi>2,600.000</bdi></td><td class="num "><bdi>2,600.000</bdi></td><td class="num "><bdi>4,100.000</bdi></td><td class="num "><bdi>4,100.000</bdi></td><td class="num be "><bdi>4,100.000</bdi></td><td class="num "><bdi>4,100.000</bdi></td><td class="num "><bdi>4,100.000</bdi></td><td class="num "><bdi>4,100.000</bdi></td><td class="num "><bdi>4,100.000</bdi></td><td class="num "><bdi>4,100.000</bdi></td><td class="num "><bdi>4,100.000</bdi></td><td class="num tot "><bdi>44,700.000</bdi></td></tr>
+    <tr><th scope="row">ربح التشغيل</th><td class="num strong"><bdi>−2,600.000</bdi></td><td class="num strong"><bdi>−1,640.000</bdi></td><td class="num strong"><bdi>−680.000</bdi></td><td class="num strong"><bdi>−1,220.000</bdi></td><td class="num strong"><bdi>−260.000</bdi></td><td class="num be strong"><bdi>700.000</bdi></td><td class="num strong"><bdi>700.000</bdi></td><td class="num strong"><bdi>700.000</bdi></td><td class="num strong"><bdi>700.000</bdi></td><td class="num strong"><bdi>700.000</bdi></td><td class="num strong"><bdi>700.000</bdi></td><td class="num strong"><bdi>700.000</bdi></td><td class="num tot strong"><bdi>−1,500.000</bdi></td></tr>
+    <tr><th scope="row">صافي النقد</th><td class="num "><bdi>−2,600.000</bdi></td><td class="num "><bdi>−1,640.000</bdi></td><td class="num "><bdi>−680.000</bdi></td><td class="num "><bdi>−1,220.000</bdi></td><td class="num "><bdi>−260.000</bdi></td><td class="num be "><bdi>700.000</bdi></td><td class="num "><bdi>700.000</bdi></td><td class="num "><bdi>700.000</bdi></td><td class="num "><bdi>700.000</bdi></td><td class="num "><bdi>700.000</bdi></td><td class="num "><bdi>700.000</bdi></td><td class="num "><bdi>700.000</bdi></td><td class="num tot "><bdi>−1,500.000</bdi></td></tr>
+    <tr><th scope="row">الرصيد النقدي التراكمي</th><td class="num strong"><bdi>−14,600.000</bdi></td><td class="num strong"><bdi>−16,240.000</bdi></td><td class="num strong"><bdi>−16,920.000</bdi></td><td class="num strong"><bdi>−18,140.000</bdi></td><td class="num low"><bdi>−18,400.000</bdi></td><td class="num be strong"><bdi>−17,700.000</bdi></td><td class="num strong"><bdi>−17,000.000</bdi></td><td class="num strong"><bdi>−16,300.000</bdi></td><td class="num strong"><bdi>−15,600.000</bdi></td><td class="num strong"><bdi>−14,900.000</bdi></td><td class="num strong"><bdi>−14,200.000</bdi></td><td class="num strong"><bdi>−13,500.000</bdi></td><td class="num tot strong"><bdi>−13,500.000</bdi></td></tr>
+  </tbody>
+</table>
+    <p class="note legend2"><span><i class="swatch low"></i>أدنى رصيد نقدي (الشهر <bdi>5</bdi>). يبدأ الرصيد من <bdi>−12,000.000</bdi> د.أ، وهي تكاليف التأسيس.</span><span><i class="swatch be"></i>نقطة التعادل: أول شهر يربح فيه التشغيل (الشهر <bdi>6</bdi>).</span></p>
+    
+<table class="tbl dense wide-tbl q-tbl">
+  <caption>السنتان الثانية والثالثة: بالأرباع (كل ربع ثلاثة أشهر)</caption>
+  <thead>
+    <tr><th rowspan="2" scope="col" class="lbl">البند</th><th colspan="5" scope="colgroup" class="span">السنة الثانية</th><th colspan="5" scope="colgroup" class="span">السنة الثالثة</th></tr>
+    <tr><th scope="col" class="hc">الربع <bdi>1</bdi></th><th scope="col" class="hc">الربع <bdi>2</bdi></th><th scope="col" class="hc">الربع <bdi>3</bdi></th><th scope="col" class="hc">الربع <bdi>4</bdi></th><th scope="col" class="hc tot">المجموع</th><th scope="col" class="hc">الربع <bdi>1</bdi></th><th scope="col" class="hc">الربع <bdi>2</bdi></th><th scope="col" class="hc">الربع <bdi>3</bdi></th><th scope="col" class="hc">الربع <bdi>4</bdi></th><th scope="col" class="hc tot">المجموع</th></tr>
+  </thead>
+  <tbody>
+    <tr><th scope="row">الإيرادات</th><td class="num "><bdi>18,000.000</bdi></td><td class="num "><bdi>18,000.000</bdi></td><td class="num "><bdi>18,000.000</bdi></td><td class="num "><bdi>18,000.000</bdi></td><td class="num tot strong"><bdi>72,000.000</bdi></td><td class="num "><bdi>18,000.000</bdi></td><td class="num "><bdi>18,000.000</bdi></td><td class="num "><bdi>18,000.000</bdi></td><td class="num "><bdi>18,000.000</bdi></td><td class="num tot strong"><bdi>72,000.000</bdi></td></tr>
+    <tr><th scope="row">تكلفة المبيعات</th><td class="num "><bdi>3,600.000</bdi></td><td class="num "><bdi>3,600.000</bdi></td><td class="num "><bdi>3,600.000</bdi></td><td class="num "><bdi>3,600.000</bdi></td><td class="num tot strong"><bdi>14,400.000</bdi></td><td class="num "><bdi>3,600.000</bdi></td><td class="num "><bdi>3,600.000</bdi></td><td class="num "><bdi>3,600.000</bdi></td><td class="num "><bdi>3,600.000</bdi></td><td class="num tot strong"><bdi>14,400.000</bdi></td></tr>
+    <tr><th scope="row">التكاليف التشغيلية</th><td class="num "><bdi>12,300.000</bdi></td><td class="num "><bdi>12,300.000</bdi></td><td class="num "><bdi>12,300.000</bdi></td><td class="num "><bdi>12,300.000</bdi></td><td class="num tot strong"><bdi>49,200.000</bdi></td><td class="num "><bdi>12,300.000</bdi></td><td class="num "><bdi>12,300.000</bdi></td><td class="num "><bdi>12,300.000</bdi></td><td class="num "><bdi>12,300.000</bdi></td><td class="num tot strong"><bdi>49,200.000</bdi></td></tr>
+    <tr><th scope="row">ربح التشغيل</th><td class="num strong"><bdi>2,100.000</bdi></td><td class="num strong"><bdi>2,100.000</bdi></td><td class="num strong"><bdi>2,100.000</bdi></td><td class="num strong"><bdi>2,100.000</bdi></td><td class="num tot strong"><bdi>8,400.000</bdi></td><td class="num strong"><bdi>2,100.000</bdi></td><td class="num strong"><bdi>2,100.000</bdi></td><td class="num strong"><bdi>2,100.000</bdi></td><td class="num strong"><bdi>2,100.000</bdi></td><td class="num tot strong"><bdi>8,400.000</bdi></td></tr>
+    <tr><th scope="row">الرصيد النقدي التراكمي قبل الضريبة</th><td class="num strong"><bdi>−11,400.000</bdi></td><td class="num strong"><bdi>−9,300.000</bdi></td><td class="num strong"><bdi>−7,200.000</bdi></td><td class="num strong"><bdi>−5,100.000</bdi></td><td class="num tot dash">—</td><td class="num strong"><bdi>−3,000.000</bdi></td><td class="num strong"><bdi>−900.000</bdi></td><td class="num strong"><bdi>1,200.000</bdi></td><td class="num strong"><bdi>3,300.000</bdi></td><td class="num tot dash">—</td></tr>
+  </tbody>
+</table>
+    
+<div class="taxbox">
+  <strong>الضريبة غير مُدرجة في هذه الأرقام.</strong>
+  لا توجد لهذه الحالة قاعدة ضريبية موثّقة ومتحقَّق منها، فلا نحسب رقمًا من عندنا. الجهة الرسمية: <span class="slot">[رابط الجهة الضريبية الرسمية]</span>
+  <span class="chip">تحقّق من المصدر الرسمي</span> نوصي بمراجعة مستشار ضريبي في بلدك قبل أي قرار.
+</div>
+    <div class="rf"><span>تقرير نموذج العمل · أُصدر في <bdi>2026-10-12</bdi> · المحرك <bdi>1.1.0</bdi></span><span class="pg"><bdi>3</bdi></span></div>
+  </div></div>
+</section>
+
+<section class="plate" data-kind="p">
+  <p class="cap"><b>الصفحة <bdi>4</bdi></b> خطة التحقق</p>
+  <div class="frame"><div class="sheet">
+    <div class="rh"><span>خدمة برمجية بالاشتراك الشهري</span><span>خطة التحقق</span></div>
+    <h1>خطة التحقق</h1>
+    <p class="lead">قبل أن تنفق على افتراضاتك، اختبر الثلاثة الأهم. رتّبنا الاختبارات بحسب مقدار ما يحرّكه كل افتراض من ربحك ومدى ثقتك به.</p>
+
+    <div class="exp">
+      <div class="who"><span class="ord"><bdi>1</bdi></span><h3>قلقك أنت</h3><span class="cost">التكلفة: وقتك</span></div>
+      <div class="what">
+        <blockquote class="user-text plain">هل سيقبل العملاء دفع اشتراك شهري بهذا السعر؟</blockquote>
+        <p><b>الاختبار.</b> أصغر اختبار يجيب عن قلقك وحده: اعرض الاشتراك على عملاء محتملين واطلب منهم قرارًا لا رأيًا.</p>
+        <p><b>إن لم ينجح.</b> اسأل خبيرًا في مجالك قبل أن تتابع.</p>
+        <div class="fills"><div class="fill"><span>حدّ النجاح (تضعه قبل أن تبدأ)</span><i></i></div><div class="fill"><span>النتيجة</span><i></i></div><div class="fill dec"><span>القرار</span><b>☐ أمضي &nbsp;&nbsp; ☐ أعدّل &nbsp;&nbsp; ☐ أتوقّف</b></div></div>
+      </div>
+    </div>
+
+    <div class="exp">
+      <div class="who"><span class="ord"><bdi>2</bdi></span><h3>السعر</h3><span class="cost">التكلفة: وقتك</span></div>
+      <div class="what">
+        <p class="why"><bdi>30.000</bdi> د.أ للاشتراك. هو أشدّ افتراضاتك أثرًا: تغييره بنسبة <bdi>20%</bdi> يحرّك ربح السنة الأولى بمقدار <bdi>21,600.000</bdi> د.أ. ثقتك فيه مرتفعة.</p>
+        <p><b>الاختبار.</b> اعرض الاشتراك بهذا السعر على عملاء محتملين وسجّل نسبة من يقبل أن يدفع فعلًا.</p>
+        <p><b>إن لم ينجح.</b> جرّب سعرًا ثانيًا على مجموعة جديدة.</p>
+        <div class="fills"><div class="fill"><span>حدّ النجاح (تضعه قبل أن تبدأ)</span><i></i></div><div class="fill"><span>النتيجة</span><i></i></div><div class="fill dec"><span>القرار</span><b>☐ أمضي &nbsp;&nbsp; ☐ أعدّل &nbsp;&nbsp; ☐ أتوقّف</b></div></div>
+      </div>
+    </div>
+
+    <div class="exp">
+      <div class="who"><span class="ord"><bdi>3</bdi></span><h3>التكاليف الثابتة</h3><span class="cost">التكلفة: عروض أسعار من الموردين</span></div>
+      <div class="what">
+        <p class="why"><bdi>4,100.000</bdi> د.أ شهريًا بعد توظيف المطوّر في الشهر <bdi>4</bdi>. تغييرها بنسبة <bdi>20%</bdi> يحرّك ربح السنة الأولى بمقدار <bdi>17,880.000</bdi> د.أ. ثقتك فيها مرتفعة.</p>
+        <p><b>الاختبار.</b> اطلب عرض سعر مكتوبًا لكل بند ثابت.</p>
+        <p><b>إن لم ينجح.</b> اخفض البند أو أجّله.</p>
+        <div class="fills"><div class="fill"><span>حدّ النجاح (تضعه قبل أن تبدأ)</span><i></i></div><div class="fill"><span>النتيجة</span><i></i></div><div class="fill dec"><span>القرار</span><b>☐ أمضي &nbsp;&nbsp; ☐ أعدّل &nbsp;&nbsp; ☐ أتوقّف</b></div></div>
+      </div>
+    </div>
+
+    <h3 class="mth">كيف رُتّبت الاختبارات</h3>
+    <table class="tbl small">
+      <thead><tr><th scope="col">الافتراض</th><th scope="col">ثقتك فيه</th><th scope="col">ترتيب أثره في الربح</th><th scope="col">الأولوية</th></tr></thead>
+      <tbody><tr><th scope="row">السعر</th><td>مرتفعة</td><td class="num"><bdi>1</bdi></td><td class="num strong"><bdi>4</bdi></td></tr>
+<tr><th scope="row">التكلفة المتغيرة</th><td>متوسطة</td><td class="num"><bdi>4</bdi></td><td class="num strong"><bdi>2</bdi></td></tr>
+<tr><th scope="row">المبيعات</th><td>مرتفعة</td><td class="num"><bdi>3</bdi></td><td class="num strong"><bdi>2</bdi></td></tr>
+<tr><th scope="row">التكاليف الثابتة</th><td>مرتفعة</td><td class="num"><bdi>2</bdi></td><td class="num strong"><bdi>3</bdi></td></tr></tbody>
+    </table>
+    <p class="note">الأولوية = (<bdi>4</bdi> − الثقة) × (<bdi>5</bdi> − ترتيب الأثر)، والثقة: مرتفعة <bdi>3</bdi>، متوسطة <bdi>2</bdi>، منخفضة <bdi>1</bdi>. قلقك الشخصي يأخذ المكان الأول دائمًا.</p>
+    <div class="taxbox">
+      هذا التقرير تحليل مبنيّ على ما أدخلتَه، وليس استشارة قانونية أو ضريبية أو استثمارية. للضرائب: <span class="slot">[رابط الجهة الضريبية الرسمية]</span> ونوصي بمراجعة مستشار ضريبي في بلدك.
+    </div>
+    <div class="rf"><span>تقرير نموذج العمل · أُصدر في <bdi>2026-10-12</bdi> · المحرك <bdi>1.1.0</bdi></span><span class="pg"><bdi>4</bdi></span></div>
+  </div></div>
+</section>
+</main>
+<footer class="ask">
+  <h2>ما أحتاجه منك</h2>
+  <ul>
+    <li>هل تعتمد الشكل العام كما هو، أم تريد تغيير شيء في الغلاف أو في شريط الحكم؟</li>
+    <li>أعمدة الأشهر تبدأ من اليمين (الشهر <bdi>1</bdi> على اليمين) كما تُقرأ العربية. هل هذا مناسب لك؟</li>
+    <li>وضعتُ في خطة التحقق خطوط تعبئة (حدّ النجاح، النتيجة، القرار) لمن يطبع الصفحة. هل تبقيها، أم تكون الصفحة للقراءة فقط؟</li>
+    <li>الصفحة الأفقية تعرض اثني عشر شهرًا بالتفصيل ثم السنتين التاليتين بالأرباع. هل هذا مستوى التفصيل الذي تريده؟</li>
+  </ul>
+  <p>بعد اعتمادك أبدأ الخطوة <bdi>5</bdi> (الملخص والتقرير على الشاشة) على هذا الشكل.</p>
+</footer>
+
+</div>
+<script>
+(function () {
+  var root = document.documentElement;
+  function fit() {
+    var main = document.querySelector('main');
+    var w = main ? main.clientWidth : window.innerWidth;
+    root.style.setProperty('--k-p', String(Math.min(1, w / 796)));
+    root.style.setProperty('--k-l', String(Math.min(1, w / 1125)));
+  }
+  fit();
+  window.addEventListener('resize', fit);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+})();
+
+</script>
