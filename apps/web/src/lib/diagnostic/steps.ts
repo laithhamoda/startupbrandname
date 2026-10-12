@@ -24,3 +24,19 @@ export function projectPath(projectId: string): string {
 export function stepPath(projectId: string, step: StepId): string {
   return `${projectPath(projectId)}/q/${stepSlug(step)}`;
 }
+
+/** The project's canvases (M5 step 3, D-249). */
+export function canvasPath(projectId: string): string {
+  return `${projectPath(projectId)}/canvas`;
+}
+
+/** The value of `from` that sends a step page's founder back to the canvas after saving. */
+export const CANVAS_ORIGIN = 'canvas';
+
+/**
+ * Where a canvas chip leads: the question that holds the answer, told to bring the founder back to
+ * the canvas after saving (`from=canvas`, D-249). A step page without it works as before.
+ */
+export function stepFromCanvasPath(projectId: string, step: StepId): string {
+  return `${stepPath(projectId, step)}?from=${CANVAS_ORIGIN}`;
+}

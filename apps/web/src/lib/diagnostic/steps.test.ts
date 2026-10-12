@@ -1,6 +1,13 @@
 import { FOLLOW_UPS, QUESTIONS } from '@sbn/question-bank';
 import { describe, expect, it } from 'vitest';
-import { stepFromSlug, stepPath, stepSlug } from './steps';
+import {
+  canvasPath,
+  CANVAS_ORIGIN,
+  stepFromCanvasPath,
+  stepFromSlug,
+  stepPath,
+  stepSlug,
+} from './steps';
 
 describe('step URLs (D-117)', () => {
   it('write follow-ups without a dot, and read them back', () => {
@@ -36,5 +43,17 @@ describe('step URLs (D-117)', () => {
 
   it('also read a follow-up written with its dot, as saveAnswer receives it', () => {
     expect(stepFromSlug('F6.1')).toBe('F6.1');
+  });
+});
+
+describe('the canvas links (D-249)', () => {
+  it('put the canvas under the project', () => {
+    expect(canvasPath('p')).toBe('/projects/p/canvas');
+  });
+
+  it('lead a chip to its question and tell the step page to come back', () => {
+    expect(CANVAS_ORIGIN).toBe('canvas');
+    expect(stepFromCanvasPath('p', 'F3')).toBe('/projects/p/q/F3?from=canvas');
+    expect(stepFromCanvasPath('p', 'C7.1')).toBe('/projects/p/q/C7-1?from=canvas');
   });
 });

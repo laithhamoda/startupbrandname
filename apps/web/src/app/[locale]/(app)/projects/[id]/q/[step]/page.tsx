@@ -26,7 +26,13 @@ import { toDraft } from '@/lib/diagnostic/draft';
 import { editorLists } from '@/lib/diagnostic/editor-lists';
 import { viewFinding } from '@/lib/diagnostic/findings';
 import { loadProject } from '@/lib/diagnostic/project';
-import { projectPath, stepFromSlug, stepPath } from '@/lib/diagnostic/steps';
+import {
+  canvasPath,
+  CANVAS_ORIGIN,
+  projectPath,
+  stepFromSlug,
+  stepPath,
+} from '@/lib/diagnostic/steps';
 
 /** The project and its answers, read once per request for the page and its title. */
 const loadStep = cache(async (locale: Locale, id: string) => {
@@ -68,9 +74,14 @@ const num = (chunks: ReactNode) => <bdi className="num">{chunks}</bdi>;
 export const maxDuration = 30;
 
 /** One question (or follow-up) of the diagnostic, with the project's progress beside it. */
-export default async function StepPage({ params }: PageProps<'/[locale]/projects/[id]/q/[step]'>) {
+export default async function StepPage({
+  params,
+  searchParams,
+}: PageProps<'/[locale]/projects/[id]/q/[step]'>) {
   const locale = await currentLocale();
   const { id, step: slug } = await params;
+  // A chip of the canvas leads here and wants the founder back there after saving (D-249).
+  const fromCanvas = (await searchParams).from === CANVAS_ORIGIN;
   const { supabase } = await requireAccount(locale);
   const loaded = await loadStep(locale, id);
   const step = stepFromSlug(slug);
@@ -114,6 +125,11 @@ export default async function StepPage({ params }: PageProps<'/[locale]/projects
   return (
     <div className="mx-auto grid max-w-[75rem] gap-10 px-4 py-8 sm:px-6 lg:grid-cols-[minmax(0,1fr)_18rem] lg:gap-16 lg:py-12">
       <div className="grid content-start gap-6">
+        {fromCanvas ? (
+          <p className="text-small">
+            <TextLink href={canvasPath(project.id)}>{t('backToCanvas')}</TextLink>
+          </p>
+        ) : null}
         <AxisProgress byAxis={score.byAxis} current={axis} language={locale} />
         <div className="grid gap-1 text-small text-muted">
           <p className="flex flex-wrap gap-x-3">
@@ -183,6 +199,7 @@ export default async function StepPage({ params }: PageProps<'/[locale]/projects
           }}
           previousHref={previous ? stepPath(project.id, previous) : null}
           overviewHref={projectPath(project.id)}
+          returnToCanvas={fromCanvas}
         />
       </div>
       <aside>

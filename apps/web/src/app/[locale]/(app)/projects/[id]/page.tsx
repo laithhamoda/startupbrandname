@@ -23,7 +23,7 @@ import { countryOptions } from '@/lib/countries';
 import { deleteProject, switchMode } from '@/lib/diagnostic/actions';
 import { viewFinding } from '@/lib/diagnostic/findings';
 import { loadProject } from '@/lib/diagnostic/project';
-import { stepPath } from '@/lib/diagnostic/steps';
+import { canvasPath, stepPath } from '@/lib/diagnostic/steps';
 
 export async function generateMetadata({
   params,
@@ -67,7 +67,7 @@ export default async function ProjectPage({ params }: PageProps<'/[locale]/proje
             <span>{project.currency}</span>
             <span>{t(project.mode === 'quick' ? 'modeQuick' : 'modeFull')}</span>
           </p>
-          <div className="pt-2">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-3 pt-2">
             {resume ? (
               <ButtonLink href={stepPath(project.id, resume)} variant="primary">
                 {Object.keys(answers).length === 0 ? t('start') : t('resume')}
@@ -77,6 +77,7 @@ export default async function ProjectPage({ params }: PageProps<'/[locale]/proje
                 {project.mode === 'quick' ? t('quickDone') : t('allDone')}
               </p>
             )}
+            <ButtonLink href={canvasPath(project.id)}>{t('canvas')}</ButtonLink>
           </div>
         </header>
 

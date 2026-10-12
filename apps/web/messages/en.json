@@ -285,7 +285,112 @@
       "deleteTitle": "Delete the project for good?",
       "deleteBody": "The project and all its answers will be deleted at once and cannot be recovered.",
       "deleting": "Deleting…",
-      "deleteConfirm": "Yes, delete the project"
+      "deleteConfirm": "Yes, delete the project",
+      "canvas": "Canvases"
+    },
+    "backToCanvas": "Back to the canvases"
+  },
+  "canvas": {
+    "pageTitle": "Canvases",
+    "title": "Canvases",
+    "back": "Back to the project",
+    "lead": "Both canvases are built from your own answers, as you wrote them. Choose any box to edit its answer: you come back here after saving.",
+    "tabsLabel": "Canvases",
+    "tab": {
+      "business_model": "Business Model Canvas",
+      "lean": "Lean Canvas"
+    },
+    "legend": "What the marks mean",
+    "edit": "Edit this answer",
+    "totalsTitle": "Totals calculated from your answers",
+    "total": {
+      "fixedMonthly": "Fixed costs a month",
+      "variableUnit": "Variable cost of one unit",
+      "setup": "Set-up costs"
+    },
+    "empty": {
+      "unanswered": "Not answered yet.",
+      "unknown": "The answer is “I don’t know”, so nothing is shown here.",
+      "empty": "The answer lists nothing.",
+      "no_question": "No question fills this box yet."
+    },
+    "notice": {
+      "title": "The totals need a few more answers",
+      "lead": "The numbers under Cost Structure appear once these are answered. Every box above already shows what you have given.",
+      "failed": "The totals could not be calculated just now. Your answers above are not affected.",
+      "reason": {
+        "invalid_project": "The project’s currency or date could not be read.",
+        "missing_answer": "Not answered yet:",
+        "unknown_answer": "Answered “I don’t know”, but the totals need a real answer:",
+        "currency_mismatch": "Given in a currency other than the project’s:",
+        "invalid_value": "A number that cannot be used:",
+        "no_price": "The price is “I don’t know” and no competitor price is known:"
+      }
+    },
+    "block": {
+      "customerSegments": "Customer Segments",
+      "valuePropositions": "Value Propositions",
+      "channels": "Channels",
+      "customerRelationships": "Customer Relationships",
+      "revenueStreams": "Revenue Streams",
+      "keyResources": "Key Resources",
+      "keyActivities": "Key Activities",
+      "keyPartners": "Key Partners",
+      "costStructure": "Cost Structure",
+      "problem": "Problem with Existing Alternatives",
+      "solution": "Solution",
+      "keyMetrics": "Key Metrics",
+      "uniqueValueProposition": "Unique Value Proposition",
+      "unfairAdvantage": "Unfair Advantage"
+    },
+    "term": {
+      "customerSegments": "Customer Segments",
+      "valuePropositions": "Value Propositions",
+      "channels": "Channels",
+      "customerRelationships": "Customer Relationships",
+      "revenueStreams": "Revenue Streams",
+      "keyResources": "Key Resources",
+      "keyActivities": "Key Activities",
+      "keyPartners": "Key Partners",
+      "costStructure": "Cost Structure",
+      "problem": "Problem with Existing Alternatives",
+      "solution": "Solution",
+      "keyMetrics": "Key Metrics",
+      "uniqueValueProposition": "Unique Value Proposition",
+      "unfairAdvantage": "Unfair Advantage"
+    },
+    "source": {
+      "C1": "Who pays",
+      "C2": "First customer",
+      "B3": "Who suffers most",
+      "B1": "The idea",
+      "B2": "The problem",
+      "D5": "Why customers choose you",
+      "C3": "The job to be done",
+      "C7": "Where customers spend time",
+      "E1": "How it reaches the customer",
+      "D1": "Geographic scope",
+      "C7_1": "Relationship after the first purchase",
+      "F1": "Selling price",
+      "F2": "Pricing model",
+      "F7": "How the customer pays",
+      "E3": "Equipment and tools",
+      "A3": "Your skills",
+      "E6": "Where you work",
+      "E2": "The three activities",
+      "E5": "Partners you need",
+      "E4": "Suppliers",
+      "A4": "Team and partners",
+      "F3": "Variable cost per unit",
+      "F4": "Fixed costs a month",
+      "F4_1": "Marketing a month",
+      "F5": "Set-up costs",
+      "E8": "Staff",
+      "B4": "How people cope today",
+      "D3": "Existing alternatives",
+      "H2": "The number you watch",
+      "H1": "What success means",
+      "B8": "What stops copying"
     }
   },
   "account": {
