@@ -18,6 +18,7 @@ import {
   formatPercent,
   formatPlain,
   formatRatio,
+  caseReviewEntries,
   goldenReviewEntries,
   h,
   monthsPhrase,
@@ -138,7 +139,9 @@ describe('the inputs in words', () => {
     expect(said.G1).toBe('شركة');
     expect(said.A5).toBe('من 8,000 د.أ إلى 15,000 د.أ');
     expect(said.A7).toBe('أقل من 3 أشهر');
+    expect(said.H3).toBe('مدخراته الشخصية ومستثمر');
     expect(said.H5).toBe('خلال 12 شهرًا');
+    expect(said.H6).toBe('هل سيقبل العملاء دفع اشتراك شهري بهذا السعر؟');
   });
 
   it('writes a season, a foreign share, an unknown answer and the dinar with two decimals', () => {
@@ -170,13 +173,21 @@ describe('the inputs in words', () => {
     expect(lines(odd).F1).toBe('12.5 د.أ');
   });
 
-  it('lists the 19 questions in a fixed order with their IDs in the labels', () => {
+  it('lists the 21 questions in a fixed order with their IDs in the labels', () => {
     const [project] = GOLDEN_PROJECTS;
     if (project === undefined) throw new Error('no project');
     const all = describeAnswers(project);
-    expect(all).toHaveLength(19);
+    expect(all).toHaveLength(21);
     expect(all[0]).toMatchObject({ id: 'F1', label: 'سعر البيع للوحدة (F1)' });
-    expect(all.at(-1)).toMatchObject({ id: 'H5' });
+    expect(all.at(-1)).toMatchObject({ id: 'H6' });
+  });
+
+  it('can leave out the questions that were not answered', () => {
+    const [shop] = caseReviewEntries();
+    if (shop === undefined) throw new Error('no case');
+    const answered = describeAnswers(shop.project, true).map((line) => line.id);
+    expect(answered).toEqual(['F1', 'F3', 'F4', 'F5', 'F6', 'E7', 'A5', 'A7', 'H3', 'H5', 'H6']);
+    expect(describeAnswers(shop.project)).toHaveLength(21);
   });
 });
 
@@ -660,5 +671,197 @@ describe('the style of the page', () => {
     expect(css).toContain('table.stack tr{display:block');
     expect(css).toContain(':focus-visible{outline:3px solid var(--teal)');
     expect(css).toContain('td::before{content:attr(data-label)');
+  });
+});
+
+describe('the score, the verdict, confidence and the plan on the page', () => {
+  const entries = goldenReviewEntries();
+  const cases = caseReviewEntries();
+  const page = renderReviewPage(entries, cases);
+
+  it('builds the four synthetic cases from the engine fixtures, in order', () => {
+    expect(cases.map((entry) => entry.project.name)).toEqual([
+      'case-good',
+      'case-borderline',
+      'case-negative-margin',
+      'case-funding-gap',
+    ]);
+    for (const entry of cases) {
+      expect(entry.run).toEqual(runGolden(entry.project));
+      expect(entry.variants).toEqual([]);
+    }
+  });
+
+  it('has a block of the score and the verdict in each of the three projects', () => {
+    expect(page.match(/<h3>الجدوى والقرار<\/h3>/g)).toHaveLength(3);
+    expect(page.match(/<h4>معايير الجدوى<\/h4>/g)).toHaveLength(7);
+    expect(page.match(/<h4>الثقة الإجمالية<\/h4>/g)).toHaveLength(7);
+    expect(page.match(/<h4>خطة التحقّق<\/h4>/g)).toHaveLength(7);
+  });
+
+  it('shows the eleven criteria of each project with their status and hand reason', () => {
+    expect(page).toContain('هامش المساهمة للوحدة أكبر من صفر');
+    expect(plainOf(page)).toContain('وحدات التعادل ضمن الطاقة القصوى (E7)');
+    expect(page.match(/<strong>خارج العدّ<\/strong>/g)?.length).toBeGreaterThanOrEqual(7);
+    expect(page.match(/<strong>يتحقق<\/strong>/g)?.length).toBeGreaterThan(20);
+    expect(page.match(/<strong>لا يتحقق<\/strong>/g)?.length).toBeGreaterThan(10);
+    expect(plainOf(page)).toContain(
+      'التعادل في الشهر 4 (ربح الشهر 3 = 40 × 1,200 − 50,000 = −2,000',
+    );
+  });
+
+  it('writes the verdict word, and with a stop the fixed sentence of CLAUDE.md section 3', () => {
+    for (const word of ['امضِ', 'عدّل', 'توقّف']) {
+      expect(page).toContain(`<strong class="key">${word}</strong>`);
+    }
+    expect(page).toContain('غير قابل للتنفيذ بصيغته الحالية');
+    expect(page.match(/القرار توقّف: غير قابل للتنفيذ بصيغته الحالية/g)).toHaveLength(3);
+    expect(page).toContain('التغييرات الثلاثة التي قد تغيّر القرار تأتي في الخطوة التالية');
+  });
+
+  it('says on every score that it is not a probability of success', () => {
+    expect(page.match(/الدرجة ليست احتمال نجاح/g)).toHaveLength(7);
+  });
+
+  it('shows the score as passed of evaluated with its percentage', () => {
+    expect(plainOf(page)).toContain('<strong class="key">6 من 10 = 60%</strong>');
+    expect(plainOf(page)).toContain('8 من 9 = 88.89%');
+    expect(plainOf(page)).toContain('7 من 10 = 70%');
+    expect(plainOf(page)).toContain('1 من 10 = 10%');
+  });
+
+  it('shows what held a go back, the blockers, the confidence figures and the plan', () => {
+    expect(plainOf(page)).toContain('ما يمنع «امضِ»: الدرجة دون الخط');
+    expect(plainOf(page)).toContain('احتياج التمويل فوق ضعف أقصى رأس مال ولا مصدر خارجي في H3');
+    expect(page).toContain('هامش المساهمة صفر أو أقل');
+    expect(page).toContain('لا حاجب');
+    expect(plainOf(page)).toContain('سعر البيع (F1)');
+    expect(plainOf(page)).toContain('تكاليف التأسيس (F5)');
+    expect(page).toContain('<code>price.willingness_to_pay</code>');
+    expect(page).toContain('<code>variable_cost.supplier_quotes</code>');
+    expect(page).toContain('عرض سعر من مورّد');
+    expect(plainOf(page)).toContain('قلق المؤسس (H6)');
+    expect(page).toContain('—');
+    expect(page).toContain('«هل سيقبل العملاء دفع اشتراك شهري بهذا السعر؟»');
+  });
+
+  it('has a section of the four cases, in the navigation, each with its inputs and its blocks', () => {
+    expect(page).toContain('<section id="verdict-cases" aria-labelledby="verdict-cases-title">');
+    expect(page).toContain('<a href="#verdict-cases">');
+    for (const entry of cases) {
+      const id = entry.project.name;
+      expect(page).toContain(`<article id="${id}" aria-labelledby="${id}-title">`);
+    }
+    expect(page.match(/<h4>المدخلات بالكلمات<\/h4>/g)).toHaveLength(4);
+    expect(page).toContain('مشروع اصطناعي مبني على أرقام الاختبار المسطّحة');
+  });
+
+  it('agrees with every hand computation of the verdicts', () => {
+    expect(page).not.toContain('غير مطابق');
+    expect(page.match(/✓ مطابق/g)?.length).toBeGreaterThan(100);
+  });
+
+  it('writes only Western digits, each isolated, with brackets that stay together', () => {
+    expect(page).not.toMatch(/[٠-٩۰-۹]/);
+    expect(textOutsideIsolates(page)).not.toMatch(/\d/);
+    for (const match of page.matchAll(/<bdi dir="ltr">([^<]*)<\/bdi>/g)) {
+      const run = match[1] ?? '';
+      expect(run.split('(').length, run).toBe(run.split(')').length);
+    }
+  });
+
+  it('keeps the page free of script and of any request, and deterministic', () => {
+    expect(page).not.toMatch(/<script/i);
+    expect(page).not.toMatch(/url\(|@import|https?:\/\//);
+    expect(renderReviewPage(goldenReviewEntries(), caseReviewEntries())).toBe(page);
+    expect(page.endsWith('</html>\n')).toBe(true);
+  });
+
+  it('lists the new thresholds among the assumptions', () => {
+    const text = plainOf(page);
+    expect(text).toContain('نافذة الجدوى للتعادل والاسترداد');
+    expect(text).toContain('خط الدرجة للقرار «امضِ»');
+    expect(text).toContain('× 2');
+    expect(text).toContain('خط الثقة الإجمالية العالية');
+    expect(text).toContain('خط الثقة الإجمالية المتوسطة');
+  });
+
+  it('builds the cases without projects, and a page without cases has no cases section', () => {
+    const only = renderReviewPage([], cases);
+    expect(only).toContain('id="verdict-cases"');
+    expect(only).not.toContain('id="assumptions"');
+    expect(renderReviewPage(entries)).not.toContain('verdict-cases');
+  });
+
+  it('marks a hand computation of the verdict that the engine does not match', () => {
+    const [first] = cases;
+    if (first === undefined) throw new Error('no case');
+    const decision = first.project.decision;
+    const wrong: ReviewEntry = {
+      ...first,
+      project: {
+        ...first.project,
+        decision: {
+          ...decision,
+          criteria: decision.criteria.map((row, index) =>
+            index === 0 ? { ...row, status: 'fail' } : row,
+          ),
+          passed: 3,
+          blockers: ['margin_not_positive'],
+          verdict: 'stop',
+          confidence: 'low',
+          sound: 1,
+          plan: ['price'],
+        },
+      },
+    };
+    const broken = renderReviewPage([], [wrong]);
+    expect(broken.match(/✕ غير مطابق/g)).toHaveLength(6);
+  });
+
+  it('shows a run with no score, a missing figure, no worry and several blockers', () => {
+    const [first] = cases;
+    const shop = entries[1];
+    if (first === undefined || shop === undefined) throw new Error('no entry');
+    const noScore: ReviewEntry = {
+      ...first,
+      run: { ...first.run, feasibility: { ...first.run.feasibility, score: null } },
+    };
+    expect(plainOf(renderReviewPage([], [noScore]))).toContain('لا درجة: لا معيار مقيَّم');
+    // Without headline rows: the rows of the shop need the cash flow and a price floor.
+    const bare = { ...shop.project, rows: [], paymentVariants: [] };
+    const unknownSetup = runGolden({
+      ...bare,
+      answers: { ...bare.answers, F5: { status: 'unknown' } },
+    });
+    const missing: ReviewEntry = { project: bare, run: unknownSetup, variants: [] };
+    const text = plainOf(renderReviewPage([missing]));
+    expect(text).toContain('غير موجود');
+    const stopped = runGolden({
+      ...bare,
+      answers: {
+        ...shop.project.answers,
+        F6: { status: 'answered', value: { month1: 0, month6: 0, month12: 0 } },
+      },
+    });
+    const sentence = plainOf(renderReviewPage([{ project: bare, run: stopped, variants: [] }]));
+    expect(sentence).toContain(
+      'لا تعادل ضمن نافذة الجدوى في الحالة الأساسية، احتياج التمويل فوق ضعف أقصى رأس مال ولا مصدر خارجي في H3',
+    );
+  });
+
+  it('shows the hold backs of a project that is not stopped and not go', () => {
+    const [first] = cases;
+    if (first === undefined) throw new Error('no case');
+    const held: ReviewEntry = {
+      ...first,
+      run: {
+        ...first.run,
+        verdict: { ...first.run.verdict, holdBacks: ['confidence_low', 'no_score'] },
+      },
+    };
+    expect(plainOf(renderReviewPage([], [held]))).toContain(
+      'ما يمنع «امضِ»: الثقة الإجمالية منخفضة، لا معيار مقيَّم',
+    );
   });
 });

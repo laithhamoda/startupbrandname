@@ -1,10 +1,13 @@
 import type { Alert, AlertValue } from './alerts';
 import { at } from './array';
 import type { CashFlowNote } from './cash-flow';
+import type { PivotalId } from './confidence';
+import type { CriterionId, CriterionStatus } from './feasibility';
 import type { Figure } from './figure';
 import type { EngineNote } from './input';
 import {
   GOLDEN_PROJECTS,
+  decisionAgreement,
   headlineValue,
   paymentVariantResults,
   runGolden,
@@ -20,6 +23,9 @@ import { rateToDecimalString, rateToPercentString, type Rate } from './rate';
 import type { EngineRun, RunAlert } from './run';
 import type { Scenarios, ScenarioResult, TornadoVariable } from './scenarios';
 import type { TaxAlert } from './tax';
+import type { CostClass } from './validation-plan';
+import { VERDICT_CASES } from './verdict-cases';
+import type { BlockerCode, HoldBack, Verdict } from './verdict';
 import { ENGINE_VERSION } from './version';
 
 /*
@@ -44,6 +50,11 @@ export function goldenReviewEntries(): readonly ReviewEntry[] {
     run: runGolden(project),
     variants: paymentVariantResults(project),
   }));
+}
+
+/** The entries of the four synthetic cases of the verdict, as the review page shows them (D-247). */
+export function caseReviewEntries(): readonly ReviewEntry[] {
+  return VERDICT_CASES.map((project) => ({ project, run: runGolden(project), variants: [] }));
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -234,6 +245,8 @@ const NOTE_WORD: Readonly<Record<EngineNote['code'] | CashFlowNote['code'], stri
   legal_form_assumed_sole: 'الشكل القانوني (G1) غير محسوم فافترض المحرّك صاحب منشأة فردية.',
   foreign_exposure_unset:
     'حصة التكاليف المرتبطة بعملة أجنبية (D6) غير محددة فلا يُجرى اختبار العملة.',
+  financing_unset: 'مصدر التمويل (H3) غير محدد فلا يُطبَّق حاجب احتياج التمويل في القرار.',
+  worry_unset: 'أكبر ما يقلق المؤسس (H6) غير محدد فلا يتصدّر خطة التحقّق.',
   receipts_after_horizon: 'جزء من النقد يصل بعد الشهر {horizon} فلم يدخل في الحساب.',
   tax_after_horizon: 'ضريبة السنة الأخيرة تُدفع بعد الشهر {horizon} فلم تدخل في الحساب.',
   tax_not_calculated: 'لم تُحسب ضريبة، فالتدفق النقدي قبل الضريبة.',
@@ -262,7 +275,9 @@ const INPUT_ORDER = [
   'G1',
   'A5',
   'A7',
+  'H3',
   'H5',
+  'H6',
 ] as const;
 
 const INPUT_LABEL: Readonly<Record<(typeof INPUT_ORDER)[number], string>> = {
@@ -284,7 +299,9 @@ const INPUT_LABEL: Readonly<Record<(typeof INPUT_ORDER)[number], string>> = {
   G1: 'الشكل القانوني (G1)',
   A5: 'رأس المال المتاح (A5)',
   A7: 'المدة التي يتحمّلها بلا دخل (A7)',
+  H3: 'مصدر التمويل (H3)',
   H5: 'أطول مدة مقبولة حتى التعادل (H5)',
+  H6: 'أكبر ما يقلقه أو لا يعرفه (H6)',
 };
 
 const OPTION_TEXT: Readonly<Record<string, string>> = {
@@ -310,6 +327,12 @@ const OPTION_TEXT: Readonly<Record<string, string>> = {
   m24: 'خلال 24 شهرًا',
   m36: 'خلال 36 شهرًا',
   more: 'أكثر من 36 شهرًا',
+  self: 'مدخراته الشخصية',
+  family: 'العائلة والأصدقاء',
+  loan: 'قرض',
+  investor: 'مستثمر',
+  grant: 'منحة',
+  competition: 'جائزة مسابقة',
 };
 
 /** The words for an option ID of the question bank; an ID without words is written as it is. */
@@ -402,23 +425,34 @@ function describeValue(id: (typeof INPUT_ORDER)[number], value: unknown, fmt: Fm
       const range = value as { min: number; max: number; currency: string };
       return `من ${text({ amount: range.min, currency: range.currency })} إلى ${text({ amount: range.max, currency: range.currency })}`;
     }
+    case 'H3':
+      return (value as { values: string[] }).values.map(optionText).join(' و');
+    case 'H6':
+      return value as string;
   }
 }
 
-/** The answers of a project as lines of words: the label and what the founder said. */
+/**
+ * The answers of a project as lines of words: the label and what the founder said. A question that
+ * was not answered reads «لم يُجَب», or is left out when `answeredOnly` is set (the synthetic cases
+ * answer only what the verdict reads).
+ */
 export function describeAnswers(
   project: GoldenProject,
+  answeredOnly = false,
 ): readonly { readonly id: string; readonly label: string; readonly text: string }[] {
-  return INPUT_ORDER.map((id) => {
-    const answer = project.answers[id];
-    const text =
-      answer === undefined
-        ? 'لم يُجَب'
-        : answer.status === 'unknown'
-          ? 'لا أعرف'
-          : describeValue(id, answer.value, fmtOf(project));
-    return { id, label: INPUT_LABEL[id], text };
-  });
+  return INPUT_ORDER.filter((id) => !answeredOnly || project.answers[id] !== undefined).map(
+    (id) => {
+      const answer = project.answers[id];
+      const text =
+        answer === undefined
+          ? 'لم يُجَب'
+          : answer.status === 'unknown'
+            ? 'لا أعرف'
+            : describeValue(id, answer.value, fmtOf(project));
+      return { id, label: INPUT_LABEL[id], text };
+    },
+  );
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -667,11 +701,191 @@ function noteList(entry: ReviewEntry): string {
   return `<ul class="plain">${codes.map((code) => `<li>${h(NOTE_WORD[code].replace('{horizon}', horizon))}</li>`).join('\n')}</ul>`;
 }
 
-function inputList(entry: ReviewEntry): string {
-  const rows = describeAnswers(entry.project).map(
+function inputList(entry: ReviewEntry, answeredOnly = false): string {
+  const rows = describeAnswers(entry.project, answeredOnly).map(
     (line) => `<dt>${h(line.label)}</dt><dd>${h(line.text)}</dd>`,
   );
   return `<dl class="inputs">${rows.join('\n')}</dl>`;
+}
+
+// ---------------------------------------------------------------------------------------------
+// The score, the verdict, overall confidence and the validation plan (D-227, D-229, D-230)
+
+const CRITERION_WORD: Readonly<Record<CriterionId, string>> = {
+  margin_positive: 'هامش المساهمة للوحدة أكبر من صفر',
+  break_even_within_window: 'التعادل ضمن نافذة الجدوى (36 شهرًا افتراضيًا)',
+  break_even_within_target: 'التعادل ضمن أطول مدة يقبلها المؤسس (H5)',
+  break_even_within_runway: 'التعادل ضمن المدة التي يتحمّلها بلا دخل (A7)',
+  funding_within_capital: 'احتياج التمويل ضمن أقصى رأس مال متاح (A5)',
+  setup_within_capital: 'تكاليف التأسيس ضمن أقصى رأس مال متاح (A5)',
+  price_above_floor: 'السعر ليس دون سعر الحدّ الأدنى (T7)',
+  ltv_cac_at_minimum: 'نسبة LTV إلى CAC لا تقل عن الحدّ الأدنى (للاشتراك فقط)',
+  conservative_break_even: 'التعادل في السيناريو المتحفّظ',
+  payback_within_window: 'الاسترداد ضمن نافذة الجدوى',
+  break_even_units_within_capacity: 'وحدات التعادل ضمن الطاقة القصوى (E7)',
+};
+
+const STATUS_WORD: Readonly<Record<CriterionStatus, string>> = {
+  pass: 'يتحقق',
+  fail: 'لا يتحقق',
+  not_evaluated: 'خارج العدّ',
+};
+
+const BLOCKER_WORD: Readonly<Record<BlockerCode, string>> = {
+  margin_not_positive: 'هامش المساهمة صفر أو أقل',
+  no_break_even_in_window: 'لا تعادل ضمن نافذة الجدوى في الحالة الأساسية',
+  funding_need_above_capital_multiple: 'احتياج التمويل فوق ضعف أقصى رأس مال ولا مصدر خارجي في H3',
+};
+
+const VERDICT_WORD: Readonly<Record<Verdict, string>> = {
+  go: 'امضِ',
+  revise: 'عدّل',
+  stop: 'توقّف',
+};
+
+/** The fixed sentence that goes with «توقّف» (CLAUDE.md section 3). */
+const STOP_SENTENCE = 'غير قابل للتنفيذ بصيغته الحالية';
+
+const HOLD_BACK_WORD: Readonly<Record<HoldBack, string>> = {
+  score_below_line: 'الدرجة دون الخط',
+  no_score: 'لا معيار مقيَّم',
+  confidence_low: 'الثقة الإجمالية منخفضة',
+};
+
+const PIVOTAL_WORD: Readonly<Record<PivotalId, string>> = {
+  F1: 'سعر البيع (F1)',
+  F3: 'التكلفة المتغيرة (F3)',
+  F4: 'التكاليف الثابتة (F4)',
+  F5: 'تكاليف التأسيس (F5)',
+  F6: 'المبيعات المتوقعة (F6)',
+};
+
+const PLAN_WORD: Readonly<Record<TornadoVariable | 'worry', string>> = {
+  ...TORNADO_WORD,
+  worry: 'قلق المؤسس (H6)',
+};
+
+const COST_WORD: Readonly<Record<CostClass, string>> = {
+  time: 'وقت المؤسس',
+  small_cash: 'مبلغ نقدي صغير',
+  supplier_quote: 'عرض سعر من مورّد',
+};
+
+const codeTag = (text: string): string => `<code>${esc(text)}</code>`;
+
+function decisionRow(label: string, hand: string, engine: string, agrees: boolean): string {
+  return `<tr><th scope="row" data-label="البند">${h(label)}</th>${cell('الحساب اليدوي', h(hand))}${cell('ناتج المحرّك', engine)}${cell('المطابقة', mark(agrees))}</tr>`;
+}
+
+function criteriaTable(entry: ReviewEntry): string {
+  const { project, run } = entry;
+  const agreement = decisionAgreement(run, project.decision);
+  const rows = project.decision.criteria.map((row, index) => {
+    const found = at(run.feasibility.criteria, index);
+    return `<tr><th scope="row" data-label="المعيار">${h(CRITERION_WORD[found.id])}</th>${cell('الحالة', `<strong>${h(STATUS_WORD[found.status])}</strong>`)}${cell('الحساب اليدوي', h(row.hand))}${cell('المطابقة', mark(at(agreement.criteria, index)))}</tr>`;
+  });
+  return table(
+    'معايير الجدوى، بأوزان متساوية: المعيار الذي تنقص مدخلاته يخرج من العدّ',
+    ['المعيار', 'الحالة', 'الحساب اليدوي', 'المطابقة'],
+    rows,
+  );
+}
+
+function summaryTable(entry: ReviewEntry): string {
+  const { project, run } = entry;
+  const hand = project.decision;
+  const agreement = decisionAgreement(run, hand);
+  const { score, evaluated, passed } = run.feasibility;
+  const scoreText =
+    score === null
+      ? 'لا درجة: لا معيار مقيَّم'
+      : `${String(passed)} من ${String(evaluated)} = ${formatPercent(score.value)}`;
+  const blockers = run.verdict.blockers.map((blocker) => BLOCKER_WORD[blocker.code]);
+  const word = run.verdict.verdict.value;
+  const held = run.verdict.holdBacks.map((reason) => HOLD_BACK_WORD[reason]);
+  const verdict = [
+    key(VERDICT_WORD[word]),
+    word === 'stop' ? h(STOP_SENTENCE) : '',
+    word !== 'stop' && held.length > 0
+      ? `<span class="prov">${h(`ما يمنع «امضِ»: ${held.join('، ')}`)}</span>`
+      : '',
+  ]
+    .filter((part) => part !== '')
+    .join(' ');
+  const level = run.confidence.level.value;
+  const rows = [
+    decisionRow('الدرجة', hand.scoreHand, key(scoreText), agreement.score),
+    decisionRow(
+      'الحواجب',
+      hand.blockersHand,
+      blockers.length === 0 ? h('لا حاجب') : h(blockers.join('، ')),
+      agreement.blockers,
+    ),
+    decisionRow('القرار', hand.verdictHand, verdict, agreement.verdict),
+    decisionRow(
+      'الثقة الإجمالية',
+      hand.confidenceHand,
+      `${key(CONFIDENCE_WORD[level])} ${h(`${String(run.confidence.sound)} من 5`)}`,
+      agreement.confidence,
+    ),
+    decisionRow(
+      'خطة التحقّق',
+      hand.planHand,
+      h(run.validationPlan.entries.map((planned) => PLAN_WORD[planned.variable]).join(' ثم ')),
+      agreement.plan,
+    ),
+  ];
+  return table(
+    'الدرجة والحواجب والقرار والثقة والخطة، كل منها بجانب حسابه اليدوي',
+    ['البند', 'الحساب اليدوي', 'ناتج المحرّك', 'المطابقة'],
+    rows,
+  );
+}
+
+function confidenceTable(entry: ReviewEntry): string {
+  const rows = entry.run.confidence.pivotal.map((pivotal) => {
+    const level = pivotal.level.value;
+    return `<tr><th scope="row" data-label="الرقم المحوري">${h(PIVOTAL_WORD[pivotal.id])}</th>${cell('الثقة', h(level === 'missing' ? 'غير موجود' : CONFIDENCE_WORD[level]))}${cell('يُحسب سليمًا', h(pivotal.sound ? 'نعم' : 'لا'))}${cell('مصدره', h(provenanceText(pivotal.level)))}</tr>`;
+  });
+  return table(
+    'الأرقام المحورية الخمسة: السليم منها ما ثقته متوسطة أو عالية',
+    ['الرقم المحوري', 'الثقة', 'يُحسب سليمًا', 'مصدره'],
+    rows,
+  );
+}
+
+const figureText = (figure: Figure<number> | null): string =>
+  figure === null ? '—' : String(figure.value);
+
+function planTable(entry: ReviewEntry): string {
+  const rows = entry.run.validationPlan.entries.map((planned, index) => {
+    const worry = planned.worry === null ? '' : `<br>${h(`«${planned.worry.value}»`)}`;
+    return `<tr><th scope="row" data-label="المكان">${h(String(index + 1))}</th>${cell('المتغيّر', `${h(PLAN_WORD[planned.variable])}${worry}`)}${cell('الدرجة', h(figureText(planned.score)))}${cell('الثقة والترتيب', h(`${figureText(planned.confidence)} و${figureText(planned.rank)}`))}${cell('التجربة (رموز)', [planned.metric, planned.threshold, planned.fallback].map(codeTag).join('<br>'))}${cell('الكلفة', h(COST_WORD[planned.costClass]))}</tr>`;
+  });
+  return table(
+    'خطة التحقّق (T18): ثلاث تجارب، وكلفتها نوع لا مبلغ',
+    ['المكان', 'المتغيّر', 'الدرجة', 'الثقة والترتيب', 'التجربة (رموز)', 'الكلفة'],
+    rows,
+  );
+}
+
+/** The blocks of the decision, under a heading the caller chose: criteria, summary, confidence, plan. */
+function decisionBlocks(entry: ReviewEntry): readonly string[] {
+  const stopped = entry.run.verdict.verdict.value === 'stop';
+  return [
+    '<h4>معايير الجدوى</h4>',
+    criteriaTable(entry),
+    '<h4>الدرجة والقرار</h4>',
+    summaryTable(entry),
+    `<p>${h('الدرجة ليست احتمال نجاح: هي نسبة المعايير المقيَّمة التي تحققت، بأوزان متساوية.')}</p>`,
+    stopped
+      ? `<p>${h(`القرار توقّف: ${STOP_SENTENCE}. التغييرات الثلاثة التي قد تغيّر القرار تأتي في الخطوة التالية (2b) وليست في هذه الصفحة بعد.`)}</p>`
+      : '',
+    '<h4>الثقة الإجمالية</h4>',
+    confidenceTable(entry),
+    '<h4>خطة التحقّق</h4>',
+    planTable(entry),
+  ].filter((part) => part !== '');
 }
 
 function projectSection(entry: ReviewEntry, index: number): string {
@@ -692,12 +906,39 @@ function projectSection(entry: ReviewEntry, index: number): string {
     variantTable(entry),
     '<h3>التنبيهات التي ظهرت</h3>',
     alertList(entry),
+    '<h3>الجدوى والقرار</h3>',
+    ...decisionBlocks(entry),
     '<h3>ما قرأه المحرّك على غير ظاهره</h3>',
     noteList(entry),
     '</section>',
   ]
     .filter((part) => part !== '')
     .join('\n');
+}
+
+function caseArticle(entry: ReviewEntry): string {
+  const { project } = entry;
+  const id = project.name;
+  return [
+    `<article id="${id}" aria-labelledby="${id}-title">`,
+    `<h3 id="${id}-title">${h(project.title)}</h3>`,
+    `<p class="sentence">${h(project.sentence)}</p>`,
+    '<h4>المدخلات بالكلمات</h4>',
+    inputList(entry, true),
+    ...decisionBlocks(entry),
+    '</article>',
+  ].join('\n');
+}
+
+function casesSection(cases: readonly ReviewEntry[]): string {
+  if (cases.length === 0) return '';
+  return [
+    '<section id="verdict-cases" aria-labelledby="verdict-cases-title">',
+    '<h2 id="verdict-cases-title">حالات اصطناعية للقرار</h2>',
+    `<p>${h('أربع حالات بُنيت في اختبارات المحرّك على مشروع بسيط مسطّح (400 وحدة شهريًا بسعر 10 د.أ)، وليست ملفات ذهبية ولا مشاريع حقيقية: مشروع جيد، ومشروع على الحدّ دون خط 75% بمعيار واحد، ومشروع هامشه سالب، ومشروع احتياج تمويله فوق ضعف رأس ماله بلا مصدر خارجي. لكل حالة معاييرها وحسابها اليدوي كما في المشاريع الثلاثة.')}</p>`,
+    ...cases.map(caseArticle),
+    '</section>',
+  ].join('\n');
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -779,6 +1020,31 @@ const PARAM_ROWS: readonly {
     label: 'مدى حركة كل متغيّر في مخطط الحساسية',
     show: formatPercent,
   },
+  {
+    key: PARAM_KEYS.feasibilityWindowMonths,
+    label: 'نافذة الجدوى للتعادل والاسترداد',
+    show: (v: number) => monthsPhrase(v),
+  },
+  {
+    key: PARAM_KEYS.goScoreLine,
+    label: 'خط الدرجة للقرار «امضِ»',
+    show: formatPercent,
+  },
+  {
+    key: PARAM_KEYS.fundingBlockerMultiple,
+    label: 'حاجب التمويل: احتياج التمويل أكثر من هذا المضاعف لأقصى رأس مال',
+    show: (v: Rate) => `× ${formatRatio(v)}`,
+  },
+  {
+    key: PARAM_KEYS.confidenceHighLine,
+    label: 'خط الثقة الإجمالية العالية',
+    show: formatPercent,
+  },
+  {
+    key: PARAM_KEYS.confidenceMediumLine,
+    label: 'خط الثقة الإجمالية المتوسطة',
+    show: formatPercent,
+  },
 ];
 
 function paramSection(run: EngineRun): string {
@@ -818,6 +1084,8 @@ body{margin:0;background:var(--bg);color:var(--fg);font:1rem/1.85 Tajawal,Cairo,
 h1{font-size:1.9rem;line-height:1.45;margin-block:1.5rem .5rem}
 h2{font-size:1.5rem;line-height:1.5;margin-block:3rem 1rem;padding-block-start:.75rem;border-block-start:3px solid var(--fg)}
 h3{font-size:1.15rem;line-height:1.6;margin-block:2rem .5rem}
+h4{font-size:1rem;line-height:1.6;margin-block:1.5rem .25rem}
+article{margin-block:2rem;padding-block-start:1rem;border-block-start:1px solid var(--line)}
 p,li,dd{max-inline-size:70ch;overflow-wrap:anywhere}
 .lead{font-size:1.1rem}
 .sentence{font-size:1.1rem}
@@ -859,14 +1127,24 @@ h1{font-size:1.6rem}
  * Renders the owner review page from the golden runs (D-223): the banner, how to read the page,
  * and for each project the inputs in words, the headline numbers beside their hand computations
  * with a mark of agreement, the three scenarios, the tornado, the FX test and the payment options
- * where the project has them, the alerts that fired and what the engine assumed. Pure: the same
- * entries give the same text, ending with one newline.
+ * where the project has them, the alerts that fired, the feasibility score with its verdict, the
+ * overall confidence and the validation plan (each beside its hand computation), and what the engine
+ * assumed; then, when `cases` is given, the synthetic cases of the verdict. Pure: the same entries
+ * give the same text, ending with one newline.
  */
-export function renderReviewPage(entries: readonly ReviewEntry[]): string {
+export function renderReviewPage(
+  entries: readonly ReviewEntry[],
+  cases: readonly ReviewEntry[] = [],
+): string {
   const first = entries[0];
-  const nav = entries
-    .map((entry) => `<li><a href="#${entry.project.name}">${h(entry.project.title)}</a></li>`)
-    .join('\n');
+  const nav = [
+    ...entries.map(
+      (entry) => `<li><a href="#${entry.project.name}">${h(entry.project.title)}</a></li>`,
+    ),
+    ...(cases.length === 0
+      ? []
+      : [`<li><a href="#verdict-cases">${h('حالات اصطناعية للقرار')}</a></li>`]),
+  ].join('\n');
   const body = [
     '<a class="skip" href="#main">انتقل إلى المحتوى</a>',
     '<div class="page">',
@@ -879,9 +1157,10 @@ export function renderReviewPage(entries: readonly ReviewEntry[]): string {
     `<nav aria-label="${h('المشاريع')}"><ul>${nav}</ul></nav>`,
     '<section id="how" aria-labelledby="how-title">',
     '<h2 id="how-title">كيف تقرأ كل مشروع</h2>',
-    `<p>${h('يبدأ كل مشروع بجملة تصفه، ثم المدخلات بالكلمات كما أجاب المؤسس، ثم جدول الأرقام الرئيسية: الرقم، وحسابه اليدوي، وما أخرجه المحرّك، وهل يتطابقان. بعد ذلك السيناريوهات الثلاثة (Scenarios) ومخطط الحساسية (Tornado) الذي يرتّب المتغيّرات بحسب أثرها على ربح السنة الأولى، ثم اختبار العملة الأجنبية (FX test) إن وُجد، ثم التنبيهات التي ظهرت وما افترضه المحرّك لأن إجابة ناقصة. الأرقام المقصودة بالنظر مكتوبة بخط عريض ذهبي على أسود.')}</p>`,
+    `<p>${h('يبدأ كل مشروع بجملة تصفه، ثم المدخلات بالكلمات كما أجاب المؤسس، ثم جدول الأرقام الرئيسية: الرقم، وحسابه اليدوي، وما أخرجه المحرّك، وهل يتطابقان. بعد ذلك السيناريوهات الثلاثة (Scenarios) ومخطط الحساسية (Tornado) الذي يرتّب المتغيّرات بحسب أثرها على ربح السنة الأولى، ثم اختبار العملة الأجنبية (FX test) إن وُجد، ثم التنبيهات التي ظهرت. بعدها قسم «الجدوى والقرار»: معايير الجدوى الأحد عشر بأوزان متساوية (كل معيار منها نتيجة محسوبة أصلًا في التحليل، فلا يخالف القرار تنبيهًا)، ثم الدرجة والحواجب والقرار (امضِ أو عدّل أو توقّف) والثقة الإجمالية وخطة التحقّق، وكلها بجانب حسابها اليدوي. ثم ما افترضه المحرّك لأن إجابة ناقصة. الأرقام المقصودة بالنظر مكتوبة بخط عريض ذهبي على أسود.')}</p>`,
     '</section>',
     ...entries.map(projectSection),
+    casesSection(cases),
     first === undefined ? '' : paramSection(first.run),
     '</main>',
     '<footer>',

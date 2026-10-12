@@ -72,7 +72,7 @@ describe('runEngine: the whole analysis of a project', () => {
 
   it('holds the engine version, the input and its notes, and the parameters used', () => {
     expect(run.engineVersion).toBe(ENGINE_VERSION);
-    expect(run.engineVersion).toBe('1.0.0');
+    expect(run.engineVersion).toBe('1.1.0');
     expect(run.input.currency).toBe('JOD');
     expect(run.input.notes.length).toBeGreaterThan(0);
     expect(run.parameters).toEqual(listEngineParams(createEngineParams()));
@@ -89,6 +89,19 @@ describe('runEngine: the whole analysis of a project', () => {
       makeMoney(16_800_000n, 'JOD'),
     );
     expect(run.tornado.top?.value).toBe('price');
+  });
+
+  it('holds the feasibility score, the verdict, overall confidence and the validation plan', () => {
+    // healthy() has no stored provenance, so every answer counts as a low-confidence assumption:
+    // the score can be perfect and the verdict is still revise (D-227, D-229).
+    expect(run.feasibility.criteria).toHaveLength(11);
+    expect(run.feasibility.evaluated).toBe(5);
+    expect(run.feasibility.passed).toBe(5);
+    expect(run.confidence.level.value).toBe('low');
+    expect(run.confidence.sound).toBe(0);
+    expect(run.verdict.verdict.value).toBe('revise');
+    expect(run.verdict.holdBacks).toEqual(['confidence_low']);
+    expect(run.validationPlan.entries).toHaveLength(3);
   });
 
   it('agrees with itself: the base scenario is the plain projection, T8 and T9 share the break-even', () => {

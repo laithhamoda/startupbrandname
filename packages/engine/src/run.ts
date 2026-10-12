@@ -1,7 +1,9 @@
 import type { Answers } from '@sbn/question-bank';
 import type { Alert, AlertSeverity } from './alerts';
 import { analyseCash, type CashAnalysis } from './cash';
+import { overallConfidence, type OverallConfidence } from './confidence';
 import { analyseEconomics } from './economics';
+import { feasibility, type Feasibility } from './feasibility';
 import type { Figure } from './figure';
 import {
   engineInputFrom,
@@ -16,6 +18,8 @@ import { projectOperatingLines, type OperatingProjection } from './projection';
 import { scenarioAnalysis, tornadoAnalysis, type Scenarios, type Tornado } from './scenarios';
 import type { TaxAlert, TaxContext } from './tax';
 import type { UnitEconomics } from './unit-economics';
+import { validationPlan, type ValidationPlan } from './validation-plan';
+import { blockersOf, verdictOf, type VerdictResult } from './verdict';
 import { ENGINE_VERSION } from './version';
 
 /**
@@ -29,7 +33,8 @@ export type RunAlert =
 /**
  * Everything the engine knows about one project (D-220): the input and its notes, the operating
  * projection, T8 and T7, the cash analysis (tax, cash flow with its funding need and payback, FX
- * test), T10's scenarios and tornado, the parameters used, and one list of alerts.
+ * test), T10's scenarios and tornado, the feasibility score, the verdict, the overall confidence
+ * and the validation plan T18 (D-227 to D-230), the parameters used, and one list of alerts.
  */
 export interface EngineRun {
   readonly engineVersion: string;
@@ -47,6 +52,14 @@ export interface EngineRun {
   readonly cash: Omit<CashAnalysis, 'alerts'>;
   readonly scenarios: Scenarios;
   readonly tornado: Tornado;
+  /** The criteria of D-227 and the score that counts them; the score is not a probability of success. */
+  readonly feasibility: Feasibility;
+  /** Overall confidence in the five pivotal figures (D-229). */
+  readonly confidence: OverallConfidence;
+  /** The verdict: go, revise or stop, with the blockers that hold (D-227). */
+  readonly verdict: VerdictResult;
+  /** The three experiments to run first (D-230). */
+  readonly validationPlan: ValidationPlan;
   /**
    * The alerts of T8 and T7 and of the tax engine, each once: blocks first, then warnings, then
    * notes, each group by code (D-220).
@@ -86,8 +99,9 @@ export function mergeAlerts(
  * The single entry point of the engine, which M5 calls (D-178, D-220). It reads the stored answers
  * (`engineInputFrom`: what the answers are, where they came from, which project) and, when they can
  * be calculated, makes the whole analysis: the operating projection, T8 and T7, the tax, the cash
- * flow, the funding need, the payback and the FX test, T10's three scenarios and its tornado, and
- * one merged list of alerts. `tax` is what the caller knows about taxes for the country (rules from
+ * flow, the funding need, the payback and the FX test, T10's three scenarios and its tornado, the
+ * feasibility score, the verdict, the overall confidence and the validation plan, and one merged
+ * list of alerts. `tax` is what the caller knows about taxes for the country (rules from
  * the country pack, the VAT threshold); without it no regime is calculated and the cash flow is
  * before tax, with a note. `overrides` replace engine defaults, each with its own provenance
  * (`createEngineParams`); `pricingOptions` says whether D5 passed rule R5. Pure and deterministic:
@@ -112,6 +126,19 @@ export function runEngine(
   const projection = projectOperatingLines(input, params);
   const economics = analyseEconomics(input, projection, pricingOptions, params);
   const { alerts: taxAlerts, ...cash } = analyseCash(input, projection, tax, params);
+  const scenarios = scenarioAnalysis(input, tax, params);
+  const tornado = tornadoAnalysis(input, params);
+  const score = feasibility(
+    input,
+    projection,
+    economics.unitEconomics,
+    economics.pricing,
+    cash.cashFlow,
+    scenarios,
+    params,
+  );
+  const confidence = overallConfidence(input, params);
+  const blockers = blockersOf(input, projection, economics.unitEconomics, cash.cashFlow, params);
   return {
     status: 'ok',
     run: {
@@ -122,8 +149,12 @@ export function runEngine(
       unitEconomics: economics.unitEconomics,
       pricing: economics.pricing,
       cash,
-      scenarios: scenarioAnalysis(input, tax, params),
-      tornado: tornadoAnalysis(input, params),
+      scenarios,
+      tornado,
+      feasibility: score,
+      confidence,
+      verdict: verdictOf(blockers, score, confidence, params),
+      validationPlan: validationPlan(input, tornado),
       alerts: mergeAlerts(economics.alerts, taxAlerts),
     },
   };

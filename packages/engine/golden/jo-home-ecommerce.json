@@ -1441,7 +1441,479 @@
       ]
     }
   },
-  "engineVersion": "1.0.0",
+  "confidence": {
+    "level": {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "F1", "kind": "answer" },
+        { "id": "F3", "kind": "answer" },
+        { "id": "F4", "kind": "answer" },
+        { "id": "F5", "kind": "answer" },
+        { "id": "F6", "kind": "answer" },
+        { "id": "confidence.high_line", "kind": "default" },
+        { "id": "confidence.medium_line", "kind": "default" },
+        { "id": "confidence.overall", "kind": "rule" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": "high"
+    },
+    "pivotal": [
+      {
+        "id": "F1",
+        "level": {
+          "confidence": "high",
+          "inputs": [
+            { "id": "F1", "kind": "answer" }
+          ],
+          "source": "user",
+          "validated": true,
+          "value": "high"
+        },
+        "sound": true
+      },
+      {
+        "id": "F3",
+        "level": {
+          "confidence": "high",
+          "inputs": [
+            { "id": "F3", "kind": "answer" }
+          ],
+          "source": "user",
+          "validated": true,
+          "value": "high"
+        },
+        "sound": true
+      },
+      {
+        "id": "F4",
+        "level": {
+          "confidence": "high",
+          "inputs": [
+            { "id": "F4", "kind": "answer" }
+          ],
+          "source": "user",
+          "validated": true,
+          "value": "high"
+        },
+        "sound": true
+      },
+      {
+        "id": "F5",
+        "level": {
+          "confidence": "medium",
+          "inputs": [
+            { "id": "F5", "kind": "answer" }
+          ],
+          "source": "user",
+          "validated": true,
+          "value": "medium"
+        },
+        "sound": true
+      },
+      {
+        "id": "F6",
+        "level": {
+          "confidence": "medium",
+          "inputs": [
+            { "id": "F6", "kind": "answer" }
+          ],
+          "source": "user",
+          "validated": false,
+          "value": "medium"
+        },
+        "sound": true
+      }
+    ],
+    "sound": 5
+  },
+  "engineVersion": "1.1.0",
+  "feasibility": {
+    "criteria": [
+      {
+        "confidence": "high",
+        "id": "margin_positive",
+        "inputs": [
+          { "id": "F1", "kind": "answer" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "T8.contribution_margin", "kind": "rule" },
+          { "id": "feasibility.margin_positive", "kind": "rule" }
+        ],
+        "reason": null,
+        "source": "user",
+        "status": "pass",
+        "validated": true
+      },
+      {
+        "confidence": "low",
+        "id": "break_even_within_window",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "growth.founder_share", "kind": "default" },
+          { "id": "growth.upper_bound_yearly", "kind": "default" },
+          { "id": "growth.year3_share_of_year2", "kind": "default" },
+          { "id": "T9.growth_estimate", "kind": "rule" },
+          { "id": "seasonality.peak_factor", "kind": "default" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "F1", "kind": "answer" },
+          { "id": "T9.revenue", "kind": "rule" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "T9.cogs", "kind": "rule" },
+          { "id": "T9.gross_profit", "kind": "rule" },
+          { "id": "F4", "kind": "answer" },
+          { "id": "E8", "kind": "answer" },
+          { "id": "F4.1", "kind": "answer" },
+          { "id": "T9.operating_costs", "kind": "rule" },
+          { "id": "T9.operating_profit", "kind": "rule" },
+          { "id": "T8.break_even_month", "kind": "rule" },
+          { "id": "feasibility.window_months", "kind": "default" },
+          { "id": "feasibility.break_even_within_window", "kind": "rule" }
+        ],
+        "reason": null,
+        "source": "assumption",
+        "status": "pass",
+        "validated": false
+      },
+      {
+        "confidence": "low",
+        "id": "break_even_within_target",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "growth.founder_share", "kind": "default" },
+          { "id": "growth.upper_bound_yearly", "kind": "default" },
+          { "id": "growth.year3_share_of_year2", "kind": "default" },
+          { "id": "T9.growth_estimate", "kind": "rule" },
+          { "id": "seasonality.peak_factor", "kind": "default" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "F1", "kind": "answer" },
+          { "id": "T9.revenue", "kind": "rule" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "T9.cogs", "kind": "rule" },
+          { "id": "T9.gross_profit", "kind": "rule" },
+          { "id": "F4", "kind": "answer" },
+          { "id": "E8", "kind": "answer" },
+          { "id": "F4.1", "kind": "answer" },
+          { "id": "T9.operating_costs", "kind": "rule" },
+          { "id": "T9.operating_profit", "kind": "rule" },
+          { "id": "T8.break_even_month", "kind": "rule" },
+          { "id": "H5", "kind": "answer" },
+          { "id": "feasibility.break_even_within_target", "kind": "rule" }
+        ],
+        "reason": null,
+        "source": "assumption",
+        "status": "pass",
+        "validated": false
+      },
+      {
+        "confidence": "low",
+        "id": "break_even_within_runway",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "growth.founder_share", "kind": "default" },
+          { "id": "growth.upper_bound_yearly", "kind": "default" },
+          { "id": "growth.year3_share_of_year2", "kind": "default" },
+          { "id": "T9.growth_estimate", "kind": "rule" },
+          { "id": "seasonality.peak_factor", "kind": "default" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "F1", "kind": "answer" },
+          { "id": "T9.revenue", "kind": "rule" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "T9.cogs", "kind": "rule" },
+          { "id": "T9.gross_profit", "kind": "rule" },
+          { "id": "F4", "kind": "answer" },
+          { "id": "E8", "kind": "answer" },
+          { "id": "F4.1", "kind": "answer" },
+          { "id": "T9.operating_costs", "kind": "rule" },
+          { "id": "T9.operating_profit", "kind": "rule" },
+          { "id": "T8.break_even_month", "kind": "rule" },
+          { "id": "A7", "kind": "answer" },
+          { "id": "feasibility.break_even_within_runway", "kind": "rule" }
+        ],
+        "reason": null,
+        "source": "assumption",
+        "status": "pass",
+        "validated": false
+      },
+      {
+        "confidence": "low",
+        "id": "funding_within_capital",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "growth.founder_share", "kind": "default" },
+          { "id": "growth.upper_bound_yearly", "kind": "default" },
+          { "id": "growth.year3_share_of_year2", "kind": "default" },
+          { "id": "T9.growth_estimate", "kind": "rule" },
+          { "id": "seasonality.peak_factor", "kind": "default" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "F1", "kind": "answer" },
+          { "id": "T9.revenue", "kind": "rule" },
+          { "id": "F7", "kind": "answer" },
+          { "id": "payment.instalments", "kind": "default" },
+          { "id": "T9.cash_receipts", "kind": "rule" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "T9.cogs", "kind": "rule" },
+          { "id": "F4", "kind": "answer" },
+          { "id": "E8", "kind": "answer" },
+          { "id": "F4.1", "kind": "answer" },
+          { "id": "T9.operating_costs", "kind": "rule" },
+          { "id": "fixture.jo.sole.profit_tax", "kind": "country_pack_item" },
+          { "id": "G1", "kind": "answer" },
+          { "id": "T9.gross_profit", "kind": "rule" },
+          { "id": "T9.operating_profit", "kind": "rule" },
+          { "id": "T9.tax_due", "kind": "rule" },
+          { "id": "T9.tax_paid", "kind": "rule" },
+          { "id": "T9.net_cash", "kind": "rule" },
+          { "id": "F5", "kind": "answer" },
+          { "id": "T9.cumulative_cash", "kind": "rule" },
+          { "id": "T9.funding_need", "kind": "rule" },
+          { "id": "A5", "kind": "answer" },
+          { "id": "feasibility.funding_within_capital", "kind": "rule" }
+        ],
+        "reason": null,
+        "source": "assumption",
+        "status": "fail",
+        "validated": false
+      },
+      {
+        "confidence": "medium",
+        "id": "setup_within_capital",
+        "inputs": [
+          { "id": "F5", "kind": "answer" },
+          { "id": "A5", "kind": "answer" },
+          { "id": "feasibility.setup_within_capital", "kind": "rule" }
+        ],
+        "reason": null,
+        "source": "user",
+        "status": "fail",
+        "validated": true
+      },
+      {
+        "confidence": "low",
+        "id": "price_above_floor",
+        "inputs": [
+          { "id": "F1", "kind": "answer" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "F4", "kind": "answer" },
+          { "id": "E8", "kind": "answer" },
+          { "id": "F4.1", "kind": "answer" },
+          { "id": "T9.operating_costs", "kind": "rule" },
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "growth.founder_share", "kind": "default" },
+          { "id": "growth.upper_bound_yearly", "kind": "default" },
+          { "id": "growth.year3_share_of_year2", "kind": "default" },
+          { "id": "T9.growth_estimate", "kind": "rule" },
+          { "id": "seasonality.peak_factor", "kind": "default" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "T7.floor", "kind": "rule" },
+          { "id": "feasibility.price_above_floor", "kind": "rule" }
+        ],
+        "reason": null,
+        "source": "assumption",
+        "status": "pass",
+        "validated": false
+      },
+      {
+        "confidence": "high",
+        "id": "ltv_cac_at_minimum",
+        "inputs": [
+          { "id": "F2", "kind": "answer" },
+          { "id": "feasibility.ltv_cac_at_minimum", "kind": "rule" }
+        ],
+        "reason": "not_applicable",
+        "source": "user",
+        "status": "not_evaluated",
+        "validated": true
+      },
+      {
+        "confidence": "low",
+        "id": "conservative_break_even",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "growth.founder_share", "kind": "default" },
+          { "id": "growth.upper_bound_yearly", "kind": "default" },
+          { "id": "growth.year3_share_of_year2", "kind": "default" },
+          { "id": "T9.growth_estimate", "kind": "rule" },
+          { "id": "seasonality.peak_factor", "kind": "default" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "T9.sales_multiplier", "kind": "rule" },
+          { "id": "T9.launch_delay", "kind": "rule" },
+          { "id": "F1", "kind": "answer" },
+          { "id": "T9.revenue", "kind": "rule" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "T9.cogs", "kind": "rule" },
+          { "id": "T9.cogs_multiplier", "kind": "rule" },
+          { "id": "T9.gross_profit", "kind": "rule" },
+          { "id": "F4", "kind": "answer" },
+          { "id": "E8", "kind": "answer" },
+          { "id": "F4.1", "kind": "answer" },
+          { "id": "T9.operating_costs", "kind": "rule" },
+          { "id": "T9.operating_profit", "kind": "rule" },
+          { "id": "scenario.conservative.sales_factor", "kind": "default" },
+          { "id": "scenario.conservative.vc_factor", "kind": "default" },
+          { "id": "scenario.conservative.launch_delay_months", "kind": "default" },
+          { "id": "T10.scenario", "kind": "rule" },
+          { "id": "feasibility.window_months", "kind": "default" },
+          { "id": "feasibility.conservative_break_even", "kind": "rule" }
+        ],
+        "reason": null,
+        "source": "assumption",
+        "status": "fail",
+        "validated": false
+      },
+      {
+        "confidence": "low",
+        "id": "payback_within_window",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "growth.founder_share", "kind": "default" },
+          { "id": "growth.upper_bound_yearly", "kind": "default" },
+          { "id": "growth.year3_share_of_year2", "kind": "default" },
+          { "id": "T9.growth_estimate", "kind": "rule" },
+          { "id": "seasonality.peak_factor", "kind": "default" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "F1", "kind": "answer" },
+          { "id": "T9.revenue", "kind": "rule" },
+          { "id": "F7", "kind": "answer" },
+          { "id": "payment.instalments", "kind": "default" },
+          { "id": "T9.cash_receipts", "kind": "rule" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "T9.cogs", "kind": "rule" },
+          { "id": "F4", "kind": "answer" },
+          { "id": "E8", "kind": "answer" },
+          { "id": "F4.1", "kind": "answer" },
+          { "id": "T9.operating_costs", "kind": "rule" },
+          { "id": "fixture.jo.sole.profit_tax", "kind": "country_pack_item" },
+          { "id": "G1", "kind": "answer" },
+          { "id": "T9.gross_profit", "kind": "rule" },
+          { "id": "T9.operating_profit", "kind": "rule" },
+          { "id": "T9.tax_due", "kind": "rule" },
+          { "id": "T9.tax_paid", "kind": "rule" },
+          { "id": "T9.net_cash", "kind": "rule" },
+          { "id": "F5", "kind": "answer" },
+          { "id": "T9.cumulative_cash", "kind": "rule" },
+          { "id": "T9.payback", "kind": "rule" },
+          { "id": "feasibility.window_months", "kind": "default" },
+          { "id": "feasibility.payback_within_window", "kind": "rule" }
+        ],
+        "reason": null,
+        "source": "assumption",
+        "status": "fail",
+        "validated": false
+      },
+      {
+        "confidence": "low",
+        "id": "break_even_units_within_capacity",
+        "inputs": [
+          { "id": "F4", "kind": "answer" },
+          { "id": "E8", "kind": "answer" },
+          { "id": "F4.1", "kind": "answer" },
+          { "id": "T9.operating_costs", "kind": "rule" },
+          { "id": "T8.fixed_cost", "kind": "rule" },
+          { "id": "F1", "kind": "answer" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "T8.contribution_margin", "kind": "rule" },
+          { "id": "T8.break_even_units", "kind": "rule" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "feasibility.break_even_units_within_capacity", "kind": "rule" }
+        ],
+        "reason": null,
+        "source": "assumption",
+        "status": "pass",
+        "validated": false
+      }
+    ],
+    "evaluated": 10,
+    "notes": [],
+    "passed": 6,
+    "score": {
+      "confidence": "low",
+      "inputs": [
+        { "id": "F1", "kind": "answer" },
+        { "id": "F3", "kind": "answer" },
+        { "id": "T8.contribution_margin", "kind": "rule" },
+        { "id": "feasibility.margin_positive", "kind": "rule" },
+        { "id": "F6", "kind": "answer" },
+        { "id": "D7", "kind": "answer" },
+        { "id": "E7", "kind": "answer" },
+        { "id": "F6.2", "kind": "answer" },
+        { "id": "growth.founder_share", "kind": "default" },
+        { "id": "growth.upper_bound_yearly", "kind": "default" },
+        { "id": "growth.year3_share_of_year2", "kind": "default" },
+        { "id": "T9.growth_estimate", "kind": "rule" },
+        { "id": "seasonality.peak_factor", "kind": "default" },
+        { "id": "T9.units", "kind": "rule" },
+        { "id": "T9.revenue", "kind": "rule" },
+        { "id": "T9.cogs", "kind": "rule" },
+        { "id": "T9.gross_profit", "kind": "rule" },
+        { "id": "F4", "kind": "answer" },
+        { "id": "E8", "kind": "answer" },
+        { "id": "F4.1", "kind": "answer" },
+        { "id": "T9.operating_costs", "kind": "rule" },
+        { "id": "T9.operating_profit", "kind": "rule" },
+        { "id": "T8.break_even_month", "kind": "rule" },
+        { "id": "feasibility.window_months", "kind": "default" },
+        { "id": "feasibility.break_even_within_window", "kind": "rule" },
+        { "id": "H5", "kind": "answer" },
+        { "id": "feasibility.break_even_within_target", "kind": "rule" },
+        { "id": "A7", "kind": "answer" },
+        { "id": "feasibility.break_even_within_runway", "kind": "rule" },
+        { "id": "F7", "kind": "answer" },
+        { "id": "payment.instalments", "kind": "default" },
+        { "id": "T9.cash_receipts", "kind": "rule" },
+        { "id": "fixture.jo.sole.profit_tax", "kind": "country_pack_item" },
+        { "id": "G1", "kind": "answer" },
+        { "id": "T9.tax_due", "kind": "rule" },
+        { "id": "T9.tax_paid", "kind": "rule" },
+        { "id": "T9.net_cash", "kind": "rule" },
+        { "id": "F5", "kind": "answer" },
+        { "id": "T9.cumulative_cash", "kind": "rule" },
+        { "id": "T9.funding_need", "kind": "rule" },
+        { "id": "A5", "kind": "answer" },
+        { "id": "feasibility.funding_within_capital", "kind": "rule" },
+        { "id": "feasibility.setup_within_capital", "kind": "rule" },
+        { "id": "T7.floor", "kind": "rule" },
+        { "id": "feasibility.price_above_floor", "kind": "rule" },
+        { "id": "T9.sales_multiplier", "kind": "rule" },
+        { "id": "T9.launch_delay", "kind": "rule" },
+        { "id": "T9.cogs_multiplier", "kind": "rule" },
+        { "id": "scenario.conservative.sales_factor", "kind": "default" },
+        { "id": "scenario.conservative.vc_factor", "kind": "default" },
+        { "id": "scenario.conservative.launch_delay_months", "kind": "default" },
+        { "id": "T10.scenario", "kind": "rule" },
+        { "id": "feasibility.conservative_break_even", "kind": "rule" },
+        { "id": "T9.payback", "kind": "rule" },
+        { "id": "feasibility.payback_within_window", "kind": "rule" },
+        { "id": "T8.fixed_cost", "kind": "rule" },
+        { "id": "T8.break_even_units", "kind": "rule" },
+        { "id": "feasibility.break_even_units_within_capacity", "kind": "rule" },
+        { "id": "feasibility.score", "kind": "rule" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": "3/5"
+    }
+  },
   "input": {
     "breakEvenTarget": {
       "confidence": "high",
@@ -1546,8 +2018,18 @@
     "notes": [
       { "code": "staff_unset", "questionId": "E8", "state": "missing" },
       { "code": "growth_estimated", "questionId": "F6.2", "state": "missing" },
-      { "code": "legal_form_assumed_sole", "questionId": "G1", "state": "unknown" }
+      { "code": "legal_form_assumed_sole", "questionId": "G1", "state": "unknown" },
+      { "code": "worry_unset", "questionId": "H6", "state": "missing" }
     ],
+    "outsideFinancing": {
+      "confidence": "high",
+      "inputs": [
+        { "id": "H3", "kind": "answer" }
+      ],
+      "source": "user",
+      "validated": true,
+      "value": false
+    },
     "paymentOption": {
       "confidence": "high",
       "inputs": [
@@ -1629,6 +2111,15 @@
       "source": "user",
       "validated": true,
       "value": { "currency": "JOD", "minor": "25000" }
+    },
+    "worry": {
+      "confidence": "low",
+      "inputs": [
+        { "id": "H6", "kind": "answer" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": null
     },
     "yearlyGrowth": {
       "confidence": "low",
@@ -1822,6 +2313,51 @@
       "source": "assumption",
       "validated": false,
       "value": "1/5"
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "feasibility.window_months", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": 36
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "verdict.go_score_line", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": "3/4"
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "verdict.funding_multiple", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": "2/1"
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "confidence.high_line", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": "3/4"
+    },
+    {
+      "confidence": "medium",
+      "inputs": [
+        { "id": "confidence.medium_line", "kind": "default" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": "1/2"
     }
   ],
   "pricing": {
@@ -2621,6 +3157,7 @@
       { "code": "staff_unset", "questionId": "E8", "state": "missing" },
       { "code": "growth_estimated", "questionId": "F6.2", "state": "missing" },
       { "code": "legal_form_assumed_sole", "questionId": "G1", "state": "unknown" },
+      { "code": "worry_unset", "questionId": "H6", "state": "missing" },
       { "code": "inflation_not_applied" }
     ],
     "operatingCosts": {
@@ -3916,5 +4453,691 @@
     },
     "status": "ok",
     "subscription": null
+  },
+  "validationPlan": {
+    "candidates": [
+      {
+        "confidence": {
+          "confidence": "high",
+          "inputs": [
+            { "id": "F1", "kind": "answer" },
+            { "id": "T18.priority", "kind": "rule" }
+          ],
+          "source": "user",
+          "validated": true,
+          "value": 3
+        },
+        "rank": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "growth.founder_share", "kind": "default" },
+            { "id": "growth.upper_bound_yearly", "kind": "default" },
+            { "id": "growth.year3_share_of_year2", "kind": "default" },
+            { "id": "T9.growth_estimate", "kind": "rule" },
+            { "id": "seasonality.peak_factor", "kind": "default" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "T9.price_multiplier", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "scenario.tornado_swing", "kind": "default" },
+            { "id": "T10.tornado", "kind": "rule" },
+            { "id": "T18.priority", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": 1
+        },
+        "score": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F1", "kind": "answer" },
+            { "id": "T18.priority", "kind": "rule" },
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "growth.founder_share", "kind": "default" },
+            { "id": "growth.upper_bound_yearly", "kind": "default" },
+            { "id": "growth.year3_share_of_year2", "kind": "default" },
+            { "id": "T9.growth_estimate", "kind": "rule" },
+            { "id": "seasonality.peak_factor", "kind": "default" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "T9.price_multiplier", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "scenario.tornado_swing", "kind": "default" },
+            { "id": "T10.tornado", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": 4
+        },
+        "variable": "price"
+      },
+      {
+        "confidence": {
+          "confidence": "high",
+          "inputs": [
+            { "id": "F3", "kind": "answer" },
+            { "id": "T18.priority", "kind": "rule" }
+          ],
+          "source": "user",
+          "validated": true,
+          "value": 3
+        },
+        "rank": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "growth.founder_share", "kind": "default" },
+            { "id": "growth.upper_bound_yearly", "kind": "default" },
+            { "id": "growth.year3_share_of_year2", "kind": "default" },
+            { "id": "T9.growth_estimate", "kind": "rule" },
+            { "id": "seasonality.peak_factor", "kind": "default" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.cogs_multiplier", "kind": "rule" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "scenario.tornado_swing", "kind": "default" },
+            { "id": "T10.tornado", "kind": "rule" },
+            { "id": "T18.priority", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": 2
+        },
+        "score": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F3", "kind": "answer" },
+            { "id": "T18.priority", "kind": "rule" },
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "growth.founder_share", "kind": "default" },
+            { "id": "growth.upper_bound_yearly", "kind": "default" },
+            { "id": "growth.year3_share_of_year2", "kind": "default" },
+            { "id": "T9.growth_estimate", "kind": "rule" },
+            { "id": "seasonality.peak_factor", "kind": "default" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.cogs_multiplier", "kind": "rule" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "scenario.tornado_swing", "kind": "default" },
+            { "id": "T10.tornado", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": 3
+        },
+        "variable": "vc"
+      },
+      {
+        "confidence": {
+          "confidence": "medium",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "T18.priority", "kind": "rule" }
+          ],
+          "source": "user",
+          "validated": false,
+          "value": 2
+        },
+        "rank": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "growth.founder_share", "kind": "default" },
+            { "id": "growth.upper_bound_yearly", "kind": "default" },
+            { "id": "growth.year3_share_of_year2", "kind": "default" },
+            { "id": "T9.growth_estimate", "kind": "rule" },
+            { "id": "seasonality.peak_factor", "kind": "default" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "T9.sales_multiplier", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "scenario.tornado_swing", "kind": "default" },
+            { "id": "T10.tornado", "kind": "rule" },
+            { "id": "T18.priority", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": 3
+        },
+        "score": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "T18.priority", "kind": "rule" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "growth.founder_share", "kind": "default" },
+            { "id": "growth.upper_bound_yearly", "kind": "default" },
+            { "id": "growth.year3_share_of_year2", "kind": "default" },
+            { "id": "T9.growth_estimate", "kind": "rule" },
+            { "id": "seasonality.peak_factor", "kind": "default" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "T9.sales_multiplier", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "scenario.tornado_swing", "kind": "default" },
+            { "id": "T10.tornado", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": 4
+        },
+        "variable": "sales"
+      },
+      {
+        "confidence": {
+          "confidence": "high",
+          "inputs": [
+            { "id": "F4", "kind": "answer" },
+            { "id": "T18.priority", "kind": "rule" }
+          ],
+          "source": "user",
+          "validated": true,
+          "value": 3
+        },
+        "rank": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "growth.founder_share", "kind": "default" },
+            { "id": "growth.upper_bound_yearly", "kind": "default" },
+            { "id": "growth.year3_share_of_year2", "kind": "default" },
+            { "id": "T9.growth_estimate", "kind": "rule" },
+            { "id": "seasonality.peak_factor", "kind": "default" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "T9.fixed_cost_multiplier", "kind": "rule" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "scenario.tornado_swing", "kind": "default" },
+            { "id": "T10.tornado", "kind": "rule" },
+            { "id": "T18.priority", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": 4
+        },
+        "score": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F4", "kind": "answer" },
+            { "id": "T18.priority", "kind": "rule" },
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "growth.founder_share", "kind": "default" },
+            { "id": "growth.upper_bound_yearly", "kind": "default" },
+            { "id": "growth.year3_share_of_year2", "kind": "default" },
+            { "id": "T9.growth_estimate", "kind": "rule" },
+            { "id": "seasonality.peak_factor", "kind": "default" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "T9.fixed_cost_multiplier", "kind": "rule" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "scenario.tornado_swing", "kind": "default" },
+            { "id": "T10.tornado", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": 1
+        },
+        "variable": "fixed_costs"
+      }
+    ],
+    "entries": [
+      {
+        "confidence": {
+          "confidence": "high",
+          "inputs": [
+            { "id": "F1", "kind": "answer" },
+            { "id": "T18.priority", "kind": "rule" }
+          ],
+          "source": "user",
+          "validated": true,
+          "value": 3
+        },
+        "costClass": "time",
+        "experiment": "price",
+        "fallback": "price.test_second_price",
+        "metric": "price.willingness_to_pay",
+        "rank": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "growth.founder_share", "kind": "default" },
+            { "id": "growth.upper_bound_yearly", "kind": "default" },
+            { "id": "growth.year3_share_of_year2", "kind": "default" },
+            { "id": "T9.growth_estimate", "kind": "rule" },
+            { "id": "seasonality.peak_factor", "kind": "default" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "T9.price_multiplier", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "scenario.tornado_swing", "kind": "default" },
+            { "id": "T10.tornado", "kind": "rule" },
+            { "id": "T18.priority", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": 1
+        },
+        "score": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F1", "kind": "answer" },
+            { "id": "T18.priority", "kind": "rule" },
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "growth.founder_share", "kind": "default" },
+            { "id": "growth.upper_bound_yearly", "kind": "default" },
+            { "id": "growth.year3_share_of_year2", "kind": "default" },
+            { "id": "T9.growth_estimate", "kind": "rule" },
+            { "id": "seasonality.peak_factor", "kind": "default" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "T9.price_multiplier", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "scenario.tornado_swing", "kind": "default" },
+            { "id": "T10.tornado", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": 4
+        },
+        "threshold": "price.accepting_share",
+        "variable": "price",
+        "worry": null
+      },
+      {
+        "confidence": {
+          "confidence": "medium",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "T18.priority", "kind": "rule" }
+          ],
+          "source": "user",
+          "validated": false,
+          "value": 2
+        },
+        "costClass": "small_cash",
+        "experiment": "sales",
+        "fallback": "sales.revise_forecast",
+        "metric": "sales.paid_preorders",
+        "rank": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "growth.founder_share", "kind": "default" },
+            { "id": "growth.upper_bound_yearly", "kind": "default" },
+            { "id": "growth.year3_share_of_year2", "kind": "default" },
+            { "id": "T9.growth_estimate", "kind": "rule" },
+            { "id": "seasonality.peak_factor", "kind": "default" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "T9.sales_multiplier", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "scenario.tornado_swing", "kind": "default" },
+            { "id": "T10.tornado", "kind": "rule" },
+            { "id": "T18.priority", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": 3
+        },
+        "score": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "T18.priority", "kind": "rule" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "growth.founder_share", "kind": "default" },
+            { "id": "growth.upper_bound_yearly", "kind": "default" },
+            { "id": "growth.year3_share_of_year2", "kind": "default" },
+            { "id": "T9.growth_estimate", "kind": "rule" },
+            { "id": "seasonality.peak_factor", "kind": "default" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "T9.sales_multiplier", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "scenario.tornado_swing", "kind": "default" },
+            { "id": "T10.tornado", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": 4
+        },
+        "threshold": "sales.preorders_against_month_one",
+        "variable": "sales",
+        "worry": null
+      },
+      {
+        "confidence": {
+          "confidence": "high",
+          "inputs": [
+            { "id": "F3", "kind": "answer" },
+            { "id": "T18.priority", "kind": "rule" }
+          ],
+          "source": "user",
+          "validated": true,
+          "value": 3
+        },
+        "costClass": "supplier_quote",
+        "experiment": "variable_cost",
+        "fallback": "variable_cost.second_supplier",
+        "metric": "variable_cost.supplier_quotes",
+        "rank": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "growth.founder_share", "kind": "default" },
+            { "id": "growth.upper_bound_yearly", "kind": "default" },
+            { "id": "growth.year3_share_of_year2", "kind": "default" },
+            { "id": "T9.growth_estimate", "kind": "rule" },
+            { "id": "seasonality.peak_factor", "kind": "default" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "F3", "kind": "answer" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.cogs_multiplier", "kind": "rule" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "scenario.tornado_swing", "kind": "default" },
+            { "id": "T10.tornado", "kind": "rule" },
+            { "id": "T18.priority", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": 2
+        },
+        "score": {
+          "confidence": "low",
+          "inputs": [
+            { "id": "F3", "kind": "answer" },
+            { "id": "T18.priority", "kind": "rule" },
+            { "id": "F6", "kind": "answer" },
+            { "id": "D7", "kind": "answer" },
+            { "id": "E7", "kind": "answer" },
+            { "id": "F6.2", "kind": "answer" },
+            { "id": "growth.founder_share", "kind": "default" },
+            { "id": "growth.upper_bound_yearly", "kind": "default" },
+            { "id": "growth.year3_share_of_year2", "kind": "default" },
+            { "id": "T9.growth_estimate", "kind": "rule" },
+            { "id": "seasonality.peak_factor", "kind": "default" },
+            { "id": "T9.units", "kind": "rule" },
+            { "id": "F1", "kind": "answer" },
+            { "id": "T9.revenue", "kind": "rule" },
+            { "id": "T9.cogs", "kind": "rule" },
+            { "id": "T9.cogs_multiplier", "kind": "rule" },
+            { "id": "T9.gross_profit", "kind": "rule" },
+            { "id": "F4", "kind": "answer" },
+            { "id": "E8", "kind": "answer" },
+            { "id": "F4.1", "kind": "answer" },
+            { "id": "T9.operating_costs", "kind": "rule" },
+            { "id": "T9.operating_profit", "kind": "rule" },
+            { "id": "scenario.tornado_swing", "kind": "default" },
+            { "id": "T10.tornado", "kind": "rule" }
+          ],
+          "source": "assumption",
+          "validated": false,
+          "value": 3
+        },
+        "threshold": "variable_cost.quotes_within_estimate",
+        "variable": "vc",
+        "worry": null
+      }
+    ]
+  },
+  "verdict": {
+    "blockers": [
+      {
+        "code": "funding_need_above_capital_multiple",
+        "confidence": "low",
+        "inputs": [
+          { "id": "F6", "kind": "answer" },
+          { "id": "D7", "kind": "answer" },
+          { "id": "E7", "kind": "answer" },
+          { "id": "F6.2", "kind": "answer" },
+          { "id": "growth.founder_share", "kind": "default" },
+          { "id": "growth.upper_bound_yearly", "kind": "default" },
+          { "id": "growth.year3_share_of_year2", "kind": "default" },
+          { "id": "T9.growth_estimate", "kind": "rule" },
+          { "id": "seasonality.peak_factor", "kind": "default" },
+          { "id": "T9.units", "kind": "rule" },
+          { "id": "F1", "kind": "answer" },
+          { "id": "T9.revenue", "kind": "rule" },
+          { "id": "F7", "kind": "answer" },
+          { "id": "payment.instalments", "kind": "default" },
+          { "id": "T9.cash_receipts", "kind": "rule" },
+          { "id": "F3", "kind": "answer" },
+          { "id": "T9.cogs", "kind": "rule" },
+          { "id": "F4", "kind": "answer" },
+          { "id": "E8", "kind": "answer" },
+          { "id": "F4.1", "kind": "answer" },
+          { "id": "T9.operating_costs", "kind": "rule" },
+          { "id": "fixture.jo.sole.profit_tax", "kind": "country_pack_item" },
+          { "id": "G1", "kind": "answer" },
+          { "id": "T9.gross_profit", "kind": "rule" },
+          { "id": "T9.operating_profit", "kind": "rule" },
+          { "id": "T9.tax_due", "kind": "rule" },
+          { "id": "T9.tax_paid", "kind": "rule" },
+          { "id": "T9.net_cash", "kind": "rule" },
+          { "id": "F5", "kind": "answer" },
+          { "id": "T9.cumulative_cash", "kind": "rule" },
+          { "id": "T9.funding_need", "kind": "rule" },
+          { "id": "A5", "kind": "answer" },
+          { "id": "H3", "kind": "answer" },
+          { "id": "verdict.funding_multiple", "kind": "default" },
+          { "id": "verdict.blocker.funding_need_above_capital_multiple", "kind": "rule" }
+        ],
+        "source": "assumption",
+        "validated": false
+      }
+    ],
+    "holdBacks": ["score_below_line"],
+    "verdict": {
+      "confidence": "low",
+      "inputs": [
+        { "id": "F1", "kind": "answer" },
+        { "id": "F3", "kind": "answer" },
+        { "id": "F4", "kind": "answer" },
+        { "id": "F5", "kind": "answer" },
+        { "id": "F6", "kind": "answer" },
+        { "id": "confidence.high_line", "kind": "default" },
+        { "id": "confidence.medium_line", "kind": "default" },
+        { "id": "confidence.overall", "kind": "rule" },
+        { "id": "verdict.go_score_line", "kind": "default" },
+        { "id": "T8.contribution_margin", "kind": "rule" },
+        { "id": "feasibility.margin_positive", "kind": "rule" },
+        { "id": "D7", "kind": "answer" },
+        { "id": "E7", "kind": "answer" },
+        { "id": "F6.2", "kind": "answer" },
+        { "id": "growth.founder_share", "kind": "default" },
+        { "id": "growth.upper_bound_yearly", "kind": "default" },
+        { "id": "growth.year3_share_of_year2", "kind": "default" },
+        { "id": "T9.growth_estimate", "kind": "rule" },
+        { "id": "seasonality.peak_factor", "kind": "default" },
+        { "id": "T9.units", "kind": "rule" },
+        { "id": "T9.revenue", "kind": "rule" },
+        { "id": "T9.cogs", "kind": "rule" },
+        { "id": "T9.gross_profit", "kind": "rule" },
+        { "id": "E8", "kind": "answer" },
+        { "id": "F4.1", "kind": "answer" },
+        { "id": "T9.operating_costs", "kind": "rule" },
+        { "id": "T9.operating_profit", "kind": "rule" },
+        { "id": "T8.break_even_month", "kind": "rule" },
+        { "id": "feasibility.window_months", "kind": "default" },
+        { "id": "feasibility.break_even_within_window", "kind": "rule" },
+        { "id": "H5", "kind": "answer" },
+        { "id": "feasibility.break_even_within_target", "kind": "rule" },
+        { "id": "A7", "kind": "answer" },
+        { "id": "feasibility.break_even_within_runway", "kind": "rule" },
+        { "id": "F7", "kind": "answer" },
+        { "id": "payment.instalments", "kind": "default" },
+        { "id": "T9.cash_receipts", "kind": "rule" },
+        { "id": "fixture.jo.sole.profit_tax", "kind": "country_pack_item" },
+        { "id": "G1", "kind": "answer" },
+        { "id": "T9.tax_due", "kind": "rule" },
+        { "id": "T9.tax_paid", "kind": "rule" },
+        { "id": "T9.net_cash", "kind": "rule" },
+        { "id": "T9.cumulative_cash", "kind": "rule" },
+        { "id": "T9.funding_need", "kind": "rule" },
+        { "id": "A5", "kind": "answer" },
+        { "id": "feasibility.funding_within_capital", "kind": "rule" },
+        { "id": "feasibility.setup_within_capital", "kind": "rule" },
+        { "id": "T7.floor", "kind": "rule" },
+        { "id": "feasibility.price_above_floor", "kind": "rule" },
+        { "id": "T9.sales_multiplier", "kind": "rule" },
+        { "id": "T9.launch_delay", "kind": "rule" },
+        { "id": "T9.cogs_multiplier", "kind": "rule" },
+        { "id": "scenario.conservative.sales_factor", "kind": "default" },
+        { "id": "scenario.conservative.vc_factor", "kind": "default" },
+        { "id": "scenario.conservative.launch_delay_months", "kind": "default" },
+        { "id": "T10.scenario", "kind": "rule" },
+        { "id": "feasibility.conservative_break_even", "kind": "rule" },
+        { "id": "T9.payback", "kind": "rule" },
+        { "id": "feasibility.payback_within_window", "kind": "rule" },
+        { "id": "T8.fixed_cost", "kind": "rule" },
+        { "id": "T8.break_even_units", "kind": "rule" },
+        { "id": "feasibility.break_even_units_within_capacity", "kind": "rule" },
+        { "id": "feasibility.score", "kind": "rule" },
+        { "id": "H3", "kind": "answer" },
+        { "id": "verdict.funding_multiple", "kind": "default" },
+        { "id": "verdict.blocker.funding_need_above_capital_multiple", "kind": "rule" },
+        { "id": "verdict.verdict", "kind": "rule" }
+      ],
+      "source": "assumption",
+      "validated": false,
+      "value": "stop"
+    }
   }
 }

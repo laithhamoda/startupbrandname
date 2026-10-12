@@ -1,7 +1,7 @@
 import { option } from '../options';
 import { define, t } from './define';
 
-// F — الأرقام. F1, F3, F4 and F5 gate the full report (docs/SPEC.md §3).
+// F — الأرقام. F1, F3, F4, F5 and F6 gate the full report (docs/SPEC.md §3).
 export const AXIS_F = [
   define({
     id: 'F1',

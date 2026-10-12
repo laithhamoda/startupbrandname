@@ -1,9 +1,12 @@
 import type { Answers } from '@sbn/question-bank';
+import type { CriterionId, CriterionStatus } from './feasibility';
+import type { FigureConfidence } from './figure';
 import type { ProjectContext, ProvenanceBySteps } from './input';
 import { makeMoney, sumMoney, type Money } from './money';
 import { compareRates, makeRate, type Rate } from './rate';
 import { runEngine, type EngineRun } from './run';
 import type { TaxContext, TaxRule } from './tax';
+import type { BlockerCode, Verdict } from './verdict';
 
 /*
  * The three golden projects of M4 (D-178, D-222). Each is a fixture of answers with provenance, a
@@ -20,6 +23,10 @@ import type { TaxContext, TaxRule } from './tax';
  */
 
 export type GoldenName = 'jo-service-subscription' | 'jo-home-ecommerce' | 'dz-auto-entrepreneur';
+
+/** The synthetic projects of the verdict (D-247): built in the engine's fixtures, with no golden file. */
+export type CaseName =
+  'case-good' | 'case-borderline' | 'case-negative-margin' | 'case-funding-gap';
 
 /** What a hand computation expects, and what the engine gave, in the same four shapes. */
 export type Expected =
@@ -64,8 +71,38 @@ export interface PaymentVariantRow {
   readonly payback: number | null;
 }
 
+/** What a hand computation expects of one criterion of the feasibility score. */
+export interface CriterionRow {
+  readonly id: CriterionId;
+  readonly status: CriterionStatus;
+  /** The hand reason, in Modern Standard Arabic as the page shows it. */
+  readonly hand: string;
+}
+
+/**
+ * The hand computation of the score, the verdict, overall confidence and the validation plan of
+ * one project (D-227, D-229, D-230). `plan` lists the variables of the three places in order;
+ * the sentences are the hand reasons the page shows next to what the engine gave.
+ */
+export interface DecisionRows {
+  readonly criteria: readonly CriterionRow[];
+  readonly evaluated: number;
+  readonly passed: number;
+  readonly blockers: readonly BlockerCode[];
+  readonly verdict: Verdict;
+  readonly confidence: FigureConfidence;
+  /** How many of the five pivotal figures are at medium or high confidence. */
+  readonly sound: number;
+  readonly plan: readonly string[];
+  readonly scoreHand: string;
+  readonly blockersHand: string;
+  readonly verdictHand: string;
+  readonly confidenceHand: string;
+  readonly planHand: string;
+}
+
 export interface GoldenProject {
-  readonly name: GoldenName;
+  readonly name: GoldenName | CaseName;
   readonly title: string;
   /** One plain sentence about the project, for the owner. */
   readonly sentence: string;
@@ -78,6 +115,8 @@ export interface GoldenProject {
   readonly rows: readonly HeadlineRow[];
   /** The project run again under each F7 option, when the project shows them (the e-commerce shop). */
   readonly paymentVariants: readonly PaymentVariantRow[];
+  /** The hand computation of the verdict (D-227). */
+  readonly decision: DecisionRows;
 }
 
 const real = (value: unknown) => ({ status: 'answered' as const, value });
@@ -207,7 +246,9 @@ const subscription: GoldenProject = {
     G1: real('company'),
     A5: real({ min: 8000, max: 15000, currency: 'JOD' }),
     A7: real('lt3'),
+    H3: real({ values: ['self', 'investor'] }),
     H5: real('m12'),
+    H6: real('هل سيقبل العملاء دفع اشتراك شهري بهذا السعر؟'),
   },
   provenance: {
     F1: userHigh,
@@ -227,7 +268,9 @@ const subscription: GoldenProject = {
     G1: userHigh,
     A5: userHigh,
     A7: userHigh,
+    H3: userHigh,
     H5: userHigh,
+    H6: userHigh,
   },
   tax: { rules: JORDAN_FIXTURE_RULES },
   rows: [
@@ -323,6 +366,77 @@ const subscription: GoldenProject = {
     },
   ],
   paymentVariants: [],
+  decision: {
+    criteria: [
+      { id: 'margin_positive', status: 'pass', hand: '30 − 6 = 24 د.أ، وهو موجب' },
+      {
+        id: 'break_even_within_window',
+        status: 'pass',
+        hand: 'التعادل في الشهر 6 (ربح الشهر 6 = 200 × 24 − 4,100 = 700 د.أ)، وهو ضمن 36 شهرًا',
+      },
+      {
+        id: 'break_even_within_target',
+        status: 'pass',
+        hand: 'الشهر 6 ضمن أطول مدة قبلها المؤسس (H5: 12 شهرًا)',
+      },
+      {
+        id: 'break_even_within_runway',
+        status: 'fail',
+        hand: 'الشهر 6 بعد المدة التي يتحمّلها المؤسس بلا دخل (A7: أقل من 3 أشهر)',
+      },
+      {
+        id: 'funding_within_capital',
+        status: 'fail',
+        hand: 'احتياج التمويل 18,400 د.أ أعلى من أقصى رأس مال متاح (15,000 د.أ)',
+      },
+      {
+        id: 'setup_within_capital',
+        status: 'pass',
+        hand: 'تكاليف التأسيس 12,000 د.أ ضمن أقصى رأس مال متاح (15,000 د.أ)',
+      },
+      {
+        id: 'price_above_floor',
+        status: 'fail',
+        hand: 'السعر 30 د.أ أقل من سعر الحدّ الأدنى (30.833 د.أ)',
+      },
+      {
+        id: 'ltv_cac_at_minimum',
+        status: 'pass',
+        hand: 'LTV ÷ CAC = 480 ÷ 60 = 8، وهو 3 فأكثر',
+      },
+      {
+        id: 'conservative_break_even',
+        status: 'fail',
+        hand: 'في السيناريو المتحفّظ: 120 مشتركًا × 23.4 = 2,808 د.أ شهريًا أقل من التكاليف 4,100 د.أ، فلا يوجد تعادل',
+      },
+      {
+        id: 'payback_within_window',
+        status: 'pass',
+        hand: 'الاسترداد بعد 34 شهرًا، وهو ضمن 36 شهرًا',
+      },
+      {
+        id: 'break_even_units_within_capacity',
+        status: 'not_evaluated',
+        hand: 'الطاقة القصوى (E7) غير محددة، فلا يُقارَن بها شيء',
+      },
+    ],
+    evaluated: 10,
+    passed: 6,
+    blockers: [],
+    verdict: 'revise',
+    confidence: 'high',
+    sound: 5,
+    plan: ['worry', 'price', 'fixed_costs'],
+    scoreHand:
+      'المعايير المقيَّمة 10 (معيار الطاقة القصوى خارج العدّ)؛ المتحقق منها 6 (الأول والثاني والثالث والسادس والثامن والعاشر)، فالدرجة 6 ÷ 10 = 60%',
+    blockersHand:
+      'لا حاجب: الهامش 24 د.أ موجب، والتعادل في الشهر 6 ضمن 36 شهرًا، واحتياج التمويل 18,400 د.أ لا يتجاوز ضعف أقصى رأس مال (2 × 15,000 = 30,000 د.أ)',
+    verdictHand: 'الدرجة 60% أقل من 75% ولا حاجب والثقة الإجمالية عالية: القرار عدّل',
+    confidenceHand:
+      'F1 وF4 وF5 وF6 بثقة عالية وF3 بثقة متوسطة: 5 من 5 أرقام محورية بثقة متوسطة أو أعلى = 100%، وهو 75% فأكثر: عالية',
+    planHand:
+      'قلق المؤسس (H6) أولًا. ثم الدرجة (4 − الثقة) × (5 − الترتيب): السعر 1 × 4 = 4، والتكاليف الثابتة 1 × 3 = 3، والمبيعات 1 × 2 = 2، والتكلفة المتغيرة (ثقة متوسطة) 2 × 1 = 2؛ فيدخل السعر ثم التكاليف الثابتة',
+  },
 };
 
 /*
@@ -361,6 +475,7 @@ const ecommerce: GoldenProject = {
     G1: real('dont_know'),
     A5: real({ min: 3000, max: 6000, currency: 'JOD' }),
     A7: real('gt12'),
+    H3: real({ values: ['self', 'family'] }),
     H5: real('m6'),
   },
   provenance: {
@@ -379,6 +494,7 @@ const ecommerce: GoldenProject = {
     G1: userHigh,
     A5: userHigh,
     A7: userHigh,
+    H3: userHigh,
     H5: userHigh,
   },
   tax: { rules: JORDAN_FIXTURE_RULES },
@@ -486,6 +602,77 @@ const ecommerce: GoldenProject = {
       payback: null,
     },
   ],
+  decision: {
+    criteria: [
+      { id: 'margin_positive', status: 'pass', hand: '40 − 25 = 15 د.أ، وهو موجب' },
+      {
+        id: 'break_even_within_window',
+        status: 'pass',
+        hand: 'التعادل في الشهر 1 (ربحه 150 × 15 − 1,200 = 1,050 د.أ)، وهو ضمن 36 شهرًا',
+      },
+      {
+        id: 'break_even_within_target',
+        status: 'pass',
+        hand: 'الشهر 1 ضمن أطول مدة قبلها المؤسس (H5: 6 أشهر)',
+      },
+      {
+        id: 'break_even_within_runway',
+        status: 'pass',
+        hand: 'A7 هو «أكثر من 12 شهرًا»: لا حدّ يمكن أن يتجاوزه التعادل',
+      },
+      {
+        id: 'funding_within_capital',
+        status: 'fail',
+        hand: 'احتياج التمويل 12,900 د.أ أعلى من أقصى رأس مال متاح (6,000 د.أ)',
+      },
+      {
+        id: 'setup_within_capital',
+        status: 'fail',
+        hand: 'تكاليف التأسيس 9,000 د.أ أعلى من أقصى رأس مال متاح (6,000 د.أ)',
+      },
+      {
+        id: 'price_above_floor',
+        status: 'pass',
+        hand: 'السعر 40 د.أ فوق سعر الحدّ الأدنى (37 د.أ)',
+      },
+      {
+        id: 'ltv_cac_at_minimum',
+        status: 'not_evaluated',
+        hand: 'ليس اشتراكًا (F2 سعر ثابت)، فلا LTV ولا CAC',
+      },
+      {
+        id: 'conservative_break_even',
+        status: 'fail',
+        hand: 'في السيناريو المتحفّظ (مبيعات × 0.6، وتكلفة متغيرة × 1.1، وإطلاق متأخر 3 أشهر) لا تعادل خلال 36 شهرًا',
+      },
+      {
+        id: 'payback_within_window',
+        status: 'fail',
+        hand: 'رصيد الشهر 36 ما زال −2,520 د.أ، فلا استرداد خلال 36 شهرًا',
+      },
+      {
+        id: 'break_even_units_within_capacity',
+        status: 'pass',
+        hand: 'نقطة التعادل 80 وحدة ضمن الطاقة القصوى (E7: 200 وحدة)',
+      },
+    ],
+    evaluated: 10,
+    passed: 6,
+    blockers: ['funding_need_above_capital_multiple'],
+    verdict: 'stop',
+    confidence: 'high',
+    sound: 5,
+    plan: ['price', 'sales', 'vc'],
+    scoreHand:
+      'المعايير المقيَّمة 10 (معيار LTV ÷ CAC خارج العدّ)؛ المتحقق منها 6 (الأول والثاني والثالث والرابع والسابع والحادي عشر)، فالدرجة 6 ÷ 10 = 60%',
+    blockersHand:
+      'حاجب واحد: احتياج التمويل 12,900 د.أ أعلى من ضعف أقصى رأس مال (2 × 6,000 = 12,000 د.أ)، و H3 لا يذكر غير المدخرات والعائلة',
+    verdictHand: 'حاجب واحد يوقف المشروع مهما كانت الدرجة: القرار توقّف',
+    confidenceHand:
+      'F1 وF3 وF4 بثقة عالية وF5 وF6 بثقة متوسطة: 5 من 5 أرقام محورية بثقة متوسطة أو أعلى = 100%: عالية',
+    planHand:
+      'لا قلق مسجّل (H6). السعر 1 × 4 = 4، والمبيعات (ثقة متوسطة) 2 × 2 = 4، والتكلفة المتغيرة 1 × 3 = 3، والتكاليف الثابتة 1 × 1 = 1؛ يتعادل السعر والمبيعات في 4 فيتقدّم الأعلى حساسية، ثم التكلفة المتغيرة',
+  },
 };
 
 /*
@@ -529,7 +716,9 @@ const algeria: GoldenProject = {
     G1: real('sole'),
     A5: real({ min: 200000, max: 400000, currency: 'DZD' }),
     A7: real('3to6'),
+    H3: real({ values: ['self', 'family'] }),
     H5: real('m6'),
+    H6: real('هل يستمر الطلب على الأكل المنزلي خارج المناسبات؟'),
   },
   provenance: {
     F1: userHigh,
@@ -546,7 +735,9 @@ const algeria: GoldenProject = {
     G1: userHigh,
     A5: userHigh,
     A7: userHigh,
+    H3: userHigh,
     H5: userHigh,
+    H6: userHigh,
   },
   tax: { rules: ALGERIA_FIXTURE_RULES },
   rows: [
@@ -636,6 +827,77 @@ const algeria: GoldenProject = {
     },
   ],
   paymentVariants: [],
+  decision: {
+    criteria: [
+      { id: 'margin_positive', status: 'pass', hand: '2,000 − 800 = 1,200 DZD، وهو موجب' },
+      {
+        id: 'break_even_within_window',
+        status: 'pass',
+        hand: 'التعادل في الشهر 4 (ربح الشهر 3 = 40 × 1,200 − 50,000 = −2,000، وربح الشهر 4 = 60 × 1,200 − 50,000 = 22,000 DZD)',
+      },
+      {
+        id: 'break_even_within_target',
+        status: 'pass',
+        hand: 'الشهر 4 ضمن أطول مدة قبلها المؤسس (H5: 6 أشهر)',
+      },
+      {
+        id: 'break_even_within_runway',
+        status: 'pass',
+        hand: 'الشهر 4 ضمن المدة التي يتحمّلها المؤسس بلا دخل (A7: من 3 إلى 6 أشهر)',
+      },
+      {
+        id: 'funding_within_capital',
+        status: 'fail',
+        hand: 'احتياج التمويل 418,000 DZD أعلى من أقصى رأس مال متاح (400,000 DZD)',
+      },
+      {
+        id: 'setup_within_capital',
+        status: 'pass',
+        hand: 'تكاليف التأسيس 300,000 DZD ضمن أقصى رأس مال متاح (400,000 DZD)',
+      },
+      {
+        id: 'price_above_floor',
+        status: 'pass',
+        hand: 'السعر 2,000 DZD فوق سعر الحدّ الأدنى (1,466.67 DZD)',
+      },
+      {
+        id: 'ltv_cac_at_minimum',
+        status: 'not_evaluated',
+        hand: 'ليس اشتراكًا (F2 سعر ثابت)، فلا LTV ولا CAC',
+      },
+      {
+        id: 'conservative_break_even',
+        status: 'pass',
+        hand: 'في السيناريو المتحفّظ التعادل في الشهر 8، وهو ضمن 36 شهرًا',
+      },
+      {
+        id: 'payback_within_window',
+        status: 'pass',
+        hand: 'الاسترداد بعد 11 شهرًا، وهو ضمن 36 شهرًا',
+      },
+      {
+        id: 'break_even_units_within_capacity',
+        status: 'not_evaluated',
+        hand: 'الطاقة القصوى (E7) غير محددة، فلا يُقارَن بها شيء',
+      },
+    ],
+    evaluated: 9,
+    passed: 8,
+    blockers: [],
+    verdict: 'go',
+    confidence: 'high',
+    sound: 5,
+    plan: ['worry', 'sales', 'price'],
+    scoreHand:
+      'المعايير المقيَّمة 9 (معيارا LTV ÷ CAC والطاقة القصوى خارج العدّ)؛ المتحقق منها 8، فالدرجة 8 ÷ 9 = 88.89%',
+    blockersHand:
+      'لا حاجب: الهامش 1,200 DZD موجب، والتعادل في الشهر 4، واحتياج التمويل 418,000 DZD لا يتجاوز ضعف أقصى رأس مال (2 × 400,000 = 800,000 DZD)',
+    verdictHand: 'الدرجة 88.89% فوق 75% ولا حاجب والثقة الإجمالية عالية: القرار امضِ',
+    confidenceHand:
+      'F6 بثقة متوسطة والبقية بثقة عالية: 5 من 5 أرقام محورية بثقة متوسطة أو أعلى = 100%: عالية',
+    planHand:
+      'قلق المؤسس (H6) أولًا. السعر 1 × 4 = 4، والمبيعات (ثقة متوسطة) 2 × 3 = 6، والتكلفة المتغيرة 1 × 2 = 2، والتكاليف الثابتة 1 × 1 = 1؛ فيدخل بعد القلق الأعلى درجة: المبيعات ثم السعر',
+  },
 };
 
 /** The three golden projects, in the order of the review page. */
@@ -733,6 +995,46 @@ export function sameValue(a: Expected, b: Expected): boolean {
     case 'rate':
       return b.kind === 'rate' && compareRates(a.rate, b.rate) === 0;
   }
+}
+
+/**
+ * Whether the engine agrees with the hand computation of the verdict, piece by piece (D-247): each
+ * criterion in its row (same id and status), the counts of the score, the blockers, the verdict,
+ * overall confidence with its count of sound figures, and the variables of the plan in order.
+ */
+export interface DecisionAgreement {
+  readonly criteria: readonly boolean[];
+  readonly score: boolean;
+  readonly blockers: boolean;
+  readonly verdict: boolean;
+  readonly confidence: boolean;
+  readonly plan: boolean;
+}
+
+const sameList = (a: readonly string[], b: readonly string[]): boolean =>
+  a.length === b.length && a.every((item, index) => item === b[index]);
+
+/** Compares a run with the hand computation of a project's verdict. */
+export function decisionAgreement(run: EngineRun, decision: DecisionRows): DecisionAgreement {
+  const { feasibility, verdict, confidence, validationPlan } = run;
+  return {
+    criteria: decision.criteria.map((row, index) => {
+      const found = feasibility.criteria[index];
+      return found?.id === row.id && found.status === row.status;
+    }),
+    score: feasibility.evaluated === decision.evaluated && feasibility.passed === decision.passed,
+    blockers: sameList(
+      verdict.blockers.map((blocker) => blocker.code),
+      decision.blockers,
+    ),
+    verdict: verdict.verdict.value === decision.verdict,
+    confidence:
+      confidence.level.value === decision.confidence && confidence.sound === decision.sound,
+    plan: sameList(
+      validationPlan.entries.map((entry) => entry.variable),
+      decision.plan,
+    ),
+  };
 }
 
 /** What the engine gave when a project was run under one of its F7 variants. */

@@ -146,3 +146,18 @@ export function defaultFigure<T>(key: string, value: T): Figure<T> {
     inputs: [{ kind: 'default', id: key }],
   });
 }
+
+/**
+ * The provenance of an answer that is missing or «لا أعرف»: an unvalidated low-confidence
+ * assumption (D-104) naming the question. Used where a figure would exist if the answer did, such
+ * as the set-up costs F5 when the cash flow cannot be made, so that a result built on its absence
+ * still says which answer it lacks.
+ */
+export function missingProvenance(questionId: string): Provenance {
+  return {
+    source: 'assumption',
+    confidence: 'low',
+    validated: false,
+    inputs: [{ kind: 'answer', id: questionId }],
+  };
+}

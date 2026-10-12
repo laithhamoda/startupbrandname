@@ -5,6 +5,7 @@ import {
   defaultFigure,
   figureFromAnswer,
   makeFigure,
+  missingProvenance,
   type FigureConfidence,
   type FigureSource,
   type InputRef,
@@ -177,6 +178,27 @@ describe('defaultFigure', () => {
       confidence: 'medium',
       validated: false,
       inputs: [{ kind: 'default', id: 'seasonality.peak_factor' }],
+    });
+  });
+});
+
+describe('missingProvenance', () => {
+  it('is an unvalidated low-confidence assumption naming the missing question', () => {
+    expect(missingProvenance('F5')).toEqual({
+      source: 'assumption',
+      confidence: 'low',
+      validated: false,
+      inputs: [{ kind: 'answer', id: 'F5' }],
+    });
+  });
+
+  it('is the weakest input of any combination', () => {
+    const user = prov('user', 'high', true, ref('F1'));
+    expect(combineProvenance([user, missingProvenance('F5')])).toEqual({
+      source: 'assumption',
+      confidence: 'low',
+      validated: false,
+      inputs: [ref('F1'), ref('F5')],
     });
   });
 });

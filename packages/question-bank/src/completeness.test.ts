@@ -3,6 +3,7 @@ import {
   AXIS_WEIGHTS,
   completeness,
   displayPercent,
+  FULL_REPORT_QUESTIONS,
   questionGain,
   STAR_WEIGHT,
 } from './completeness';
@@ -30,7 +31,7 @@ describe('completeness (SPEC §3, D-102, D-104, D-105)', () => {
     expect(completeness({})).toMatchObject({
       score: 0,
       gate: 'none',
-      missingForFull: ['F1', 'F3', 'F4', 'F5'],
+      missingForFull: ['F1', 'F3', 'F4', 'F5', 'F6'],
     });
   });
 
@@ -65,10 +66,21 @@ describe('completeness (SPEC §3, D-102, D-104, D-105)', () => {
     expect(completeness({ 'A2.1': answered('نص') }).score).toBe(0);
   });
 
-  it('needs real F3, F4 and F5 values for the full report (D-110)', () => {
+  it('needs real F3, F4, F5 and F6 values for the full report (D-110, D-232)', () => {
     const all = sampleAnswers();
     all.F3 = unknown;
     expect(completeness(all)).toMatchObject({ gate: 'summary', missingForFull: ['F3'] });
+  });
+
+  it('holds the full report back until the sales forecast F6 is a real answer (D-232)', () => {
+    const all = sampleAnswers();
+    expect(FULL_REPORT_QUESTIONS).toEqual(['F1', 'F3', 'F4', 'F5', 'F6']);
+    all.F6 = unknown;
+    expect(completeness(all)).toMatchObject({ gate: 'summary', missingForFull: ['F6'] });
+    delete all.F6;
+    expect(completeness(all)).toMatchObject({ gate: 'summary', missingForFull: ['F6'] });
+    all.F6 = answered({ month1: 1, month6: 5, month12: 10 });
+    expect(completeness(all)).toMatchObject({ gate: 'full', missingForFull: [] });
   });
 
   it('accepts an unknown price (F1) when a competitor price is known (SPEC F1)', () => {
@@ -81,7 +93,7 @@ describe('completeness (SPEC §3, D-102, D-104, D-105)', () => {
     expect(completeness(all).missingForFull).toEqual(['F1']);
   });
 
-  it('keeps the summary below 80% even with the four numbers', () => {
+  it('keeps the summary below 80% even with the five numbers', () => {
     expect(completeness(sampleAnswers(ids('quick'))).missingForFull).toEqual([]);
   });
 
