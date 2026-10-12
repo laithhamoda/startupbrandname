@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
+    "./canvas": "./src/canvas/index.ts",
     "./testing": "./src/testing/index.ts"
   },
   "scripts": {
@@ -16,6 +17,7 @@
   "dependencies": {
     "@fontsource/cairo": "5.3.0",
     "@fontsource/tajawal": "5.3.0",
+    "@sbn/question-bank": "workspace:*",
     "@sparticuz/chromium": "153.0.0",
     "puppeteer-core": "25.11.0"
   },

@@ -177,6 +177,9 @@ importers:
       '@fontsource/tajawal':
         specifier: 5.3.0
         version: 5.3.0
+      '@sbn/question-bank':
+        specifier: workspace:*
+        version: link:../question-bank
       '@sparticuz/chromium':
         specifier: 153.0.0
         version: 153.0.0
