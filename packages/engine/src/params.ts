@@ -63,6 +63,16 @@ export const PARAM_KEYS = {
 } as const;
 
 /**
+ * The key of the one parameter that does not change any run (D-261): the budget of the search for
+ * the changes that would change a verdict. It is listed by `listChangeParams`, not by
+ * `listEngineParams`, because a run's parameters are part of its serialised result and of its
+ * settings hash, and a budget alters neither.
+ */
+export const CHANGE_PARAM_KEYS = {
+  changeSearchBudget: 'changes.search_budget',
+} as const;
+
+/**
  * Every default the engine assumes, each a figure with source `assumption` and a stable key
  * (D-181, D-195), so the report can list them and a caller can override any of them. Rates are
  * exact and unitless. None is a legal, tax or market value (CLAUDE.md rule 8).
@@ -126,6 +136,11 @@ export interface EngineParams {
   readonly confidenceHighLine: Figure<Rate>;
   /** The share that makes overall confidence at least medium (D-229). Default 1/2. */
   readonly confidenceMediumLine: Figure<Rate>;
+  /**
+   * How many evaluations of the engine the search for the changes that would change a verdict may
+   * use (D-228, D-261): 160 by default. A whole number from 1 to 10,000. Not part of a run.
+   */
+  readonly changeSearchBudget: Figure<number>;
 }
 
 /**
@@ -182,6 +197,7 @@ function defaultParams(): EngineParams {
     fundingBlockerMultiple: defaultFigure(PARAM_KEYS.fundingBlockerMultiple, makeRate(2n, 1n)),
     confidenceHighLine: defaultFigure(PARAM_KEYS.confidenceHighLine, makeRate(3n, 4n)),
     confidenceMediumLine: defaultFigure(PARAM_KEYS.confidenceMediumLine, makeRate(1n, 2n)),
+    changeSearchBudget: defaultFigure(CHANGE_PARAM_KEYS.changeSearchBudget, 160),
   };
 }
 
@@ -343,6 +359,12 @@ function validate(params: EngineParams): void {
     PARAM_KEYS.confidenceMediumLine,
     'must not be above the high confidence line',
   );
+  const budget = params.changeSearchBudget.value;
+  ensure(
+    Number.isSafeInteger(budget) && budget >= 1 && budget <= 10_000,
+    CHANGE_PARAM_KEYS.changeSearchBudget,
+    'must be a whole number of evaluations from 1 to 10000',
+  );
 }
 
 /**
@@ -424,4 +446,12 @@ export function listEngineParams(params: EngineParams): readonly Figure<unknown>
     params.confidenceHighLine,
     params.confidenceMediumLine,
   ];
+}
+
+/**
+ * The parameters that belong to the search for the changes that would change a verdict and to no
+ * run (D-261), as figures: the evaluation budget. `suggestChanges` lists them in its result.
+ */
+export function listChangeParams(params: EngineParams): readonly Figure<unknown>[] {
+  return [params.changeSearchBudget];
 }
