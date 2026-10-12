@@ -1,0 +1,390 @@
+{
+  "version": 1,
+  "locale": "ar",
+  "kind": "summary",
+  "lockReason": "completeness",
+  "audience": "investor",
+  "meta": {
+    "title": "خدمة برمجية بالاشتراك الشهري",
+    "countryCode": "JO",
+    "currencyLabel": "د.أ",
+    "issuedOn": "2026-10-12",
+    "engineVersion": null,
+    "inputHash": null,
+    "completeness": {
+      "percent": 86,
+      "gate": "full"
+    },
+    "confidence": null
+  },
+  "sections": [
+    {
+      "id": "project_card",
+      "title": "بطاقة المشروع",
+      "locked": false,
+      "blocks": [
+        {
+          "type": "definitionList",
+          "title": null,
+          "items": [
+            {
+              "term": [
+                "الفريق"
+              ],
+              "definition": {
+                "text": [
+                  "سامر: شريك مؤسس"
+                ],
+                "provenance": {
+                  "source": "user",
+                  "confidence": "high",
+                  "validated": true
+                },
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            },
+            {
+              "term": [
+                "الفكرة"
+              ],
+              "definition": {
+                "text": [
+                  "منصة برمجية تدير حجوزات العيادات الصغيرة باشتراك شهري."
+                ],
+                "provenance": {
+                  "source": "user",
+                  "confidence": "high",
+                  "validated": true
+                },
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            },
+            {
+              "term": [
+                "من يدفع"
+              ],
+              "definition": {
+                "text": [
+                  "شركات"
+                ],
+                "provenance": {
+                  "source": "user",
+                  "confidence": "high",
+                  "validated": true
+                },
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            },
+            {
+              "term": [
+                "المكان"
+              ],
+              "definition": {
+                "text": [
+                  "عمّان، الأردن"
+                ],
+                "provenance": {
+                  "source": "user",
+                  "confidence": "high",
+                  "validated": true
+                },
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            },
+            {
+              "term": [
+                "مكان العمل"
+              ],
+              "definition": {
+                "text": [
+                  "مكتب"
+                ],
+                "provenance": {
+                  "source": "user",
+                  "confidence": "high",
+                  "validated": true
+                },
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            },
+            {
+              "term": [
+                "القطاع"
+              ],
+              "definition": {
+                "text": [
+                  "المعلومات والاتصالات"
+                ],
+                "provenance": {
+                  "source": "user",
+                  "confidence": "high",
+                  "validated": true
+                },
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            },
+            {
+              "term": [
+                "نوع المشروع"
+              ],
+              "definition": {
+                "text": [
+                  "منتج رقمي"
+                ],
+                "provenance": {
+                  "source": "user",
+                  "confidence": "high",
+                  "validated": true
+                },
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            },
+            {
+              "term": [
+                "نموذج التسعير"
+              ],
+              "definition": {
+                "text": [
+                  "اشتراك"
+                ],
+                "provenance": {
+                  "source": "user",
+                  "confidence": "high",
+                  "validated": true
+                },
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            },
+            {
+              "term": [
+                "سعر البيع"
+              ],
+              "definition": {
+                "text": [
+                  {
+                    "n": "30.000"
+                  },
+                  " د.أ"
+                ],
+                "provenance": {
+                  "source": "user",
+                  "confidence": "high",
+                  "validated": true
+                },
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            },
+            {
+              "term": [
+                "رأس المال المتاح"
+              ],
+              "definition": {
+                "text": [
+                  "من ",
+                  {
+                    "n": "8,000.000"
+                  },
+                  " د.أ إلى ",
+                  {
+                    "n": "15,000.000"
+                  },
+                  " د.أ"
+                ],
+                "provenance": {
+                  "source": "user",
+                  "confidence": "high",
+                  "validated": true
+                },
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            },
+            {
+              "term": [
+                "الهدف من المشروع"
+              ],
+              "definition": {
+                "text": [
+                  "شركة قابلة للنمو"
+                ],
+                "provenance": {
+                  "source": "user",
+                  "confidence": "high",
+                  "validated": true
+                },
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "top_risks",
+      "title": "أهم ثلاث مخاطر",
+      "locked": false,
+      "blocks": [
+        {
+          "type": "list",
+          "title": null,
+          "ordered": false,
+          "items": [
+            [
+              "لم تُجب بعد عن التكلفة المتغيرة للوحدة، وبدونه لا يكتمل الحساب."
+            ],
+            [
+              "لم تُجب بعد عن التكاليف الثابتة، وبدونه لا يكتمل الحساب."
+            ],
+            [
+              "لم تُجب بعد عن تكاليف التأسيس، وبدونه لا يكتمل الحساب."
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "break_even",
+      "title": "تقدير التعادل",
+      "locked": false,
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": [
+            "إجاباتك الحالية لا تكفي بعد لتقدير نقطة التعادل (",
+            {
+              "l": "Break-even"
+            },
+            ")."
+          ]
+        },
+        {
+          "type": "list",
+          "title": [
+            "ما ينقص:"
+          ],
+          "ordered": false,
+          "items": [
+            [
+              "ينقص: التكلفة المتغيرة للوحدة."
+            ],
+            [
+              "ينقص: التكاليف الثابتة."
+            ],
+            [
+              "ينقص: توقّعات المبيعات."
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cover",
+      "title": "الغلاف",
+      "locked": true,
+      "blocks": []
+    },
+    {
+      "id": "executive_summary",
+      "title": "الملخص التنفيذي",
+      "locked": true,
+      "blocks": []
+    },
+    {
+      "id": "canvases",
+      "title": "لوحتا نموذج العمل",
+      "locked": true,
+      "blocks": []
+    },
+    {
+      "id": "pricing_unit_economics",
+      "title": "التسعير واقتصاديات الوحدة",
+      "locked": true,
+      "blocks": []
+    },
+    {
+      "id": "projection",
+      "title": "الإسقاط المالي",
+      "locked": true,
+      "blocks": []
+    },
+    {
+      "id": "scenarios_sensitivity",
+      "title": "السيناريوهات والحساسية",
+      "locked": true,
+      "blocks": []
+    },
+    {
+      "id": "legal_path_financing",
+      "title": "المسار القانوني والتمويل",
+      "locked": true,
+      "blocks": []
+    },
+    {
+      "id": "validation_plan",
+      "title": "خطة التحقق",
+      "locked": true,
+      "blocks": []
+    },
+    {
+      "id": "appendix_assumptions",
+      "title": "ملحق أ: سجل الافتراضات",
+      "locked": true,
+      "blocks": []
+    },
+    {
+      "id": "appendix_sources",
+      "title": "ملحق ب: المصادر",
+      "locked": true,
+      "blocks": []
+    },
+    {
+      "id": "appendix_disclaimer",
+      "title": "ملحق ج: إخلاء المسؤولية",
+      "locked": true,
+      "blocks": []
+    }
+  ]
+}

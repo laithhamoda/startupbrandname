@@ -1,11 +1,13 @@
 import {
   GOLDEN_PROJECTS,
-  runGolden,
+  runEngine,
   suggestChanges,
-  type EngineRun,
+  type EngineRunResult,
   type GoldenName,
   type GoldenProject,
+  type NotCalculableReason,
   type SuggestedChanges,
+  type TaxContext,
 } from '@sbn/engine';
 import type { Answers } from '@sbn/question-bank';
 import type { PackItem } from '../legal-path';
@@ -70,51 +72,100 @@ const IDENTITY: Readonly<
   },
 };
 
-/** A small, clearly artificial pack: two Jordan items and the tax authority, one of them old. */
+const pair = (ar: string, en: string) => ({ ar, en });
+
+function packItem(
+  countryCode: string,
+  key: string,
+  name: { ar: string; en: string },
+  options: {
+    readonly lastVerified?: string | null;
+    readonly status?: PackItem['status'];
+    readonly url?: string;
+    readonly note?: boolean;
+    readonly figure?: string;
+  } = {},
+): PackItem {
+  const slug = key.replace(/[^a-z]+/g, '-');
+  return {
+    countryCode,
+    key,
+    value: {
+      name,
+      description: pair('وصف تجريبي من مصدر رسمي.', 'A test description from an official source.'),
+      ...(options.note === true ? { note: pair('ملاحظة تجريبية.', 'A test note.') } : {}),
+      ...(options.url === undefined ? {} : { url: options.url }),
+      ...(options.figure === undefined
+        ? {}
+        : {
+            figures: [
+              {
+                id: 'ceiling',
+                text: options.figure,
+                evidence: [
+                  {
+                    text: 'a sentence of the official page',
+                    lang: 'en' as const,
+                    url: `https://example.invalid/${countryCode.toLowerCase()}/${slug}`,
+                  },
+                ],
+              },
+            ],
+          }),
+    },
+    sourceUrl: `https://example.invalid/${countryCode.toLowerCase()}/${slug}`,
+    lastVerified: options.lastVerified === undefined ? '2026-10-01' : options.lastVerified,
+    status: options.status ?? 'verified',
+  };
+}
+
+/**
+ * A small, clearly artificial country pack (example.invalid links, invented descriptions): Jordan
+ * with a fresh item, an old item and the tax authority link; Algeria with an item under review, a
+ * ceiling figure and a tax authority item that holds no link. The real pack is in the database.
+ */
 export function testPackItems(): readonly PackItem[] {
-  const pair = (ar: string, en: string) => ({ ar, en });
   return [
-    {
-      countryCode: 'JO',
-      key: 'registration.sole.body',
-      value: {
-        name: pair('تسجيل مؤسسة فردية', 'Sole proprietorship registration'),
-        description: pair(
-          'تُسجَّل المؤسسة لدى الجهة الرسمية.',
-          'The business is registered with the official body.',
-        ),
-      },
-      sourceUrl: 'https://example.invalid/jo/sole',
-      lastVerified: '2026-10-01',
-      status: 'verified',
-    },
-    {
-      countryCode: 'JO',
-      key: 'registration.company.body',
-      value: {
-        name: pair('تسجيل شركة', 'Company registration'),
-        description: pair(
-          'تُسجَّل الشركة لدى الجهة الرسمية.',
-          'The company is registered with the official body.',
-        ),
-        note: pair('راجع الجهة الرسمية.', 'Check with the official body.'),
-      },
-      sourceUrl: 'https://example.invalid/jo/company',
+    packItem(
+      'JO',
+      'registration.sole.body',
+      pair('تسجيل مؤسسة فردية', 'Sole proprietorship registration'),
+    ),
+    packItem('JO', 'registration.company.body', pair('تسجيل شركة', 'Company registration'), {
       lastVerified: '2026-01-01',
-      status: 'verified',
-    },
-    {
-      countryCode: 'JO',
-      key: 'official.tax_authority',
-      value: {
-        name: pair('دائرة ضريبة الدخل والمبيعات', 'Income and Sales Tax Department'),
-        description: pair('الجهة الضريبية الرسمية.', 'The official tax authority.'),
-        url: 'https://example.invalid/jo/tax',
-      },
-      sourceUrl: 'https://example.invalid/jo/tax',
-      lastVerified: '2026-10-01',
-      status: 'verified',
-    },
+      note: true,
+    }),
+    packItem(
+      'JO',
+      'registration.chamber.membership',
+      pair('الانتساب إلى الغرفة', 'Chamber membership'),
+    ),
+    packItem('JO', 'tax.registration.body', pair('التسجيل الضريبي', 'Tax registration'), {
+      lastVerified: null,
+    }),
+    packItem(
+      'JO',
+      'official.tax_authority',
+      pair('دائرة ضريبة الدخل والمبيعات', 'Income and Sales Tax Department'),
+      { url: 'https://example.invalid/jo/tax' },
+    ),
+    packItem(
+      'DZ',
+      'registration.auto_entrepreneur.body',
+      pair('مسار المقاول الذاتي', 'The auto-entrepreneur path'),
+      { status: 'under_review' },
+    ),
+    packItem(
+      'DZ',
+      'tax.ifu.auto_entrepreneur.rate_ceiling',
+      pair('سقف الضريبة الجزافية الوحيدة', 'The flat-tax ceiling'),
+      { figure: '5,000,000 DA' },
+    ),
+    packItem(
+      'DZ',
+      'official.tax_authority',
+      pair('المديرية العامة للضرائب', 'The tax directorate'),
+    ),
   ];
 }
 
@@ -123,8 +174,24 @@ export interface GoldenReportOptions {
   readonly kind?: 'full' | 'summary';
   readonly lockReason?: 'completeness' | 'plan' | null;
   readonly today?: string;
-  readonly run?: EngineRun | null;
+  /** Changes the answers (and their provenance) before the engine runs again. */
+  readonly change?: (answers: MutableAnswers, provenance: MutableProvenance) => void;
+  /** The tax context of the run; the project's own fixture rules by default. */
+  readonly tax?: TaxContext;
+  /** Pretend the answers cannot be calculated: no run, and these reasons. */
+  readonly withoutRun?: readonly NotCalculableReason[];
 }
+
+export type MutableAnswers = Record<string, unknown>;
+export type MutableProvenance = Record<string, unknown>;
+
+/** Removes answers (or their provenance) by question ID, for a test that trims a project. */
+export function drop(target: Record<string, unknown>, ...ids: readonly string[]): void {
+  for (const id of ids) Reflect.deleteProperty(target, id);
+}
+
+/** An answered question, the way the database holds it. */
+export const answered = (value: unknown) => ({ status: 'answered' as const, value });
 
 export function goldenProject(name: GoldenName): GoldenProject {
   const found = GOLDEN_PROJECTS.find((candidate) => candidate.name === name);
@@ -148,25 +215,36 @@ export function goldenAnswers(name: GoldenName): {
 
 export function goldenReportInput(name: GoldenName, options: GoldenReportOptions): ReportInput {
   const project = goldenProject(name);
-  const { answers, provenance } = goldenAnswers(name);
-  const run = options.run === undefined ? runGolden(project) : options.run;
-  const changes: SuggestedChanges | null = run === null ? null : suggestChanges(run, project.tax);
+  const base = goldenAnswers(name);
+  const answers: MutableAnswers = { ...base.answers };
+  const provenance: MutableProvenance = { ...base.provenance };
+  options.change?.(answers, provenance);
+  const tax = options.tax ?? project.tax;
+  const result: EngineRunResult = runEngine(
+    answers as Answers,
+    provenance as GoldenProject['provenance'],
+    project.context,
+    tax,
+  );
+  const calculated = options.withoutRun === undefined && result.status === 'ok';
+  const run = calculated ? result.run : null;
+  const changes: SuggestedChanges | null = run === null ? null : suggestChanges(run, tax);
   const kind = options.kind ?? 'full';
   return {
     locale: options.locale,
     kind,
     lockReason: options.lockReason ?? (kind === 'full' ? null : 'plan'),
-    audience: audienceOfAnswers(answers),
+    audience: audienceOfAnswers(answers as Answers),
     project: {
       title: project.title,
       countryCode: project.context.country,
       currency: project.context.currency,
       currencyLabel: IDENTITY[name].currencyLabel,
     },
-    answers,
-    provenance,
+    answers: answers as Answers,
+    provenance: provenance as GoldenProject['provenance'],
     run,
-    notCalculable: [],
+    notCalculable: options.withoutRun ?? (result.status === 'not_calculable' ? result.reasons : []),
     changes,
     packItems: testPackItems(),
     completeness: { percent: 86, gate: 'full' },

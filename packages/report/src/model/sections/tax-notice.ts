@@ -1,6 +1,6 @@
 import type { EngineRun } from '@sbn/engine';
 import type { Ctx } from '../context';
-import { concat, plain } from '../inline';
+import { concat, ltr, plain } from '../inline';
 import type { Block, Inline } from '../types';
 import { callout, note } from './shared';
 
@@ -10,9 +10,8 @@ export function taxGapText(ctx: Ctx, run: EngineRun): Inline {
   if (tax.status !== 'not_calculated') return [];
   const { gap } = tax;
   return ctx.m.taxGaps[gap.code]({
-    regimes:
-      gap.code === 'ambiguous_regime' ? plain(gap.regimes.join(ctx.m.words.listSeparator)) : [],
-    currency: gap.code === 'rule_other_currency' ? plain(gap.currency) : [],
+    regimes: gap.code === 'ambiguous_regime' ? ltr(gap.regimes.join(', ')) : [],
+    currency: gap.code === 'rule_other_currency' ? ltr(gap.currency) : [],
   });
 }
 

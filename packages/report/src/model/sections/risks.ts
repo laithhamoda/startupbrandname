@@ -15,7 +15,7 @@ import {
   type Ctx,
   answerProvenance,
 } from '../context';
-import { plain } from '../inline';
+import { ltr, plain } from '../inline';
 import type { Inline } from '../types';
 
 /** How many risks the executive summary and the free summary show (D-229). */
@@ -55,7 +55,7 @@ export function alertSentence(ctx: Ctx, alert: RunAlert): Inline {
     limit: ctx.alertValue(alert.limit),
     lowerLimit: alert.origin === 'economics' ? ctx.alertValue(alert.lowerLimit) : [],
     year: alert.origin === 'tax' && alert.year !== null ? ctx.integer(alert.year) : [],
-    regime: alert.origin === 'tax' && alert.regime !== null ? plain(alert.regime) : [],
+    regime: alert.origin === 'tax' && alert.regime !== null ? ltr(alert.regime) : [],
   });
 }
 

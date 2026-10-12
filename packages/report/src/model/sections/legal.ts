@@ -2,7 +2,7 @@ import { compareMoney, type EngineRun } from '@sbn/engine';
 import { getQuestion, valueOf } from '@sbn/question-bank';
 import type { GuideStep } from '../../legal-path';
 import type { Ctx } from '../context';
-import { join, plain } from '../inline';
+import { join, ltr, plain } from '../inline';
 import type { Block, DefinitionItem, Inline } from '../types';
 import { adviserBlocks, taxNoticeBlocks } from './tax-notice';
 import { bulletList, callout, column, note, paragraph, row, table } from './shared';
@@ -63,7 +63,7 @@ function taxBlocks(ctx: Ctx, run: EngineRun): Block[] {
   const words = ctx.m.legal;
   if (tax.status !== 'calculated') return taxNoticeBlocks(ctx, run);
   return [
-    paragraph(words.taxCalculated({ regime: plain(tax.regime) })),
+    paragraph(words.taxCalculated({ regime: ltr(tax.regime) })),
     table({
       caption: plain(words.taxCaption),
       headHeader: plain(words.taxColumns.year),

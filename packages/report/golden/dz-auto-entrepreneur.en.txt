@@ -1,0 +1,222 @@
+## Cover
+Every number in this report is calculated by the engine with fixed formulas and carries its source and its level of confidence. No language model writes any number.
+- Project: مقاول ذاتي يبيع أكلات منزلية في الجزائر
+- Country: Algeria
+- Report currency: Algerian Dinar (DZD)
+- Issued on: 2026-10-12
+- Engine version: 1.1.0
+- Answers completed: 86%
+- Overall confidence: High (5 of 5 key answers are sound)
+## Executive summary
+This report is addressed to a grant body, so it opens with the break-even month, then the funding need, then first-year profit.
+VERDICT Go  | 8 of 9 feasibility criteria pass (88.89%), which reaches or exceeds the Go line (75%); no criterion blocks, and your confidence in the key figures is sufficient. The score is not a probability of success; it is the share of criteria that pass.
+Feasibility criteria met: 8 of 9. The Go line is at 75%.
+Break-even month: Month 4 (Break-even: the first month income covers costs)
+Funding need: 418,000.00 د.ج (Lowest cash balance, in Month 3)
+Year-one operating profit: 480,000.00 د.ج (Operating profit before tax)
+Main risks:
+- Your revenue in year 3 (7,126,000.00 د.ج) exceeds the ceiling of the fixture_auto_entrepreneur tax regime (5,000,000.00 د.ج).
+- Set-up costs (300,000.00 د.ج) are above your smallest available capital (200,000.00 د.ج) and below your largest (400,000.00 د.ج).
+- Your own worry: “هل يستمر الطلب على الأكل المنزلي خارج المناسبات؟”.
+Overall confidence in your answers is High (5 of 5 key answers are sound).
+## Project card
+- The idea: خدمة صيانة للأجهزة المنزلية لدى الزبائن.
+- Who pays: Individuals (B2C)
+- Location: وهران, Algeria
+- Where you work: In the field, at customers’ sites
+- Sector: Other service activities
+- Project type: Service
+- Pricing model: Fixed price
+- Selling price: 2,000.00 د.ج
+- Available capital: from 200,000.00 د.ج to 400,000.00 د.ج
+- Goal of the project: Main income
+## Business model canvases
+Each cell shows your own words as you wrote them, with their source and level of confidence; the platform writes no text for you.
+CANVAS Business Model Canvas
+  Customer segments: Individuals (B2C)
+  Value propositions: خدمة صيانة للأجهزة المنزلية لدى الزبائن.
+  Channels: You have not yet answered the question behind this cell.
+  Customer relationships: You have not yet answered the question behind this cell.
+  Revenue streams: 2000 د.ج / Fixed price / A deposit, the rest later
+  Key resources: In the field, at customers’ sites
+  Key activities: You have not yet answered the question behind this cell.
+  Key partners: You have not yet answered the question behind this cell.
+  Cost structure: 650 د.ج / 150 د.ج / 30000 د.ج / 10000 د.ج / 10000 د.ج / 220000 د.ج / 30000 د.ج / 50000 د.ج
+    Total fixed costs per month: 40,000.00 د.ج
+    Variable cost per unit: 800.00 د.ج
+    Total set-up costs: 300,000.00 د.ج
+CANVAS Lean Canvas
+  Customer segments: You have not yet answered the question behind this cell.
+  Problem: You have not yet answered the question behind this cell.
+  Unique value proposition: خدمة صيانة للأجهزة المنزلية لدى الزبائن.
+  Solution: خدمة صيانة للأجهزة المنزلية لدى الزبائن.
+  Channels: You have not yet answered the question behind this cell.
+  Revenue streams: 2000 د.ج / Fixed price / A deposit, the rest later
+  Cost structure: 650 د.ج / 150 د.ج / 30000 د.ج / 10000 د.ج / 10000 د.ج / 220000 د.ج / 30000 د.ج / 50000 د.ج
+    Total fixed costs per month: 40,000.00 د.ج
+    Variable cost per unit: 800.00 د.ج
+    Total set-up costs: 300,000.00 د.ج
+  Key metrics: You have not yet answered the question behind this cell.
+  Unfair advantage: You have not yet answered the question behind this cell.
+## Pricing and unit economics
+TABLE Unit economics and break-even
+  | Item | Value
+  | Selling price per unit | 2,000.00 د.ج
+  | Variable cost per unit | 800.00 د.ج
+  | Fixed costs you entered, per month | 40,000.00 د.ج
+  | Contribution margin per unit | 1,200.00 د.ج
+  | Margin rate | 60%
+  | Total fixed costs per month as the engine counts them | 50,000.00 د.ج
+  | Break-even units per month | 42
+  | Break-even revenue per month | 83,333.33 د.ج
+  | Break-even month | Month 4
+You gave no maximum monthly capacity, so break-even units are not compared with one.
+TABLE Price positions in the market
+  | Item | Value
+  | Price floor | 1,466.67 د.ج
+  | Lowest competitor price | 1,800.00 د.ج
+  | Median competitor price | 2,000.00 د.ج
+  | Highest competitor price | 2,200.00 د.ج
+  | Penetration price | 1,800.00 د.ج
+  | Market price | 2,000.00 د.ج
+A premium price needs a measurable difference in your offer, and your answer does not show one yet.
+## Financial projection
+Revenue is collected as a deposit with the rest later. Figures are before tax unless stated otherwise.
+TABLE Year one, month by month
+  | Month | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | Year total
+  | Units sold | 0 | 20 | 40 | 60 | 80 | 100 | 100 | 100 | 100 | 100 | 100 | 100 | 900
+  | Revenue | 0.00 د.ج | 40,000.00 د.ج | 80,000.00 د.ج | 120,000.00 د.ج | 160,000.00 د.ج | 200,000.00 د.ج | 200,000.00 د.ج | 200,000.00 د.ج | 200,000.00 د.ج | 200,000.00 د.ج | 200,000.00 د.ج | 200,000.00 د.ج | 1,800,000.00 د.ج
+  | Cost of sales | 0.00 د.ج | 16,000.00 د.ج | 32,000.00 د.ج | 48,000.00 د.ج | 64,000.00 د.ج | 80,000.00 د.ج | 80,000.00 د.ج | 80,000.00 د.ج | 80,000.00 د.ج | 80,000.00 د.ج | 80,000.00 د.ج | 80,000.00 د.ج | 720,000.00 د.ج
+  | Gross profit | 0.00 د.ج | 24,000.00 د.ج | 48,000.00 د.ج | 72,000.00 د.ج | 96,000.00 د.ج | 120,000.00 د.ج | 120,000.00 د.ج | 120,000.00 د.ج | 120,000.00 د.ج | 120,000.00 د.ج | 120,000.00 د.ج | 120,000.00 د.ج | 1,080,000.00 د.ج
+  | Operating costs | 50,000.00 د.ج | 50,000.00 د.ج | 50,000.00 د.ج | 50,000.00 د.ج | 50,000.00 د.ج | 50,000.00 د.ج | 50,000.00 د.ج | 50,000.00 د.ج | 50,000.00 د.ج | 50,000.00 د.ج | 50,000.00 د.ج | 50,000.00 د.ج | 600,000.00 د.ج
+  | Operating profit | −50,000.00 د.ج | −26,000.00 د.ج | −2,000.00 د.ج | 22,000.00 د.ج | 46,000.00 د.ج | 70,000.00 د.ج | 70,000.00 د.ج | 70,000.00 د.ج | 70,000.00 د.ج | 70,000.00 د.ج | 70,000.00 د.ج | 70,000.00 د.ج | 480,000.00 د.ج
+  | Net cash | −50,000.00 د.ج | −46,000.00 د.ج | −22,000.00 د.ج | 2,000.00 د.ج | 26,000.00 د.ج | 50,000.00 د.ج | 70,000.00 د.ج | 70,000.00 د.ج | 70,000.00 د.ج | 70,000.00 د.ج | 70,000.00 د.ج | 70,000.00 د.ج | 380,000.00 د.ج
+  | Cumulative cash balance | −350,000.00 د.ج | −396,000.00 د.ج | −418,000.00 د.ج [lowest_cash] | −416,000.00 د.ج | −390,000.00 د.ج | −340,000.00 د.ج | −270,000.00 د.ج | −200,000.00 د.ج | −130,000.00 د.ج | −60,000.00 د.ج | 10,000.00 د.ج | 80,000.00 د.ج | 80,000.00 د.ج
+The cash balance starts from −300,000.00 د.ج, which is the set-up costs.
+The lowest cash balance is in Month 3; it is the funding need.
+Break-even: the first month operations make a profit, which is Month 4.
+Payback period: the capital you spent is recovered in Month 11.
+TABLE Year 2: by quarter (each quarter is three months)
+  | Month | Quarter 1 | Quarter 2 | Quarter 3 | Quarter 4 | Year total
+  | Revenue | 674,000.00 د.ج | 800,000.00 د.ج | 954,000.00 د.ج | 1,134,000.00 د.ج | 3,562,000.00 د.ج
+  | Cost of sales | 269,600.00 د.ج | 320,000.00 د.ج | 381,600.00 د.ج | 453,600.00 د.ج | 1,424,800.00 د.ج
+  | Operating costs | 150,000.00 د.ج | 150,000.00 د.ج | 150,000.00 د.ج | 150,000.00 د.ج | 600,000.00 د.ج
+  | Operating profit | 254,400.00 د.ج | 330,000.00 د.ج | 422,400.00 د.ج | 530,400.00 د.ج | 1,537,200.00 د.ج
+  | Net cash | 225,400.00 د.ج | 308,000.00 د.ج | 395,400.00 د.ج | 498,400.00 د.ج | 1,427,200.00 د.ج
+  | Cumulative cash balance | 305,400.00 د.ج | 613,400.00 د.ج | 1,008,800.00 د.ج | 1,507,200.00 د.ج | —
+TABLE Year 3: by quarter (each quarter is three months)
+  | Month | Quarter 1 | Quarter 2 | Quarter 3 | Quarter 4 | Year total
+  | Revenue | 1,348,000.00 د.ج | 1,604,000.00 د.ج | 1,906,000.00 د.ج | 2,268,000.00 د.ج | 7,126,000.00 د.ج
+  | Cost of sales | 539,200.00 د.ج | 641,600.00 د.ج | 762,400.00 د.ج | 907,200.00 د.ج | 2,850,400.00 د.ج
+  | Operating costs | 150,000.00 د.ج | 150,000.00 د.ج | 150,000.00 د.ج | 150,000.00 د.ج | 600,000.00 د.ج
+  | Operating profit | 658,800.00 د.ج | 812,400.00 د.ج | 993,600.00 د.ج | 1,210,800.00 د.ج | 3,675,600.00 د.ج
+  | Net cash | 602,990.00 د.ج | 767,400.00 د.ج | 940,600.00 د.ج | 1,146,800.00 د.ج | 3,457,790.00 د.ج
+  | Cumulative cash balance | 2,110,190.00 د.ج | 2,877,590.00 د.ج | 3,818,190.00 د.ج | 4,964,990.00 د.ج | —
+## Scenarios and sensitivity
+TABLE The three scenarios
+  |  | Conservative | Base | Optimistic
+  | Assumptions | Sales × 0.6, variable cost × 1.1, launch delayed by 3 months | Your numbers as entered | Sales × 1.3, variable cost × 0.95
+  | Break-even month | Month 8 | Month 4 | Month 3
+  | Funding need | 613,600.00 د.ج | 418,000.00 د.ج | 405,280.00 د.ج
+  | Year-one operating profit | −196,800.00 د.ج | 480,000.00 د.ج | 850,800.00 د.ج
+TABLE Sensitivity analysis: the four numbers ranked by their effect on year-one profit, each moved 20% up and down
+  | Number | Year-one profit at the low end | Year-one profit at the high end | Swing
+  | Price | 120,000.00 د.ج | 840,000.00 د.ج | 720,000.00 د.ج
+  | Sales | 264,000.00 د.ج | 696,000.00 د.ج | 432,000.00 د.ج
+  | Variable cost | 624,000.00 د.ج | 336,000.00 د.ج | 288,000.00 د.ج
+  | Fixed costs | 600,000.00 د.ج | 360,000.00 د.ج | 240,000.00 د.ج
+The number at the top of the table is the one most worth testing before you spend.
+## Legal path and financing
+Registration and licensing steps:
+- The auto-entrepreneur path <Main path>: A test description from an official source. {Check the official source} https://example.invalid/dz/registration-auto-entrepreneur-body
+- The flat-tax ceiling <Condition>: A test description from an official source. 5,000,000 DA https://example.invalid/dz/tax-ifu-auto-entrepreneur-rate-ceiling
+Some pack items (4) are not available yet, so these steps do not cover everything that may apply to you.
+Tax was calculated in the projection under the “fixture_auto_entrepreneur” regime.
+TABLE Tax calculated for each year
+  | Year | Revenue | Operating profit | Tax
+  | Year 1 | 1,800,000.00 د.ج | 480,000.00 د.ج | 10,000.00 د.ج
+  | Year 2 | 3,562,000.00 د.ج | 1,537,200.00 د.ج | 17,810.00 د.ج
+  | Year 3 | 7,126,000.00 د.ج | 3,675,600.00 د.ج | 35,630.00 د.ج
+(adviser) We recommend consulting a tax adviser in your country before any decision.
+The data for this country holds no official link for the tax authority yet, and we will not put one of our own.
+Financing:
+- The funding need (418,000.00 د.ج) is above the largest capital you named (400,000.00 د.ج): the difference needs an outside source or a change in your numbers.
+- You chose no outside funding source.
+## Validation plan
+A test plan of 30 days: test the most important assumptions before you spend on them, ranked by how much each moves your profit and how confident you are in it.
+(worry) “هل يستمر الطلب على الأكل المنزلي خارج المناسبات؟”
+Your own worry:
+- The test: The smallest test that answers your worry alone: show your idea to prospective customers and ask for a decision, not an opinion.
+- Success line: You set the success line before you start. This is the protocol’s default description; you set the number you will accept before you start.
+- If it fails: Ask an expert in your field before you go on.
+- Cost: Your time
+Test 2:
+- Why: You forecast 100 units a month in month twelve. Changing that by 20% moves year-one profit by 432,000.00 د.ج. Your confidence in it is Medium.
+- The test: Collect paid pre-orders from real customers.
+- Success line: The number of pre-orders against your forecast for month one. This is the protocol’s default description; you set the number you will accept before you start.
+- If it fails: Revise the sales forecast and run the numbers again.
+- Cost: A small amount of cash
+Test 3:
+- Why: Your price is 2,000.00 د.ج. Changing it by 20% moves year-one profit by 720,000.00 د.ج. Your confidence in it is High.
+- The test: Offer the product or service at this price to prospective customers and record who actually agrees to pay.
+- Success line: The share of those you ask who actually agree to pay, not those who merely like the offer. This is the protocol’s default description; you set the number you will accept before you start.
+- If it fails: Try a second price on a new group.
+- Cost: Your time
+TABLE How the tests were ranked
+  | Assumption | Your confidence | Rank of effect on profit | Priority
+  | Price | High | 1 | 4
+  | Variable cost | High | 3 | 2
+  | Sales | Medium | 2 | 6
+  | Fixed costs | High | 4 | 1
+Priority = (4 − confidence) × (5 − effect rank), with confidence scored high 3, medium 2, low 1.
+Your own worry always takes the first place.
+## Appendix A: assumptions register
+This register lists every number in the report that is an assumption or has low confidence, with its source and level of confidence; test these numbers before you build a decision on them.
+TABLE Numbers that are assumptions or have low confidence
+  | Number | Value | Source | Confidence | Confirmed
+  | Team and salaries | Number of roles: 0 | Assumption | Low | Not confirmed
+  | Maximum capacity | — | Assumption | Low | Not confirmed
+  | Churn | — | Assumption | Low | Not confirmed
+  | Funding need | 418,000.00 د.ج | Assumption | Low | Not confirmed
+  | Break-even month | Month 4 | Assumption | Low | Not confirmed
+  | Year-one operating profit | 480,000.00 د.ج | Assumption | Low | Not confirmed
+Engine notes on your answers:
+- No hiring plan was given, so no salaries are in the calculation.
+- Seasonality was not given, so demand was taken as non-seasonal.
+- The maximum capacity was not given, so there is no cap on units.
+- No inflation was applied to costs because no rate with a documented source exists.
+TABLE The engine’s named assumptions
+  | Assumption | Value | Source | Confidence | Confirmed
+  | Projection horizon | 36 months | Assumption | Medium | Not confirmed
+  | Ceiling of the yearly growth estimate | 25% | Assumption | Medium | Not confirmed
+  | Share of your own growth the estimate keeps | 50% | Assumption | Medium | Not confirmed
+  | Share of year-two growth applied to year three | 50% | Assumption | Medium | Not confirmed
+  | Peak-month factor | 1.5 | Assumption | Medium | Not confirmed
+  | Yearly cost inflation | Not applied: no documented rate | Assumption | Medium | Not confirmed
+  | Conservative scenario: sales multiplier | 0.6 | Assumption | Medium | Not confirmed
+  | Optimistic scenario: sales multiplier | 1.3 | Assumption | Medium | Not confirmed
+  | Conservative scenario: variable cost multiplier | 1.1 | Assumption | Medium | Not confirmed
+  | Optimistic scenario: variable cost multiplier | 0.95 | Assumption | Medium | Not confirmed
+  | Conservative scenario: launch delay | 3 months | Assumption | Medium | Not confirmed
+  | Penetration price factor above the lowest price that covers costs | 1.1 | Assumption | Medium | Not confirmed
+  | Minimum accepted customer value to acquisition cost | 3 | Assumption | Medium | Not confirmed
+  | Imported-cost shocks in the currency test | −20%; −10%; +10%; +20% | Assumption | Medium | Not confirmed
+  | How far each number moves when ranking effect | 20% | Assumption | Medium | Not confirmed
+  | Feasibility window for break-even and recovery | 36 months | Assumption | Medium | Not confirmed
+  | Score line for the Go verdict | 75% | Assumption | Medium | Not confirmed
+  | Funding blocker: multiple of the largest capital | 2 | Assumption | Medium | Not confirmed
+  | Line for high overall confidence | 75% | Assumption | Medium | Not confirmed
+  | Line for medium overall confidence | 50% | Assumption | Medium | Not confirmed
+## Appendix B: sources
+The official sources behind the steps of the legal path, with the date each was last verified.
+TABLE Country data sources
+  | Item | Link | Last verified | Status
+  | The auto-entrepreneur path | https://example.invalid/dz/registration-auto-entrepreneur-body | 2026-10-01 | Check the official source
+  | The flat-tax ceiling | https://example.invalid/dz/tax-ifu-auto-entrepreneur-rate-ceiling | 2026-10-01 | —
+## Appendix C: disclaimer
+This report is a planning tool built on the numbers you entered and on the engine’s assumptions listed in Appendix A; it is not legal, tax, financial or investment advice.
+Neither the verdict nor any number guarantees how the project will fare in the market; test the assumptions with the validation plan before you spend on them.
+The legal and regulatory values in the report are taken from dated official sources, and anything old or unverified carries the line “Check the official source”.
+The feasibility score and the share of criteria met are not a probability of success.
+(adviser) We recommend consulting a tax adviser in your country before any decision.
+The data for this country holds no official link for the tax authority yet, and we will not put one of our own.
