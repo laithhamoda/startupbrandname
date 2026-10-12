@@ -34,6 +34,13 @@ import type { TaxAlert } from './tax';
 const plainOf = (html: string): string =>
   html.split('<bdi dir="ltr">').join('').split('</bdi>').join('');
 
+/** The text between the tags of the page, read piece by piece instead of stripping tags by pattern. */
+const textBetweenTags = (html: string): string =>
+  html
+    .split(/(<[^>]*>)/)
+    .filter((piece) => !piece.startsWith('<'))
+    .join('');
+
 /**
  * The text of the page that is outside every tag and outside the `style`, `code` and `bdi`
  * elements, where digits are allowed. It walks the pieces between tags instead of stripping tags
@@ -903,7 +910,7 @@ describe('the changes that would change the verdict on the page (D-262)', () => 
   });
 
   it('writes the founder value, the suggested one, the relative change and the result', () => {
-    const text = plainOf(page).replace(/<[^>]*>/g, '');
+    const text = textBetweenTags(plainOf(page));
     expect(text).toContain('تكاليف التأسيس (F5): من 9,000 د.أ إلى 6,000 د.أ');
     expect(text).toContain(
       'التكاليف الثابتة الكاملة (F4 مع رواتب من بدأ وF4.1): تُضرب في 0.738 (73.8% من قيمتها)',
