@@ -22,7 +22,7 @@
     "@sbn/engine": "workspace:*",
     "@sbn/question-bank": "workspace:*",
     "@sparticuz/chromium": "153.0.0",
-    "puppeteer-core": "25.11.0",
+    "puppeteer-core": "25.13.0",
     "zod": "4.6.5"
   },
   "devDependencies": {
