@@ -76,11 +76,12 @@ describe('checkBudgets', () => {
 });
 
 describe('BUDGETS', () => {
-  it('covers the home page, signup, onboarding and the diagnostic step (PERF-5)', () => {
+  it('covers the home page, signup, onboarding, the canvas and the diagnostic step (PERF-5)', () => {
     expect(Object.keys(BUDGETS)).toEqual([
       '/[locale]',
       '/[locale]/signup',
       '/[locale]/onboarding',
+      '/[locale]/projects/[id]/canvas',
       '/[locale]/projects/[id]/q/[step]',
     ]);
   });

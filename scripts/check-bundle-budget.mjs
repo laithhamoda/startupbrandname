@@ -15,12 +15,17 @@ const NEXT_DIR = fileURLToPath(new URL('../apps/web/.next/', import.meta.url));
 
 /**
  * Gzipped JavaScript per route, in bytes, keyed by the route as `next build` prints it. Measured
- * on 2026-10-05: 175,028 (home), 192,178 (signup), 190,298 (onboarding), 316,149 (a step).
+ * on 2026-10-05: 175,028 (home), 192,178 (signup), 190,298 (onboarding), 316,149 (a step); the canvas
+ * on 2026-10-12: 186,227.
  */
 export const BUDGETS = {
   '/[locale]': { entry: '[locale]/(site)/page', gzipBytes: 192_500 },
   '/[locale]/signup': { entry: '[locale]/(site)/signup/page', gzipBytes: 211_400 },
   '/[locale]/onboarding': { entry: '[locale]/(site)/onboarding/page', gzipBytes: 209_300 },
+  '/[locale]/projects/[id]/canvas': {
+    entry: '[locale]/(app)/projects/[id]/canvas/page',
+    gzipBytes: 204_800,
+  },
   '/[locale]/projects/[id]/q/[step]': {
     entry: '[locale]/(app)/projects/[id]/q/[step]/page',
     gzipBytes: 347_800,
