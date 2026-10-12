@@ -1,4 +1,4 @@
-import type { Answer, StepId } from '@sbn/question-bank';
+import type { StepId } from '@sbn/question-bank';
 import { chipsOf } from './chips';
 import { CANVAS_MAP } from './map';
 import {
@@ -15,11 +15,10 @@ import {
 } from './types';
 
 /**
- * The provenance of an answer. «لا أعرف» is an assumption whatever the row says, and an answer
- * with no stored provenance is an unchecked assumption (rule 2).
+ * The provenance of an answered question: what the row stored, and an unchecked assumption when
+ * nothing is stored (rule 2). «لا أعرف» never gets here: it gives no chip (rule 9).
  */
-export function provenanceFor(answer: Answer, stored: ChipProvenance | undefined): ChipProvenance {
-  if (answer.status === 'unknown') return ASSUMED;
+function provenanceFor(stored: ChipProvenance | undefined): ChipProvenance {
   return stored ?? ASSUMED;
 }
 
@@ -44,7 +43,7 @@ function buildBlock(definition: BlockDefinition, input: CanvasInput): CanvasBloc
       source.id,
       answer.value,
       source.items === true,
-      provenanceFor(answer, input.provenance[source.id]),
+      provenanceFor(input.provenance[source.id]),
       input,
     );
     if (made.length === 0) gaps.push({ questionId: source.id, state: 'empty' });
