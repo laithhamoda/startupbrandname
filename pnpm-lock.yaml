@@ -186,6 +186,9 @@ importers:
       puppeteer-core:
         specifier: 25.11.0
         version: 25.11.0
+      zod:
+        specifier: 4.6.5
+        version: 4.6.5
     devDependencies:
       pdfjs-dist:
         specifier: 6.4.299
