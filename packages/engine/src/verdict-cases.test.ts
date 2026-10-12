@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { decisionAgreement, runGolden, type CaseName } from './golden-projects';
+import { suggestChanges } from './changes';
+import {
+  changesAgreement,
+  decisionAgreement,
+  factorTo,
+  moneyTo,
+  runGolden,
+  type CaseName,
+} from './golden-projects';
 import { VERDICT_CASES } from './verdict-cases';
 
 const named = (name: CaseName) => {
@@ -160,5 +168,72 @@ describe('the synthetic cases of the verdict', () => {
     expect(at(16000, ['self', 'family']).verdict.blockers).toEqual([]);
     expect(at(17000, ['self', 'family', 'grant']).verdict.blockers).toEqual([]);
     expect(at(17000, ['self', 'family']).verdict.blockers).toHaveLength(1);
+  });
+});
+
+describe('the changes of the synthetic cases', () => {
+  it.each(VERDICT_CASES)(
+    '$name: the engine agrees with every hand computed change',
+    (candidate) => {
+      const suggested = suggestChanges(runGolden(candidate), candidate.tax);
+      const agreement = changesAgreement(suggested, candidate.decision);
+      expect(agreement.list).toBe(true);
+      expect(agreement.changes).toEqual(candidate.decision.changes.map(() => true));
+      expect(suggested.complete).toBe(true);
+    },
+  );
+
+  it('has three changes for the borderline and negative margin cases, one and two rethinks for the gap', () => {
+    const counts = Object.fromEntries(
+      VERDICT_CASES.map((candidate) => [
+        candidate.name,
+        [candidate.decision.changes.length, candidate.decision.rethink.length],
+      ]),
+    );
+    expect(counts).toEqual({
+      'case-good': [0, 0],
+      'case-borderline': [3, 0],
+      'case-negative-margin': [3, 0],
+      'case-funding-gap': [1, 2],
+    });
+  });
+
+  it('disagree piece by piece when the hand computation differs from the engine', () => {
+    const base = named('case-negative-margin');
+    const suggested = suggestChanges(runGolden(base), base.tax);
+    const decision = base.decision;
+    const [first, second] = decision.changes;
+    if (first === undefined || second === undefined) throw new Error('no change');
+    const check = (changes: typeof decision.changes, rethink = decision.rethink) =>
+      changesAgreement(suggested, { ...decision, changes, rethink });
+    const rest = decision.changes.slice(1);
+    // One field at a time.
+    expect(check([{ ...first, levers: ['price'] }, ...rest]).changes[0]).toBe(false);
+    expect(check([{ ...first, to: [moneyTo(7_501n)] }, ...rest]).changes[0]).toBe(false);
+    expect(check([{ ...first, to: [factorTo(3n, 4n)] }, ...rest]).changes[0]).toBe(false);
+    expect(check([{ ...first, to: [] }, ...rest]).changes[0]).toBe(false);
+    expect(check([{ ...first, premium: true }, ...rest]).changes[0]).toBe(false);
+    expect(check([{ ...first, reachesThreshold: false }, ...rest]).changes[0]).toBe(false);
+    expect(check([{ ...first, passed: 7 }, ...rest]).changes[0]).toBe(false);
+    expect(check([{ ...first, evaluated: 9 }, ...rest]).changes[0]).toBe(false);
+    expect(check([{ ...first, verdict: 'revise' }, ...rest]).changes[0]).toBe(false);
+    // The second change is a pair: a lever's target of the wrong kind or a missing one fails.
+    expect(
+      check([first, { ...second, to: [moneyTo(12_100n)] }, ...decision.changes.slice(2)])
+        .changes[1],
+    ).toBe(false);
+    expect(
+      check([
+        first,
+        { ...second, to: [factorTo(1n, 1n), moneyTo(9_480n)] },
+        ...decision.changes.slice(2),
+      ]).changes[1],
+    ).toBe(false);
+    // A change with no hand row behind it never agrees, and the list is then not the expected one.
+    const short = check([first]);
+    expect(short.changes).toEqual([true, false, false]);
+    expect(short.list).toBe(false);
+    expect(check(decision.changes, ['price']).list).toBe(false);
+    expect(check(decision.changes).list).toBe(true);
   });
 });

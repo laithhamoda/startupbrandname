@@ -2,8 +2,10 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
+import { suggestChanges } from './changes';
 import {
   GOLDEN_PROJECTS,
+  changesAgreement,
   decisionAgreement,
   headlineValue,
   runGolden,
@@ -105,6 +107,15 @@ describe.each(GOLDEN_PROJECTS)('golden project $name', (golden) => {
       confidence: true,
       plan: true,
     });
+  });
+
+  it('agrees with the hand computation of the changes that would change the verdict', () => {
+    const suggested = suggestChanges(run, golden.tax);
+    const agreement = changesAgreement(suggested, golden.decision);
+    expect(agreement.list).toBe(true);
+    expect(agreement.changes).toEqual(golden.decision.changes.map(() => true));
+    expect(suggested.status).toBe(golden.decision.verdict === 'go' ? 'none_needed' : 'suggested');
+    expect(suggested.complete).toBe(true);
   });
 
   it('is deterministic: a second run gives the same bytes', () => {

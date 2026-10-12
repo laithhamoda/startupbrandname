@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import type { Alert } from './alerts';
+import { suggestChanges } from './changes';
+import { defaultFigure } from './figure';
+import { flatProvenance } from './flat-vector';
 import {
   GOLDEN_PROJECTS,
   runGolden,
@@ -525,7 +528,14 @@ describe('the review page', () => {
       ),
     };
     const run = runGolden(noSetup);
-    const text = renderReviewPage([{ project: { ...shop.project, rows: [] }, run, variants: [] }]);
+    const text = renderReviewPage([
+      {
+        project: { ...shop.project, rows: [] },
+        run,
+        variants: [],
+        changes: suggestChanges(run, shop.project.tax),
+      },
+    ]);
     expect(plainOf(text)).toContain('تكاليف التأسيس (F5) لم تُحدَّد');
     expect(plainOf(text)).toContain('غير محسوب: تكاليف التأسيس (F5) ناقصة');
   });
@@ -716,7 +726,8 @@ describe('the score, the verdict, confidence and the plan on the page', () => {
     }
     expect(page).toContain('غير قابل للتنفيذ بصيغته الحالية');
     expect(page.match(/القرار توقّف: غير قابل للتنفيذ بصيغته الحالية/g)).toHaveLength(3);
-    expect(page).toContain('التغييرات الثلاثة التي قد تغيّر القرار تأتي في الخطوة التالية');
+    expect(page).not.toContain('(2b)');
+    expect(page).not.toContain('تأتي في الخطوة التالية');
   });
 
   it('says on every score that it is not a probability of success', () => {
@@ -834,7 +845,12 @@ describe('the score, the verdict, confidence and the plan on the page', () => {
       ...bare,
       answers: { ...bare.answers, F5: { status: 'unknown' } },
     });
-    const missing: ReviewEntry = { project: bare, run: unknownSetup, variants: [] };
+    const missing: ReviewEntry = {
+      project: bare,
+      run: unknownSetup,
+      variants: [],
+      changes: suggestChanges(unknownSetup, bare.tax),
+    };
     const text = plainOf(renderReviewPage([missing]));
     expect(text).toContain('غير موجود');
     const stopped = runGolden({
@@ -844,7 +860,11 @@ describe('the score, the verdict, confidence and the plan on the page', () => {
         F6: { status: 'answered', value: { month1: 0, month6: 0, month12: 0 } },
       },
     });
-    const sentence = plainOf(renderReviewPage([{ project: bare, run: stopped, variants: [] }]));
+    const sentence = plainOf(
+      renderReviewPage([
+        { project: bare, run: stopped, variants: [], changes: suggestChanges(stopped, bare.tax) },
+      ]),
+    );
     expect(sentence).toContain(
       'لا تعادل ضمن نافذة الجدوى في الحالة الأساسية، احتياج التمويل فوق ضعف أقصى رأس مال ولا مصدر خارجي في H3',
     );
@@ -863,5 +883,144 @@ describe('the score, the verdict, confidence and the plan on the page', () => {
     expect(plainOf(renderReviewPage([], [held]))).toContain(
       'ما يمنع «امضِ»: الثقة الإجمالية منخفضة، لا معيار مقيَّم',
     );
+  });
+});
+
+describe('the changes that would change the verdict on the page (D-262)', () => {
+  const entries = goldenReviewEntries();
+  const cases = caseReviewEntries();
+  const page = renderReviewPage(entries, cases);
+
+  it('has a table of changes for each project that is not a go, and none for a go', () => {
+    // The subscription service and the shop, the borderline, negative margin and funding gap cases.
+    expect(page.match(/<h4>التغييرات التي قد تغيّر القرار<\/h4>/g)).toHaveLength(5);
+    const rows = page.match(/<td data-label="التغيير">/g) ?? [];
+    expect(rows).toHaveLength(3 + 3 + 3 + 3 + 1);
+  });
+
+  it('marks every hand computed change as matching the engine', () => {
+    expect(page).not.toContain('✕ غير مطابق');
+  });
+
+  it('writes the founder value, the suggested one, the relative change and the result', () => {
+    const text = plainOf(page).replace(/<[^>]*>/g, '');
+    expect(text).toContain('تكاليف التأسيس (F5): من 9,000 د.أ إلى 6,000 د.أ');
+    expect(text).toContain(
+      'التكاليف الثابتة الكاملة (F4 مع رواتب من بدأ وF4.1): تُضرب في 0.738 (73.8% من قيمتها)',
+    );
+    expect(text).toContain('التكلفة المتغيرة (F3): تخفيض 37.5%');
+    expect(text).toContain('سعر البيع (F1): زيادة 7.09%');
+    expect(text).toContain('الجهد (مجموع النسبتين): 42%');
+    expect(text).toContain('الدرجة 9 من 10 = 90%');
+    expect(text).toContain('يبلغ خط «امضِ»');
+  });
+
+  it('says that a price above the market is a premium and needs a measurable difference', () => {
+    const text = plainOf(page);
+    // The subscription price 38.5, the shop price 46 and the negative margin price 14.5.
+    expect(text.match(/سعر مميَّز \(Premium\): أعلى من أعلى سعر منافس معروف/g)).toHaveLength(3);
+    expect(text.match(/يحتاج فرقًا في العرض يمكن قياسه \(القاعدة R5\)/g)).toHaveLength(3);
+    expect(text).toContain('أعلى من أعلى سعر منافس معروف (35 د.أ)');
+    expect(text).toContain('أعلى من أعلى سعر منافس معروف (45 د.أ)');
+    expect(text).toContain('أعلى من أعلى سعر منافس معروف (14 د.أ)');
+  });
+
+  it('lists the levers to rethink when fewer than three changes work', () => {
+    const text = plainOf(page);
+    expect(text).toContain('لم يكفِ أي تغيير في الأرقام لملء الأماكن الثلاثة');
+    expect(text).toContain(
+      'سعر البيع (F1): الترتيب 1 في الحساسية، وتأرجح ربح السنة الأولى 19,200 د.أ',
+    );
+    expect(text).toContain(
+      'المبيعات المتوقعة (F6): الترتيب 2 في الحساسية، وتأرجح ربح السنة الأولى 11,520 د.أ',
+    );
+    expect(text.match(/لم يكفِ أي تغيير/g)).toHaveLength(1);
+  });
+
+  it('says how many times the search ran, and that it finished', () => {
+    const text = plainOf(page);
+    expect(text.match(/شغّل البحث المحرّك \d+ مرة، واكتمل داخل ميزانيته/g)).toHaveLength(5);
+    expect(text).not.toContain('وانتهت ميزانيته');
+  });
+
+  it('explains the search in the section on how to read the page', () => {
+    const text = plainOf(page);
+    expect(text).toContain('يبحث المحرّك في خمسة أرقام للمؤسس');
+    expect(text).toContain('المبيعات تُجرَّب خطوة خطوة بنسبة 5%');
+  });
+
+  it('marks a change whose hand computation differs from the engine', () => {
+    const [shop] = entries.slice(1);
+    if (shop === undefined) throw new Error('no entry');
+    const decision = shop.project.decision;
+    const wrong: ReviewEntry = {
+      ...shop,
+      project: {
+        ...shop.project,
+        decision: {
+          ...decision,
+          changes: decision.changes.map((row, index) =>
+            index === 0 ? { ...row, passed: 1 } : row,
+          ),
+        },
+      },
+    };
+    const broken = renderReviewPage([wrong]);
+    expect(broken.match(/✕ غير مطابق/g)).toHaveLength(1);
+    // A change with no hand row shows a dash and does not match.
+    const bare: ReviewEntry = {
+      ...shop,
+      project: { ...shop.project, decision: { ...decision, changes: [] } },
+    };
+    const bareText = renderReviewPage([bare]);
+    expect(bareText.match(/✕ غير مطابق/g)).toHaveLength(4);
+  });
+
+  it('says what a low confidence does: a stop only loses its blocker, and a revise has no way to go', () => {
+    const stopCase = cases.find((entry) => entry.project.name === 'case-negative-margin');
+    const reviseCase = cases.find((entry) => entry.project.name === 'case-borderline');
+    if (stopCase === undefined || reviseCase === undefined) throw new Error('no case');
+    const low = flatProvenance({ F1: 'low', F3: 'low', F5: 'low' });
+    const lowRun = (entry: ReviewEntry): ReviewEntry => {
+      const run = runGolden({ ...entry.project, provenance: low });
+      return { ...entry, run, changes: suggestChanges(run, entry.project.tax) };
+    };
+    const stopped = plainOf(renderReviewPage([], [lowRun(stopCase)]));
+    expect(stopped).toContain('يزيل الحاجب ولا يبلغ خط «امضِ»');
+    expect(stopped).not.toContain('الثقة الإجمالية منخفضة، وهي تأتي من جودة الإجابات');
+    const revised = plainOf(renderReviewPage([], [lowRun(reviseCase)]));
+    expect(revised).toContain('الثقة الإجمالية منخفضة، وهي تأتي من جودة الإجابات لا من قيمها');
+    expect(revised).not.toContain('الدرجة 8 من 10');
+  });
+
+  it('says when the budget of the search ran out', () => {
+    const stopCase = cases.find((entry) => entry.project.name === 'case-negative-margin');
+    if (stopCase === undefined) throw new Error('no case');
+    const short: ReviewEntry = {
+      ...stopCase,
+      changes: suggestChanges(stopCase.run, stopCase.project.tax, {
+        changeSearchBudget: defaultFigure('test', 5),
+      }),
+    };
+    const text = plainOf(renderReviewPage([], [short]));
+    expect(text).toContain('شغّل البحث المحرّك 5 مرة، وانتهت ميزانيته قبل أن يكتمل');
+  });
+
+  it('shows a score of nothing evaluated and a stop without a market ceiling', () => {
+    const stopCase = cases.find((entry) => entry.project.name === 'case-negative-margin');
+    if (stopCase === undefined) throw new Error('no case');
+    const [change] = stopCase.changes.changes;
+    if (change === undefined) throw new Error('no change');
+    const entry: ReviewEntry = {
+      ...stopCase,
+      changes: {
+        ...stopCase.changes,
+        marketCeiling: null,
+        changes: [{ ...change, premium: true, outcome: { ...change.outcome, score: null } }],
+      },
+    };
+    const text = plainOf(renderReviewPage([], [entry]));
+    expect(text).toContain('لا درجة: لا معيار مقيَّم');
+    expect(text).not.toContain('سعر مميَّز (Premium)');
   });
 });
