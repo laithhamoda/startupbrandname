@@ -43,6 +43,22 @@ describe('canvasTotals (D-231)', () => {
     expect(totals[0]).toMatchObject({ kind: 'fixedMonthly', text: '320.75 د.أ' });
   });
 
+  it('totals the fixed costs list only: the marketing budget and the staff plan stay apart', () => {
+    const answers = {
+      ...sampleAnswers(),
+      'F4.1': { status: 'answered' as const, value: { amount: 100, currency: 'JOD' } },
+      E8: {
+        status: 'answered' as const,
+        value: {
+          items: [{ role: 'فنّي', monthlyCost: { amount: 500, currency: 'JOD' }, startMonth: 1 }],
+        },
+      },
+    };
+    const run = runOf(sampleSource({}, answers));
+    expect(run.input.marketing.value.minor).not.toBe(0n);
+    expect(canvasTotals(run, arabic)[0]).toMatchObject({ kind: 'fixedMonthly', text: '8 د.أ' });
+  });
+
   it('carries the provenance the engine gave each figure', () => {
     const run = runOf();
     const [fixed, variable, setup] = canvasTotals(run, arabic);

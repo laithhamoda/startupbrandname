@@ -304,7 +304,7 @@
     "edit": "Edit this answer",
     "totalsTitle": "Totals calculated from your answers",
     "total": {
-      "fixedMonthly": "Fixed costs a month",
+      "fixedMonthly": "Fixed costs on your list, a month",
       "variableUnit": "Variable cost of one unit",
       "setup": "Set-up costs"
     },
