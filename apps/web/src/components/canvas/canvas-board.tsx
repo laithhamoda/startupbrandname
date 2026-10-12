@@ -26,7 +26,7 @@ type SourceKey = keyof (typeof ar)['canvas']['source'];
  * direction. Customer segments are the rightmost block of both canvases. Below `lg` the blocks
  * stack in the model's filling order instead, starting with the customer segments.
  */
-const PLACEMENT: Record<CanvasKind, Partial<Record<BlockId, string>>> = {
+export const PLACEMENT: Record<CanvasKind, Partial<Record<BlockId, string>>> = {
   business_model: {
     keyPartners: 'lg:col-start-1 lg:col-span-2 lg:row-start-1 lg:row-span-2',
     keyActivities: 'lg:col-start-3 lg:col-span-2 lg:row-start-1',

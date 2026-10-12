@@ -146,7 +146,44 @@
   animation: sbn-rise 300ms ease-out 400ms both;
 }
 
+/*
+ * The report page's reveal (D-275): the verdict slab is uncovered from its top edge in 600 ms and
+ * its word settles into place. Only clip-path and transform change, so nothing moves around the
+ * slab (no layout shift), and no opacity is animated (a half-faded word would fail contrast). It
+ * plays once, when the page is first drawn, with no script.
+ */
+@keyframes sbn-report-reveal {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes sbn-report-settle {
+  from {
+    transform: translateY(0.75rem);
+  }
+  to {
+    transform: none;
+  }
+}
+
+[data-report-reveal] {
+  animation: sbn-report-reveal 600ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+[data-report-reveal] .verdict-word {
+  animation: sbn-report-settle 600ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  [data-report-reveal],
+  [data-report-reveal] .verdict-word {
+    animation: none;
+  }
+
   *,
   ::before,
   ::after {
