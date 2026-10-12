@@ -134,14 +134,21 @@ export interface SuggestedChanges {
    * inside the bounds and the budget.
    */
   readonly changes: readonly Change[];
-  /** For a `stop` with fewer than three changes, the largest tornado drivers not already used. */
+  /**
+   * For a `stop` with fewer than three changes, the largest tornado drivers not already used. Empty
+   * when the budget ran out (`complete` false): a driver the search never finished is not one that
+   * was tried and failed.
+   */
   readonly rethink: readonly RethinkItem[];
   /**
    * The largest known D4 price, which a suggested price may not pass without being a premium;
    * null when no competitor price is known (then no price is marked premium).
    */
   readonly marketCeiling: Figure<Money> | null;
-  /** Set when `go` cannot be reached by any change (overall confidence is low). */
+  /**
+   * Set, for a `revise` or a `stop`, when `go` cannot be reached by any change because overall
+   * confidence is low; a `stop` then still gets the changes that only remove its blockers.
+   */
   readonly goBlockedBy: GoBlocker | null;
   /** How many times the pipeline was run for a change; the run being started from is not counted. */
   readonly evaluations: number;
@@ -436,7 +443,7 @@ interface Found {
 
 /** A change found by a search, before the ranking. */
 interface Candidate {
-  /** The indexes of its levers in , joined: '01' is the price with the variable cost. */
+  /** The indexes of its levers in `CHANGE_LEVERS`, joined: '01' is the price with the variable cost. */
   readonly order: string;
   readonly effort: Rate;
   readonly change: Change;
@@ -739,7 +746,8 @@ export function suggestChanges(
     changes.flatMap((change) => change.shifts.map((shift) => shift.lever)),
   );
   const rethink: RethinkItem[] = [];
-  if (startedStopped) {
+  // Only a finished search can say a lever was tried and failed (D-261).
+  if (startedStopped && complete) {
     run.tornado.rows.forEach((row, index) => {
       const lever = TORNADO_LEVER[row.variable];
       if (changes.length + rethink.length >= 3) return;
@@ -754,7 +762,7 @@ export function suggestChanges(
     changes,
     rethink,
     marketCeiling,
-    goBlockedBy: null,
+    goBlockedBy: goReachable ? null : 'confidence_low',
     evaluations: used,
     complete,
     parameters,

@@ -976,7 +976,7 @@ describe('the changes that would change the verdict on the page (D-262)', () => 
     expect(bareText.match(/✕ غير مطابق/g)).toHaveLength(4);
   });
 
-  it('says what a low confidence does: a stop only loses its blocker, and a revise has no way to go', () => {
+  it('says what a low confidence does: a stop only loses its blocker, and neither has a way to go', () => {
     const stopCase = cases.find((entry) => entry.project.name === 'case-negative-margin');
     const reviseCase = cases.find((entry) => entry.project.name === 'case-borderline');
     if (stopCase === undefined || reviseCase === undefined) throw new Error('no case');
@@ -987,7 +987,7 @@ describe('the changes that would change the verdict on the page (D-262)', () => 
     };
     const stopped = plainOf(renderReviewPage([], [lowRun(stopCase)]));
     expect(stopped).toContain('يزيل الحاجب ولا يبلغ خط «امضِ»');
-    expect(stopped).not.toContain('الثقة الإجمالية منخفضة، وهي تأتي من جودة الإجابات');
+    expect(stopped).toContain('الثقة الإجمالية منخفضة، وهي تأتي من جودة الإجابات لا من قيمها');
     const revised = plainOf(renderReviewPage([], [lowRun(reviseCase)]));
     expect(revised).toContain('الثقة الإجمالية منخفضة، وهي تأتي من جودة الإجابات لا من قيمها');
     expect(revised).not.toContain('الدرجة 8 من 10');

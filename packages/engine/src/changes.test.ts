@@ -389,6 +389,8 @@ describe('the budget of evaluations', () => {
     expect(result.evaluations).toBe(12);
     expect(result.parameters.map((figure) => figure.value)).toEqual([12]);
     expect(result.changes.length).toBeLessThan(3);
+    // A lever the search never finished is not one that was tried and failed.
+    expect(result.rethink).toEqual([]);
   });
 
   it('keeps the changes found before it ran out', () => {
@@ -534,7 +536,7 @@ describe('confidence and the go line', () => {
     const run = runFlat(stopAnswers, low);
     expect(run.verdict.verdict.value).toBe('stop');
     const result = suggestChanges(run);
-    expect(result.goBlockedBy).toBeNull();
+    expect(result.goBlockedBy).toBe('confidence_low');
     expect(result.changes).toHaveLength(3);
     for (const change of result.changes) {
       expect(change.reachesThreshold).toBe(false);
