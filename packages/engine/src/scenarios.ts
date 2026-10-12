@@ -10,7 +10,7 @@ import {
   type OperatingProjection,
   type ProjectionAdjustments,
 } from './projection';
-import { addRates, ONE_RATE, subtractRates, type Rate } from './rate';
+import { addRates, multiplyRates, ONE_RATE, subtractRates, type Rate } from './rate';
 import { taxAnalysis, type TaxContext } from './tax';
 
 /** The stable IDs of the T10 rules, listed in the inputs of the figures they produce (D-181). */
@@ -98,11 +98,22 @@ function scenario(
     readonly delay: number;
     readonly used: readonly Provenance[];
   },
+  base: ProjectionAdjustments = {},
 ): ScenarioResult {
+  // `base` is what a caller already changed in the project (the search of D-228 tries a larger
+  // sales volume or lower fixed costs); the scenario's own factors come on top of it. Without
+  // `base` the projection is called exactly as the scenario defines it.
   const projection = projectOperatingLines(input, params, {
-    salesMultiplier: changes.sales,
-    cogsMultiplier: changes.vc,
-    launchDelayMonths: changes.delay,
+    ...base,
+    salesMultiplier:
+      base.salesMultiplier === undefined
+        ? changes.sales
+        : multiplyRates(changes.sales, base.salesMultiplier),
+    cogsMultiplier:
+      base.cogsMultiplier === undefined
+        ? changes.vc
+        : multiplyRates(changes.vc, base.cogsMultiplier),
+    launchDelayMonths: changes.delay + (base.launchDelayMonths ?? 0),
   });
   const flow = cashFlow(input, projection, taxAnalysis(input, projection, context), params);
   const used = changes.used;
@@ -133,6 +144,38 @@ function scenario(
 }
 
 /**
+ * The conservative scenario alone (D-218), which the feasibility score reads: `scenarioAnalysis`
+ * calls it, and so does the search of D-228, which needs only this scenario for each change it
+ * tries. `base` holds adjustments the caller already made to the project (a sales multiplier, a
+ * fixed-cost multiplier); the scenario's own factors come on top of them, rounded once, and an
+ * empty `base` is exactly the scenario of `scenarioAnalysis`. Pure and deterministic.
+ */
+export function conservativeScenario(
+  input: EngineInput,
+  context: TaxContext = { rules: [] },
+  params: EngineParams = DEFAULT_ENGINE_PARAMS,
+  base: ProjectionAdjustments = {},
+): ScenarioResult {
+  return scenario(
+    'conservative',
+    input,
+    context,
+    params,
+    {
+      sales: params.conservativeSalesFactor.value,
+      vc: params.conservativeVcFactor.value,
+      delay: params.conservativeLaunchDelayMonths.value,
+      used: [
+        params.conservativeSalesFactor,
+        params.conservativeVcFactor,
+        params.conservativeLaunchDelayMonths,
+      ],
+    },
+    base,
+  );
+}
+
+/**
  * T10's scenarios (SPEC §4; D-189, D-217, D-218). The conservative scenario multiplies the units by
  * `params.conservativeSalesFactor` and the variable cost by `params.conservativeVcFactor` and
  * delays the launch by `params.conservativeLaunchDelayMonths`, all together; the base scenario is
@@ -150,16 +193,7 @@ export function scenarioAnalysis(
   params: EngineParams = DEFAULT_ENGINE_PARAMS,
 ): Scenarios {
   return {
-    conservative: scenario('conservative', input, context, params, {
-      sales: params.conservativeSalesFactor.value,
-      vc: params.conservativeVcFactor.value,
-      delay: params.conservativeLaunchDelayMonths.value,
-      used: [
-        params.conservativeSalesFactor,
-        params.conservativeVcFactor,
-        params.conservativeLaunchDelayMonths,
-      ],
-    }),
+    conservative: conservativeScenario(input, context, params),
     base: scenario('base', input, context, params, {
       sales: ONE_RATE,
       vc: ONE_RATE,

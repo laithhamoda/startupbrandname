@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { defaultFigure } from './figure';
 import {
+  CHANGE_PARAM_KEYS,
   DEFAULT_ENGINE_PARAMS,
   PARAM_KEYS,
   PAYMENT_OPTIONS,
   createEngineParams,
+  listChangeParams,
   listEngineParams,
   type EngineParamOverrides,
   type PaymentPart,
@@ -289,6 +291,43 @@ describe('overrides', () => {
   it('names the key of the parameter in the message', () => {
     expect(() => createEngineParams({ horizonMonths: defaultFigure('h', 30) })).toThrow(
       /engine\.horizon_months/,
+    );
+  });
+});
+
+/*
+ * The budget of the search for the changes that would change a verdict (D-228, D-261): a named
+ * assumption with its own list, because it belongs to no run.
+ */
+describe('the budget of the search for changes', () => {
+  it('is 160 evaluations by default, an unvalidated assumption with its own key', () => {
+    const budget = DEFAULT_ENGINE_PARAMS.changeSearchBudget;
+    expect(budget.value).toBe(160);
+    expect(budget.source).toBe('assumption');
+    expect(budget.validated).toBe(false);
+    expect(budget.inputs).toEqual([{ kind: 'default', id: CHANGE_PARAM_KEYS.changeSearchBudget }]);
+    expect(CHANGE_PARAM_KEYS.changeSearchBudget).toBe('changes.search_budget');
+  });
+
+  it('is listed by listChangeParams and not by listEngineParams, which every run serialises', () => {
+    expect(listChangeParams(DEFAULT_ENGINE_PARAMS)).toEqual([
+      DEFAULT_ENGINE_PARAMS.changeSearchBudget,
+    ]);
+    expect(listEngineParams(DEFAULT_ENGINE_PARAMS)).not.toContain(
+      DEFAULT_ENGINE_PARAMS.changeSearchBudget,
+    );
+  });
+
+  it('can be overridden with a whole number from 1 to 10,000', () => {
+    for (const value of [1, 10, 10_000]) {
+      const params = createEngineParams({ changeSearchBudget: defaultFigure('b', value) });
+      expect(params.changeSearchBudget.value).toBe(value);
+    }
+  });
+
+  it.each([0, -1, 10_001, 1.5, Number.NaN, Number.POSITIVE_INFINITY])('rejects %s', (value) => {
+    expect(() => createEngineParams({ changeSearchBudget: defaultFigure('b', value) })).toThrow(
+      /changes\.search_budget/,
     );
   });
 });

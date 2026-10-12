@@ -1,4 +1,5 @@
 import type { Answers } from '@sbn/question-bank';
+import type { ChangeLever, SuggestedChanges } from './changes';
 import type { CriterionId, CriterionStatus } from './feasibility';
 import type { FigureConfidence } from './figure';
 import type { ProjectContext, ProvenanceBySteps } from './input';
@@ -79,10 +80,34 @@ export interface CriterionRow {
   readonly hand: string;
 }
 
+/** The value a hand computation expects for one lever of a suggested change: an amount or a factor. */
+export type ChangeTarget =
+  | { readonly kind: 'money'; readonly minor: bigint }
+  | { readonly kind: 'factor'; readonly rate: Rate };
+
+/**
+ * What a hand computation expects of one suggested change (D-228, D-262): the levers it moves in
+ * the order of the search, the value each is moved to, whether it is a premium price, whether it
+ * reaches the go line, the score and the verdict after it, and the hand reasons as the page shows
+ * them. The page marks it next to what `suggestChanges` gave.
+ */
+export interface ChangeRow {
+  readonly levers: readonly ChangeLever[];
+  readonly to: readonly ChangeTarget[];
+  readonly premium: boolean;
+  readonly reachesThreshold: boolean;
+  readonly passed: number;
+  readonly evaluated: number;
+  readonly verdict: Verdict;
+  readonly hand: string;
+}
+
 /**
  * The hand computation of the score, the verdict, overall confidence and the validation plan of
- * one project (D-227, D-229, D-230). `plan` lists the variables of the three places in order;
- * the sentences are the hand reasons the page shows next to what the engine gave.
+ * one project (D-227, D-229, D-230), and of the changes that would change the verdict (D-228).
+ * `plan` lists the variables of the three places in order; the sentences are the hand reasons the
+ * page shows next to what the engine gave. `changes` is empty for a `go`; `rethink` lists the
+ * levers of the tornado that fill the places no change took, with its own hand reason.
  */
 export interface DecisionRows {
   readonly criteria: readonly CriterionRow[];
@@ -99,6 +124,9 @@ export interface DecisionRows {
   readonly verdictHand: string;
   readonly confidenceHand: string;
   readonly planHand: string;
+  readonly changes: readonly ChangeRow[];
+  readonly rethink: readonly ChangeLever[];
+  readonly rethinkHand: string;
 }
 
 export interface GoldenProject {
@@ -200,6 +228,13 @@ const moneyOf = (minor: bigint): Expected => ({ kind: 'money', minor });
 const unitsOf = (units: bigint): Expected => ({ kind: 'units', units });
 const monthOf = (month: number | null): Expected => ({ kind: 'month', month });
 const rateOf = (num: bigint, den: bigint): Expected => ({ kind: 'rate', rate: makeRate(num, den) });
+
+/** A change to an amount (a price, a cost) or by a factor (the fixed costs, the sales), as a hand computation writes it. */
+export const moneyTo = (minor: bigint): ChangeTarget => ({ kind: 'money', minor });
+export const factorTo = (num: bigint, den: bigint): ChangeTarget => ({
+  kind: 'factor',
+  rate: makeRate(num, den),
+});
 
 /*
  * Project 1: a Jordanian software service sold as a monthly subscription (JOD, 3 decimals).
@@ -432,6 +467,40 @@ const subscription: GoldenProject = {
     blockersHand:
       'لا حاجب: الهامش 24 د.أ موجب، والتعادل في الشهر 6 ضمن 36 شهرًا، واحتياج التمويل 18,400 د.أ لا يتجاوز ضعف أقصى رأس مال (2 × 15,000 = 30,000 د.أ)',
     verdictHand: 'الدرجة 60% أقل من 75% ولا حاجب والثقة الإجمالية عالية: القرار عدّل',
+    changes: [
+      {
+        levers: ['fixed_costs'],
+        to: [factorTo(369n, 500n)],
+        premium: false,
+        reachesThreshold: true,
+        passed: 8,
+        evaluated: 10,
+        verdict: 'go',
+        hand: 'قبل أن يبدأ المطوّر في الشهر 4 تبلغ التكاليف الثابتة الكاملة 2,000 + 600 = 2,600 د.أ، وفي الشهر 3 يبيع 80 مشتركًا × 24 = 1,920 د.أ. التعادل في الشهر 3 يحتاج تكاليف لا تزيد على ذلك: 2,600 × 0.738 = 1,918.8 د.أ يحقق، و2,600 × 0.739 = 1,921.4 د.أ لا يحقق، فالتخفيض −26.2% (إلى جزء من ألف). فيتحقق معياران: التعادل ضمن مهلة A7 (الشهر 3) وسعر الحدّ الأدنى (6 + 44,700 × 0.738 ÷ 1,800 = 24.33 د.أ، والسعر 30 فوقه). ويبقى احتياج التمويل 12,000 + 1,918.8 + 958.8 − 1.2 + 145.8 = 15,022.2 د.أ، أعلى من 15,000 د.أ بـ 22.2 فلا يتحقق. فيصير 8 من 10 = 80% ولا حاجب: امضِ',
+      },
+      {
+        levers: ['price'],
+        to: [moneyTo(38_500n)],
+        premium: true,
+        reachesThreshold: true,
+        passed: 8,
+        evaluated: 10,
+        verdict: 'go',
+        hand: 'في الشهر 3 يبيع 80 مشتركًا وتكاليف ما قبل راتب المطوّر 2,600 د.أ: 80 × (السعر − 6) ≥ 2,600 يعطي السعر ≥ 38.5 د.أ، فيتعادل المشروع في الشهر 3 بربح صفر (80 × 32.5 − 2,600 = 0) ويتحقق معيار مهلة A7. وسعر الحدّ الأدنى 30.833 د.أ فالسعر 38.5 فوقه. الزيادة +28.33%. والسعر 38.5 أعلى من أعلى منافس معروف (35 د.أ)، فهو سعر مميَّز (Premium). فيصير 8 من 10 = 80% ولا حاجب: امضِ',
+      },
+      {
+        levers: ['sales'],
+        to: [factorTo(7n, 5n)],
+        premium: false,
+        reachesThreshold: true,
+        passed: 8,
+        evaluated: 10,
+        verdict: 'go',
+        hand: 'في الشهر 3 يبيع 80 × 1.4 = 112 مشتركًا فربحه 112 × 24 − 2,600 = 88 د.أ فيتعادل، أما زيادة 35% فتعطي 108 مشتركين وربحًا 108 × 24 − 2,600 = −8 د.أ فلا يتعادل؛ والخطوة 5% لأن زيادة المبيعات لا تحسّن كل شيء دائمًا. ويتحقق سعر الحدّ الأدنى: متوسط الوحدات يصير 1,800 × 1.4 = 2,520 والحدّ 6 + 44,700 ÷ 2,520 = 23.74 د.أ. الزيادة +40%. فيصير 8 من 10 = 80% ولا حاجب: امضِ',
+      },
+    ],
+    rethink: [],
+    rethinkHand: 'ثلاثة تغييرات تغيّر القرار، فلا حاجة إلى قائمة «أعِد التفكير»',
     confidenceHand:
       'F1 وF4 وF5 وF6 بثقة عالية وF3 بثقة متوسطة: 5 من 5 أرقام محورية بثقة متوسطة أو أعلى = 100%، وهو 75% فأكثر: عالية',
     planHand:
@@ -668,6 +737,40 @@ const ecommerce: GoldenProject = {
     blockersHand:
       'حاجب واحد: احتياج التمويل 12,900 د.أ أعلى من ضعف أقصى رأس مال (2 × 6,000 = 12,000 د.أ)، و H3 لا يذكر غير المدخرات والعائلة',
     verdictHand: 'حاجب واحد يوقف المشروع مهما كانت الدرجة: القرار توقّف',
+    changes: [
+      {
+        levers: ['variable_cost'],
+        to: [moneyTo(22_000n)],
+        premium: false,
+        reachesThreshold: true,
+        passed: 8,
+        evaluated: 10,
+        verdict: 'go',
+        hand: 'يهبط احتياج التمويل من 12,900 إلى 12,000 د.أ: وحدات الشهرين الأولين 150 + 150 = 300، وتخفيض 3 د.أ لكل وحدة يوفّر 3 × 300 = 900 د.أ؛ و12,000 = 2 × 6,000 بالضبط فلا حاجب، وأي تخفيض أقل يُبقيه. وفي السيناريو المتحفّظ تصير التكلفة 22 × 1.1 = 24.2 د.أ، وفي شهر الذروة 150 × 0.6 = 90 وحدة: 90 × (40 − 24.2) = 1,422 د.أ، وهي فوق التكاليف 1,200 د.أ فيتعادل (كان 90 × 12.5 = 1,125 فلا). ويُسترد التأسيس بعد 22 شهرًا. التخفيض −12%. فيصير 8 من 10 = 80% ولا حاجب: امضِ',
+      },
+      {
+        levers: ['price'],
+        to: [moneyTo(46_000n)],
+        premium: true,
+        reachesThreshold: true,
+        passed: 8,
+        evaluated: 10,
+        verdict: 'go',
+        hand: 'المحصَّل حتى الشهر 2 هو ثلثا مبيعات الشهر الأول وثلث مبيعات الشهر الثاني (ثلاث دفعات)، أي 150 × 46 = 6,900 د.أ لكل شهر فيصل 4,600 + 2,300 = 6,900 د.أ بدل 6,000 د.أ، فيهبط الاحتياج بـ 900 د.أ إلى 12,900 − 900 = 12,000 = 2 × 6,000 فلا حاجب. وفي السيناريو المتحفّظ: 90 × (46 − 27.5) = 1,665 د.أ فوق 1,200 د.أ فيتعادل (كان 1,125 فلا). ويُسترد التأسيس بعد 15 شهرًا. الزيادة +15%. والسعر 46 أعلى من أعلى منافس معروف (45 د.أ)، فهو سعر مميَّز (Premium). فيصير 8 من 10 = 80% ولا حاجب: امضِ',
+      },
+      {
+        levers: ['setup_costs'],
+        to: [moneyTo(6_000_000n)],
+        premium: false,
+        reachesThreshold: true,
+        passed: 8,
+        evaluated: 10,
+        verdict: 'go',
+        hand: 'تخفيض 900 د.أ فقط (من 9,000 إلى 8,100) يكفي لإزالة الحاجب: الاحتياج يصير 12,900 − 900 = 12,000 د.أ وهو ضعف رأس المال 6,000 بالضبط، ويصير القرار عدّل. أما ما يبلغ خط «امضِ» فهو 6,000 د.أ (تخفيض 3,000 د.أ، −33.33%): تكاليف التأسيس تساوي أقصى رأس مال فيتحقق معيارها، ويصير رصيد الشهر 36 −2,520 + 3,000 = 480 د.أ فيُسترد التأسيس (في الشهر 33). ويبقى الاحتياج 12,900 − 3,000 = 9,900 د.أ، أعلى من 6,000 د.أ فلا يتحقق معياره لكنه دون الحاجب. فيصير 8 من 10 = 80% ولا حاجب: امضِ',
+      },
+    ],
+    rethink: [],
+    rethinkHand: 'ثلاثة تغييرات تغيّر القرار، فلا حاجة إلى قائمة «أعِد التفكير»',
     confidenceHand:
       'F1 وF3 وF4 بثقة عالية وF5 وF6 بثقة متوسطة: 5 من 5 أرقام محورية بثقة متوسطة أو أعلى = 100%: عالية',
     planHand:
@@ -893,6 +996,9 @@ const algeria: GoldenProject = {
     blockersHand:
       'لا حاجب: الهامش 1,200 DZD موجب، والتعادل في الشهر 4، واحتياج التمويل 418,000 DZD لا يتجاوز ضعف أقصى رأس مال (2 × 400,000 = 800,000 DZD)',
     verdictHand: 'الدرجة 88.89% فوق 75% ولا حاجب والثقة الإجمالية عالية: القرار امضِ',
+    changes: [],
+    rethink: [],
+    rethinkHand: 'القرار امضِ: لا تغيير مطلوب',
     confidenceHand:
       'F6 بثقة متوسطة والبقية بثقة عالية: 5 من 5 أرقام محورية بثقة متوسطة أو أعلى = 100%: عالية',
     planHand:
@@ -1034,6 +1140,57 @@ export function decisionAgreement(run: EngineRun, decision: DecisionRows): Decis
       validationPlan.entries.map((entry) => entry.variable),
       decision.plan,
     ),
+  };
+}
+
+/** Whether the engine's changes are the ones the hand computation expects, one by one (D-262). */
+export interface ChangesAgreement {
+  /** The number of changes and the levers kept for rethinking are the expected ones. */
+  readonly list: boolean;
+  /** One flag per change the engine gave: levers, values, premium, line, score and verdict. */
+  readonly changes: readonly boolean[];
+}
+
+const sameTarget = (a: ChangeTarget, b: ChangeTarget): boolean =>
+  a.kind === 'money'
+    ? b.kind === 'money' && a.minor === b.minor
+    : b.kind === 'factor' && compareRates(a.rate, b.rate) === 0;
+
+/** Compares the changes `suggestChanges` gave with the hand computation of a project's changes. */
+export function changesAgreement(
+  suggested: SuggestedChanges,
+  decision: DecisionRows,
+): ChangesAgreement {
+  return {
+    list:
+      suggested.changes.length === decision.changes.length &&
+      sameList(
+        suggested.rethink.map((item) => item.lever),
+        decision.rethink,
+      ),
+    changes: suggested.changes.map((change, index) => {
+      const row = decision.changes[index];
+      return (
+        row !== undefined &&
+        sameList(
+          change.shifts.map((shift) => shift.lever),
+          row.levers,
+        ) &&
+        change.shifts.every((shift, place) => {
+          const expected = row.to[place];
+          const found: ChangeTarget =
+            shift.unit === 'money'
+              ? { kind: 'money', minor: shift.to.value.minor }
+              : { kind: 'factor', rate: shift.to.value };
+          return expected !== undefined && sameTarget(expected, found);
+        }) &&
+        change.premium === row.premium &&
+        change.reachesThreshold === row.reachesThreshold &&
+        change.outcome.passed === row.passed &&
+        change.outcome.evaluated === row.evaluated &&
+        change.outcome.verdict.value === row.verdict
+      );
+    }),
   };
 }
 

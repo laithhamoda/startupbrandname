@@ -1,9 +1,10 @@
 import type { Answers } from '@sbn/question-bank';
 import type { Alert, AlertSeverity } from './alerts';
-import { analyseCash, type CashAnalysis } from './cash';
-import { overallConfidence, type OverallConfidence } from './confidence';
-import { analyseEconomics } from './economics';
-import { feasibility, type Feasibility } from './feasibility';
+import { assess } from './assessment';
+import type { CashAnalysis } from './cash';
+import type { OverallConfidence } from './confidence';
+import type { Feasibility } from './feasibility';
+import { fxTest } from './fx-test';
 import type { Figure } from './figure';
 import {
   engineInputFrom,
@@ -14,12 +15,12 @@ import {
 } from './input';
 import { createEngineParams, listEngineParams, type EngineParamOverrides } from './params';
 import type { Pricing, PricingOptions } from './pricing';
-import { projectOperatingLines, type OperatingProjection } from './projection';
+import type { OperatingProjection } from './projection';
 import { scenarioAnalysis, tornadoAnalysis, type Scenarios, type Tornado } from './scenarios';
 import type { TaxAlert, TaxContext } from './tax';
 import type { UnitEconomics } from './unit-economics';
 import { validationPlan, type ValidationPlan } from './validation-plan';
-import { blockersOf, verdictOf, type VerdictResult } from './verdict';
+import type { VerdictResult } from './verdict';
 import { ENGINE_VERSION } from './version';
 
 /**
@@ -123,22 +124,17 @@ export function runEngine(
     return { status: 'not_calculable', reasons: adapted.reasons };
   }
   const { input } = adapted;
-  const projection = projectOperatingLines(input, params);
-  const economics = analyseEconomics(input, projection, pricingOptions, params);
-  const { alerts: taxAlerts, ...cash } = analyseCash(input, projection, tax, params);
+  // The pipeline of the verdict is shared with the search for the changes that would change it
+  // (D-228): the same function judges the founder's numbers and every change tried.
   const scenarios = scenarioAnalysis(input, tax, params);
+  const judged = assess(input, tax, params, pricingOptions, {}, scenarios.conservative);
+  const { projection, economics } = judged;
+  const cash = {
+    tax: judged.tax,
+    cashFlow: judged.cashFlow,
+    fxTest: fxTest(input, params, tax),
+  };
   const tornado = tornadoAnalysis(input, params);
-  const score = feasibility(
-    input,
-    projection,
-    economics.unitEconomics,
-    economics.pricing,
-    cash.cashFlow,
-    scenarios,
-    params,
-  );
-  const confidence = overallConfidence(input, params);
-  const blockers = blockersOf(input, projection, economics.unitEconomics, cash.cashFlow, params);
   return {
     status: 'ok',
     run: {
@@ -151,11 +147,11 @@ export function runEngine(
       cash,
       scenarios,
       tornado,
-      feasibility: score,
-      confidence,
-      verdict: verdictOf(blockers, score, confidence, params),
+      feasibility: judged.feasibility,
+      confidence: judged.confidence,
+      verdict: judged.verdict,
       validationPlan: validationPlan(input, tornado),
-      alerts: mergeAlerts(economics.alerts, taxAlerts),
+      alerts: mergeAlerts(economics.alerts, judged.tax.alerts),
     },
   };
 }

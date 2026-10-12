@@ -1,12 +1,20 @@
 import type { Alert, AlertValue } from './alerts';
 import { at } from './array';
 import type { CashFlowNote } from './cash-flow';
+import {
+  suggestChanges,
+  type Change,
+  type ChangeLever,
+  type LeverShift,
+  type SuggestedChanges,
+} from './changes';
 import type { PivotalId } from './confidence';
 import type { CriterionId, CriterionStatus } from './feasibility';
 import type { Figure } from './figure';
 import type { EngineNote } from './input';
 import {
   GOLDEN_PROJECTS,
+  changesAgreement,
   decisionAgreement,
   headlineValue,
   paymentVariantResults,
@@ -19,7 +27,7 @@ import {
 } from './golden-projects';
 import { moneyFromMajor, moneyToMajorString, type Money } from './money';
 import { PARAM_KEYS } from './params';
-import { rateToDecimalString, rateToPercentString, type Rate } from './rate';
+import { negateRate, rateToDecimalString, rateToPercentString, type Rate } from './rate';
 import type { EngineRun, RunAlert } from './run';
 import type { Scenarios, ScenarioResult, TornadoVariable } from './scenarios';
 import type { TaxAlert } from './tax';
@@ -41,20 +49,29 @@ export interface ReviewEntry {
   readonly project: GoldenProject;
   readonly run: EngineRun;
   readonly variants: readonly PaymentVariantResult[];
+  /** The changes that would change the verdict (D-228), searched for the same run and tax. */
+  readonly changes: SuggestedChanges;
 }
 
 /** The entries of the three golden projects, as the review page shows them. */
 export function goldenReviewEntries(): readonly ReviewEntry[] {
-  return GOLDEN_PROJECTS.map((project) => ({
-    project,
-    run: runGolden(project),
-    variants: paymentVariantResults(project),
-  }));
+  return GOLDEN_PROJECTS.map((project) => {
+    const run = runGolden(project);
+    return {
+      project,
+      run,
+      variants: paymentVariantResults(project),
+      changes: suggestChanges(run, project.tax),
+    };
+  });
 }
 
 /** The entries of the four synthetic cases of the verdict, as the review page shows them (D-247). */
 export function caseReviewEntries(): readonly ReviewEntry[] {
-  return VERDICT_CASES.map((project) => ({ project, run: runGolden(project), variants: [] }));
+  return VERDICT_CASES.map((project) => {
+    const run = runGolden(project);
+    return { project, run, variants: [], changes: suggestChanges(run, project.tax) };
+  });
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -771,6 +788,14 @@ const COST_WORD: Readonly<Record<CostClass, string>> = {
   supplier_quote: 'عرض سعر من مورّد',
 };
 
+const CHANGE_WORD: Readonly<Record<ChangeLever, string>> = {
+  price: 'سعر البيع (F1)',
+  variable_cost: 'التكلفة المتغيرة (F3)',
+  fixed_costs: 'التكاليف الثابتة الكاملة (F4 مع رواتب من بدأ وF4.1)',
+  sales: 'المبيعات المتوقعة (F6)',
+  setup_costs: 'تكاليف التأسيس (F5)',
+};
+
 const codeTag = (text: string): string => `<code>${esc(text)}</code>`;
 
 function decisionRow(label: string, hand: string, engine: string, agrees: boolean): string {
@@ -869,6 +894,100 @@ function planTable(entry: ReviewEntry): string {
   );
 }
 
+const absRate = (rate: Rate): Rate => (rate.num < 0n ? negateRate(rate) : rate);
+
+/** One lever of a change: the founder's value, the suggested one (a key number) and the relative change. */
+function shiftLines(shift: LeverShift, fmt: Fmt): { value: string; change: string } {
+  const direction = shift.relativeChange.value.num < 0n ? 'تخفيض' : 'زيادة';
+  const change = `${direction} ${formatPercent(absRate(shift.relativeChange.value))}`;
+  const name = CHANGE_WORD[shift.lever];
+  if (shift.unit === 'money') {
+    return {
+      value: `${h(`${name}: من ${money(shift.from.value.minor, fmt)} إلى `)}${key(money(shift.to.value.minor, fmt))}`,
+      change: h(`${name}: ${change}`),
+    };
+  }
+  const factor = shift.to.value;
+  return {
+    value: `${h(`${name}: تُضرب في `)}${key(formatRatio(factor))}${h(` (${formatPercent(factor)} من قيمتها)`)}`,
+    change: h(`${name}: ${change}`),
+  };
+}
+
+function changeRow(
+  entry: ReviewEntry,
+  change: Change,
+  hand: string | undefined,
+  agrees: boolean,
+): string {
+  const fmt = fmtOf(entry.project, entry.run.projection.calendar.horizonMonths);
+  const lines = change.shifts.map((shift) => shiftLines(shift, fmt));
+  const { score, passed, evaluated } = change.outcome;
+  const scoreText =
+    score === null
+      ? 'لا درجة: لا معيار مقيَّم'
+      : `الدرجة ${String(passed)} من ${String(evaluated)} = ${formatPercent(score.value)}`;
+  const ceiling = entry.changes.marketCeiling;
+  const premium =
+    !change.premium || ceiling === null
+      ? ''
+      : `<br><span class="prov">${h(`سعر مميَّز (Premium): أعلى من أعلى سعر منافس معروف (${money(ceiling.value.minor, fmt)}). السعر الأعلى من السوق يحتاج فرقًا في العرض يمكن قياسه (القاعدة R5)، ولا يعطي المحرّك رقمًا يدّعي أن السوق سيدفعه.`)}</span>`;
+  const reach = change.reachesThreshold ? 'يبلغ خط «امضِ»' : 'يزيل الحاجب ولا يبلغ خط «امضِ»';
+  const effort =
+    change.shifts.length > 1
+      ? `<br>${h(`الجهد (مجموع النسبتين): ${formatPercent(change.effort.value)}`)}`
+      : '';
+  return `<tr>${cell('التغيير', lines.map((line) => line.value).join('<br>'))}${cell('نسبة التغيير', `${lines.map((line) => line.change).join('<br>')}${effort}`)}${cell('بعد التغيير', `${h(scoreText)}<br>${key(VERDICT_WORD[change.outcome.verdict.value])} ${h(reach)}${premium}`)}${cell('الحساب اليدوي', hand === undefined ? h('—') : h(hand))}${cell('المطابقة', mark(agrees))}</tr>`;
+}
+
+/**
+ * The changes that would change the verdict (D-228, D-262), for a project that is not `go`: one
+ * table with each change, what the engine says about the project once it is made, its hand
+ * computation and a mark; then the levers to rethink, when fewer than three changes work, and how
+ * many times the search ran the engine.
+ */
+function changesBlocks(entry: ReviewEntry): readonly string[] {
+  const { changes, project } = entry;
+  if (changes.status === 'none_needed') return [];
+  const hand = project.decision;
+  const agreement = changesAgreement(changes, hand);
+  const fmt = fmtOf(project, entry.run.projection.calendar.horizonMonths);
+  const blocks = [
+    '<h4>التغييرات التي قد تغيّر القرار</h4>',
+    `<p>${h('كل تغيير يعدّل رقمًا من أرقام المؤسس نفسها ويُحكم عليه بالمحرّك نفسه الذي حكم على الأصلية. الرقم المقترح افتراض يحتاج المؤسس إلى التحقق من إمكانه، وليس وعدًا بنتيجة.')}</p>`,
+  ];
+  if (changes.goBlockedBy !== null) {
+    blocks.push(
+      `<p>${h('لا يوجد تغيير في هذه الأرقام يرفع القرار إلى «امضِ»: الثقة الإجمالية منخفضة، وهي تأتي من جودة الإجابات لا من قيمها، فيبدأ التحسين بتأكيد الأرقام المحورية.')}</p>`,
+    );
+  }
+  if (changes.changes.length > 0) {
+    blocks.push(
+      table(
+        'التغييرات الأصغر جهدًا أولًا (جهد التغيير مجموع نسب تغيير أرقامه)',
+        ['التغيير', 'نسبة التغيير', 'بعد التغيير', 'الحساب اليدوي', 'المطابقة'],
+        changes.changes.map((change, index) =>
+          changeRow(entry, change, hand.changes[index]?.hand, agreement.changes[index] === true),
+        ),
+      ),
+    );
+  }
+  if (changes.rethink.length > 0) {
+    const items = changes.rethink.map(
+      (item) =>
+        `${CHANGE_WORD[item.lever]}: الترتيب ${String(item.rank)} في الحساسية، وتأرجح ربح السنة الأولى ${money(item.swing.value.minor, fmt)}`,
+    );
+    blocks.push(
+      `<p>${h(`لم يكفِ أي تغيير في الأرقام لملء الأماكن الثلاثة، فيُطلب من المؤسس أن يعيد التفكير في: ${items.join('؛ ')}. لا قيمة مقترحة لها.`)}</p>`,
+    );
+  }
+  blocks.push(
+    `<p>${h(hand.rethinkHand)} ${mark(agreement.list)}</p>`,
+    `<p class="prov">${h(`شغّل البحث المحرّك ${String(changes.evaluations)} مرة، ${changes.complete ? 'واكتمل داخل ميزانيته' : 'وانتهت ميزانيته قبل أن يكتمل، فهذه ما وُجد وقد لا تكون الأصغر'}.`)}</p>`,
+  );
+  return blocks;
+}
+
 /** The blocks of the decision, under a heading the caller chose: criteria, summary, confidence, plan. */
 function decisionBlocks(entry: ReviewEntry): readonly string[] {
   const stopped = entry.run.verdict.verdict.value === 'stop';
@@ -878,9 +997,8 @@ function decisionBlocks(entry: ReviewEntry): readonly string[] {
     '<h4>الدرجة والقرار</h4>',
     summaryTable(entry),
     `<p>${h('الدرجة ليست احتمال نجاح: هي نسبة المعايير المقيَّمة التي تحققت، بأوزان متساوية.')}</p>`,
-    stopped
-      ? `<p>${h(`القرار توقّف: ${STOP_SENTENCE}. التغييرات الثلاثة التي قد تغيّر القرار تأتي في الخطوة التالية (2b) وليست في هذه الصفحة بعد.`)}</p>`
-      : '',
+    stopped ? `<p>${h(`القرار توقّف: ${STOP_SENTENCE}.`)}</p>` : '',
+    ...changesBlocks(entry),
     '<h4>الثقة الإجمالية</h4>',
     confidenceTable(entry),
     '<h4>خطة التحقّق</h4>',
@@ -1158,6 +1276,7 @@ export function renderReviewPage(
     '<section id="how" aria-labelledby="how-title">',
     '<h2 id="how-title">كيف تقرأ كل مشروع</h2>',
     `<p>${h('يبدأ كل مشروع بجملة تصفه، ثم المدخلات بالكلمات كما أجاب المؤسس، ثم جدول الأرقام الرئيسية: الرقم، وحسابه اليدوي، وما أخرجه المحرّك، وهل يتطابقان. بعد ذلك السيناريوهات الثلاثة (Scenarios) ومخطط الحساسية (Tornado) الذي يرتّب المتغيّرات بحسب أثرها على ربح السنة الأولى، ثم اختبار العملة الأجنبية (FX test) إن وُجد، ثم التنبيهات التي ظهرت. بعدها قسم «الجدوى والقرار»: معايير الجدوى الأحد عشر بأوزان متساوية (كل معيار منها نتيجة محسوبة أصلًا في التحليل، فلا يخالف القرار تنبيهًا)، ثم الدرجة والحواجب والقرار (امضِ أو عدّل أو توقّف) والثقة الإجمالية وخطة التحقّق، وكلها بجانب حسابها اليدوي. ثم ما افترضه المحرّك لأن إجابة ناقصة. الأرقام المقصودة بالنظر مكتوبة بخط عريض ذهبي على أسود.')}</p>`,
+    `<p>${h('لكل مشروع قراره «توقّف» أو «عدّل» جدول بالتغييرات التي قد تغيّر القرار. يبحث المحرّك في خمسة أرقام للمؤسس: السعر (حتى ضعفه)، والتكلفة المتغيرة والتكاليف الثابتة وتكاليف التأسيس (حتى نصفها)، والمبيعات (حتى ضعفها). هدفه في «توقّف» أن يزيل الحاجب أولًا، ثم أن يبلغ خط «امضِ» إن أمكن داخل الحدود فيذكر الأخير، وفي «عدّل» أن يبلغ الخط. يجرّب رقمًا واحدًا ثم رقمين يتحركان بالنسبة نفسها حين لا يكفي الواحد، ويرتّب بحسب الجهد وهو مجموع نسب التغيير، ويعرض الثلاثة الأصغر. سعر فوق أعلى سعر منافس معروف يُعلَّم «مميَّز»: يحتاج فرقًا في العرض يمكن قياسه، والمحرّك لا يقدّم رقمًا يدّعي أن السوق سيدفعه. المبيعات تُجرَّب خطوة خطوة بنسبة 5% لأن زيادتها مع الدفع المتأخر قد تحتاج تمويلًا أكبر فلا تُحسَّن النتيجة دائمًا. وإن نفدت ميزانية البحث قال ذلك.')}</p>`,
     '</section>',
     ...entries.map(projectSection),
     casesSection(cases),
