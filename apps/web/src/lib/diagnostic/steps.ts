@@ -40,3 +40,12 @@ export const CANVAS_ORIGIN = 'canvas';
 export function stepFromCanvasPath(projectId: string, step: StepId): string {
   return `${stepPath(projectId, step)}?from=${CANVAS_ORIGIN}`;
 }
+
+/**
+ * Where a follow-up the answers do not call for yet sends the founder: to its parent question. A
+ * founder who came from the canvas keeps the way back (D-249), so that saving the parent returns
+ * to the canvas and not to the next question.
+ */
+export function inactiveStepPath(projectId: string, parent: StepId, fromCanvas: boolean): string {
+  return fromCanvas ? stepFromCanvasPath(projectId, parent) : stepPath(projectId, parent);
+}

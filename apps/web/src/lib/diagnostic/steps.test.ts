@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   canvasPath,
   CANVAS_ORIGIN,
+  inactiveStepPath,
   stepFromCanvasPath,
   stepFromSlug,
   stepPath,
@@ -55,5 +56,10 @@ describe('the canvas links (D-249)', () => {
     expect(CANVAS_ORIGIN).toBe('canvas');
     expect(stepFromCanvasPath('p', 'F3')).toBe('/projects/p/q/F3?from=canvas');
     expect(stepFromCanvasPath('p', 'C7.1')).toBe('/projects/p/q/C7-1?from=canvas');
+  });
+
+  it('send a follow-up that is not asked yet to its parent, keeping the way back to the canvas', () => {
+    expect(inactiveStepPath('p', 'C7', true)).toBe('/projects/p/q/C7?from=canvas');
+    expect(inactiveStepPath('p', 'C7', false)).toBe('/projects/p/q/C7');
   });
 });

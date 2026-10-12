@@ -97,6 +97,17 @@ test('a founder edits a chip of the canvas, comes back, and sees the chip and th
     .getByRole('region', { name: /المشكلة والبدائل الحالية/ });
   await expect(problem).toBeVisible();
   await expect(page.getByRole('tabpanel').getByRole('region')).toHaveCount(9);
+
+  // Customer Relationships links to C7.1, which is not asked until C7 is answered: the founder
+  // lands on C7 and keeps the way back to the canvas.
+  await page.getByRole('tab', { name: /لوحة نموذج العمل/ }).click();
+  await page
+    .getByRole('tabpanel')
+    .getByRole('region', { name: /علاقات العملاء/ })
+    .getByRole('link')
+    .click();
+  await expect(page).toHaveURL(new RegExp(`/q/C7\\?from=canvas$`));
+  await expect(page.getByRole('link', { name: 'العودة إلى اللوحتين' })).toBeVisible();
 });
 
 test('the canvas has no WCAG 2.2 AA violations in either language, tab or theme', async ({

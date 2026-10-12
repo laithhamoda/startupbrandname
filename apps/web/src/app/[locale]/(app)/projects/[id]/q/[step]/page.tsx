@@ -29,6 +29,7 @@ import { loadProject } from '@/lib/diagnostic/project';
 import {
   canvasPath,
   CANVAS_ORIGIN,
+  inactiveStepPath,
   projectPath,
   stepFromSlug,
   stepPath,
@@ -91,9 +92,10 @@ export default async function StepPage({
 
   const resolved = resolveStep(step, answers);
   if (!resolved) notFound();
-  // A follow-up the answers no longer call for goes back to its question.
+  // A follow-up the answers do not call for (yet) goes to its question, and a founder who came
+  // from the canvas keeps the way back to it (D-249).
   if (resolved.status === 'inactive') {
-    redirect(`/${locale}${stepPath(project.id, resolved.parent)}`);
+    redirect(`/${locale}${inactiveStepPath(project.id, resolved.parent, fromCanvas)}`);
   }
   const question = resolved.step;
   const core = question.question;
