@@ -233,11 +233,11 @@
             {
               "n": "75%"
             },
-            "). We found changes to your numbers (",
+            "). We found ",
             {
               "n": "3"
             },
-            ") that take the project to Go. The score is not a probability of success; it is the share of criteria that pass."
+            " changes to your numbers, and applying that takes the project to Go. The score is not a probability of success; it is the share of criteria that pass."
           ],
           "stopSentence": "Not viable in its current form",
           "meter": {

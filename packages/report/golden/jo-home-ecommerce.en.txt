@@ -9,7 +9,7 @@ Every number in this report is calculated by the engine with fixed formulas and 
 - Overall confidence: High (5 of 5 key answers are sound)
 ## Executive summary
 This report is addressed to a bank, so it opens with what matters most to one: the funding need, then the break-even month, then first-year profit.
-VERDICT Stop Not viable in its current form | Blocking conditions hold (1); they are listed in the risks below. 6 of 10 feasibility criteria pass (60%), which is below the Go line (75%). We found changes to your numbers (3) that take the project to Go. The score is not a probability of success; it is the share of criteria that pass.
+VERDICT Stop Not viable in its current form | Blocking conditions hold (1); they are listed in the risks below. 6 of 10 feasibility criteria pass (60%), which is below the Go line (75%). We found 3 changes to your numbers, and applying that takes the project to Go. The score is not a probability of success; it is the share of criteria that pass.
 Feasibility criteria met: 6 of 10. The Go line is at 75%.
 Funding need: 12,900.000 JOD (Lowest cash balance, in Month 2)
 Break-even month: Month 1 (Break-even: the first month income covers costs)

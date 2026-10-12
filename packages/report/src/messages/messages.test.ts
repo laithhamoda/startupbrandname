@@ -186,7 +186,7 @@ describe('the report message catalogs', () => {
       inlineText(messages.months({ count, n: n(count) }));
     expect([1, 2, 3, 10, 11, 36].map((count) => text(ar, count))).toEqual([
       'شهر واحد',
-      'شهران',
+      'شهرين',
       '3 أشهر',
       '10 أشهر',
       '11 شهرًا',
@@ -197,6 +197,38 @@ describe('the report message catalogs', () => {
       'two months',
       '3 months',
       '36 months',
+    ]);
+  });
+
+  it('pick the right plural of units and changes in Arabic and English', () => {
+    const n = (count: number): Inline => [{ n: String(count) }];
+    const units = (messages: typeof ar, count: number) =>
+      inlineText(messages.units({ count, n: n(count) }));
+    const changes = (messages: typeof ar, count: number) =>
+      inlineText(messages.changes({ count, n: n(count) }));
+    expect([1, 2, 3, 10, 11, 171].map((count) => units(ar, count))).toEqual([
+      'وحدة واحدة',
+      'وحدتين',
+      '3 وحدات',
+      '10 وحدات',
+      '11 وحدة',
+      '171 وحدة',
+    ]);
+    expect([1, 2, 3, 11].map((count) => changes(ar, count))).toEqual([
+      'تغيير واحد',
+      'تغييرين',
+      '3 تغييرات',
+      '11 تغييرًا',
+    ]);
+    expect([1, 2, 5].map((count) => units(en, count))).toEqual([
+      'one unit',
+      'two units',
+      '5 units',
+    ]);
+    expect([1, 2, 5].map((count) => changes(en, count))).toEqual([
+      'one change',
+      'two changes',
+      '5 changes',
     ]);
   });
 

@@ -33,7 +33,7 @@ function estimateBlocks(ctx: Ctx, run: EngineRun): Block[] {
         term,
         month: ctx.monthLabel(month),
         revenue: ctx.money(unit.breakEvenRevenue.value),
-        units: ctx.integer(unit.breakEvenUnits.value),
+        units: ctx.unitsPhrase(unit.breakEvenUnits.value),
       }),
     ),
   ];

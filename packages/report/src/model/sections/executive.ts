@@ -73,7 +73,8 @@ function meterOf(ctx: Ctx, run: EngineRun): Meter | null {
   const { feasibility } = run;
   const line = paramRate(run, PARAM_KEYS.goScoreLine);
   if (feasibility.score === null || line === null) return null;
-  const linePercent = Number((line.value.num * 100n) / line.value.den);
+  // Rounded to the nearest whole percent (exact integer arithmetic); the caption keeps the exact value.
+  const linePercent = Number((line.value.num * 200n + line.value.den) / (line.value.den * 2n));
   return {
     passed: feasibility.passed,
     evaluated: feasibility.evaluated,
@@ -122,8 +123,8 @@ function verdictReason(ctx: Ctx, run: EngineRun, changes: SuggestedChanges | nul
       const reaching = changes.changes.filter((change) => change.reachesThreshold).length;
       sentences.push(
         reaching > 0
-          ? reason.changesReach({ count: ctx.integer(reaching) })
-          : reason.changesImprove({ count: ctx.integer(changes.changes.length) }),
+          ? reason.changesReach({ changes: ctx.changesPhrase(reaching) })
+          : reason.changesImprove({ changes: ctx.changesPhrase(changes.changes.length) }),
       );
     }
     if (changes?.goBlockedBy === 'confidence_low') sentences.push(plain(reason.goNeedsConfidence));

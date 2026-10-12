@@ -44,7 +44,6 @@ export const en: ReportMessages = {
     yes: 'Yes',
     no: 'No',
     notCalculated: 'Not calculated',
-    unitsWord: 'units',
     perMonth: 'per month',
     dash: '—',
     listSeparator: '; ',
@@ -58,6 +57,16 @@ export const en: ReportMessages = {
     if (count === 1) return ['one month'];
     if (count === 2) return ['two months'];
     return inl`${n} months`;
+  },
+  units: ({ count, n }) => {
+    if (count === 1) return ['one unit'];
+    if (count === 2) return ['two units'];
+    return inl`${n} units`;
+  },
+  changes: ({ count, n }) => {
+    if (count === 1) return ['one change'];
+    if (count === 2) return ['two changes'];
+    return inl`${n} changes`;
   },
   within: ({ months }) => inl`within ${months}`,
   noBreakEvenWithin: ({ months }) => inl`no break-even within ${months}`,
@@ -103,10 +112,10 @@ export const en: ReportMessages = {
         inl`Blocking conditions hold (${count}); they are listed in the risks below.`,
       score: ({ passed, evaluated, score, line }) =>
         inl`${passed} of ${evaluated} feasibility criteria pass (${score}); the Go line is ${line}.`,
-      changesReach: ({ count }) =>
-        inl`We found changes to your numbers (${count}) that take the project to Go.`,
-      changesImprove: ({ count }) =>
-        inl`We found changes to your numbers (${count}) that improve the result but do not take the project to Go on their own.`,
+      changesReach: ({ changes }) =>
+        inl`We found ${changes} to your numbers, and applying that takes the project to Go.`,
+      changesImprove: ({ changes }) =>
+        inl`We found ${changes} to your numbers, and applying that improves the result but does not take the project to Go on its own.`,
       goNeedsConfidence:
         'The project cannot reach Go while your confidence in the key figures is low.',
       notProbability:
@@ -256,13 +265,13 @@ export const en: ReportMessages = {
 
   breakEven: {
     estimate: ({ term, month, revenue, units }) =>
-      inl`By our estimate your project reaches ${term} in ${month}, at ${units} units a month and monthly revenue of ${revenue}.`,
+      inl`By our estimate your project reaches ${term} in ${month}, at ${units} a month and monthly revenue of ${revenue}.`,
     notReached: ({ term, horizon }) =>
       inl`The project does not reach ${term} within ${horizon} on the current numbers.`,
     blocked: ({ term, margin }) =>
       inl`There is no ${term}: the unit margin (${margin}) is not positive.`,
     notEnough: ({ term }) => inl`Your answers are not enough yet to estimate ${term}.`,
-    missingIntro: 'Still missing:',
+    missingIntro: 'Still missing',
     caveat:
       'An estimate from your numbers and the engine’s assumptions, not a promise of an outcome.',
   },
@@ -550,7 +559,7 @@ export const en: ReportMessages = {
       'fixed_costs.cut_or_postpone': 'Cut the item or postpone it.',
       'worry.smallest_test':
         'The smallest test that answers your worry alone: show your idea to prospective customers and ask for a decision, not an opinion.',
-      'worry.founder_sets_the_line': 'You set the success line before you start.',
+      'worry.founder_sets_the_line': 'The worry is yours, so the line you accept is your choice.',
       'worry.ask_an_expert': 'Ask an expert in your field before you go on.',
     },
     rankCaption: 'How the tests were ranked',

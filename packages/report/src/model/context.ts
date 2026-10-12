@@ -180,6 +180,16 @@ export class Ctx {
     return this.m.months({ count, n: this.integer(count) });
   }
 
+  /** "one unit", "3 units": a count of units with the plural of the language. */
+  unitsPhrase(count: bigint): Inline {
+    return this.m.units({ count: Number(count), n: this.integer(count) });
+  }
+
+  /** "two changes", "3 changes". */
+  changesPhrase(count: number): Inline {
+    return this.m.changes({ count, n: this.integer(count) });
+  }
+
   /** A month or "no break-even within N months" when there was none. */
   monthOrNone(month: number | null, horizon: number): Inline {
     return month === null
@@ -194,7 +204,7 @@ export class Ctx {
       case 'money':
         return this.money(value.money);
       case 'units':
-        return concat(this.integer(value.units), [' '], plain(this.m.words.unitsWord));
+        return this.unitsPhrase(value.units);
       case 'months':
         return this.monthsPhrase(value.months);
       case 'months_after':

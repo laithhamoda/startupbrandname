@@ -44,7 +44,6 @@ export const ar: ReportMessages = {
     yes: 'نعم',
     no: 'لا',
     notCalculated: 'غير محسوب',
-    unitsWord: 'وحدة',
     perMonth: 'شهريًا',
     dash: '—',
     listSeparator: '، ',
@@ -56,8 +55,19 @@ export const ar: ReportMessages = {
   month: ({ n }) => inl`الشهر ${n}`,
   months: ({ count, n }) => {
     if (count === 1) return ['شهر واحد'];
-    if (count === 2) return ['شهران'];
+    // The oblique form: the phrase is almost always the object of a preposition (ضمن, خلال).
+    if (count === 2) return ['شهرين'];
     return count <= 10 ? inl`${n} أشهر` : inl`${n} شهرًا`;
+  },
+  units: ({ count, n }) => {
+    if (count === 1) return ['وحدة واحدة'];
+    if (count === 2) return ['وحدتين'];
+    return count >= 3 && count <= 10 ? inl`${n} وحدات` : inl`${n} وحدة`;
+  },
+  changes: ({ count, n }) => {
+    if (count === 1) return ['تغيير واحد'];
+    if (count === 2) return ['تغييرين'];
+    return count >= 3 && count <= 10 ? inl`${n} تغييرات` : inl`${n} تغييرًا`;
   },
   within: ({ months }) => inl`ضمن ${months}`,
   noBreakEvenWithin: ({ months }) => inl`لا تعادل خلال ${months}`,
@@ -102,9 +112,10 @@ export const ar: ReportMessages = {
       blockers: ({ count }) => inl`توجد شروط حاجبة (${count})، وهي مذكورة في المخاطر أدناه.`,
       score: ({ passed, evaluated, score, line }) =>
         inl`يتحقق ${passed} من ${evaluated} من معايير الجدوى (${score})، وخط «امضِ» ${line}.`,
-      changesReach: ({ count }) => inl`وجدنا تغييرات في أرقامك (${count}) تصل بالمشروع إلى «امضِ».`,
-      changesImprove: ({ count }) =>
-        inl`وجدنا تغييرات في أرقامك (${count}) تحسّن النتيجة لكنها لا تصل بالمشروع إلى «امضِ» وحدها.`,
+      changesReach: ({ changes }) =>
+        inl`وجدنا ${changes} في أرقامك، وتطبيق ذلك يصل بالمشروع إلى «امضِ».`,
+      changesImprove: ({ changes }) =>
+        inl`وجدنا ${changes} في أرقامك، وتطبيق ذلك يحسّن النتيجة لكنه لا يصل بالمشروع إلى «امضِ» وحده.`,
       goNeedsConfidence: 'ولا يصل المشروع إلى «امضِ» ما دامت ثقتك في الأرقام المحورية منخفضة.',
       notProbability: 'الدرجة ليست احتمال نجاح، بل نسبة المعايير التي تحققت.',
     },
@@ -199,7 +210,7 @@ export const ar: ReportMessages = {
       F5: 'تكاليف التأسيس',
       F6: 'توقّعات المبيعات',
     },
-    pivotalMissing: ({ figure }) => inl`لم تُجب بعد عن ${figure}، وبدونه لا يكتمل الحساب.`,
+    pivotalMissing: ({ figure }) => inl`لم تُجب بعد عن ${figure}، فلا يكتمل الحساب.`,
     pivotalAssumed: ({ figure }) =>
       inl`${figure} افتراض غير مؤكَّد، فاختبره قبل أن تبني عليه قراراً.`,
     worry: ({ worry }) => inl`قلقك أنت: «${worry}».`,
@@ -247,12 +258,12 @@ export const ar: ReportMessages = {
 
   breakEven: {
     estimate: ({ term, month, revenue, units }) =>
-      inl`يبلغ مشروعك ${term} في ${month} وفق تقديرنا، عند ${units} وحدة شهريًا وإيراد شهري قدره ${revenue}.`,
+      inl`يبلغ مشروعك ${term} في ${month} وفق تقديرنا، عند ${units} شهريًا وإيراد شهري قدره ${revenue}.`,
     notReached: ({ term, horizon }) =>
       inl`لا يبلغ المشروع ${term} خلال ${horizon} بالأرقام الحالية.`,
     blocked: ({ term, margin }) => inl`لا يوجد ${term}: هامش الوحدة (${margin}) ليس موجبًا.`,
     notEnough: ({ term }) => inl`إجاباتك الحالية لا تكفي بعد لتقدير ${term}.`,
-    missingIntro: 'ما ينقص:',
+    missingIntro: 'ما ينقص',
     caveat: 'تقدير من أرقامك وافتراضات المحرك، وليس وعدًا بنتيجة.',
   },
   notCalculable: {
@@ -520,7 +531,7 @@ export const ar: ReportMessages = {
       'fixed_costs.cut_or_postpone': 'اخفض البند أو أجّله.',
       'worry.smallest_test':
         'أصغر اختبار يجيب عن قلقك وحده: اعرض فكرتك على عملاء محتملين واطلب منهم قرارًا لا رأيًا.',
-      'worry.founder_sets_the_line': 'حدّ النجاح تضعه أنت قبل أن تبدأ.',
+      'worry.founder_sets_the_line': 'القلق قلقك، فالحدّ الذي ترضى به من اختيارك.',
       'worry.ask_an_expert': 'اسأل خبيرًا في مجالك قبل أن تتابع.',
     },
     rankCaption: 'كيف رُتّبت الاختبارات',

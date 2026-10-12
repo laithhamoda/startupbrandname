@@ -147,7 +147,7 @@ A test plan of 30 days: test the most important assumptions before you spend on 
 (worry) “هل يستمر الطلب على الأكل المنزلي خارج المناسبات؟”
 Your own worry:
 - The test: The smallest test that answers your worry alone: show your idea to prospective customers and ask for a decision, not an opinion.
-- Success line: You set the success line before you start. This is the protocol’s default description; you set the number you will accept before you start.
+- Success line: The worry is yours, so the line you accept is your choice. This is the protocol’s default description; you set the number you will accept before you start.
 - If it fails: Ask an expert in your field before you go on.
 - Cost: Your time
 Test 2:

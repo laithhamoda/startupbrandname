@@ -134,7 +134,6 @@ export interface ReportMessages {
     readonly yes: string;
     readonly no: string;
     readonly notCalculated: string;
-    readonly unitsWord: string;
     readonly perMonth: string;
     readonly dash: string;
     readonly listSeparator: string;
@@ -148,6 +147,9 @@ export interface ReportMessages {
 
   readonly month: Template<'n'>;
   readonly months: (slots: { readonly count: number; readonly n: Inline }) => Inline;
+  /** Counted nouns with their own plural rules: "one unit", "3 units". */
+  readonly units: (slots: { readonly count: number; readonly n: Inline }) => Inline;
+  readonly changes: (slots: { readonly count: number; readonly n: Inline }) => Inline;
   readonly within: Template<'months'>;
   readonly noBreakEvenWithin: Template<'months'>;
   readonly noPaybackWithin: Template<'months'>;
@@ -181,8 +183,8 @@ export interface ReportMessages {
       readonly noBlocker: string;
       readonly blockers: Template<'count'>;
       readonly score: Template<ScoreSlot>;
-      readonly changesReach: Template<'count'>;
-      readonly changesImprove: Template<'count'>;
+      readonly changesReach: Template<'changes'>;
+      readonly changesImprove: Template<'changes'>;
       readonly goNeedsConfidence: string;
       readonly notProbability: string;
     };
