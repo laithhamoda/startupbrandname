@@ -16,6 +16,13 @@ import { compareRates, makeRate, type Rate } from './rate';
 import type { Scenarios } from './scenarios';
 import type { UnitEconomics } from './unit-economics';
 
+/**
+ * The part of T10 the criteria read: the conservative scenario. The search for the changes that
+ * would change a verdict (D-228) evaluates a project with this scenario only, so the score takes
+ * `Pick<Scenarios, 'conservative'>` and a full `Scenarios` fits it.
+ */
+export type ConservativeOnly = Pick<Scenarios, 'conservative'>;
+
 /** The stable IDs of the feasibility rules, listed in the inputs of the figures they produce (D-181). */
 export const FEASIBILITY_RULES = {
   score: 'feasibility.score',
@@ -199,7 +206,7 @@ export function feasibilityCriteria(
   unit: UnitEconomics,
   prices: Pricing,
   flow: CashFlow,
-  scenarios: Scenarios,
+  scenarios: ConservativeOnly,
   params: EngineParams,
 ): readonly Criterion[] {
   const horizon = projection.calendar.horizonMonths;
@@ -328,7 +335,7 @@ export function feasibility(
   unit: UnitEconomics,
   prices: Pricing,
   flow: CashFlow,
-  scenarios: Scenarios,
+  scenarios: ConservativeOnly,
   params: EngineParams,
 ): Feasibility {
   return scoreCriteria(
