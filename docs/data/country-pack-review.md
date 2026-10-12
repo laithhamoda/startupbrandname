@@ -2,6 +2,15 @@
 
 For the lead and the owner. Generated from `supabase/migrations/20261013000000_m5_country_pack_seed.sql` (M5 step 4, D-263 to D-266). Every item was read on its official page on 2026-10-12 and audited by the lead the same day. Nothing here is from memory or from the SPEC.
 
+## Re-run note
+
+The verifier (verify_seed.py) was re-run later on 2026-10-12 and reported BAD for five items. The mf.gov.dz
+finance-law PDFs answered HTTP 500 (three DZ items), and the istd.gov.jo page (JO tax.registration.body)
+and casnos.dz/affiliation (DZ social_security.registration.body) no longer returned the evidence
+sentences, although the lead found them earlier the same day. Treat this as a live-site fault, not a
+wrong fact. Re-run the verifier when the sites answer; if a sentence is really gone, set that item to
+under_review.
+
 ## Items
 
 | Country | Key                                                  | Status       | Source URL                                                                                                                                                                                                                          | Date       |
