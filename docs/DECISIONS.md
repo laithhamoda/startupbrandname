@@ -41,8 +41,8 @@ A decision may sit under several topics. A new decision joins its topics in the 
 - **Diagnostic and question bank:** D-072, D-102, D-104, D-105, D-106, D-108, D-110 to D-119, D-129,
   D-149, D-156 to D-161, D-163, D-165, D-167, D-182, D-183, D-197 to D-199, D-231, D-232, D-249, D-252.
 - **Calculation engine:** D-178 to D-190, D-193 to D-196, D-200 to D-224, D-227 to D-230,
-  D-238, D-244, D-246 to D-248, D-251.
-- **Report, canvases and PDF (M5):** D-225 to D-253.
+  D-238, D-244, D-246 to D-248, D-251, D-260 to D-262.
+- **Report, canvases and PDF (M5):** D-225 to D-253, D-260 to D-262.
 - **AI and cost:** D-062, D-071, D-072, D-073, D-082, D-103, D-107, D-119 to D-124, D-143, D-146 to
   D-152, D-155, D-183, D-191, D-226.
 - **Privacy, consent and security:** D-013, D-016, D-040, D-041, D-061, D-062, D-074, D-077,
@@ -1856,4 +1856,112 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   budget is in `docs/runbooks/operations.md`.
 - **Reason:** Keeps the canvas free of the PDF code, the report package free of the engine until
   step 5, and the wording of a number in one place (rule 1).
+- **Status:** Active
+
+### D-260 (2026-10-12): The levers of the change search, their bounds and what they aim at
+
+- **Decision:** `suggestChanges` (D-228) moves five of the founder's own numbers. **Price** (F1) up to
+  double. **Variable cost** (F3) down to half. **Fixed costs** as D-182 defines them (F4, the payroll
+  of the staff who started and F4.1) down to half, through the projection's fixed-cost multiplier
+  (D-217). **Sales** up to double, through the units multiplier (the three points of F6 together,
+  E7's capacity still cuts them). **Set-up costs** (F5) down to half. A lever the project does not
+  have is not searched: no F5, no sales in year 1, no fixed costs at all. The steps are a minor unit
+  of the currency for the three money levers, a tenth of a percent for the fixed costs (a factor of
+  `(1000 - n) / 1000`) and 5 percent for the sales; in a pair (D-261) a whole percent, the amount
+  rounded once to the minor unit, half away from zero (D-179). Every change is a figure with
+  source `assumption`, validated false, listing the original input it moved as a reference and the
+  rules `changes.shift` or `changes.outcome` (D-181): the amounts and the factor, the relative change
+  `(to - from) / from` as an exact rate, the effort (the sum of the absolute relative changes of its
+  levers) and the score and verdict after it. The fixed costs and the sales are given as a factor on
+  the founder's figures with `from` always 1, because D-182's cost is the sum of three answers and
+  the sales are three points of a curve, so no single amount stands for either. **What it aims at.**
+  For a `stop`: first the smallest change that leaves no blocker; then the smallest that reaches
+  `go` (the pipeline's own verdict, so a score at or above the line, no blocker and a confidence
+  that is not low); the second is reported when it exists inside the bounds and `reachesThreshold`
+  says so, otherwise the first. For a `revise`: `go`. Overall confidence reads the stored
+  provenance of five answers and not their values (D-229), so no change of a number can lift it: a
+  `revise` held back by low confidence returns no change and `goBlockedBy` set to `confidence_low`,
+  and a `stop` with low confidence reports only changes that remove the blockers. A margin of zero
+  or less (CM = P - VC) can be mended only by the price and the variable cost, alone or together:
+  the other levers are not searched then. **A premium price.** The search does not stop at the
+  market: it reports the smallest price that works, and the change carries `premium` when that price
+  is above the largest known D4 competitor price (equal to it is not above). A premium price is not
+  a claim that the market will pay it: under T7's rule R5 it needs a measurable difference in the
+  offer, which is the owner's wording that a suggested price must fit market basics and otherwise
+  the value offered must change; the engine gives the flag and never a number for it. **No D4
+  prices.** With no known competitor price there is no ceiling (`marketCeiling` is null), no price
+  is marked premium, and the price is bounded only by double its value; this is how D-228's
+  "up to the largest competitor price" is read when there is none.
+- **Reason:** D-228 and the owner's decisions of 2026-10-11; CLAUDE.md rules 1, 2 and 9 (the changes
+  are the founder's numbers moved by the engine, never a figure the model or the engine invented).
+  Halving and doubling are the bounds D-228 names; bounds that look unrealistic to the owner are
+  listed in OPEN-QUESTIONS #94.
+- **Status:** Active
+
+### D-261 (2026-10-12): How the change search runs
+
+- **Decision:** `runEngine`'s pipeline is split into `assess` (the projection with adjustments, T8
+  and T7 with their alerts, the tax, the cash flow, the conservative scenario only, the
+  feasibility, the confidence, the blockers and the verdict, `assessment.ts`), which `runEngine`
+  calls and then adds the FX test, the other scenarios, the tornado and the plan; the search judges
+  every change by `assess`, so a change is never judged by a second set of rules. No run output
+  changes: the golden files are byte-identical and `ENGINE_VERSION` stays 1.1.0 (D-246).
+  **Monotone levers** (the price, the variable cost, the set-up costs, and the pairs below): more
+  price or less cost can only help, so the smallest working step is found by bisection between a
+  step that is known to fail (the founder's own numbers) and one that was judged to pass, which
+  makes the answer exact at the minor unit (the fixed costs: to a tenth of a percent) and always a
+  value the pipeline passed, whatever the cash flow does in between. **The sales are not
+  monotone.** With late payment more sales can need more funding (D-248): a larger volume can pass a
+  criterion that a smaller one fails and fail one that a smaller one passes, so there is no
+  boundary to bisect for. They are tried on a grid of 5 percent steps from 5 to 100 percent and the
+  first step that meets the target is taken (a comment in `changes.ts` says why). **Pairs.** A pair
+  moves two levers by the same relative step on a grid of whole percents up to 50 (the lowest bound
+  among the levers is half): price with variable cost, with fixed costs and with set-up costs,
+  variable cost with fixed costs and with set-up costs, and fixed costs with set-up costs; the sales
+  are in no pair, because a pair assumes both levers only help as they move. A pair is dropped when
+  one of its levers alone, moved by the same percent, already does what the pair does. Pairs are
+  searched only when fewer than three single levers worked, to make up the three; they do not
+  displace a third single lever (OPEN-QUESTIONS #94). **A cut.** Once three changes exist, a search
+  that cannot beat the third by effort is not run, and a ladder whose go lies beyond the cut is
+  dropped: both are exact, they only save evaluations. **The budget** is the engine parameter
+  `changes.search_budget`, a named assumption (default 160 evaluations of `assess`, a whole number
+  from 1 to 10,000, overridable through `createEngineParams` like the others). It is listed by
+  `listChangeParams` and by the result of `suggestChanges`, and not by `listEngineParams`: a run's
+  parameters are serialised into the golden files and into the settings hash, and a budget changes
+  neither. When it runs out the search returns what it found and `complete` is false; the founder's
+  own run is not counted in `evaluations`. **Ranking and selection.** By effort, smallest first; equal
+  efforts by the order price, variable cost, fixed costs, sales, set-up costs, a lever before its
+  pairs. Each set of levers gives at most one candidate, so the first three have different sets.
+  **The rethink fill.** For a `stop` with fewer than three changes, the places are filled with the
+  widest drivers of the tornado (D-218) that no change uses and whose swing is not zero, in the
+  tornado's order, as `rethink` with their rank and swing and no target value; the set-up costs are
+  not in the tornado. **Determinism.** Pure, with no clock and no randomness: the same arguments give
+  a deeply equal result, and the run and its input are never changed. It throws what the engine throws
+  and an `invalid_param` for an override out of its range; an error of the pipeline is never taken
+  for a spent budget.
+- **Reason:** D-228 (a bounded, deterministic search, exact at the minor unit, with its own budget);
+  D-248 for the sales; keeping the golden files and the settings hash free of a search setting.
+- **Status:** Active
+
+### D-262 (2026-10-12): How the review page shows the changes
+
+- **Decision:** For each sample project and synthetic case whose verdict is `stop` or `revise`, the
+  owner review page shows, under the verdict, a table of the changes `suggestChanges` found:
+  the levers with the founder's value and the suggested one (a key number), the relative change, the
+  score and verdict after it, whether it reaches the line, a hand computation and a mark that says
+  whether the engine matches it. A premium price carries the plain sentence that a price above the
+  market needs a measurable difference in the offer and that the engine gives no number for it. A
+  stop with fewer than three changes lists the levers to rethink with their rank and swing and no
+  target, and every table says how many times the search ran the engine and whether it finished.
+  The sentence that said the three changes come in the next step is gone. The hand computations
+  live in `DecisionRows.changes` of `golden-projects.ts` and `verdict-cases.ts` (the levers, the
+  values, the flag, the score and the verdict after it, the text), compared by `changesAgreement`;
+  the vectors of the engine's tests (D-260) are those of the synthetic cases, whose negative margin
+  and borderline cases now name two competitors at 11 and 14 dinars so the premium flag has a
+  market to be read against. For the Jordanian shop (a stop) the table shows the change that
+  reaches «امضِ» (set-up costs down to 6,000) and its hand computation also gives the smaller
+  change that only removes the blocker (down by 900, to 8,100, which brings the funding need from
+  12,900 to 12,000, twice the capital of 6,000). The golden files do not change.
+- **Reason:** D-223 (every number the owner reviews has its hand computation next to it) and the
+  brief of M5 step 2b.
 - **Status:** Active
