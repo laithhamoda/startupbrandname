@@ -4,12 +4,14 @@ For the lead and the owner. Generated from `supabase/migrations/20261013000000_m
 
 ## Re-run note
 
-The verifier (verify_seed.py) was re-run later on 2026-10-12 and reported BAD for five items. The mf.gov.dz
-finance-law PDFs answered HTTP 500 (three DZ items), and the istd.gov.jo page (JO tax.registration.body)
-and casnos.dz/affiliation (DZ social_security.registration.body) no longer returned the evidence
-sentences, although the lead found them earlier the same day. Treat this as a live-site fault, not a
-wrong fact. Re-run the verifier when the sites answer; if a sentence is really gone, set that item to
-under_review.
+The evidence check (a script that fetches every cited page and looks for each evidence sentence, letters
+and digits only) passed for all 29 items on 2026-10-12. Two things to know when it is run again. First,
+the mf.gov.dz copies of the finance laws answered HTTP 500 that afternoon, so the evidence for the
+Algerian IFU figures cites the same Journal Officiel issues on the gazette's own host, joradp.dz (N° 84 of
+2024, N° 86 of 2023, N° 89 of 2022, N° 88 of 2025 and N° 85 of 2022). Second, istd.gov.jo and casnos.dz
+build their pages with scripts, and casnos.dz blocks automated browsers after repeated requests, so those
+two items need a browser to be read; if a sentence is not found there, read the page by hand before
+changing a status. If a sentence is really gone, set that item to under_review.
 
 ## Items
 
@@ -58,9 +60,9 @@ Every number sits with its own evidence: a sentence in the page's own words and 
 
 - **customs_duty_rate**: 5%
   - (ar) "مع دفع نسبة إجمالية مقدرة بنسبة 05 % من قيمة السلع المستوردة كحقوق ورسوم جمركية." https://www.anae.dz/micro-importer/guide
-  - (fr) "sont soumises au taux réduit de 5% des droits de douane" https://www.mf.gov.dz/images/pdf/loidefinance/Loi_de_Finances_2026_FR.pdf (Journal Officiel N° 88 (31 décembre 2025), loi de finances pour 2026, art. 143)
+  - (fr) "sont soumises au taux réduit de 5% des droits de douane" https://www.joradp.dz/FTP/JO-FRANCAIS/2025/F2025088.pdf (Journal Officiel N° 88 (31 décembre 2025), loi de finances pour 2026, art. 143)
 - **ifu_rate_at_customs**: 0,5 %
-  - (fr) "à l’impôt forfaitaire unique fixé au taux de 0,5 % libératoire, calculé sur la base de la valeur en douane, augmentée des droits de douane et d’une marge forfaitaire de 30%" https://www.mf.gov.dz/images/pdf/loidefinance/Loi_de_Finances_2026_FR.pdf (Journal Officiel N° 88 (31 décembre 2025), loi de finances pour 2026, art. 143)
+  - (fr) "à l’impôt forfaitaire unique fixé au taux de 0,5 % libératoire, calculé sur la base de la valeur en douane, augmentée des droits de douane et d’une marge forfaitaire de 30%" https://www.joradp.dz/FTP/JO-FRANCAIS/2025/F2025088.pdf (Journal Officiel N° 88 (31 décembre 2025), loi de finances pour 2026, art. 143)
   - (fr) "le montant de l'impôt est acquitté auprès des services des douanes au moment de la mise à la consommation des marchandises." https://www.mfdgi.gov.dz/fr/professionnels/services-pro/regime-forfaitaire-unique/ifu (Art.143/LF 2026, as cited by the DGI page)
 
 ### DZ `registration.auto_entrepreneur.micro_import_limits`
@@ -75,11 +77,11 @@ Every number sits with its own evidence: a sentence in the page's own words and 
 - **rate**: 0,5 %
   - (fr) "0,5 %, pour les activités exercées par les activités sous le statut auto-entrepreneur ; (Art. 282sexies du CIDTA/ Art.18 LF 2024)" https://www.mfdgi.gov.dz/fr/professionnels/services-pro/regime-forfaitaire-unique/ifu
   - (ar) "0,5٪، للأنشطة الممارسة في إطار نظام المقاول الذاتي؛ (المادة 282 مكرر4 من قانون الضرائب المباشرة والرسوم المماثلة/ المادة 18 من ق.م 2024)" https://www.mfdgi.gov.dz/professionnels-ar/identifier-regime-fiscal-ar/regime-forfaitaire-unique-ar/ifu-ar
-  - (fr) "Toutefois, les activités exercées sous le statut d’auto-entrepreneur sont soumises au taux de 0,5%" https://www.mf.gov.dz/images/pdf/loidefinance/FLFin.pdf (Journal Officiel N° 86 (31 décembre 2023), loi de finances pour 2024, art. 18 (art. 282 sexies du CIDTA))
+  - (fr) "Toutefois, les activités exercées sous le statut d’auto-entrepreneur sont soumises au taux de 0,5%" https://www.joradp.dz/FTP/JO-FRANCAIS/2023/F2023086.pdf (Journal Officiel N° 86 (31 décembre 2023), loi de finances pour 2024, art. 18 (art. 282 sexies du CIDTA))
 - **turnover_ceiling**: 5.000.000 DA
   - (fr) "Personnes physiques exerçant une activité sous le statut d'auto-entrepreneur lorsque leur chiffre d'affaires annuel n'excède pas cinq millions de dinars algériens (5.000.000 DA) ; (Art. 282ter du CIDTA et Art. 51 LF 2023)" https://www.mfdgi.gov.dz/fr/professionnels/services-pro/regime-forfaitaire-unique/ifu
   - (ar) "الأشخاص الطبيعيون الذين يمارسون نشاطا في إطار نظام المقاول الذاتي عندما لا يتجاوز رقم أعمالهم السنوي خمسة ملايين دينار جزائري (5.000.000,00 دج)؛ (المادتين 282 مكرر4 من قانون الضرائب المباشرة والرسوم المماثلة و51 من قانون المالية لسنة 2023)" https://www.mfdgi.gov.dz/professionnels-ar/identifier-regime-fiscal-ar/regime-forfaitaire-unique-ar/ifu-ar
-  - (fr) "sont éligibles au statut d’auto-entrepreneur, les contribuables réalisant un chiffre d’affaires annuel n’excédant pas cinq millions de dinars algériens (5.000.000 DA)" https://www.mf.gov.dz/images/pdf/loidefinancecomplementaire/F2022089.pdf (Journal Officiel N° 89 (29 décembre 2022), loi de finances pour 2023, art. 51)
+  - (fr) "sont éligibles au statut d’auto-entrepreneur, les contribuables réalisant un chiffre d’affaires annuel n’excédant pas cinq millions de dinars algériens (5.000.000 DA)" https://www.joradp.dz/FTP/JO-FRANCAIS/2022/F2022089.pdf (Journal Officiel N° 89 (29 décembre 2022), loi de finances pour 2023, art. 51)
 - **years_above_ceiling**: 3
   - (fr) "Pour l'auto entrepreneur ayant réalisé un chiffre d'affaires annuel dépassant le seuil de 5.000.000 DA, durant trois (03) années de suite, de s'inscrire au registre du commerce, s'il souhaite poursuivre l'exercice de son activité. Dans ce cas, il sera soumis au régime fiscal approprié conformément à la législation fiscale en vigueur. (Art.14 de la loi n° 22-23 du 18 décembre 2022 portant statut de l'auto-entrepreneur - J.O.N°85)" https://www.mfdgi.gov.dz/fr/professionnels/services-pro/regime-forfaitaire-unique/ifu
   - (ar) "بالنسبة للمقاول الذاتي الذي حقق رقم أعمال سنوي يتجاوز عتبة 5.000.000 دج، خلال ثلاث (03) سنوات متتالية، يجب عليه التسجيل في السجل التجاري، إذا كان يرغب في مواصلة ممارسة نشاطه. في هذه الحالة، يخضع للنظام الضريبي المناسب وفقًا للتشريع الضريبي المعمول به. (المادة 14 من القانون رقم 22-23 المؤرخ في 18 ديسمبر سنة 2022 - الجريدة الرسمية رقم 85)" https://www.mfdgi.gov.dz/professionnels-ar/identifier-regime-fiscal-ar/regime-forfaitaire-unique-ar/ifu-ar
@@ -101,12 +103,12 @@ Every number sits with its own evidence: a sentence in the page's own words and 
 - **minimum_auto_entrepreneur**: 10.000 DA
   - (fr) "Sauf pour les activités exercées sous le statut d'auto entrepreneur, ce montant est fixé à 10.000 DA." https://www.mfdgi.gov.dz/fr/professionnels/services-pro/regime-forfaitaire-unique/ifu
   - (ar) "باستثناء الأنشطة الممارسة تحت صفة المقاول الذاتي، يُحدد هذا المبلغ بـ 10.000 دج." https://www.mfdgi.gov.dz/professionnels-ar/identifier-regime-fiscal-ar/regime-forfaitaire-unique-ar/ifu-ar
-  - (fr) "Toutefois, pour les activités exercées sous le statut d’autoentrepreneur, ce montant est fixé à 10.000 DA." https://www.mf.gov.dz/images/pdf/loidefinance/Loi_de_finance_2025_FR.pdf (Journal Officiel N° 84 (26 décembre 2024), loi de finances pour 2025, art. 29 (art. 365 bis du CIDTA))
+  - (fr) "Toutefois, pour les activités exercées sous le statut d’autoentrepreneur, ce montant est fixé à 10.000 DA." https://www.joradp.dz/FTP/JO-FRANCAIS/2024/F2024084.pdf (Journal Officiel N° 84 (26 décembre 2024), loi de finances pour 2025, art. 29 (art. 365 bis du CIDTA))
 - **minimum_general**: 30.000 DA
   - (fr) "Le montant de l'IFU ne peut être inférieur à 30.000 DA." https://www.mfdgi.gov.dz/fr/professionnels/services-pro/regime-forfaitaire-unique/ifu
-  - (fr) "Le montant dû au titre de l’impôt forfaitaire unique ne peut être inférieur, pour chaque exercice et quel que soit le chiffre d’affaires imposable, à 30.000 DA." https://www.mf.gov.dz/images/pdf/loidefinance/Loi_de_finance_2025_FR.pdf (Journal Officiel N° 84 (26 décembre 2024), loi de finances pour 2025, art. 29 (art. 365 bis du CIDTA))
+  - (fr) "Le montant dû au titre de l’impôt forfaitaire unique ne peut être inférieur, pour chaque exercice et quel que soit le chiffre d’affaires imposable, à 30.000 DA." https://www.joradp.dz/FTP/JO-FRANCAIS/2024/F2024084.pdf (Journal Officiel N° 84 (26 décembre 2024), loi de finances pour 2025, art. 29 (art. 365 bis du CIDTA))
 - **payment_deadline**: 30 juin
-  - (fr) "Le minimum d’imposition doit être acquitté intégralement au plus tard le 30 juin de l’année concernée." https://www.mf.gov.dz/images/pdf/loidefinance/Loi_de_finance_2025_FR.pdf (Journal Officiel N° 84 (26 décembre 2024), loi de finances pour 2025, art. 29 (art. 365 bis du CIDTA))
+  - (fr) "Le minimum d’imposition doit être acquitté intégralement au plus tard le 30 juin de l’année concernée." https://www.joradp.dz/FTP/JO-FRANCAIS/2024/F2024084.pdf (Journal Officiel N° 84 (26 décembre 2024), loi de finances pour 2025, art. 29 (art. 365 bis du CIDTA))
 
 ### DZ `social_security.registration.body`
 
@@ -136,8 +138,8 @@ A host matches a domain or any subdomain of it. Government portals and public ag
 | JO      | jedco.gov.jo       | JEDCO, the government enterprise development body: support programmes                            |
 | DZ      | anae.dz            | National Agency for the Auto-Entrepreneur: registration, activity list, micro-import             |
 | DZ      | mfdgi.gov.dz       | General Directorate of Taxes: the tax authority and the IFU                                      |
-| DZ      | mf.gov.dz          | Ministry of Finance: hosts the Journal Officiel PDFs of the finance laws                         |
-| DZ      | joradp.dz          | The Official Gazette                                                                             |
+| DZ      | mf.gov.dz          | Ministry of Finance: publishes the finance laws (the cited copies are on joradp.dz)              |
+| DZ      | joradp.dz          | The Official Gazette: the Journal Officiel issues cited for the finance laws and law 22-23       |
 | DZ      | cnrc.dz            | National Centre of the Commercial Register                                                       |
 | DZ      | casnos.dz          | National social security fund for non-salaried workers                                           |
 | DZ      | ons.dz             | National Office of Statistics                                                                    |

@@ -550,7 +550,7 @@ values (
           {
             "text": "sont soumises au taux réduit de 5% des droits de douane",
             "lang": "fr",
-            "url": "https://www.mf.gov.dz/images/pdf/loidefinance/Loi_de_Finances_2026_FR.pdf",
+            "url": "https://www.joradp.dz/FTP/JO-FRANCAIS/2025/F2025088.pdf",
             "cite": "Journal Officiel N° 88 (31 décembre 2025), loi de finances pour 2026, art. 143"
           }
         ]
@@ -562,7 +562,7 @@ values (
           {
             "text": "à l’impôt forfaitaire unique fixé au taux de 0,5 % libératoire, calculé sur la base de la valeur en douane, augmentée des droits de douane et d’une marge forfaitaire de 30%",
             "lang": "fr",
-            "url": "https://www.mf.gov.dz/images/pdf/loidefinance/Loi_de_Finances_2026_FR.pdf",
+            "url": "https://www.joradp.dz/FTP/JO-FRANCAIS/2025/F2025088.pdf",
             "cite": "Journal Officiel N° 88 (31 décembre 2025), loi de finances pour 2026, art. 143"
           },
           {
@@ -593,7 +593,7 @@ values (
       {
         "text": "les contribuables exerçant l’activité de micro-importation définie par la législation et la réglementation en vigueur, sont éligibles au statut d’auto-entrepreneur",
         "lang": "fr",
-        "url": "https://www.mf.gov.dz/images/pdf/loidefinance/Loi_de_Finances_2026_FR.pdf",
+        "url": "https://www.joradp.dz/FTP/JO-FRANCAIS/2025/F2025088.pdf",
         "cite": "Journal Officiel N° 88 (31 décembre 2025), loi de finances pour 2026, art. 143"
       }
     ],
@@ -685,7 +685,7 @@ values (
           {
             "text": "Toutefois, les activités exercées sous le statut d’auto-entrepreneur sont soumises au taux de 0,5%",
             "lang": "fr",
-            "url": "https://www.mf.gov.dz/images/pdf/loidefinance/FLFin.pdf",
+            "url": "https://www.joradp.dz/FTP/JO-FRANCAIS/2023/F2023086.pdf",
             "cite": "Journal Officiel N° 86 (31 décembre 2023), loi de finances pour 2024, art. 18 (art. 282 sexies du CIDTA)"
           }
         ]
@@ -707,7 +707,7 @@ values (
           {
             "text": "sont éligibles au statut d’auto-entrepreneur, les contribuables réalisant un chiffre d’affaires annuel n’excédant pas cinq millions de dinars algériens (5.000.000 DA)",
             "lang": "fr",
-            "url": "https://www.mf.gov.dz/images/pdf/loidefinancecomplementaire/F2022089.pdf",
+            "url": "https://www.joradp.dz/FTP/JO-FRANCAIS/2022/F2022089.pdf",
             "cite": "Journal Officiel N° 89 (29 décembre 2022), loi de finances pour 2023, art. 51"
           }
         ]
@@ -841,7 +841,7 @@ values (
           {
             "text": "Toutefois, pour les activités exercées sous le statut d’autoentrepreneur, ce montant est fixé à 10.000 DA.",
             "lang": "fr",
-            "url": "https://www.mf.gov.dz/images/pdf/loidefinance/Loi_de_finance_2025_FR.pdf",
+            "url": "https://www.joradp.dz/FTP/JO-FRANCAIS/2024/F2024084.pdf",
             "cite": "Journal Officiel N° 84 (26 décembre 2024), loi de finances pour 2025, art. 29 (art. 365 bis du CIDTA)"
           }
         ]
@@ -858,7 +858,7 @@ values (
           {
             "text": "Le montant dû au titre de l’impôt forfaitaire unique ne peut être inférieur, pour chaque exercice et quel que soit le chiffre d’affaires imposable, à 30.000 DA.",
             "lang": "fr",
-            "url": "https://www.mf.gov.dz/images/pdf/loidefinance/Loi_de_finance_2025_FR.pdf",
+            "url": "https://www.joradp.dz/FTP/JO-FRANCAIS/2024/F2024084.pdf",
             "cite": "Journal Officiel N° 84 (26 décembre 2024), loi de finances pour 2025, art. 29 (art. 365 bis du CIDTA)"
           }
         ]
@@ -870,7 +870,7 @@ values (
           {
             "text": "Le minimum d’imposition doit être acquitté intégralement au plus tard le 30 juin de l’année concernée.",
             "lang": "fr",
-            "url": "https://www.mf.gov.dz/images/pdf/loidefinance/Loi_de_finance_2025_FR.pdf",
+            "url": "https://www.joradp.dz/FTP/JO-FRANCAIS/2024/F2024084.pdf",
             "cite": "Journal Officiel N° 84 (26 décembre 2024), loi de finances pour 2025, art. 29 (art. 365 bis du CIDTA)"
           }
         ]
