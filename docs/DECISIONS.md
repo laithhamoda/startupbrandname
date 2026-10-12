@@ -1828,7 +1828,7 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   answered. A block with no chip says why, by its first source without a chip: not answered yet,
   answered «لا أعرف», answered with nothing listed, or no question for it, and links to that
   question; a source answered «لا أعرف» gives no chip, so the block never shows text of its own
-  (rule 9). An answer with no stored provenance, or «لا أعرف», counts as an unchecked assumption.
+  (rule 9). An answered question with no stored provenance counts as an unchecked assumption.
 - **Reason:** D-231 asks for a source of Customer Relationships; CLAUDE.md rules 2 and 9.
 - **Status:** Active
 
@@ -1846,7 +1846,14 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   exported for the loader. Vitest has no DOM here, so the board is tested as static markup
   (`react-dom/server`) with the navigation mocked; the signed-in end-to-end spec
   `e2e/auth/canvas.spec.ts` needs the local database and could not run where this was written. The
-  rows of `docs/architecture.md` are not changed: no procedure changed.
+  first total of Cost Structure is named «التكاليف الثابتة في قائمتك شهريًا» (Fixed costs on your
+  list, a month): it is the engine's sum of the F4 list, and the F4.1 marketing budget and the E8
+  staff plan, which sit in the same block as chips, are not part of it (a test pins this). A link
+  to a follow-up that is not asked yet (C7.1 before C7) goes through the step page's redirect to
+  the parent question and keeps `from=canvas`. The `packages/report` row of
+  `docs/architecture.md` is left for step 5, which rewrites that row for the report; editing it now
+  would re-pad the whole table and conflict with the parallel pull requests. The canvas route
+  budget is in `docs/runbooks/operations.md`.
 - **Reason:** Keeps the canvas free of the PDF code, the report package free of the engine until
   step 5, and the wording of a number in one place (rule 1).
 - **Status:** Active
