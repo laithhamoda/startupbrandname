@@ -217,10 +217,13 @@ function algeriaGuide(builder: Builder, answers: Answers): void {
 export function registrationGuide(input: GuideInput): RegistrationGuide {
   const country = input.country.toUpperCase();
   const items = input.items.filter((item) => item.countryCode === country);
-  if (items.length === 0) return { hasPack: false, country, steps: [], missing: [] };
+  const hasBranch = country === 'JO' || country === 'DZ';
+  if (items.length === 0 || !hasBranch) {
+    return { hasPack: false, country, steps: [], missing: [] };
+  }
   const builder = new Builder(items, input.today);
   if (country === 'JO') jordanGuide(builder, input.answers);
-  else if (country === 'DZ') algeriaGuide(builder, input.answers);
+  else algeriaGuide(builder, input.answers);
   return { hasPack: true, country, steps: builder.steps, missing: builder.missing };
 }
 

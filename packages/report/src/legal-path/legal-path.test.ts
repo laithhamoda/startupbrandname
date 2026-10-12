@@ -269,6 +269,13 @@ describe('registrationGuide, labels and gaps', () => {
     expect(guide.steps.map((step) => step.key)).not.toContain('jo.social_security');
   });
 
+  it('gives hasPack false for a country with items but no guide branch yet', () => {
+    const fr = ALL_ITEMS.map((item) => ({ ...item, countryCode: 'FR' }));
+    const guide = registrationGuide({ country: 'FR', answers: {}, items: fr, today: TODAY });
+    expect(guide.hasPack).toBe(false);
+    expect(guide.steps).toEqual([]);
+  });
+
   it('gives an empty guide and hasPack false for a country with no pack', () => {
     expect(
       registrationGuide({ country: 'FR', answers: {}, items: ALL_ITEMS, today: TODAY }),
