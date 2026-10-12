@@ -119,18 +119,21 @@ describe('follow-ups (never counted, D-105)', () => {
 
   it('appear only when their trigger holds', () => {
     // F4 and F6 are answered in the sample, so their follow-ups are already called for.
-    expect(active({})).toEqual(['F4.1', 'F6.2']);
-    expect(active({ F4: unknown, F6: unknown })).toEqual([]);
-    expect(active({ F2: answered('subscription') })).toEqual(['F2.1', 'F4.1', 'F6.2']);
-    expect(active({ A2: answered(0) })).toEqual(['A2.1', 'F4.1', 'F6.2']);
+    expect(active({})).toEqual(['C7.1', 'F4.1', 'F6.2']);
+    expect(active({ F4: unknown, F6: unknown })).toEqual(['C7.1']);
+    expect(active({ C7: unknown })).toEqual(['F4.1', 'F6.2']);
+    expect(active({ F2: answered('subscription') })).toEqual(['C7.1', 'F2.1', 'F4.1', 'F6.2']);
+    expect(active({ A2: answered(0) })).toEqual(['A2.1', 'C7.1', 'F4.1', 'F6.2']);
     expect(active({ C8: answered(5000), C7: unknown })).toEqual(['C8.1', 'F4.1', 'F6.2']);
-    expect(active({ C8: answered(5000) })).toEqual(['F4.1', 'F6.2']);
+    expect(active({ C8: answered(5000) })).toEqual(['C7.1', 'F4.1', 'F6.2']);
     expect(active({ F6: answered({ month1: 2, month6: 10, month12: 40 }) })).toEqual([
+      'C7.1',
       'F4.1',
       'F6.1',
       'F6.2',
     ]);
     expect(active({ F6: answered({ month1: 0, month6: 0, month12: 11 }) })).toEqual([
+      'C7.1',
       'F4.1',
       'F6.1',
       'F6.2',
@@ -144,13 +147,14 @@ describe('follow-ups (never counted, D-105)', () => {
           ],
         }),
       }),
-    ).toEqual(['F4.1', 'F6.2', 'G4.1']);
+    ).toEqual(['C7.1', 'F4.1', 'F6.2', 'G4.1']);
   });
 
   it('leave the score, the gates and the next questions as they are', () => {
     const without = completeness(base);
     const withFollowUps = completeness({
       ...base,
+      'C7.1': answered('متابعة بعد أسبوع'),
       'F2.1': answered(5),
       'F4.1': answered({ amount: 300, currency: 'JOD' }),
       'F6.2': unknown,

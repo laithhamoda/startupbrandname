@@ -24,6 +24,24 @@ export const FOLLOW_UPS: readonly FollowUpDefinition[] = [
     when: (answers) => valueOf(answers, 'A2', 'number') === 0,
   },
   {
+    // Draft wording for the owner's review (OPEN-QUESTIONS #86). It feeds the Customer
+    // Relationships block of the Business Model Canvas (D-231, D-252); no rule rejects its text.
+    id: 'C7.1',
+    parent: 'C7',
+    field: { kind: 'short_text' },
+    modes: ['full'],
+    allowUnknown: true,
+    label: t(
+      'ما نوع العلاقة التي ستبنيها مع عملائك بعد أول عملية شراء؟',
+      'What kind of relationship will you build with your customers after their first purchase?',
+    ),
+    help: t(
+      'مثال: متابعة بعد أسبوع من التسليم، أو عقد صيانة سنوي، أو مجموعة للعملاء على واتساب.',
+      'For example a check-in a week after delivery, an annual service contract, or a customers’ group on WhatsApp.',
+    ),
+    when: (answers) => answers.C7?.status === 'answered',
+  },
+  {
     id: 'C8.1',
     parent: 'C8',
     field: { kind: 'long_text', minWords: 3 },
