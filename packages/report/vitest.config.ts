@@ -15,6 +15,11 @@ export default defineConfig({
         'src/render/pdf.ts',
         'src/testing/index.ts',
         'src/testing/pdf-inspect.ts',
+        // Test support for the report model (D-272): inputs built from the golden projects, a
+        // plain-text reading of a model and small helpers. Tests import them, the application never.
+        'src/testing/report-inputs.ts',
+        'src/testing/model-text.ts',
+        'src/testing/model-helpers.ts',
       ],
       reporter: ['text', 'lcov'],
       // D-237.

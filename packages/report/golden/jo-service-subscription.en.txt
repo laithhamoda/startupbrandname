@@ -1,0 +1,245 @@
+## Cover
+Every number in this report is calculated by the engine with fixed formulas and carries its source and its level of confidence. No language model writes any number.
+- Project: خدمة برمجية بالاشتراك الشهري
+- Country: Jordan
+- Report currency: Jordanian Dinar (JOD)
+- Issued on: 2026-10-12
+- Engine version: 1.1.0
+- Answers completed: 86%
+- Overall confidence: High (5 of 5 key answers are sound)
+## Executive summary
+This report is addressed to a prospective investor, so it opens with what matters most to one: first-year profit, then the break-even month, then the funding you need.
+VERDICT Revise  | No criterion blocks. 6 of 10 feasibility criteria pass (60%), which is below the Go line (75%). We found 3 changes to your numbers, and applying that takes the project to Go. The score is not a probability of success; it is the share of criteria that pass.
+Feasibility criteria met: 6 of 10. The Go line is at 75%.
+Year-one operating profit: −1,500.000 JOD (Operating profit before tax)
+Break-even month: Month 6 (Break-even: the first month income covers costs)
+Funding need: 18,400.000 JOD (Lowest cash balance, in Month 5)
+Main risks:
+- The price (30.000 JOD) is below the lowest price that covers your costs (30.833 JOD).
+- Break-even (6 months) comes after the time you can go without income (3 months).
+- Set-up costs (12,000.000 JOD) are above your smallest available capital (8,000.000 JOD) and below your largest (15,000.000 JOD).
+TABLE Criteria not met
+  | Criterion | Measured | Limit
+  | Break-even within the time you can go without income | Month 6 | within 3 months
+  | Funding need within your largest available capital | 18,400.000 JOD | 15,000.000 JOD
+  | The price is not below the lowest price that covers costs | 30.000 JOD | 30.833 JOD
+  | Break-even in the conservative scenario | no break-even within 36 months | within 36 months
+10 of 11 criteria were evaluated; a criterion that lacks answers is not counted.
+TABLE Changes to your numbers that bring the project closer to Go
+  | Change | Now | Suggested | Change | Result
+  | Lower the fixed costs | 100% | 73.8% | −26.2% | Go · 8 of 10 // Relative to your current estimate
+  | Raise the price | 30.000 JOD | 38.500 JOD | +28.33% | Go · 8 of 10 // Above the highest competitor (35.000 JOD): your offer needs a measurable difference.
+  | Raise sales | 100% | 140% | +40% | Go · 8 of 10 // Relative to your current forecast
+Overall confidence in your answers is High (5 of 5 key answers are sound).
+## Project card
+- Team: سامر: شريك مؤسس
+- The idea: منصة برمجية تدير حجوزات العيادات الصغيرة باشتراك شهري.
+- Who pays: Businesses (B2B)
+- Location: عمّان, Jordan
+- Where you work: An office
+- Sector: Information and communication
+- Project type: Digital product
+- Pricing model: Subscription
+- Selling price: 30.000 JOD
+- Available capital: from 8,000.000 JOD to 15,000.000 JOD
+- Goal of the project: A company that can scale
+## Business model canvases
+Each cell shows your own words as you wrote them, with their source and level of confidence; the platform writes no text for you.
+CANVAS Business Model Canvas
+  Customer segments: Businesses (B2B)
+  Value propositions: منصة برمجية تدير حجوزات العيادات الصغيرة باشتراك شهري.
+  Channels: You have not yet answered the question behind this cell.
+  Customer relationships: You have not yet answered the question behind this cell.
+  Revenue streams: 30 JOD / Subscription / Cash on purchase
+  Key resources: An office
+  Key activities: You have not yet answered the question behind this cell.
+  Key partners: شريك مؤسس
+  Cost structure: 4 JOD / 2 JOD / 1200 JOD / 800 JOD / 600 JOD / 7000 JOD / 3000 JOD / 2000 JOD / 1500 JOD
+    Total fixed costs per month: 2,000.000 JOD
+    Variable cost per unit: 6.000 JOD
+    Total set-up costs: 12,000.000 JOD
+CANVAS Lean Canvas
+  Customer segments: You have not yet answered the question behind this cell.
+  Problem: You have not yet answered the question behind this cell.
+  Unique value proposition: منصة برمجية تدير حجوزات العيادات الصغيرة باشتراك شهري.
+  Solution: منصة برمجية تدير حجوزات العيادات الصغيرة باشتراك شهري.
+  Channels: You have not yet answered the question behind this cell.
+  Revenue streams: 30 JOD / Subscription / Cash on purchase
+  Cost structure: 4 JOD / 2 JOD / 1200 JOD / 800 JOD / 600 JOD / 7000 JOD / 3000 JOD / 2000 JOD / 1500 JOD
+    Total fixed costs per month: 2,000.000 JOD
+    Variable cost per unit: 6.000 JOD
+    Total set-up costs: 12,000.000 JOD
+  Key metrics: You have not yet answered the question behind this cell.
+  Unfair advantage: You have not yet answered the question behind this cell.
+## Pricing and unit economics
+TABLE Unit economics and break-even
+  | Item | Value
+  | Selling price per unit | 30.000 JOD
+  | Variable cost per unit | 6.000 JOD
+  | Fixed costs you entered, per month | 2,000.000 JOD
+  | Contribution margin per unit | 24.000 JOD
+  | Margin rate | 80%
+  | Total fixed costs per month as the engine counts them | 4,100.000 JOD
+  | Break-even units per month | 171
+  | Break-even revenue per month | 5,125.000 JOD
+  | Break-even month | Month 6
+You gave no maximum monthly capacity, so break-even units are not compared with one.
+TABLE Subscription measures
+  | Item | Value
+  | Average revenue per subscriber per month | 30.000 JOD
+  | Monthly churn | 5%
+  | Customer lifetime value (LTV) | 480.000 JOD
+  | New subscribers per month | 10
+  | Customer acquisition cost (CAC) | 60.000 JOD
+  | Customer value to acquisition cost | 8
+TABLE Price positions in the market
+  | Item | Value
+  | Price floor | 30.833 JOD
+  | Lowest competitor price | 28.000 JOD
+  | Median competitor price | 32.000 JOD
+  | Highest competitor price | 35.000 JOD
+  | Penetration price | 33.917 JOD
+  | Market price | 32.000 JOD
+A premium price needs a measurable difference in your offer, and your answer does not show one yet.
+## Financial projection
+Revenue is collected in cash in the same month. Figures are before tax unless stated otherwise.
+TABLE Year one, month by month
+  | Month | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | Year total
+  | Units sold | 0 | 40 | 80 | 120 | 160 | 200 | 200 | 200 | 200 | 200 | 200 | 200 | 1,800
+  | Revenue | 0.000 JOD | 1,200.000 JOD | 2,400.000 JOD | 3,600.000 JOD | 4,800.000 JOD | 6,000.000 JOD | 6,000.000 JOD | 6,000.000 JOD | 6,000.000 JOD | 6,000.000 JOD | 6,000.000 JOD | 6,000.000 JOD | 54,000.000 JOD
+  | Cost of sales | 0.000 JOD | 240.000 JOD | 480.000 JOD | 720.000 JOD | 960.000 JOD | 1,200.000 JOD | 1,200.000 JOD | 1,200.000 JOD | 1,200.000 JOD | 1,200.000 JOD | 1,200.000 JOD | 1,200.000 JOD | 10,800.000 JOD
+  | Gross profit | 0.000 JOD | 960.000 JOD | 1,920.000 JOD | 2,880.000 JOD | 3,840.000 JOD | 4,800.000 JOD | 4,800.000 JOD | 4,800.000 JOD | 4,800.000 JOD | 4,800.000 JOD | 4,800.000 JOD | 4,800.000 JOD | 43,200.000 JOD
+  | Operating costs | 2,600.000 JOD | 2,600.000 JOD | 2,600.000 JOD | 4,100.000 JOD | 4,100.000 JOD | 4,100.000 JOD | 4,100.000 JOD | 4,100.000 JOD | 4,100.000 JOD | 4,100.000 JOD | 4,100.000 JOD | 4,100.000 JOD | 44,700.000 JOD
+  | Operating profit | −2,600.000 JOD | −1,640.000 JOD | −680.000 JOD | −1,220.000 JOD | −260.000 JOD | 700.000 JOD | 700.000 JOD | 700.000 JOD | 700.000 JOD | 700.000 JOD | 700.000 JOD | 700.000 JOD | −1,500.000 JOD
+  | Net cash | −2,600.000 JOD | −1,640.000 JOD | −680.000 JOD | −1,220.000 JOD | −260.000 JOD | 700.000 JOD | 700.000 JOD | 700.000 JOD | 700.000 JOD | 700.000 JOD | 700.000 JOD | 700.000 JOD | −1,500.000 JOD
+  | Cumulative cash balance | −14,600.000 JOD | −16,240.000 JOD | −16,920.000 JOD | −18,140.000 JOD | −18,400.000 JOD [lowest_cash] | −17,700.000 JOD | −17,000.000 JOD | −16,300.000 JOD | −15,600.000 JOD | −14,900.000 JOD | −14,200.000 JOD | −13,500.000 JOD | −13,500.000 JOD
+The cash balance starts from −12,000.000 JOD, which is the set-up costs.
+The lowest cash balance is in Month 5; it is the funding need.
+Break-even: the first month operations make a profit, which is Month 6.
+Payback period: the capital you spent is recovered in Month 34.
+TABLE Year 2: by quarter (each quarter is three months)
+  | Item | Quarter 1 | Quarter 2 | Quarter 3 | Quarter 4 | Year total
+  | Revenue | 18,000.000 JOD | 18,000.000 JOD | 18,000.000 JOD | 18,000.000 JOD | 72,000.000 JOD
+  | Cost of sales | 3,600.000 JOD | 3,600.000 JOD | 3,600.000 JOD | 3,600.000 JOD | 14,400.000 JOD
+  | Operating costs | 12,300.000 JOD | 12,300.000 JOD | 12,300.000 JOD | 12,300.000 JOD | 49,200.000 JOD
+  | Operating profit | 2,100.000 JOD | 2,100.000 JOD | 2,100.000 JOD | 2,100.000 JOD | 8,400.000 JOD
+  | Net cash | 2,100.000 JOD | 2,100.000 JOD | 2,100.000 JOD | 2,100.000 JOD | 8,400.000 JOD
+  | Cumulative cash balance | −11,400.000 JOD | −9,300.000 JOD | −7,200.000 JOD | −5,100.000 JOD | —
+TABLE Year 3: by quarter (each quarter is three months)
+  | Item | Quarter 1 | Quarter 2 | Quarter 3 | Quarter 4 | Year total
+  | Revenue | 18,000.000 JOD | 18,000.000 JOD | 18,000.000 JOD | 18,000.000 JOD | 72,000.000 JOD
+  | Cost of sales | 3,600.000 JOD | 3,600.000 JOD | 3,600.000 JOD | 3,600.000 JOD | 14,400.000 JOD
+  | Operating costs | 12,300.000 JOD | 12,300.000 JOD | 12,300.000 JOD | 12,300.000 JOD | 49,200.000 JOD
+  | Operating profit | 2,100.000 JOD | 2,100.000 JOD | 2,100.000 JOD | 2,100.000 JOD | 8,400.000 JOD
+  | Net cash | 2,100.000 JOD | 420.000 JOD | 2,100.000 JOD | 2,100.000 JOD | 6,720.000 JOD
+  | Cumulative cash balance | −3,000.000 JOD | −2,580.000 JOD | −480.000 JOD | 1,620.000 JOD | —
+## Scenarios and sensitivity
+TABLE The three scenarios
+  |  | Conservative | Base | Optimistic
+  | Assumptions | Sales × 0.6, variable cost × 1.1, launch delayed by 3 months | Your numbers as entered | Sales × 1.3, variable cost × 0.95
+  | Break-even month | no break-even within 36 months | Month 6 | Month 5
+  | Funding need | 70,860.000 JOD | 18,400.000 JOD | 16,318.400 JOD
+  | Year-one operating profit | −27,852.000 JOD | −1,500.000 JOD | 12,162.000 JOD
+TABLE Sensitivity analysis: the four numbers ranked by their effect on year-one profit, each moved 20% up and down
+  | Number | Year-one profit at the low end | Year-one profit at the high end | Swing
+  | Price | −12,300.000 JOD | 9,300.000 JOD | 21,600.000 JOD
+  | Fixed costs | 7,440.000 JOD | −10,440.000 JOD | 17,880.000 JOD
+  | Sales | −10,140.000 JOD | 7,140.000 JOD | 17,280.000 JOD
+  | Variable cost | 660.000 JOD | −3,660.000 JOD | 4,320.000 JOD
+The number at the top of the table is the one most worth testing before you spend.
+## Legal path and financing
+Registration and licensing steps:
+- Sole proprietorship registration <Main path>: A test description from an official source. https://example.invalid/jo/registration-sole-body
+- Company registration <For comparison>: A test description from an official source. A test note. {Check the official source} https://example.invalid/jo/registration-company-body
+- Chamber membership <Always>: A test description from an official source. https://example.invalid/jo/registration-chamber-membership
+- Tax registration <Always>: A test description from an official source. {Check the official source} https://example.invalid/jo/tax-registration-body
+Some pack items (2) are not available yet, so these steps do not cover everything that may apply to you.
+Tax was calculated in the projection under the “fixture_regime_company” regime.
+TABLE Tax calculated for each year
+  | Year | Revenue | Operating profit | Tax
+  | Year 1 | 54,000.000 JOD | −1,500.000 JOD | 0.000 JOD
+  | Year 2 | 72,000.000 JOD | 8,400.000 JOD | 1,680.000 JOD
+  | Year 3 | 72,000.000 JOD | 8,400.000 JOD | 1,680.000 JOD
+(adviser) We recommend consulting a tax adviser in your country before any decision.
+LINK Income and Sales Tax Department https://example.invalid/jo/tax
+Financing:
+- The funding need (18,400.000 JOD) is above the largest capital you named (15,000.000 JOD): the difference needs an outside source or a change in your numbers.
+- Outside funding sources you chose: An investor.
+## Validation plan
+A test plan of 30 days: test the most important assumptions before you spend on them, ranked by how much each moves your profit and how confident you are in it.
+(worry) “هل سيقبل العملاء دفع اشتراك شهري بهذا السعر؟”
+Your own worry:
+- The test: The smallest test that answers your worry alone: show your idea to prospective customers and ask for a decision, not an opinion.
+- Success line: The worry is yours, so the line you accept is your choice. This is the protocol’s default description; you set the number you will accept before you start.
+- If it fails: Ask an expert in your field before you go on.
+- Cost: Your time
+Test 2:
+- Why: Your price is 30.000 JOD. Changing it by 20% moves year-one profit by 21,600.000 JOD. Your confidence in it is High.
+- The test: Offer the product or service at this price to prospective customers and record who actually agrees to pay.
+- Success line: The share of those you ask who actually agree to pay, not those who merely like the offer. This is the protocol’s default description; you set the number you will accept before you start.
+- If it fails: Try a second price on a new group.
+- Cost: Your time
+Test 3:
+- Why: Your fixed costs are 2,000.000 JOD a month. Changing them by 20% moves year-one profit by 17,880.000 JOD. Your confidence in them is High.
+- The test: Ask for a written quote for each fixed item.
+- Success line: The quotes together do not exceed your estimate of the fixed costs. This is the protocol’s default description; you set the number you will accept before you start.
+- If it fails: Cut the item or postpone it.
+- Cost: Supplier quotes
+TABLE How the tests were ranked
+  | Assumption | Your confidence | Rank of effect on profit | Priority
+  | Price | High | 1 | 4
+  | Variable cost | Medium | 4 | 2
+  | Sales | High | 3 | 2
+  | Fixed costs | High | 2 | 3
+Priority = (4 − confidence) × (5 − effect rank), with confidence scored high 3, medium 2, low 1.
+Your own worry always takes the first place.
+## Appendix A: assumptions register
+This register lists every number in the report that is an assumption or has low confidence, with its source and level of confidence; test these numbers before you build a decision on them.
+TABLE Numbers that are assumptions or have low confidence
+  | Number | Value | Source | Confidence | Confirmed
+  | Maximum capacity | — | Assumption | Low | Not confirmed
+  | Churn | 5% | From your answers | Low | Not confirmed
+  | Funding need | 18,400.000 JOD | Assumption | Low | Not confirmed
+  | Break-even month | Month 6 | Assumption | Low | Not confirmed
+  | Year-one operating profit | −1,500.000 JOD | Assumption | Low | Not confirmed
+Engine notes on your answers:
+- The maximum capacity was not given, so there is no cap on units.
+- No inflation was applied to costs because no rate with a documented source exists.
+TABLE The engine’s named assumptions
+  | Assumption | Value | Source | Confidence | Confirmed
+  | Projection horizon | 36 months | Assumption | Medium | Not confirmed
+  | Ceiling of the yearly growth estimate | 25% | Assumption | Medium | Not confirmed
+  | Share of your own growth the estimate keeps | 50% | Assumption | Medium | Not confirmed
+  | Share of year-two growth applied to year three | 50% | Assumption | Medium | Not confirmed
+  | Peak-month factor | 1.5 | Assumption | Medium | Not confirmed
+  | Yearly cost inflation | Not applied: no documented rate | Assumption | Medium | Not confirmed
+  | Conservative scenario: sales multiplier | 0.6 | Assumption | Medium | Not confirmed
+  | Optimistic scenario: sales multiplier | 1.3 | Assumption | Medium | Not confirmed
+  | Conservative scenario: variable cost multiplier | 1.1 | Assumption | Medium | Not confirmed
+  | Optimistic scenario: variable cost multiplier | 0.95 | Assumption | Medium | Not confirmed
+  | Conservative scenario: launch delay | 3 months | Assumption | Medium | Not confirmed
+  | Penetration price factor above the lowest price that covers costs | 1.1 | Assumption | Medium | Not confirmed
+  | Minimum accepted customer value to acquisition cost | 3 | Assumption | Medium | Not confirmed
+  | Imported-cost shocks in the currency test | −20%; −10%; +10%; +20% | Assumption | Medium | Not confirmed
+  | How far each number moves when ranking effect | 20% | Assumption | Medium | Not confirmed
+  | Feasibility window for break-even and recovery | 36 months | Assumption | Medium | Not confirmed
+  | Score line for the Go verdict | 75% | Assumption | Medium | Not confirmed
+  | Funding blocker: multiple of the largest capital | 2 | Assumption | Medium | Not confirmed
+  | Line for high overall confidence | 75% | Assumption | Medium | Not confirmed
+  | Line for medium overall confidence | 50% | Assumption | Medium | Not confirmed
+## Appendix B: sources
+The official sources behind the steps of the legal path, with the date each was last verified.
+TABLE Country data sources
+  | Item | Link | Last verified | Status
+  | Sole proprietorship registration | https://example.invalid/jo/registration-sole-body | 2026-10-01 | —
+  | Company registration | https://example.invalid/jo/registration-company-body | 2026-01-01 | Check the official source
+  | Chamber membership | https://example.invalid/jo/registration-chamber-membership | 2026-10-01 | —
+  | Tax registration | https://example.invalid/jo/tax-registration-body | Never verified | Check the official source
+  | Income and Sales Tax Department | https://example.invalid/jo/official-tax-authority | 2026-10-01 | —
+## Appendix C: disclaimer
+This report is a planning tool built on the numbers you entered and on the engine’s assumptions listed in Appendix A; it is not legal, tax, financial or investment advice.
+Neither the verdict nor any number guarantees how the project will fare in the market; test the assumptions with the validation plan before you spend on them.
+The legal and regulatory values in the report are taken from dated official sources, and anything old or unverified carries the line “Check the official source”.
+The feasibility score and the share of criteria met are not a probability of success.
+(adviser) We recommend consulting a tax adviser in your country before any decision.
+LINK Income and Sales Tax Department https://example.invalid/jo/tax

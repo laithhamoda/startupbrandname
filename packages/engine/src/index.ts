@@ -248,3 +248,4 @@ export {
 } from './changes';
 export { mergeAlerts, runEngine, type EngineRun, type EngineRunResult, type RunAlert } from './run';
 export { canonicalJson, serialiseRun } from './serialise';
+export { GOLDEN_PROJECTS, runGolden, type GoldenName, type GoldenProject } from './golden-projects';
