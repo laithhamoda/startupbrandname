@@ -9,6 +9,8 @@ const PAGES = [
   '/en/design',
   '/ar/design/diagnostic',
   '/en/design/diagnostic',
+  '/ar/design/canvas',
+  '/en/design/canvas',
   '/ar/signup',
   '/en/signup',
   '/ar/login',

@@ -24,3 +24,28 @@ export function projectPath(projectId: string): string {
 export function stepPath(projectId: string, step: StepId): string {
   return `${projectPath(projectId)}/q/${stepSlug(step)}`;
 }
+
+/** The project's canvases (M5 step 3, D-249). */
+export function canvasPath(projectId: string): string {
+  return `${projectPath(projectId)}/canvas`;
+}
+
+/** The value of `from` that sends a step page's founder back to the canvas after saving. */
+export const CANVAS_ORIGIN = 'canvas';
+
+/**
+ * Where a canvas chip leads: the question that holds the answer, told to bring the founder back to
+ * the canvas after saving (`from=canvas`, D-249). A step page without it works as before.
+ */
+export function stepFromCanvasPath(projectId: string, step: StepId): string {
+  return `${stepPath(projectId, step)}?from=${CANVAS_ORIGIN}`;
+}
+
+/**
+ * Where a follow-up the answers do not call for yet sends the founder: to its parent question. A
+ * founder who came from the canvas keeps the way back (D-249), so that saving the parent returns
+ * to the canvas and not to the next question.
+ */
+export function inactiveStepPath(projectId: string, parent: StepId, fromCanvas: boolean): string {
+  return fromCanvas ? stepFromCanvasPath(projectId, parent) : stepPath(projectId, parent);
+}

@@ -31,6 +31,7 @@ import {
 } from '@/lib/diagnostic/draft';
 import type { FindingView } from '@/lib/diagnostic/findings';
 import { sameDraft } from '@/lib/diagnostic/leave';
+import { CANVAS_ORIGIN } from '@/lib/diagnostic/steps';
 import { type EditorOptions, FieldEditor } from './field-editor';
 import { FindingList } from './finding-list';
 import { LeaveGuard } from './leave-guard';
@@ -54,6 +55,8 @@ interface AnswerEditorProps {
   /** Where "Previous" goes; null on the first step. */
   previousHref: string | null;
   overviewHref: string;
+  /** The founder came from a canvas chip: saving goes back to the canvas (D-249). */
+  returnToCanvas?: boolean;
 }
 
 type Local =
@@ -126,6 +129,7 @@ export function AnswerEditor(props: AnswerEditorProps) {
             projectId: props.projectId,
             step: props.step,
             submission,
+            ...(props.returnToCanvas ? { returnTo: CANVAS_ORIGIN } : {}),
           }),
         SAVE_FAILED,
       );
@@ -424,7 +428,7 @@ export function AnswerEditor(props: AnswerEditorProps) {
       <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
         {saved ? (
           <ButtonLink href={saved.next ?? props.overviewHref} variant="primary">
-            {t('continue')}
+            {props.returnToCanvas ? t('backToCanvas') : t('continue')}
           </ButtonLink>
         ) : (
           <Button type="submit" variant="primary" disabled={pending}>

@@ -9,12 +9,17 @@ const MARKER: Record<ProvenanceSource, string> = {
   external: 'size-[7px] rotate-45 bg-teal-ink',
 };
 
+/** The mark alone, for places that name the source in words elsewhere (the canvas, its legend). */
+export function ProvenanceMark({ source }: { source: ProvenanceSource }) {
+  return <span aria-hidden className={`inline-block shrink-0 ${MARKER[source]}`} />;
+}
+
 export function ProvenanceTag({ source }: { source: ProvenanceSource }) {
   const t = useTranslations('provenance');
 
   return (
     <span className="inline-flex items-center gap-1.5 rounded-pill border border-control px-2.5 py-0.5 text-caption text-ink-2">
-      <span aria-hidden className={`inline-block ${MARKER[source]}`} />
+      <ProvenanceMark source={source} />
       {t(source)}
     </span>
   );

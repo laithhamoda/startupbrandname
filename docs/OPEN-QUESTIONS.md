@@ -128,7 +128,7 @@ Mixed currencies stay uncompared until #21 is answered (D-113).
 83. `launch` The course name as shown on the public pages: «الذكاء الاصطناعي في ريادة الأعمال» / "AI in Entrepreneurship". Confirm the exact wording.
 84. `launch` Content review before launch (#69): the Arabic and English text of the seven public pages in `apps/web/src/content`, the FAQ answers and the 35 glossary definitions.
 85. `launch` Month names in Arabic: the question bank uses «يناير، فبراير…». Jordan usually says «كانون الثاني، شباط…» and Algeria «جانفي، فيفري…». Keep one list, or show the regional name by country?
-86. `launch` **Includes #19 and #76.** Review of the question bank text (D-106): the English versions, the hints and examples, the option lists (including the ISIC sector names), the follow-ups and the rule messages in `packages/question-bank/src`.
+86. `launch` **Includes #19 and #76.** Review of the question bank text (D-106): the English versions, the hints and examples, the option lists (including the ISIC sector names), the follow-ups and the rule messages in `packages/question-bank/src`. Added with M5: the follow-up C7.1 (the relationship with customers after the first purchase, D-252), which feeds the Customer Relationships block of the canvas.
 
 ## Added 2026-10-05
 

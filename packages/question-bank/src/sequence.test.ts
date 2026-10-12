@@ -54,7 +54,7 @@ describe('the diagnostic sequence', () => {
   it('resumes at the first step without an answer', () => {
     expect(firstUnanswered('quick', {})).toBe('A1');
     expect(firstUnanswered('quick', sampleAnswers(['A1', 'A8']))).toBe('B1');
-    expect(firstUnanswered('full', sampleAnswers())).toBe('F4.1');
+    expect(firstUnanswered('full', sampleAnswers())).toBe('C7.1');
     expect(firstUnanswered('quick', sampleAnswers())).toBeNull();
   });
 
@@ -145,6 +145,7 @@ describe('the follow-ups for the engine (D-183, D-197 to D-199)', () => {
     expect(steps).toHaveLength(20);
     for (const id of ['F2.1', 'F4.1', 'F6.2']) expect(steps).not.toContain(id);
     expect(FOLLOW_UPS.filter((followUp) => followUp.modes).map((followUp) => followUp.id)).toEqual([
+      'C7.1',
       'F2.1',
       'F4.1',
       'F6.2',
@@ -173,12 +174,12 @@ describe('the follow-ups for the engine (D-183, D-197 to D-199)', () => {
     expect(resolveStep('F6.2', {})).toEqual({ status: 'inactive', parent: 'F6' });
   });
 
-  it('offers «لا أعرف» on these three follow-ups only', () => {
+  it('offers «لا أعرف» on these four follow-ups only', () => {
     const allowing = FOLLOW_UPS.filter((followUp) => followUp.allowUnknown).map(
       (followUp) => followUp.id,
     );
-    expect(allowing).toEqual(['F2.1', 'F4.1', 'F6.2']);
-    const answers = { F2: sub, F4: costs, F6: forecast };
+    expect(allowing).toEqual(['C7.1', 'F2.1', 'F4.1', 'F6.2']);
+    const answers = { C7: answered({ values: ['search'] }), F2: sub, F4: costs, F6: forecast };
     for (const id of allowing) {
       expect(resolveStep(id, answers)).toMatchObject({ step: { allowUnknown: true } });
     }

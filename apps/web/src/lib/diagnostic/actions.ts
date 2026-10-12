@@ -39,7 +39,7 @@ import { isCountryCode } from '@/lib/countries';
 import { errorFields, log } from '@/lib/log';
 import { type FindingView, viewFinding } from './findings';
 import { loadProject, provenanceOf } from './project';
-import { projectPath, stepFromSlug, stepPath, stepSlug } from './steps';
+import { canvasPath, CANVAS_ORIGIN, projectPath, stepFromSlug, stepPath, stepSlug } from './steps';
 
 // Every action receives the page locale explicitly (Server Actions cannot read [locale]) and
 // validates all input: the question bank decides what an answer may be (CLAUDE.md rule 7).
@@ -144,6 +144,8 @@ const saveSchema = z.object({
   projectId: z.uuid(),
   step: z.string().max(8),
   submission: submissionSchema,
+  /** Set when the step was opened from a canvas chip: the founder goes back there (D-249). */
+  returnTo: z.literal(CANVAS_ORIGIN).optional(),
 });
 
 export type SaveInput = z.input<typeof saveSchema>;
@@ -296,6 +298,7 @@ async function save(
     projectId,
     step,
     submission,
+    returnTo,
   }: Omit<z.output<typeof saveSchema>, 'step'> & { step: StepId },
   trace: SaveTrace,
 ): Promise<SaveResult> {
@@ -418,15 +421,21 @@ async function save(
   const current = await dropInactiveFollowUps(supabase, project.id, updated);
 
   revalidatePath(`/${locale}${projectPath(project.id)}`, 'layout');
-  const next = nextStep(sequenceModeFor(project.mode, current, step), current, step);
+  const following = nextStep(sequenceModeFor(project.mode, current, step), current, step);
+  // From a canvas chip the founder edits one answer and goes back to the canvas, not on to the next
+  // question (D-249).
+  const next =
+    returnTo === CANVAS_ORIGIN
+      ? canvasPath(project.id)
+      : following
+        ? stepPath(project.id, following)
+        : null;
   // The same warnings the step page shows when the founder comes back (stepNotes).
   const notes = stepNotes(step, current).map((finding) => viewFinding(finding, locale));
   // Nothing to read before moving on: the next page renders in this same response, instead of
   // the current step being rendered again and the editor then asking for the next (PERF-3).
-  if (notes.length === 0) {
-    redirect(`/${locale}${next ? stepPath(project.id, next) : projectPath(project.id)}`);
-  }
-  return { status: 'saved', next: next ? stepPath(project.id, next) : null, notes };
+  if (notes.length === 0) redirect(`/${locale}${next ?? projectPath(project.id)}`);
+  return { status: 'saved', next, notes };
 }
 
 // -----------------------------------------------------------------------------------------------

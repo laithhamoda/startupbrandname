@@ -25,7 +25,7 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   // Workspace packages ship TypeScript source (packages/*/src).
-  transpilePackages: ['@sbn/ai', '@sbn/question-bank', '@sbn/report'],
+  transpilePackages: ['@sbn/ai', '@sbn/engine', '@sbn/question-bank', '@sbn/report'],
   // The PDF renderer (D-239): Puppeteer and the 60 MB Chromium of @sparticuz/chromium stay outside
   // the bundle, because the browser is unpacked from the package's own bin folder at run time.
   serverExternalPackages: ['puppeteer-core', '@sparticuz/chromium'],

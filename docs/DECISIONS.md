@@ -39,10 +39,10 @@ A decision may sit under several topics. A new decision joins its topics in the 
 - **Markets, countries and languages:** D-026, D-063, D-066, D-067, D-068, D-069, D-070, D-075,
   D-080, D-081, D-088, D-129, D-180, D-186, D-233, D-236.
 - **Diagnostic and question bank:** D-072, D-102, D-104, D-105, D-106, D-108, D-110 to D-119, D-129,
-  D-149, D-156 to D-161, D-163, D-165, D-167, D-182, D-183, D-197 to D-199, D-231, D-232.
+  D-149, D-156 to D-161, D-163, D-165, D-167, D-182, D-183, D-197 to D-199, D-231, D-232, D-249, D-252.
 - **Calculation engine:** D-178 to D-190, D-193 to D-196, D-200 to D-224, D-227 to D-230,
-  D-238, D-244, D-246 to D-248.
-- **Report, canvases and PDF (M5):** D-225 to D-248.
+  D-238, D-244, D-246 to D-248, D-251.
+- **Report, canvases and PDF (M5):** D-225 to D-253.
 - **AI and cost:** D-062, D-071, D-072, D-073, D-082, D-103, D-107, D-119 to D-124, D-143, D-146 to
   D-152, D-155, D-183, D-191, D-226.
 - **Privacy, consent and security:** D-013, D-016, D-040, D-041, D-061, D-062, D-074, D-077,
@@ -50,9 +50,9 @@ A decision may sit under several topics. A new decision joins its topics in the 
   D-153, D-154, D-175, D-232, D-234, D-235, D-244, D-245.
 - **Legal:** D-059, D-066, D-068, D-082, D-086, D-137, D-145, D-147, D-154, D-186, D-233.
 - **Design and accessibility:** D-007, D-008, D-049 to D-053, D-055 to D-058, D-099, D-118, D-128,
-  D-131, D-158, D-159, D-161, D-162, D-170, D-231.
+  D-131, D-158, D-159, D-161, D-162, D-170, D-231, D-249, D-250.
 - **Public site and SEO:** D-027, D-054, D-076, D-090 to D-098, D-100, D-101, D-153.
-- **Performance:** D-054, D-150, D-151, D-167 to D-171.
+- **Performance:** D-054, D-150, D-151, D-167 to D-171, D-250.
 - **CI and repository:** D-001 to D-007, D-012 to D-016, D-020, D-023 to D-025, D-028, D-030 to
   D-033, D-039 to D-041, D-048, D-055, D-083, D-097, D-125, D-127, D-134, D-136, D-139 to D-142,
   D-144, D-164 to D-166, D-171 to D-174, D-176, D-178, D-192.
@@ -1729,4 +1729,131 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   the pull request that owns the SPEC.
 - **Reason:** CLAUDE.md rule 9 (do not promise what the numbers do not support) and D-222 (a
   changed formula must show as a diff the owner can read).
+- **Status:** Active
+
+### D-249 (2026-10-12): A canvas chip is a link to its question, with a way back
+
+- **Decision:** A chip is a link to the step page that holds its answer
+  (`/projects/[id]/q/[step]?from=canvas`), not a dialog. A step page opened with `from=canvas` shows
+  "Back to the canvases" above the question, and `AnswerEditor` sends `returnTo: 'canvas'` with the
+  save. `saveAnswer` then goes to the canvas instead of the next question: the redirect when there
+  is nothing to read first, and `next` of the result (with "Continue" worded "Back to the canvases")
+  when a warning is shown first. `returnTo` accepts only the literal `canvas` (zod), so it is not an
+  open redirect, and nothing else in the save changes. The canvas page is revalidated by the
+  existing layout revalidation of the project path. `canvasPath` and `stepFromCanvasPath` are in
+  `lib/diagnostic/steps.ts`.
+- **Reason:** A dialog that reuses the diagnostic's editor needs, for every chip on the page, its
+  draft, the country and currency lists, the AI consent state and a save that does not redirect to
+  the next question (PERF-3): far more than a small, behaviour-preserving extraction, and a heavy
+  page payload. A link reuses the editor, the rules, the AI review and the save exactly as they are,
+  so the answer stays the single source (CLAUDE.md rule 3), costs the canvas no editor code, and
+  works without JavaScript.
+- **Status:** Active
+
+### D-250 (2026-10-12): The board geometry, the provenance marks and the route budget
+
+- **Decision:** `CanvasBoard` (`components/canvas`) is a presentational server component: it takes
+  the model and a function that gives the link of a question, so the page and the gallery show the
+  same board. From `lg` the board is a ten-column, three-row grid laid out with `dir="ltr"`, and
+  each block takes the document direction for its content, so the physical order is the same in
+  Arabic and English (D-051). Business Model Canvas, left to right: Key Partners (rows 1 and 2), Key
+  Activities over Key Resources, Value Propositions (rows 1 and 2), Customer Relationships over
+  Channels, Customer Segments (rows 1 and 2); row 3: Cost Structure on the left, Revenue Streams on
+  the right. Lean Canvas: Problem with Existing Alternatives, Solution over Key Metrics, Unique Value
+  Proposition, Unfair Advantage over Channels, Customer Segments, then Cost Structure and Revenue
+  Streams. Below `lg` the blocks stack in the model's filling order, customer segments first, in
+  one column; the page does not scroll sideways (checked at 360 px). Cells have no radius and no
+  shadow, with one hairline between them. Each block is a `section` named by its `h3`. A mark
+  (solid dot: the founder's answer; dashed ring: an assumption; small diamond: an external source,
+  `ProvenanceMark`, split out of `ProvenanceTag`) sits beside each chip's caption and each total;
+  it is hidden from assistive technology and the source is named in words next to it, and a legend
+  lists the three. A long text is cut at six lines in its box; the whole text is in the page and on
+  its question. The English term follows the Arabic block name in parentheses once per page (all
+  nine on the Business Model Canvas, the five blocks only the Lean Canvas has on the Lean Canvas).
+  Digits are isolated with `bdi.num`; the currency label comes after the number. The gallery
+  section is the page `/design/canvas` (D-058), not a part of `/design`, so that the baselines of
+  `/design` are untouched; it holds both boards with fixtures (the three marks, a long text, an
+  unknown answer, an unanswered block, totals) and an empty project, and is in the accessibility
+  tests. No snapshot expectation was added for it: its baselines come from the manual workflow
+  (D-055). The route `/[locale]/projects/[id]/canvas` has a budget of 204,800 bytes of gzipped
+  JavaScript in `scripts/check-bundle-budget.mjs` (measured 186,227 plus about 10%, D-171); the step
+  page measures 316,793, still inside its 347,800.
+- **Reason:** SPEC T1 and T2, D-051, D-053 and the design plan (0 radius for canvas cells); CLAUDE.md
+  rules 2 and 11 (shape and text, never colour alone; RTL and accessibility are acceptance
+  criteria) and §3 (an English term on first use only).
+- **Status:** Active
+
+### D-251 (2026-10-12): Running the engine for the canvas page, and recording the run
+
+- **Decision:** `lib/engine` loads a project (`loadRunSource`: the project and its answers with
+  their stored source, confidence and validated in one round trip, then the tax rules of its
+  country), runs `runEngine` and records a compact summary (`analyseProject`). The page runs the
+  engine on every visit, because it is pure and fast; only the summary is stored (D-238). The
+  input hash is the sha256 of the canonical text of the answers with their provenance, the
+  country, currency and mode, the mapped tax rules in the order of their IDs, the parameter
+  overrides, the pricing options (D5 passed rule R5, D-189), `ENGINE_VERSION` and, added to the
+  inputs of D-238, the month of the run (YYYY-MM). Month 1 of the projection is the month after
+  the reference date (D-184), so the output depends on it; a project nobody touches therefore gets
+  at most one new row a month, and the newest five are kept (D-244). The canonical text is the
+  module's own (`canonicalText`: sorted keys, a bigint as digits with an n), because the engine's
+  `canonicalJson` refuses the fractions an answer may hold. Recording: only a calculable run is
+  recorded; nothing is written when a `tool_runs` row of the project, tool `engine` and hash
+  exists; a failure of the lookup, of `record_engine_run` or a thrown error is logged as
+  `engine.record_failed` with the stage, the code and the project ID, and the page renders
+  regardless. A run whose tax rules could not be fetched is not recorded, since its hash would stand
+  for rules it never saw. Production has not had the M5 migration, so until it does the `tax_rules`
+  query fails and `record_engine_run` does not exist: the page then runs without a tax regime,
+  records nothing and logs a warning. The summary is the engine version, the verdict with its
+  blockers and hold-backs, the score as passed over evaluated and an exact decimal, the overall
+  confidence, the headline numbers as decimal strings in major units, and the alert codes, each
+  once. A run that cannot be calculated gives the page its reasons, shown in words with a link to
+  each question; a run the engine refuses is logged and shown as a notice; the canvases show
+  every chip in both cases. The mapper `toTaxRule` builds each rate and each bracket rate from the
+  two integers of its fraction with `makeRate`, each amount with `moneyFromSafeMinor` (so a
+  number beyond 2^53 is refused), turns `under_review` and `stale` into `unverified`, and runs
+  `validateTaxRule`; `toTaxRules` leaves out a row the engine would refuse and logs how many, so an
+  empty table, the case until step 4, gives a run without a regime.
+- **Reason:** CLAUDE.md rules 1, 4 and 8 and D-238, D-243, D-244; the app must keep working on the
+  schema production has until the owner approves the migration.
+- **Status:** Active
+
+### D-252 (2026-10-12): The follow-up C7.1 and the rule for an empty block
+
+- **Decision:** C7.1 (customer relationships) is a follow-up of C7, a short free text, asked in the
+  full diagnostic only (D-198) and only once C7 has a real answer, with «لا أعرف» accepted (D-199).
+  No rule rejects its text and it never counts in completeness. Its Arabic and English texts, hint
+  and example are drafts for the owner's review (OPEN-QUESTIONS #86). Every full project that has
+  answered C7 is now asked C7.1 next on resuming; the answer-contract snapshot gained its entry.
+  The canvas builder uses it for Customer Relationships and shows the empty state until it is
+  answered. A block with no chip says why, by its first source without a chip: not answered yet,
+  answered «لا أعرف», answered with nothing listed, or no question for it, and links to that
+  question; a source answered «لا أعرف» gives no chip, so the block never shows text of its own
+  (rule 9). An answered question with no stored provenance counts as an unchecked assumption.
+- **Reason:** D-231 asks for a source of Customer Relationships; CLAUDE.md rules 2 and 9.
+- **Status:** Active
+
+### D-253 (2026-10-12): Other choices of the canvas step
+
+- **Decision:** The canvas module is imported as `@sbn/report/canvas`, so the browser never loads
+  the PDF renderer of the package's main entry; `@sbn/report` depends on `@sbn/question-bank`
+  (reading option labels and fields), not on the engine: the engine's totals reach the builder
+  already written (`CanvasTotal`). Amounts in chips and totals are written by one helper,
+  `amountText`: plain digits as the founder typed them, no grouping and no trailing zeros, the
+  currency label after the number. What a chip is about is named by `canvas.source.<question ID>`
+  in the messages (a follow-up with an underscore, `C7_1`), and a test requires one for every source
+  of the map. The page title is never the project's title. `@sbn/engine` joins `transpilePackages`.
+  `toProject`, `answersOf`, `PROJECT_COLUMNS` and `AnswerRow` of `lib/diagnostic/project.ts` are
+  exported for the loader. Vitest has no DOM here, so the board is tested as static markup
+  (`react-dom/server`) with the navigation mocked; the signed-in end-to-end spec
+  `e2e/auth/canvas.spec.ts` needs the local database and could not run where this was written. The
+  first total of Cost Structure is named «التكاليف الثابتة في قائمتك شهريًا» (Fixed costs on your
+  list, a month): it is the engine's sum of the F4 list, and the F4.1 marketing budget and the E8
+  staff plan, which sit in the same block as chips, are not part of it (a test pins this). A link
+  to a follow-up that is not asked yet (C7.1 before C7) goes through the step page's redirect to
+  the parent question and keeps `from=canvas`. The `packages/report` row of
+  `docs/architecture.md` is left for step 5, which rewrites that row for the report; editing it now
+  would re-pad the whole table and conflict with the parallel pull requests. The canvas route
+  budget is in `docs/runbooks/operations.md`.
+- **Reason:** Keeps the canvas free of the PDF code, the report package free of the engine until
+  step 5, and the wording of a number in one place (rule 1).
 - **Status:** Active

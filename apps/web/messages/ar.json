@@ -285,7 +285,112 @@
       "deleteTitle": "حذف المشروع نهائيًا؟",
       "deleteBody": "سيُحذف المشروع وكل إجاباته فورًا، ولا يمكن استعادتها.",
       "deleting": "جارٍ الحذف…",
-      "deleteConfirm": "نعم، احذف المشروع"
+      "deleteConfirm": "نعم، احذف المشروع",
+      "canvas": "لوحتا المشروع"
+    },
+    "backToCanvas": "العودة إلى اللوحتين"
+  },
+  "canvas": {
+    "pageTitle": "لوحتا المشروع",
+    "title": "لوحتا المشروع",
+    "back": "العودة إلى المشروع",
+    "lead": "تُبنى اللوحتان من إجاباتك أنت كما كتبتها. اختر أي مربع لتعديل إجابته، ثم تعود إلى هنا بعد الحفظ.",
+    "tabsLabel": "اللوحتان",
+    "tab": {
+      "business_model": "لوحة نموذج العمل (Business Model Canvas)",
+      "lean": "اللوحة الرشيقة (Lean Canvas)"
+    },
+    "legend": "معنى العلامات",
+    "edit": "تعديل هذه الإجابة",
+    "totalsTitle": "مجاميع محسوبة من إجاباتك",
+    "total": {
+      "fixedMonthly": "التكاليف الثابتة في قائمتك شهريًا",
+      "variableUnit": "التكلفة المتغيرة للوحدة الواحدة",
+      "setup": "تكاليف التأسيس"
+    },
+    "empty": {
+      "unanswered": "لم تتم الإجابة بعد.",
+      "unknown": "الإجابة «لا أعرف»، فلا يظهر هنا شيء.",
+      "empty": "الإجابة بلا بنود.",
+      "no_question": "لا يوجد سؤال يملأ هذا المربع بعد."
+    },
+    "notice": {
+      "title": "المجاميع تحتاج إلى بضع إجابات أخرى",
+      "lead": "تظهر أرقام هيكل التكاليف عند الإجابة عن هذه الأسئلة. وكل مربع أعلاه يعرض ما قدّمته حتى الآن.",
+      "failed": "تعذّر حساب المجاميع الآن. إجاباتك أعلاه سليمة.",
+      "reason": {
+        "invalid_project": "تعذّرت قراءة عملة المشروع أو تاريخه.",
+        "missing_answer": "لم تتم الإجابة بعد:",
+        "unknown_answer": "الإجابة «لا أعرف»، والمجاميع تحتاج إلى إجابة فعلية:",
+        "currency_mismatch": "مُدخَل بعملة تختلف عن عملة المشروع:",
+        "invalid_value": "رقم لا يمكن استخدامه:",
+        "no_price": "السعر «لا أعرف» ولا يوجد سعر معروف لأي منافس:"
+      }
+    },
+    "block": {
+      "customerSegments": "شرائح العملاء",
+      "valuePropositions": "عروض القيمة",
+      "channels": "القنوات",
+      "customerRelationships": "علاقات العملاء",
+      "revenueStreams": "مصادر الإيرادات",
+      "keyResources": "الموارد الرئيسية",
+      "keyActivities": "الأنشطة الرئيسية",
+      "keyPartners": "الشركاء الرئيسيون",
+      "costStructure": "هيكل التكاليف",
+      "problem": "المشكلة والبدائل الحالية",
+      "solution": "الحل",
+      "keyMetrics": "المؤشرات الرئيسية",
+      "uniqueValueProposition": "القيمة الفريدة",
+      "unfairAdvantage": "ميزة يصعب تقليدها"
+    },
+    "term": {
+      "customerSegments": "Customer Segments",
+      "valuePropositions": "Value Propositions",
+      "channels": "Channels",
+      "customerRelationships": "Customer Relationships",
+      "revenueStreams": "Revenue Streams",
+      "keyResources": "Key Resources",
+      "keyActivities": "Key Activities",
+      "keyPartners": "Key Partners",
+      "costStructure": "Cost Structure",
+      "problem": "Problem with Existing Alternatives",
+      "solution": "Solution",
+      "keyMetrics": "Key Metrics",
+      "uniqueValueProposition": "Unique Value Proposition",
+      "unfairAdvantage": "Unfair Advantage"
+    },
+    "source": {
+      "C1": "من يدفع",
+      "C2": "العميل الأول",
+      "B3": "الأكثر تضررًا",
+      "B1": "الفكرة",
+      "B2": "المشكلة",
+      "D5": "سبب اختيارك",
+      "C3": "المهمة التي يوظّفك العميل لها",
+      "C7": "أين يقضي العميل وقته",
+      "E1": "كيف يصل إلى العميل",
+      "D1": "النطاق الجغرافي",
+      "C7_1": "العلاقة بعد أول عملية شراء",
+      "F1": "سعر البيع",
+      "F2": "نموذج التسعير",
+      "F7": "طريقة دفع العميل",
+      "E3": "المعدات والأدوات",
+      "A3": "مهاراتك",
+      "E6": "مكان العمل",
+      "E2": "الأنشطة الثلاثة",
+      "E5": "الشركاء الذين تحتاجهم",
+      "E4": "الموردون",
+      "A4": "الفريق والشركاء",
+      "F3": "التكلفة المتغيرة للوحدة",
+      "F4": "التكاليف الثابتة شهريًا",
+      "F4_1": "التسويق شهريًا",
+      "F5": "تكاليف التأسيس",
+      "E8": "الموظفون",
+      "B4": "كيف يتصرف الناس اليوم",
+      "D3": "البدائل الحالية",
+      "H2": "الرقم الذي تتابعه",
+      "H1": "معنى النجاح",
+      "B8": "ما يمنع النسخ"
     }
   },
   "account": {

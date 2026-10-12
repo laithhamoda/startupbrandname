@@ -339,6 +339,7 @@
     "value": { "oneOf": ["bank", "course", "grant_body", "investor", "self"] }
   },
   "A2.1": { "kind": "long_text", "allowUnknown": false, "value": "string" },
+  "C7.1": { "kind": "short_text", "allowUnknown": true, "value": "string" },
   "C8.1": { "kind": "long_text", "allowUnknown": false, "value": "string" },
   "F2.1": { "kind": "number", "allowUnknown": true, "value": "number" },
   "F4.1": {

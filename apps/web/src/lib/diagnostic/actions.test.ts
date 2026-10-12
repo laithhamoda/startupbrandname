@@ -340,6 +340,60 @@ describe('saveAnswer', () => {
     expect(revalidatePath).toHaveBeenCalledWith(`/ar/projects/${projectId}`, 'layout');
   });
 
+  describe('from a canvas chip (D-249)', () => {
+    it('goes back to the canvas, not on to the next question', async () => {
+      const { client, writes } = fakeClient();
+      signedIn(client);
+
+      const save = saveAnswer({ ...numberOfPartners(3), returnTo: 'canvas' });
+
+      expect(await redirectTarget(save)).toBe(`/ar/projects/${projectId}/canvas`);
+      // The same answer is saved the same way, and the canvas page is revalidated with it.
+      expect(writes.upsert).toHaveBeenCalledWith(
+        expect.objectContaining({ question_id: 'A2', source: 'user' }),
+      );
+      expect(revalidatePath).toHaveBeenCalledWith(`/ar/projects/${projectId}`, 'layout');
+    });
+
+    it('still shows the warnings first, and then continues to the canvas', async () => {
+      const { client } = fakeClient();
+      const partners = {
+        items: [
+          { label: 'أ', percent: 50 },
+          { label: 'ب', percent: 50 },
+        ],
+      };
+      signedIn(client, { G4: { status: 'answered', value: partners } });
+
+      const result = await saveAnswer({
+        locale: 'ar',
+        projectId,
+        step: 'G4.1',
+        submission: { kind: 'value', value: false },
+        returnTo: 'canvas',
+      });
+
+      expect(result).toMatchObject({
+        status: 'saved',
+        next: `/projects/${projectId}/canvas`,
+        notes: [{ code: 'G4_no_agreement' }],
+      });
+    });
+
+    it('refuses any other place to return to', async () => {
+      const { client, writes } = fakeClient();
+      signedIn(client);
+
+      const result = await saveAnswer({
+        ...numberOfPartners(3),
+        returnTo: 'https://example.test' as 'canvas',
+      });
+
+      expect(result).toEqual({ status: 'error', reason: 'failed' });
+      expect(writes.upsert).not.toHaveBeenCalled();
+    });
+  });
+
   it('opens the overview after the last step', async () => {
     const { client } = fakeClient();
     const last = getQuestion('H8');

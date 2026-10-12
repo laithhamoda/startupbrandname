@@ -24,7 +24,7 @@ export interface Project {
   updatedAt: string;
 }
 
-function toProject(row: {
+export function toProject(row: {
   id: string;
   title: string;
   country_code: string;
@@ -44,7 +44,7 @@ function toProject(row: {
   };
 }
 
-interface AnswerRow {
+export interface AnswerRow {
   question_id: string;
   normalized_value: unknown;
 }
@@ -95,7 +95,7 @@ export function parseAnswers(rows: readonly AnswerRow[]): Answers {
 }
 
 /** Reads a project's stored answers; rows that no longer fit are logged by ID, never by value. */
-async function answersOf(projectId: string, rows: readonly AnswerRow[]): Promise<Answers> {
+export async function answersOf(projectId: string, rows: readonly AnswerRow[]): Promise<Answers> {
   const { answers, unreadable } = readAnswers(rows);
   if (unreadable.length > 0) {
     await log.warn('diagnostic.answers_unreadable', {
@@ -107,7 +107,7 @@ async function answersOf(projectId: string, rows: readonly AnswerRow[]): Promise
   return answers;
 }
 
-const PROJECT_COLUMNS = 'id, title, country_code, currency, mode, created_at, updated_at';
+export const PROJECT_COLUMNS = 'id, title, country_code, currency, mode, created_at, updated_at';
 
 /** The signed-in account's projects (RLS), newest first, each with its answers. */
 export async function listProjects(
