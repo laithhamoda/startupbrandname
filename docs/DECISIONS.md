@@ -37,19 +37,19 @@ A decision may sit under several topics. A new decision joins its topics in the 
 - **Auth and accounts:** D-018, D-034, D-059, D-061, D-065, D-074, D-077, D-078, D-079, D-084,
   D-085, D-086, D-087, D-089, D-129, D-131, D-163, D-168, D-174.
 - **Markets, countries and languages:** D-026, D-063, D-066, D-067, D-068, D-069, D-070, D-075,
-  D-080, D-081, D-088, D-129, D-180, D-186, D-233, D-236, D-263 to D-266.
+  D-080, D-081, D-088, D-129, D-180, D-186, D-233, D-236, D-263 to D-266, D-269, D-270.
 - **Diagnostic and question bank:** D-072, D-102, D-104, D-105, D-106, D-108, D-110 to D-119, D-129,
   D-149, D-156 to D-161, D-163, D-165, D-167, D-182, D-183, D-197 to D-199, D-231, D-232, D-249, D-252.
 - **Calculation engine:** D-178 to D-190, D-193 to D-196, D-200 to D-224, D-227 to D-230,
   D-238, D-244, D-246 to D-248, D-251, D-260 to D-262.
-- **Report, canvases and PDF (M5):** D-225 to D-253, D-260 to D-266.
+- **Report, canvases and PDF (M5):** D-225 to D-253, D-260 to D-272.
 - **AI and cost:** D-062, D-071, D-072, D-073, D-082, D-103, D-107, D-119 to D-124, D-143, D-146 to
   D-152, D-155, D-183, D-191, D-226.
 - **Privacy, consent and security:** D-013, D-016, D-040, D-041, D-061, D-062, D-074, D-077,
   D-082, D-085, D-092, D-098, D-103, D-107, D-126, D-130, D-137, D-138, D-142, D-144 to D-149,
   D-153, D-154, D-175, D-232, D-234, D-235, D-244, D-245.
 - **Legal:** D-059, D-066, D-068, D-082, D-086, D-137, D-145, D-147, D-154, D-186, D-233, D-263,
-  D-266.
+  D-266, D-270, D-271.
 - **Design and accessibility:** D-007, D-008, D-049 to D-053, D-055 to D-058, D-099, D-118, D-128,
   D-131, D-158, D-159, D-161, D-162, D-170, D-231, D-249, D-250.
 - **Public site and SEO:** D-027, D-054, D-076, D-090 to D-098, D-100, D-101, D-153.
@@ -2059,4 +2059,139 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   row that is added later. Open question #97 asks the owner whether the engine should support the
   advance payment of the IFU.
 - **Reason:** CLAUDE.md rules 1, 8 and 9: a wrong cash flow is worse than an honest "not calculated".
+- **Status:** Active
+
+### D-267 (2026-10-12): The ReportModel contract and its inline parts
+
+- **Decision:** `packages/report/src/model` (`@sbn/report/model`) holds the report as data.
+  `buildReportModel(input): ReportModel` is pure and deterministic (no clock, no randomness, no I/O)
+  and the model is JSON-safe: strings, numbers, booleans, null, arrays and plain objects, with no
+  `bigint` and no `undefined` (a test round-trips every golden model). The module imports nothing
+  from `render/` or `print/`, so the web can import it without pulling Chromium. Text is an `Inline`,
+  an array of parts: a string is plain text, `{ n }` is a number (Western digits, a comma between
+  thousands, the minus sign U+2212, a sign on changes), `{ l }` is a left-to-right fragment (a URL, a
+  currency code, a regime code). The renderers wrap `n` and `l` in `bdi` with `dir="ltr"` and escape
+  strings; the model carries no HTML. An amount is its number followed by the currency label as a
+  separate part, so the label is after the number and stays outside the isolated number: a label
+  inside an isolate that starts with an Arabic letter would resolve the isolate to right-to-left and
+  put the minus sign after the digits. A money in a currency other than the project's carries its own
+  code as `l`, never the project's label (CLAUDE.md section 3). Amounts keep the decimals of the
+  currency (3 for the Jordanian dinar, 2 for the Algerian, none for the yen), all in integer
+  arithmetic; percentages have at most two decimals and ratios four. The input is `locale`, `kind`,
+  `lockReason` and `audience` (decided by the caller from the gate, the entitlement and H8),
+  `project`, the answers with their provenance exactly as the engine takes them, `run` (null with the
+  reasons when the answers cannot be calculated), `changes`, `packItems`, `completeness` and `today`.
+  A `kind: 'full'` without a run, a lock reason on a full report, a summary without one, a bad date or
+  a currency different from the run's throw `ReportModelError` with a code. The blocks are the closed
+  set: paragraph, list, keyNumbers, verdict, table, definitionList, canvas, callout, link and note. A
+  figure `Cell` is `{ text, provenance, lowConfidence, mark }`, and `lowConfidence` is true only for
+  F1, F3, F4, F5 and F6 themselves (D-229), never for a number derived from them. The country and
+  currency names on the cover come from the platform's locale data (`Intl.DisplayNames`), as plain
+  strings.
+- **Reason:** CLAUDE.md rules 1, 2 and 9; D-226, D-229, D-232. One model for the screen and the print
+  keeps a number in one place, and a model without markup cannot carry an unescaped founder text.
+- **Status:** Active
+
+### D-268 (2026-10-12): The sections, and the split between the summary and the full report
+
+- **Decision:** The full report has twelve sections in this order: cover, executive_summary,
+  project_card, canvases, pricing_unit_economics, projection, scenarios_sensitivity,
+  legal_path_financing, validation_plan, appendix_assumptions, appendix_sources and
+  appendix_disclaimer (SPEC section 6, the MVP subset, D-236). The one-page summary has
+  project_card, top_risks and break_even open, and every other section above as a locked title with
+  `blocks: []`. The summary does not show the verdict, because SPEC section 6 puts the verdict in the
+  executive summary (open question #98). A builder for a locked section never runs, so no locked
+  value is computed into the model: a test builds the summary with every such builder replaced by one
+  that throws. The free summary does quote the figures of its three risks (SPEC: top three risks),
+  which the locked executive summary quotes too, so "no string of a locked section occurs in the
+  summary" cannot hold word for word; the proof is instead that the locked sections hold no block,
+  that no block of a locked section of the full report occurs anywhere in the summary, that the
+  numbers only a locked section computes occur nowhere in it, that the builders do not run, and that
+  changing an answer only a locked section reads leaves the summary byte-identical. The three risks
+  are the blockers, then the warnings ranked by the tornado rank of the variable they concern, then
+  the notes, then the least confident pivotal figures, then the worry H6 (D-229); without a run they
+  are the pivotal answers still missing, the pivotal guesses and H6. The break-even block gives the
+  month, the units and the revenue, or says the answers are not enough yet and lists what is missing
+  by its short title. After the blocks of a section that shows a low-confidence pivotal figure the
+  model adds the sentence of D-229 once (a callout), and the assumptions register carries it too.
+  The changes of the executive summary are one row for each change of `suggestChanges`; for a stop
+  the rows and the "rethink" list together are the three places of D-228.
+- **Reason:** SPEC sections 3 and 6; D-228, D-229, D-232, D-236.
+- **Status:** Active
+
+### D-269 (2026-10-12): The audience variants
+
+- **Decision:** There is one template. H8 chooses the opening sentence of the executive summary (five
+  short sentences in each language) and the order of the three key numbers: bank gives the funding
+  need, the break-even month, then the year-one operating profit; investor gives the profit, the
+  break-even month, then the funding need; grant gives the break-even month, the funding need, then
+  the profit; course and self give the funding need, the break-even month, then the profit. H8's
+  `grant_body` is the audience `grant`; an unanswered, unknown or unrecognised H8 is `self`
+  (`audienceOfAnswers`). Nothing else changes with the audience in this version (D-236).
+- **Reason:** D-236. The mapping is a reading the owner has not seen (open question #98).
+- **Status:** Active
+
+### D-270 (2026-10-12): The text rules
+
+- **Decision:** The words are in `packages/report/src/messages/ar.ts` and `en.ts`, typed by a shared
+  `ReportMessages`. A message is a string or a template, a function of named slots that are
+  `Inline`s the builder filled from an engine figure, an answer or a named constant. A template's
+  fixed text holds no digit, Western or Arabic-Indic, so no number in a report is written by hand;
+  the 30 of the validation plan and the 4 of its priority formula are constants
+  (`VALIDATION_PLAN_DAYS`, `PRIORITY_CONFIDENCE_CEILING`, `CONFIDENCE_SCORES`). A test walks both
+  catalogs: the same keys, a non-empty text for sample slots, no digit in any fixed text or in any
+  string of the sources, and a text for every alert, blocker, hold-back, criterion, experiment,
+  scenario, tornado and note code of the engine, as exhaustive `Record` types. The text is Modern
+  Standard Arabic; the English term in parentheses appears on its first use only, in the whole
+  report, through a per-report tracker (seven terms: break-even, payback, contribution margin, LTV,
+  CAC, price floor, sensitivity analysis); the section titles carry no term, and no message names a
+  term outside the tracker (a test checks both). The verdict words are امضِ, عدّل and توقّف in Arabic and
+  Go, Revise and Stop in English; the stop sentence is «غير قابل للتنفيذ بصيغته الحالية» and "Not
+  viable in its current form" (D-227). The low-confidence sentence is the one of SPEC section 6. The
+  word «فائدة» is written nowhere in the catalog, so it cannot appear in the financing text when G7
+  is yes; that paragraph then adds a sentence about asking the provider for the contract form and its
+  Sharia supervision. The founder's own text (the title, the worry, names and notes) enters as plain
+  string parts only. Codes of the pack that mean a regime or a rule (`regime`) are shown as `l`
+  fragments, not translated. The wording is a draft for the owner's review (open question #98).
+- **Reason:** CLAUDE.md rules 1, 8 and 9; D-226, D-227, D-229, D-236; SPEC section 6.
+- **Status:** Active
+
+### D-271 (2026-10-12): The assumptions register and the sources appendix
+
+- **Decision:** Appendix A lists every input figure whose source is an assumption or whose
+  confidence is low (price, variable cost, fixed costs, marketing, set-up costs, staff, sales,
+  capacity, churn, capital, the two time limits, the legal form) and the three key outputs when they
+  are, each with its value, source, confidence and confirmed flag; then the engine's notes on the
+  answers (`input.notes` and the projection's); then twenty named engine parameters with the same
+  four columns. The four payment-timing parameters and the cash-flow notes are not listed. Appendix B
+  lists the pack items the legal path used, each with its source URL, its `last_verified` date (or
+  "never verified") and the label «تحقّق من المصدر الرسمي» when the item is old, unverified or under
+  review (D-233, D-265), and the tax authority item when the pack has one. The tax rules the engine
+  used are not in the run, so their source is not listed (D-266: no rule is stored yet). Appendix C is
+  the disclaimer (a planning tool, not legal, tax or financial advice), the sentence that the score is
+  not a probability, and the adviser line with the official link when there is one, or a sentence that
+  the pack holds none.
+- **Reason:** CLAUDE.md rules 2, 8 and 9; SPEC section 6; D-229, D-233, D-265.
+- **Status:** Active
+
+### D-272 (2026-10-12): Golden models, gates and what the model leaves to the renderers
+
+- **Decision:** The golden models are files under `packages/report/golden/`: the three golden
+  projects of the engine as the full report in Arabic and English, the Jordanian service project as
+  the Arabic summary locked by the plan, and a summary from a trimmed answer set with no run. Each is
+  a `.golden` file (the model as JSON) and a `.txt` file (a plain reading, for the person reviewing a
+  diff). The extension is not `.json` so that Prettier's format check, which cannot be told to skip a
+  directory without a change to the root configuration, leaves the files alone. The tests fail on any
+  difference; `UPDATE_GOLDEN=1` rewrites them and is refused in CI (the rule of D-222). The tests use
+  the engine's golden projects, now exported from `@sbn/engine` (`GOLDEN_PROJECTS`, `runGolden`: no
+  output changes and `ENGINE_VERSION` stays), with identity answers added and a small artificial
+  country pack (example.invalid links). The coverage thresholds of D-237 are in
+  `packages/report/vitest.config.ts` (statements and lines 95, branches 90, functions 95); the
+  package passes them with the step 0 files in it, and three test-support files are left out of the
+  coverage (`report-inputs.ts`, `model-text.ts`, `model-helpers.ts`). The model leaves to the
+  renderers: layout and page breaks, the contents list, the `bdi` wrapping and escaping, the colour of
+  a highlighted or marked cell, the drawing of the meter and the verdict slab, the fill-in lines of
+  the validation plan on paper, page numbers and headers, and what a link opens. The FX test of T9 and
+  the cash-flow notes are not in the model yet.
+- **Reason:** D-222, D-237; CLAUDE.md rule 11.
 - **Status:** Active
