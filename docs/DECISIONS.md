@@ -1881,7 +1881,8 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   says so, otherwise the first. For a `revise`: `go`. Overall confidence reads the stored
   provenance of five answers and not their values (D-229), so no change of a number can lift it: a
   `revise` held back by low confidence returns no change and `goBlockedBy` set to `confidence_low`,
-  and a `stop` with low confidence reports only changes that remove the blockers. A margin of zero
+  and a `stop` with low confidence reports only changes that remove the blockers, with
+  `goBlockedBy` also `confidence_low`. A margin of zero
   or less (CM = P - VC) can be mended only by the price and the variable cost, alone or together:
   the other levers are not searched then. **A premium price.** The search does not stop at the
   market: it reports the smallest price that works, and the change carries `premium` when that price
@@ -1938,7 +1939,12 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   not in the tornado. **Determinism.** Pure, with no clock and no randomness: the same arguments give
   a deeply equal result, and the run and its input are never changed. It throws what the engine throws
   and an `invalid_param` for an override out of its range; an error of the pipeline is never taken
-  for a spent budget.
+  for a spent budget. **When the budget runs out** the
+  `rethink` list is empty: a driver the search never finished is not one that was tried and failed.
+  **Caching.** The budget changes which changes are found and whether `complete` is true but is not
+  in the run's settings hash, so a stored result of `suggestChanges` must be keyed by the run's hash
+  plus `changes.search_budget`, and the run, tax context, overrides and pricing options passed must
+  be the ones the run was made with: the search does not check that.
 - **Reason:** D-228 (a bounded, deterministic search, exact at the minor unit, with its own budget);
   D-248 for the sales; keeping the golden files and the settings hash free of a search setting.
 - **Status:** Active
