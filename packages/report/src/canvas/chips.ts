@@ -34,7 +34,13 @@ export function fieldOfStep(id: StepId): Field {
  */
 export function plainNumber(value: number | string): string {
   const text = typeof value === 'number' ? String(value) : value;
-  return text.includes('.') ? text.replace(/0+$/, '').replace(/\.$/, '') : text;
+  if (!text.includes('.')) return text;
+  // Walk back over the zeros and then over a bare point, instead of a pattern that backtracks on a
+  // long run of zeros.
+  let end = text.length;
+  while (end > 0 && text.charCodeAt(end - 1) === 48) end -= 1;
+  if (end > 0 && text.charCodeAt(end - 1) === 46) end -= 1;
+  return text.slice(0, end);
 }
 
 /** An amount with the currency after it, as the diagnostic's money box and the totals write it. */
