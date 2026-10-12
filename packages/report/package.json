@@ -6,6 +6,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./canvas": "./src/canvas/index.ts",
+    "./legal-path": "./src/legal-path/index.ts",
     "./testing": "./src/testing/index.ts"
   },
   "scripts": {
@@ -19,7 +20,8 @@
     "@fontsource/tajawal": "5.3.0",
     "@sbn/question-bank": "workspace:*",
     "@sparticuz/chromium": "153.0.0",
-    "puppeteer-core": "25.11.0"
+    "puppeteer-core": "25.11.0",
+    "zod": "4.6.5"
   },
   "devDependencies": {
     "pdfjs-dist": "6.4.299"

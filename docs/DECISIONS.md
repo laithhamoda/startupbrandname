@@ -37,18 +37,19 @@ A decision may sit under several topics. A new decision joins its topics in the 
 - **Auth and accounts:** D-018, D-034, D-059, D-061, D-065, D-074, D-077, D-078, D-079, D-084,
   D-085, D-086, D-087, D-089, D-129, D-131, D-163, D-168, D-174.
 - **Markets, countries and languages:** D-026, D-063, D-066, D-067, D-068, D-069, D-070, D-075,
-  D-080, D-081, D-088, D-129, D-180, D-186, D-233, D-236.
+  D-080, D-081, D-088, D-129, D-180, D-186, D-233, D-236, D-263 to D-266.
 - **Diagnostic and question bank:** D-072, D-102, D-104, D-105, D-106, D-108, D-110 to D-119, D-129,
   D-149, D-156 to D-161, D-163, D-165, D-167, D-182, D-183, D-197 to D-199, D-231, D-232, D-249, D-252.
 - **Calculation engine:** D-178 to D-190, D-193 to D-196, D-200 to D-224, D-227 to D-230,
   D-238, D-244, D-246 to D-248, D-251, D-260 to D-262.
-- **Report, canvases and PDF (M5):** D-225 to D-253, D-260 to D-262.
+- **Report, canvases and PDF (M5):** D-225 to D-253, D-260 to D-266.
 - **AI and cost:** D-062, D-071, D-072, D-073, D-082, D-103, D-107, D-119 to D-124, D-143, D-146 to
   D-152, D-155, D-183, D-191, D-226.
 - **Privacy, consent and security:** D-013, D-016, D-040, D-041, D-061, D-062, D-074, D-077,
   D-082, D-085, D-092, D-098, D-103, D-107, D-126, D-130, D-137, D-138, D-142, D-144 to D-149,
   D-153, D-154, D-175, D-232, D-234, D-235, D-244, D-245.
-- **Legal:** D-059, D-066, D-068, D-082, D-086, D-137, D-145, D-147, D-154, D-186, D-233.
+- **Legal:** D-059, D-066, D-068, D-082, D-086, D-137, D-145, D-147, D-154, D-186, D-233, D-263,
+  D-266.
 - **Design and accessibility:** D-007, D-008, D-049 to D-053, D-055 to D-058, D-099, D-118, D-128,
   D-131, D-158, D-159, D-161, D-162, D-170, D-231, D-249, D-250.
 - **Public site and SEO:** D-027, D-054, D-076, D-090 to D-098, D-100, D-101, D-153.
@@ -1970,4 +1971,92 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   12,900 to 12,000, twice the capital of 6,000). The golden files do not change.
 - **Reason:** D-223 (every number the owner reviews has its hand computation next to it) and the
   brief of M5 step 2b.
+- **Status:** Active
+
+### D-263 (2026-10-12): The sources policy as applied to the first country pack
+
+- **Decision:** The first pack (Jordan and Algeria, 29 items, `20261013000000_m5_country_pack_seed.sql`)
+  was built by this rule, which D-233 only states. A source is official when it is a government
+  portal or public agency, the official gazette, or a ministry's own document; the 17 registrable
+  domains are in the `settings` row `pack.allowed_domains` (a host matches a domain or any subdomain
+  of it) and the reason for each is in `docs/data/country-pack-review.md`. Every number needs two
+  readings: two official pages, or an official page and the Journal Officiel. Each item holds, in its
+  `value`, an evidence sentence in the page's own words and language (Arabic, French or English)
+  with the page it was read on, and a figure (a number, a date, a period) carries its own evidence,
+  never one shared sentence. `last_verified` is the day the page was read (2026-10-12). Any status
+  other than `verified` means the report shows «تحقّق من المصدر الرسمي» (rule 8). The lead audited
+  all items by script (each evidence sentence found on its page) and read the Algerian tax figures in
+  the Journal Officiel. A fee is stored only if an official page states it: none was found, so none
+  is stored (rule 9).
+- **Reason:** D-233 and CLAUDE.md rules 8 and 9: a value a founder may act on must be traceable to
+  a sentence they can check.
+- **Status:** Active
+
+### D-264 (2026-10-12): The item keys of the first pack and the statuses given
+
+- **Decision:** Keys are dotted lowercase, named once in `PACK_KEYS` (`@sbn/report/legal-path`).
+  Jordan (14): `registration.sole.body`, `registration.company.body`, `registration.chamber.membership`,
+  `approval.food.body`, `approval.cosmetics.body`, `licence.vocational.body`,
+  `licence.home_business.amman`, `tax.registration.body`, `social_security.registration.body`,
+  `data.statistics`, `data.central_bank`, `data.support_agency`, `currency.main`,
+  `official.tax_authority`. Algeria (15): `registration.auto_entrepreneur.body`, `.activity_list`
+  (a link to the official ANAE list; the codes are not stored), `.micro_import`,
+  `.micro_import_limits`, `tax.ifu.auto_entrepreneur.rate_ceiling`, `.payment`, `.minimum`,
+  `tax.ifu.coverage`, `registration.commercial_register.body`, `social_security.registration.body`,
+  `tax.registration.body`, `data.statistics`, `data.central_bank`, `currency.main`,
+  `official.tax_authority`. The `value` is JSON validated by `packValueSchema`: `name` and
+  `description` as Arabic and English pairs, and optional `note`, `url` (an official link to the
+  service), `code` (the currency), `evidence` and `figures`. Statuses: 27 `verified`; 1 `under_review`
+  (`licence.home_business.amman`: the Amman guide rests on the 2017 instructions while a later news
+  item cites 2020 amended in 2021); 1 `unverified` (`registration.auto_entrepreneur.micro_import_limits`:
+  1,800,000 DA per trip and two trips a month were read only in the ANAE guide, not in Executive
+  Decree 25-170). The seed uses the ministry's wording "Commercial Registry Directorate", not the
+  SPEC's, and names the Jordan Food and Drug Administration for home food professions, where the SPEC
+  names the Ministry of Health and Civil Defense (Civil Defense was not found and is not stored).
+- **Reason:** D-243 and the audit of 2026-10-12. The SPEC section 7 items were checked against the
+  pages; where the pages differ, the pages win (rule 9).
+- **Status:** Active
+
+### D-265 (2026-10-12): The registration guide and label rules as built
+
+- **Decision:** `packages/report/src/legal-path` (`@sbn/report/legal-path`) holds pure rules and no
+  text for the founder. `packLabel(item, today)` returns the code `verify_official_source` when the
+  status is not `verified`, the date is missing or malformed, or the date is more than
+  `PACK_STALE_AFTER_DAYS` (90) days before `today`; exactly 90 days is fresh; a date in the future is
+  not stale (the seed test refuses one). `registrationGuide({ country, answers, items, today })`
+  returns `{ hasPack, country, steps, missing }`; a step has a key, a role, the pack item it rests on
+  and its label code, and a key the pack lacks is listed in `missing` and its step left out. A country
+  with no item gives no steps and `hasPack: false`. Jordan: sole registration; the company step as a
+  comparison when A4 names a partner (a role or detail holding شريك, شركاء, partner or co-founder);
+  chamber membership; food approval for D2 `I` or `C`, cosmetics approval for D2 `C`, never from B7
+  (D-233); vocational licence; the Amman home-business step when E6 is `home` and the A1 city holds
+  the word Amman or عمان; tax and social security. Algeria: the auto-entrepreneur path, the step to
+  confirm the activity on the official ANAE list (a link, never a decision about eligibility), the
+  ceiling and three-years condition from `tax.ifu.auto_entrepreneur.rate_ceiling`, the micro-import
+  notes when D6 is yes, the commercial register as the alternative, social security and tax. The
+  turnover is not compared with the ceiling in code: the figures are text and the report shows both.
+  `officialLinks(country, items, today)` returns the link of `official.tax_authority` with its label
+  code, or null (the report then shows the adviser line without a link). The D2 sections are ISIC
+  (D-106): they cannot tell a food maker from a food shop and have no cosmetics section, so the
+  reading is narrow; G (trade) and A (agriculture) add no approval. The owner may change it
+  (OPEN-QUESTIONS #94). G6 (legal age, D-059) is not read here: the later path belongs to the
+  report's wording (step 5).
+- **Reason:** D-233, SPEC section 7, rules 8 and 9. Codes, not text, keep the wording in step 5 and
+  in the two languages' message files.
+- **Status:** Active
+
+### D-266 (2026-10-12): No tax rule is written for Jordan or Algeria
+
+- **Decision:** The seed writes no `tax_rules` row (D-233: a rule is stored only when read on an
+  official page and fit for the engine). Algeria: every IFU figure was confirmed (0.5 percent,
+  5,000,000 DA, three years above the ceiling, 10,000 DA minimum for auto-entrepreneurs and 30,000 DA
+  otherwise, payment by 30 June in full or 50, 25 and 25 percent), and they are stored as pack
+  items. A rule would misstate the cash flow: the engine pays the tax of a year in the next year
+  (D-212, `TaxRule.paymentMonth`), while the IFU is paid on the forecast turnover by 30 June of the
+  same year. The report therefore shows "tax not calculated" (D-211), the official link and the
+  adviser line. Jordan: the income tax rates and exemptions were not read on an official page, and
+  `TaxRule` cannot express personal exemptions. The pgTAP test of the seed checks every `tax_rules`
+  row that is added later. Open question #97 asks the owner whether the engine should support the
+  advance payment of the IFU.
+- **Reason:** CLAUDE.md rules 1, 8 and 9: a wrong cash flow is worse than an honest "not calculated".
 - **Status:** Active
