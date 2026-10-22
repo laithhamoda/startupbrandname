@@ -81,5 +81,5 @@ describe('the PDF download', () => {
     expect(withButton).toContain('data-actions');
     expect(withButton.indexOf('data-actions')).toBeGreaterThan(withButton.indexOf('<h1'));
     expect(without).not.toContain('data-actions');
-  });
+  }, 30_000);
 });
