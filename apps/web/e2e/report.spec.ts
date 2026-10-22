@@ -43,8 +43,9 @@ test.describe('the verdict reveal', () => {
       transform: getComputedStyle(element.querySelector('.verdict-word') ?? element).transform,
       height: element.getBoundingClientRect().height,
     }));
-    expect(after.clip).toMatch(/^inset\(0(px)?( 0(px)?){0,3}\)$/);
-    expect(after.transform).toBe('none');
+    expect(after.clip).toMatch(/^inset\(0(px|%)?( 0(px|%)?){0,3}\)$/);
+    // While an animation holds its end state the computed transform is the identity matrix.
+    expect(after.transform).toMatch(/^(none|matrix\(1, 0, 0, 1, 0, 0\))$/);
     expect(after.height).toBe(heightAtStart);
   });
 });

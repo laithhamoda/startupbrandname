@@ -122,7 +122,7 @@ export function ReportTable({
         // Keyboard users must be able to scroll the region (WCAG 2.1.1, axe scrollable-region-focusable).
         // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
         tabIndex={0}
-        className="overflow-x-auto border-y border-hairline"
+        className="relative overflow-x-auto border-y border-hairline"
       >
         <table className="w-full border-collapse text-small">
           <caption id={`${id}-caption`} className="px-3 py-2 text-start font-display font-bold">
