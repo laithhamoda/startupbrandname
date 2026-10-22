@@ -2,10 +2,11 @@ import { describe, expect, it } from 'vitest';
 import { messagesFor } from '../messages';
 import { buildReportModel } from '../model/build';
 import { inlineText } from '../model/inline';
-import type { Block, ReportModel } from '../model/types';
+import type { Block, Cell, Column, ReportModel, Row, TableBlock } from '../model/types';
 import { HOSTILE_TEXT } from '../fixtures/spike';
 import { LOCALES, NAMES, modelOf, sectionOf } from '../testing/model-helpers';
 import { goldenReportInput } from '../testing/report-inputs';
+import { tableHtml } from './blocks';
 import { PRINT_CSP_META } from './csp';
 import { buildReportDocument, reportBodyHtml, reportTitle } from './report';
 
@@ -523,5 +524,61 @@ describe('the edges of the template', () => {
 
   it('reads the plain text of an inline back for the legends it matches on', () => {
     expect(inlineText(['a', { n: '1' }, { l: 'x' }])).toBe('a1x');
+  });
+});
+
+/** The first dense table of a document, from its opening tag to its closing one. */
+function denseTable(html: string): string {
+  const start = html.indexOf('<table class="tbl dense');
+  const end = html.indexOf('</table>', start);
+  return start < 0 || end < 0 ? '' : html.slice(start, end);
+}
+
+describe('the dense projection table', () => {
+  for (const [locale, label] of [
+    ['ar', 'د.أ'],
+    ['en', 'JOD'],
+  ] as const) {
+    it(`names the currency once, in the caption, and leaves numbers alone in the cells (${locale})`, async () => {
+      const html = await buildReportDocument(modelOf('jo-service-subscription', locale), options);
+      const table = denseTable(html);
+      expect(table).not.toBe('');
+      expect(table.split(`(${label})`).length - 1).toBe(1);
+      expect(table.split(label).length - 1).toBe(1);
+    });
+  }
+
+  const amount = (value: string, closing: string): Cell => ({
+    text: [{ n: value }, closing],
+    provenance: null,
+    lowConfidence: false,
+    mark: null,
+  });
+  const column: Column = { header: ['x'], align: 'end', numeric: true, mark: null };
+  const wide = (cells: readonly Cell[]): TableBlock => {
+    const row: Row = { head: ['row'], note: null, cells };
+    return {
+      type: 'table',
+      caption: ['caption'],
+      headHeader: null,
+      columns: cells.map(() => column),
+      rows: [row],
+      total: null,
+      numeric: true,
+    };
+  };
+
+  it('keeps every label when the amounts are in different currencies', () => {
+    const cells = [1, 2, 3, 4, 5, 6].map((n) => amount(String(n), ' د.أ'));
+    const html = tableHtml(wide([...cells, amount('7', ' $')]));
+    expect(html.split('د.أ').length - 1).toBe(6);
+    expect(html).toContain('$');
+    expect(html).not.toContain('(د.أ)');
+  });
+
+  it('leaves a table with fewer columns than a dense one as it is', () => {
+    const html = tableHtml(wide([amount('1', ' د.أ'), amount('2', ' د.أ')]));
+    expect(html.split('د.أ').length - 1).toBe(2);
+    expect(html).not.toContain('(د.أ)');
   });
 });

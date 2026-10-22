@@ -105,8 +105,76 @@ const DENSE_COLUMNS = 7;
 /** A table of up to this many rows stays whole on a page; a longer one (an appendix) may break between rows. */
 const KEEP_ROWS = 12;
 
-export function tableHtml(block: TableBlock): string {
-  const dense = block.columns.length >= DENSE_COLUMNS;
+/** The label that closes an amount, and how many parts of the cell's text it takes. */
+interface Closing {
+  readonly text: string;
+  readonly parts: number;
+}
+
+/**
+ * The currency label that closes an amount, as the model writes it: Arabic labels are plain text
+ * after a space (one part); Latin labels are a space and an isolated fragment (two parts).
+ */
+function closingLabel(cell: Cell): Closing | null {
+  const parts = cell.text;
+  if (!parts.some((part) => typeof part !== 'string' && 'n' in part)) return null;
+  const last = parts[parts.length - 1];
+  if (typeof last === 'string' && last.startsWith(' ') && last.trim() !== '') {
+    return { text: last, parts: 1 };
+  }
+  if (
+    last !== undefined &&
+    typeof last !== 'string' &&
+    'l' in last &&
+    parts[parts.length - 2] === ' '
+  ) {
+    return { text: ` ${last.l}`, parts: 2 };
+  }
+  return null;
+}
+
+/**
+ * The label every amount of a dense table ends with, when there is exactly one. A narrow cell cannot
+ * hold the number and its label on one line, so a dense table names the currency once in its caption,
+ * as the approved mock does, and its cells hold the numbers alone. Amounts in another currency, or a
+ * table with no amounts, leave the table as it is.
+ */
+function sharedAmountLabel(block: TableBlock): string | null {
+  const labels = new Set<string>();
+  for (const row of [...block.rows, ...(block.total === null ? [] : [block.total])]) {
+    row.cells.forEach((cell, index) => {
+      const closing = block.columns[index]?.numeric === true ? closingLabel(cell) : null;
+      if (closing !== null) labels.add(closing.text);
+    });
+  }
+  const only = labels.size === 1 ? [...labels][0] : undefined;
+  return only ?? null;
+}
+
+function withoutLabel(row: Row, label: string): Row {
+  return {
+    ...row,
+    cells: row.cells.map((cell) => {
+      const closing = closingLabel(cell);
+      return closing !== null && closing.text === label
+        ? { ...cell, text: cell.text.slice(0, cell.text.length - closing.parts) }
+        : cell;
+    }),
+  };
+}
+
+export function tableHtml(source: TableBlock): string {
+  const dense = source.columns.length >= DENSE_COLUMNS;
+  const label = dense ? sharedAmountLabel(source) : null;
+  const block: TableBlock =
+    label === null
+      ? source
+      : {
+          ...source,
+          caption: [...source.caption, ` (${label.trim()})`],
+          rows: source.rows.map((row) => withoutLabel(row, label)),
+          total: source.total === null ? null : withoutLabel(source.total, label),
+        };
   const withHead = block.headHeader !== null || block.rows.some((row) => row.head !== null);
   const headCells = block.columns
     .map(
