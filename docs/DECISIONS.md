@@ -2241,6 +2241,10 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   on (the questions for a completeness lock; the pricing page for a plan lock, with the words that
   paid plans open later). Prose is at most 70 characters wide. All the page's own words are in the
   `report` namespace of both message files; the report's words come from the model.
+- **Gold on marks:** the low-confidence marker and the break-even and lowest-cash edges of a table
+  are drawn in the dark gold; they mark the pivotal figures of the report (a key-number use), and
+  the meaning is also carried by shape and words, never by colour alone. The owner may ask for ink
+  instead (OPEN-QUESTIONS #99).
 - **Reason:** D-267, D-270, D-232; CLAUDE.md rule 11 and section 6.
 - **Status:** Active
 
@@ -2308,5 +2312,11 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   of locked sections still never run; the goldens were regenerated and the diff holds only the new
   section. The report page loads the changes for a stop in the summary too. The summary view needs
   no new component: the verdict slab draws the block without a meter.
+- **Note on the changes block:** the owner asked for the same changes block as the executive
+  summary, so the three changes of a stop in the free summary carry their now, suggested and
+  delta values and the outcome counts; the verdict itself carries no number. If the owner reads
+  "no numbers" as covering the changes too, a reduced block (lever and direction only) is a
+  small change. When the search for changes failed, a stop shows the sentence that they are
+  unavailable instead (the engine caps changes and rethink items at three together).
 - **Reason:** The owner's decision of 2026-10-13; D-232; CLAUDE.md section 3.
 - **Status:** Active

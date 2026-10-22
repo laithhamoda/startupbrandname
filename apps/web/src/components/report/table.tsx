@@ -20,13 +20,24 @@ function alignClass(column: Column): string {
   return column.align === 'end' ? 'text-end' : 'text-start';
 }
 
-function BodyCell({ cell, column, labels }: { cell: Cell; column: Column; labels: ReportLabels }) {
+function BodyCell({
+  cell,
+  column,
+  labels,
+  total = false,
+}: {
+  cell: Cell;
+  column: Column;
+  labels: ReportLabels;
+  total?: boolean;
+}) {
   return (
     <td
       // A numeric column reads left to right so that its digits, and its decimals, line up.
       dir={column.numeric ? 'ltr' : undefined}
       className={cn(
-        'border-b border-hairline px-3 py-2 align-baseline',
+        total ? 'border-t-2 border-ink' : 'border-b border-hairline',
+        'px-3 py-2 align-baseline',
         alignClass(column),
         cell.lowConfidence && LOW_CONFIDENCE,
         cell.mark !== null && CELL_MARK_STYLE[cell.mark],
@@ -77,7 +88,7 @@ function BodyRow({
       {row.cells.map((cell, index) => {
         const column = columns[index];
         if (!column) return null;
-        return <BodyCell key={index} cell={cell} column={column} labels={labels} />;
+        return <BodyCell key={index} cell={cell} column={column} labels={labels} total={total} />;
       })}
     </tr>
   );

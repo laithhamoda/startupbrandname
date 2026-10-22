@@ -51,9 +51,9 @@ export function ReportNotice({
       aria-labelledby="report-notice"
       className="mx-auto grid max-w-[68ch] gap-2 border-s-[3px] border-ink bg-sunken px-4 py-3 text-small"
     >
-      <h2 id="report-notice" className="font-bold">
+      <p id="report-notice" className="font-bold">
         {labels.notice.title}
-      </h2>
+      </p>
       <p>{labels.notice.lead}</p>
       <ul className="grid gap-1.5">
         {reasons.map((reason) => (

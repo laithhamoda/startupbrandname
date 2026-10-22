@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { ar, messagesFor } from '../messages';
 import { LOCALES, NAMES, modelOf, sectionOf } from '../testing/model-helpers';
-import { drop } from '../testing/report-inputs';
+import { drop, goldenReportInput } from '../testing/report-inputs';
+import { buildReportModel } from './build';
 import { modelText, stringsOf } from '../testing/model-text';
 import { inlineText } from './inline';
 import { FULL_SECTION_IDS, type Section } from './types';
@@ -111,6 +112,20 @@ describe('the one-page summary (SPEC section 6)', () => {
     expect(model.sections.filter((section) => !section.locked)).toHaveLength(3);
     // No calculable run, no verdict: the section is absent, not locked (D-278).
     expect(model.sections.some((section) => section.id === 'verdict')).toBe(false);
+  });
+});
+
+describe('a stop whose changes could not be searched (D-278)', () => {
+  it('says so in words and shows no invented change', () => {
+    const input = goldenReportInput('jo-home-ecommerce', {
+      locale: 'en',
+      kind: 'summary',
+      lockReason: 'plan',
+    });
+    const model = buildReportModel({ ...input, changes: null });
+    const blocks = model.sections[0]?.blocks ?? [];
+    expect(blocks.some((entry) => entry.type === 'table')).toBe(false);
+    expect(blocks.some((entry) => entry.type === 'paragraph')).toBe(true);
   });
 });
 
