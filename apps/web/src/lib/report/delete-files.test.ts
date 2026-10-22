@@ -56,6 +56,19 @@ beforeEach(() => {
 });
 
 describe('removeReportFiles', () => {
+  it('removes only the folder of one project when a project is given', async () => {
+    const { client, list, remove } = bucket({
+      [`${USER}/${P1}`]: [file('a.pdf')],
+      [`${USER}/${P2}`]: [file('c.pdf')],
+    });
+
+    expect(await removeReportFiles(client, USER, P1)).toBe(true);
+
+    expect(list).toHaveBeenCalledTimes(1);
+    expect(list).toHaveBeenCalledWith(`${USER}/${P1}`, { limit: 100, offset: 0 });
+    expect(remove).toHaveBeenCalledWith([`${USER}/${P1}/a.pdf`]);
+  });
+
   it('removes every file of every project folder of the user, and only theirs', async () => {
     const { client, list, remove } = bucket({
       [USER]: [folder(P1), folder(P2)],

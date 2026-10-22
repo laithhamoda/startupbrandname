@@ -7,10 +7,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { reviewWithAi } from '@/lib/ai/service';
 import { requireAccount } from '@/lib/auth/session';
 import { log } from '@/lib/log';
+import { removeReportFiles } from '@/lib/report/delete-files';
 import { createProject, deleteProject, saveAnswer, type SaveInput, switchMode } from './actions';
 import { loadProject } from './project';
 
 vi.mock('@/lib/auth/session', () => ({ requireAccount: vi.fn() }));
+vi.mock('@/lib/report/delete-files', () => ({ removeReportFiles: vi.fn() }));
 vi.mock('@/lib/ai/service', () => ({ reviewWithAi: vi.fn() }));
 vi.mock('./project', async (importOriginal) => ({
   ...(await importOriginal<typeof import('./project')>()),
@@ -90,6 +92,7 @@ const stepUrl = (step: string) => `/ar/projects/${projectId}/q/${step}`;
 
 beforeEach(() => {
   vi.mocked(reviewWithAi).mockResolvedValue(null);
+  vi.mocked(removeReportFiles).mockResolvedValue(true);
 });
 
 afterEach(() => {
@@ -628,6 +631,15 @@ describe('project settings', () => {
     projectsClient();
 
     expect(await redirectTarget(deleteProject('en', projectId))).toBe('/en/projects');
+    expect(removeReportFiles).toHaveBeenCalledWith(expect.anything(), 'user-1', projectId);
+  });
+
+  it('keeps the project when its stored PDFs cannot be removed', async () => {
+    const { eq } = projectsClient();
+    vi.mocked(removeReportFiles).mockResolvedValue(false);
+
+    expect(await deleteProject('ar', projectId)).toEqual({ status: 'error' });
+    expect(eq).not.toHaveBeenCalled();
   });
 
   it('keeps the dialog when the project cannot be deleted', async () => {

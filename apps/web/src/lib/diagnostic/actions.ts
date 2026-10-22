@@ -37,6 +37,7 @@ import { reviewWithAi } from '@/lib/ai/service';
 import { requireAccount } from '@/lib/auth/session';
 import { isCountryCode } from '@/lib/countries';
 import { errorFields, log } from '@/lib/log';
+import { removeReportFiles } from '@/lib/report/delete-files';
 import { type FindingView, viewFinding } from './findings';
 import { loadProject, provenanceOf } from './project';
 import { canvasPath, CANVAS_ORIGIN, projectPath, stepFromSlug, stepPath, stepSlug } from './steps';
@@ -485,7 +486,12 @@ export async function deleteProject(
   const locale = localeSchema.parse(localeInput);
   const id = z.uuid().parse(projectId);
   try {
-    const { supabase } = await requireAccount(locale);
+    const { supabase, user } = await requireAccount(locale);
+    // Deleting the row does not delete the stored report PDFs (D-234): remove them first and keep
+    // the project if that fails, so nothing is left behind with no way to reach it.
+    if (!(await removeReportFiles(supabase, user.id, id))) {
+      return await settingsFailed('diagnostic.delete_failed', new Error('reports_files'), id);
+    }
     const { error } = await supabase.from('projects').delete().eq('id', id);
     if (error) return await settingsFailed('diagnostic.delete_failed', error, id);
   } catch (error) {

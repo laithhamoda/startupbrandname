@@ -36,7 +36,7 @@ async function listFolder(
 
 /**
  * Removes every stored report PDF of the signed-in user from the private bucket, before the
- * account is deleted (M5 step 6, D-283). Deleting the rows does not delete the files (D-234), so
+ * account (or one project, when projectId is given) is deleted (M5 step 6, D-283). Deleting the rows does not delete the files (D-234), so
  * the files go first, through the Storage API with the user's own session: an empty folder is
  * fine, and any call that fails, or removes fewer files than were asked for (the Storage API
  * answers a refused file with no error), makes this return false so the account is kept and the
@@ -45,8 +45,13 @@ async function listFolder(
 export async function removeReportFiles(
   supabase: SupabaseServerClient,
   userId: string,
+  projectId?: string,
 ): Promise<boolean> {
-  const projects = await listFolder(supabase, userId);
+  // One project: only its folder. The whole account: every folder of the user.
+  const projects =
+    projectId === undefined
+      ? await listFolder(supabase, userId)
+      : [{ name: projectId, id: null } as Listed];
   if (projects === null) return false;
 
   const paths: string[] = [];
