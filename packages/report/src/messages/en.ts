@@ -693,4 +693,15 @@ export const en: ReportMessages = {
     notAProbability:
       'The feasibility score and the share of criteria met are not a probability of success.',
   },
+  print: {
+    fill: {
+      success: 'Success line (set before you start)',
+      result: 'Result',
+      decision: 'Decision',
+      go: 'Go ahead',
+      revise: 'Revise',
+      stop: 'Stop',
+    },
+    locked: 'Locked in this summary.',
+  },
 };

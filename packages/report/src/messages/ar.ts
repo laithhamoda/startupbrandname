@@ -657,4 +657,15 @@ export const ar: ReportMessages = {
     ],
     notAProbability: 'درجة الجدوى ونسبة المعايير المتحققة ليست احتمال نجاح.',
   },
+  print: {
+    fill: {
+      success: 'حدّ النجاح (تضعه قبل أن تبدأ)',
+      result: 'النتيجة',
+      decision: 'القرار',
+      go: 'أمضي',
+      revise: 'أعدّل',
+      stop: 'أتوقّف',
+    },
+    locked: 'قسم مقفل في هذا الملخص.',
+  },
 };
