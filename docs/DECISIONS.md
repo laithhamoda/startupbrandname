@@ -37,19 +37,19 @@ A decision may sit under several topics. A new decision joins its topics in the 
 - **Auth and accounts:** D-018, D-034, D-059, D-061, D-065, D-074, D-077, D-078, D-079, D-084,
   D-085, D-086, D-087, D-089, D-129, D-131, D-163, D-168, D-174.
 - **Markets, countries and languages:** D-026, D-063, D-066, D-067, D-068, D-069, D-070, D-075,
-  D-080, D-081, D-088, D-129, D-180, D-186, D-233, D-236, D-263 to D-266, D-269, D-270, D-273.
+  D-080, D-081, D-088, D-129, D-180, D-186, D-233, D-236, D-263 to D-266, D-269, D-270, D-273, D-279.
 - **Diagnostic and question bank:** D-072, D-102, D-104, D-105, D-106, D-108, D-110 to D-119, D-129,
   D-149, D-156 to D-161, D-163, D-165, D-167, D-182, D-183, D-197 to D-199, D-231, D-232, D-249, D-252.
 - **Calculation engine:** D-178 to D-190, D-193 to D-196, D-200 to D-224, D-227 to D-230,
   D-238, D-244, D-246 to D-248, D-251, D-260 to D-262.
-- **Report, canvases and PDF (M5):** D-225 to D-253, D-260 to D-278.
+- **Report, canvases and PDF (M5):** D-225 to D-253, D-260 to D-285.
 - **AI and cost:** D-062, D-071, D-072, D-073, D-082, D-103, D-107, D-119 to D-124, D-143, D-146 to
   D-152, D-155, D-183, D-191, D-226.
 - **Privacy, consent and security:** D-013, D-016, D-040, D-041, D-061, D-062, D-074, D-077,
   D-082, D-085, D-092, D-098, D-103, D-107, D-126, D-130, D-137, D-138, D-142, D-144 to D-149,
-  D-153, D-154, D-175, D-232, D-234, D-235, D-244, D-245.
+  D-153, D-154, D-175, D-232, D-234, D-235, D-244, D-245, D-280, D-281, D-283.
 - **Legal:** D-059, D-066, D-068, D-082, D-086, D-137, D-145, D-147, D-154, D-186, D-233, D-263,
-  D-266, D-270, D-271.
+  D-266, D-270, D-271, D-279.
 - **Design and accessibility:** D-007, D-008, D-049 to D-053, D-055 to D-058, D-099, D-118, D-128,
   D-131, D-158, D-159, D-161, D-162, D-170, D-231, D-249, D-250.
 - **Public site and SEO:** D-027, D-054, D-076, D-090 to D-098, D-100, D-101, D-153.
@@ -2319,4 +2319,124 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   small change. When the search for changes failed, a stop shows the sentence that they are
   unavailable instead (the engine caps changes and rethink items at three together).
 - **Reason:** The owner's decision of 2026-10-13; D-232; CLAUDE.md section 3.
+- **Status:** Active
+
+### D-279 (2026-10-22): The print template and what each block becomes on paper
+
+- **Decision:** `buildReportDocument(model, { fontCss? })` in `packages/report/src/print/report.ts` turns
+  a `ReportModel` into the whole print document through `buildPrintDocument`, from escaped text only
+  (D-235): an `Inline` string is escaped, `{n}` becomes a `bdi`, `{l}` a `bdi dir="ltr"`; no model text
+  is put in CSS, in an attribute that can run or in a header. `blocks.ts` draws every block type. The
+  print rules of the approved mock (`docs/design/report-print-mock.html`) are merged into
+  `buildPrintCss` with logical properties only and the `PRINT_TOKENS`: A4 portrait, the cover alone on
+  its page, the executive summary on a new page, the section with the projection tables on the named
+  landscape page (`WIDE_PAGE_NAME`), the other sections flowing on portrait pages, rows, key numbers
+  and blocks that should not split kept whole, table headers repeating, widows and orphans. The verdict
+  is a black slab with the gold word and white text; key numbers are in gold ink; the dense table marks
+  the break-even month (column) and the lowest cash (cell) with a legend; a figure of low confidence
+  carries an asterisk with the legend of the model's callout (print has no hover: provenance is the
+  asterisk and the assumptions appendix); the tax line, the label «تحقّق من المصدر الرسمي» as the
+  model gives it, and the canvas as a grid in the standard geometry on a board with `dir="ltr"`. Under
+  each experiment of the validation plan a fill-in strip (success line, result, decision) is drawn on
+  paper; its three labels are new digit-free catalog entries in both languages, read from
+  `messagesFor(locale)`. Arabic and English share the one template (direction from the locale). The
+  PDF title is the project's title and nothing else: no name, no email, no author.
+- **Reason:** D-235, D-239 to D-241, D-267 to D-272, the mock approved by the owner for print.
+- **Status:** Active
+
+### D-280 (2026-10-22): The PDF route, its access rules, the cache key and the daily limit
+
+- **Decision:** `POST /api/projects/[id]/report/pdf` (Node runtime, `maxDuration` 60, the Frankfurt
+  region of `vercel.json`, the platform's default memory, as D-242 chose for the spike). The id is
+  checked with zod; any other method is 405; a post whose Origin is not the site's own is refused
+  (`not_allowed`). The session is the user's own (the route handler client; there is no service role
+  here); the project is found through RLS and an absent or foreign project is a plain 404. The report
+  is the one the page shows: the route calls the same `loadReportPage` (analysis, gate, access,
+  changes, pack items), so a plan-locked account gets the locked summary PDF with titles only, never
+  more than the page; status `none` (below the gate) is `not_allowed`. The cache key is the sha256 of
+  the canonical JSON of the model and `PRINT_TEMPLATE_VERSION` (`print/cache-key.ts`), stored in
+  `reports.input_hash` beside kind, language, audience and engine version. A row with that key whose
+  file is still in the bucket is served again with a fresh signed URL, without rendering and without
+  counting against the limit (CLAUDE.md rule 4). Otherwise the limit is checked before the browser
+  starts, and `record_report` is the authoritative count (`report.pdf_per_day` of `settings`, counted in
+  `usage_counters`); its refusal is the code `limit` (429). Errors are JSON `{ error: code }` with the
+  codes `limit`, `not_allowed`, `render_failed`, `storage_failed` and `not_found`, logged through
+  `lib/log.ts` with ids and stages only, never model text.
+- **The button:** a plain `<form method="post">` on the report page, no client JavaScript, shown
+  whenever the page draws a report (summary or full). A form (a request that accepts `text/html`)
+  gets a 303 back to the report page with `?pdf=<code>`, where a small server-rendered sentence in the
+  messages explains the refusal; a script gets the JSON. This is the simplest way that works without
+  JavaScript. Only the known codes are drawn; nothing else in the query is.
+- **Reason:** D-234, D-244, D-242; the PDF always equals the page.
+- **Status:** Active
+
+### D-281 (2026-10-22): Storage, the signed URL, the file name and the order of record and upload
+
+- **Decision:** The file is `{user_id}/{project_id}/{report_id}.pdf` in the private `reports` bucket,
+  uploaded with the user's own session (content type `application/pdf`, no upsert). The answer is a
+  303 to a signed URL valid for 120 seconds with `Content-Disposition: attachment` and an ASCII file
+  name made of the locale and the date only (never user text); the redirect is `no-store`. The order is
+  render, `record_report`, upload, sign: the storage policy lets an owner add only the file of a
+  recorded report (step 1), so the row must exist first. A failed upload therefore leaves a row that
+  names no file: the route removes what it can and answers `storage_failed`; the row is never served
+  because the cache lookup requires the file to exist, the next try renders again under a new id, and
+  the failed try has counted against the daily limit (a user cannot delete the row). A half-written
+  file is never served because the address is signed only after the upload returned. No migration was
+  needed. If the owner wants a failed try not to count, a small `record_report` change (or a delete
+  policy for rows without a file) is the way; it is for a later step.
+- **Reason:** D-234, D-244; the lead may revisit the counting of failed uploads.
+- **Status:** Active
+
+### D-282 (2026-10-22): The hardening as built and the local measurements
+
+- **Decision:** The report renders as in D-235: JavaScript off, every network request aborted and
+  counted (the tests require zero), the CSP of step 0 in a meta, fonts embedded as `data:` URLs, a
+  render timeout, the tagged PDF, a size ceiling (`MAX_PDF_BYTES`) checked before the file is recorded.
+  `pnpm --filter @sbn/report run pdf:measure` renders the three golden reports in both languages on
+  the pinned Chromium (WSL, one shared browser) and prints pages, size, the first and a warm render
+  and the browser's peak resident memory. Numbers of 2026-10-22: jo-service-subscription ar 16 pages,
+  447 KB, 13.5 s first (the browser's launch included), 2.6 s warm; en 14 pages, 429 KB, 0.7 s warm;
+  jo-home-ecommerce ar 15 pages, 441 KB, 0.8 s warm; en 15 pages, 425 KB, 1.1 s warm;
+  dz-auto-entrepreneur ar 15 pages, 408 KB, 0.8 s warm; en 13 pages, 391 KB, 0.6 s warm. Peak
+  resident memory of the browser process is about 445 MB in every run. The rows after the first are
+  not cold launches, because the browser is shared. A real measurement on a Vercel preview is the
+  lead's, through the spike route (D-285).
+- **Reason:** D-239 to D-242: measure before building around the limits.
+- **Status:** Active
+
+### D-283 (2026-10-22): Deleting the stored files with the account
+
+- **Decision:** `deleteSignedInAccount` first calls `removeReportFiles` (`lib/report/delete-files.ts`):
+  it lists the user's folder `{user_id}/` in the `reports` bucket (a folder per project, then the
+  files, a page at a time) and removes every file through the Storage API with the user's own session,
+  because deleting rows does not delete files (D-234). An empty or absent folder is fine. If listing or
+  removal fails, the failure is logged (`account.delete_failed`, stage `reports_files`) and the account
+  is kept, so nothing is left behind unseen; the user can try again. Note for the M9 retention job
+  (runbook `operations.md`): it has no user session, so it must do the same with the service role,
+  and it must remove the files before the rows.
+- **Reason:** D-234; the privacy register's promise that a deleted account leaves no PDF.
+- **Status:** Active
+
+### D-284 (2026-10-22): The page number and the running title
+
+- **Decision:** The page number is drawn by the document with an `@page` margin box (Western digits,
+  `counter(page)`), not by the browser's footer: the pinned Chromium renders it, and the text
+  extraction test proves a number on every page after the cover. `renderPdf` takes
+  `pageNumbers: 'css'`, which sends an empty footer template so Chromium draws no date, title or
+  address and a page never carries two numbers. The running title is the project's title in an
+  escaped HTML header template (never CSS `content`). No author, name or email is in the PDF.
+- **Reason:** D-235, the brief: try margin boxes first and prove them.
+- **Status:** Active
+
+### D-285 (2026-10-22): The spike route stays until the lead has measured
+
+- **Decision:** `/api/internal/pdf-spike` stays and is extended: behind the same gating (preview deployments and local development only) and the
+  same 404 outside preview, `?report=golden` (with `locale`) renders the full golden report of the
+  Jordanian service project through the new template, so a real report of about 15 pages can be timed
+  on a Vercel preview. Removal steps, once measured: delete `apps/web/src/app/api/internal/pdf-spike/`
+  (route and test), remove its entry from `outputFileTracingIncludes` in `apps/web/next.config.ts`,
+  (it reads no variable of its own, only Vercel's `VERCEL_ENV`), remove the
+  `@sbn/report/testing/inputs` import it uses if nothing else needs it, and delete the spike notes in
+  `docs/M5-PLAN.md` and `docs/architecture.md`.
+- **Reason:** D-242; the lead measures a real report before the route goes.
 - **Status:** Active

@@ -307,3 +307,7 @@ Add a row here with every new key.
 
 The contract migration (D-191) dropped the old `reserve_ai_call()`, which also read the two
 `ai.limit` keys of D-120; every key above is read by a function that remains.
+
+## Stored report PDFs (M5 step 6)
+
+The PDFs a founder asks for are kept in the private `reports` bucket, at `{user_id}/{project_id}/{report_id}.pdf`, with one `reports` row each (D-234, D-281). Deleting rows does not delete files, so every path that deletes an account or a project must remove the files first through the Storage API (D-283). Account deletion in the app does this with the user's own session. The M9 retention job (read-only period of 90 days after a subscription ends, 30 days for the free tier) has no user session: it must list the user's folder and remove every file with the service role before it deletes the rows, tolerate an empty folder, and fail loudly, keeping the rows, when a removal fails. The daily limit is the `report.pdf_per_day` setting.
