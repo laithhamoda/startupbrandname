@@ -26,6 +26,11 @@ vi.mock('next/headers', () => ({
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }));
 vi.mock('@/lib/supabase/server', () => ({ createSupabaseServerClient: vi.fn() }));
 vi.mock('./google', () => ({ googleSignInAvailable: () => Promise.resolve(true) }));
+// The files of the stored reports go before the account does (D-283); their own test is in
+// lib/report/delete-files.test.ts, and the order is checked in session.test.ts.
+vi.mock('@/lib/report/delete-files', () => ({
+  removeReportFiles: vi.fn(() => Promise.resolve(true)),
+}));
 vi.mock('@/lib/log', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/lib/log')>()),
   log: { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() },

@@ -10,6 +10,7 @@ import type { Locale } from '@/i18n/routing';
 import type { CountryCode } from '@/lib/countries';
 import { errorFields, log } from '@/lib/log';
 import { closedCountries } from '@/lib/markets';
+import { removeReportFiles } from '@/lib/report/delete-files';
 import { createSupabaseServerClient, type SupabaseServerClient } from '@/lib/supabase/server';
 import { loginPath, PATH_HEADER, projectsPath } from './next-path';
 import {
@@ -157,13 +158,20 @@ async function endDeletedSession(supabase: SupabaseServerClient): Promise<void> 
 }
 
 /**
- * Deletes the signed-in account and everything linked to it, then ends its session. Returns
- * false, after logging why, when the database refuses; nothing is deleted then.
+ * Deletes the signed-in account and everything linked to it, then ends its session. The stored
+ * report PDFs go first, with the user's own session: deleting the rows does not delete the files
+ * (D-234, D-283). Returns false, after logging why, when the files cannot be removed or the
+ * database refuses; the account is kept then.
  */
 export async function deleteSignedInAccount(
   supabase: SupabaseServerClient,
   reason: 'requested' | 'closed_market',
 ): Promise<boolean> {
+  const user = await getSessionUser(supabase);
+  if (user && !(await removeReportFiles(supabase, user.id))) {
+    await log.error('account.delete_failed', { stage: 'reports_files', reason });
+    return false;
+  }
   const { error } = await supabase.rpc('delete_my_account');
   if (error) {
     await log.error('account.delete_failed', { ...errorFields(error), reason });

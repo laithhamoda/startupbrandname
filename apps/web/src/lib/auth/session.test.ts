@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { log } from '@/lib/log';
 import { createSupabaseServerClient, type SupabaseServerClient } from '@/lib/supabase/server';
 import { PATH_HEADER } from './next-path';
-import { finishSignIn, getSessionUser, requireAccount } from './session';
+import { deleteSignedInAccount, finishSignIn, getSessionUser, requireAccount } from './session';
 import { SIGNUP_INTENT_COOKIE, serializeSignupIntent, type SignupIntent } from './signup-intent';
 
 const jar = vi.hoisted(() => new Map<string, string>());
@@ -18,6 +18,10 @@ vi.mock('next/headers', () => ({
   headers: () => Promise.resolve(requestHeaders),
 }));
 vi.mock('@/lib/supabase/server', () => ({ createSupabaseServerClient: vi.fn() }));
+const removeReportFiles = vi.hoisted(() =>
+  vi.fn<(client: unknown, userId: string) => Promise<boolean>>(() => Promise.resolve(true)),
+);
+vi.mock('@/lib/report/delete-files', () => ({ removeReportFiles }));
 vi.mock('@/lib/log', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/lib/log')>()),
   log: { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() },
@@ -34,7 +38,10 @@ function fakeClient(
   const signOut = vi.fn(() => Promise.resolve({ error: null }));
   const client = {
     rpc,
-    auth: { signOut },
+    auth: {
+      signOut,
+      getClaims: () => Promise.resolve({ data: { claims: { sub: 'user-1' } }, error: null }),
+    },
     from: () => ({
       select: () => ({ maybeSingle: () => Promise.resolve({ data: profile, error: null }) }),
     }),
@@ -205,5 +212,53 @@ describe('getSessionUser', () => {
     expect(user).toEqual({ id: 'b', email: null, names: [] });
     expect(await getSessionUser(withClaims({ sub: 'c' }))).toMatchObject({ names: [] });
     expect(await getSessionUser(withClaims(null))).toBeNull();
+  });
+});
+
+describe('deleteSignedInAccount', () => {
+  it('removes the stored report files of the user before the account', async () => {
+    const order: string[] = [];
+    removeReportFiles.mockImplementationOnce(() => {
+      order.push('files');
+      return Promise.resolve(true);
+    });
+    const { client, rpc, signOut } = fakeClient({});
+    rpc.mockImplementation((name: string) => {
+      order.push(name);
+      return Promise.resolve({ data: null, error: null });
+    });
+
+    expect(await deleteSignedInAccount(client, 'requested')).toBe(true);
+
+    expect(removeReportFiles).toHaveBeenCalledWith(client, 'user-1');
+    expect(order).toEqual(['files', 'delete_my_account']);
+    expect(signOut).toHaveBeenCalled();
+  });
+
+  it('keeps the account, and says why, when a file cannot be removed', async () => {
+    removeReportFiles.mockResolvedValueOnce(false);
+    const { client, rpc, signOut } = fakeClient({});
+
+    expect(await deleteSignedInAccount(client, 'requested')).toBe(false);
+
+    expect(rpc).not.toHaveBeenCalled();
+    expect(signOut).not.toHaveBeenCalled();
+    expect(log.error).toHaveBeenCalledWith('account.delete_failed', {
+      stage: 'reports_files',
+      reason: 'requested',
+    });
+  });
+
+  it('leaves the files alone when nobody is signed in, and lets the database refuse', async () => {
+    const rpc = vi.fn(() => Promise.resolve({ data: null, error: { code: '42501' } }));
+    const client = {
+      rpc,
+      auth: { getClaims: () => Promise.resolve({ data: null, error: null }) },
+    } as unknown as SupabaseServerClient;
+
+    expect(await deleteSignedInAccount(client, 'closed_market')).toBe(false);
+
+    expect(removeReportFiles).not.toHaveBeenCalled();
+    expect(rpc).toHaveBeenCalledWith('delete_my_account');
   });
 });
