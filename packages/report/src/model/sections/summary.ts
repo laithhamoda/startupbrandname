@@ -1,9 +1,35 @@
-import { PIVOTAL_IDS, type EngineRun } from '@sbn/engine';
+import { PIVOTAL_IDS, type EngineRun, type SuggestedChanges } from '@sbn/engine';
 import type { Ctx } from '../context';
 import { plain } from '../inline';
 import type { Block, Inline } from '../types';
 import { bulletList, note, paragraph } from './shared';
+import { changeBlocks } from './executive';
 import { questionTitle, topRisks } from './risks';
+
+/**
+ * The verdict section of the free summary (D-278): the word and one generic sentence, no score, no
+ * meter and no number. A stop also holds the fixed stop sentence and the three changes, so the
+ * locked phrasing of a stop is kept (CLAUDE.md section 3).
+ */
+export function buildSummaryVerdict(
+  ctx: Ctx,
+  run: EngineRun,
+  changes: SuggestedChanges | null,
+): Block[] {
+  const code = run.verdict.verdict.value;
+  const blocks: Block[] = [
+    {
+      type: 'verdict',
+      code,
+      word: ctx.m.verdictWords[code],
+      reason: plain(ctx.m.summaryVerdict[code]),
+      stopSentence: code === 'stop' ? ctx.m.stopSentence : null,
+      meter: null,
+    },
+  ];
+  if (code === 'stop') blocks.push(...changeBlocks(ctx, run, changes));
+  return blocks;
+}
 
 /** The risks section of the free summary (SPEC section 6): up to three template sentences. */
 export function buildTopRisks(ctx: Ctx): Block[] {

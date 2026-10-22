@@ -286,7 +286,10 @@
       "deleteBody": "The project and all its answers will be deleted at once and cannot be recovered.",
       "deleting": "Deleting…",
       "deleteConfirm": "Yes, delete the project",
-      "canvas": "Canvases"
+      "canvas": "Canvases",
+      "report": "Project report",
+      "reportSummary": "One-page summary",
+      "reportNone": "The report needs more answers"
     },
     "backToCanvas": "Back to the canvases"
   },
@@ -391,6 +394,78 @@
       "H2": "The number you watch",
       "H1": "What success means",
       "B8": "What stops copying"
+    }
+  },
+  "report": {
+    "pageTitle": "Project report",
+    "back": "Back to the project",
+    "kind": {
+      "full": "Full report",
+      "summary": "One-page summary"
+    },
+    "summaryLead": "This is the one-page summary. The other sections of the report show their titles only until they open.",
+    "contents": {
+      "title": "Contents",
+      "locked": "Locked"
+    },
+    "lock": {
+      "label": "Locked section",
+      "completeness": "This section opens once your core answers are complete: the price, the costs, the expected sales and the capital.",
+      "plan": "This section is part of the full report. Paid plans open later, and we will tell you when they are available.",
+      "continue": "Keep answering the questions",
+      "pricing": "See plans and prices"
+    },
+    "verdict": {
+      "label": "Verdict"
+    },
+    "marks": {
+      "separator": ", ",
+      "source": {
+        "user": "From your answers",
+        "assumption": "Assumption",
+        "external": "External source"
+      },
+      "confidence": {
+        "high": "High confidence",
+        "medium": "Medium confidence",
+        "low": "Low confidence"
+      },
+      "validated": {
+        "yes": "Confirmed",
+        "no": "Not confirmed"
+      },
+      "lowConfidence": "Low confidence in a pivotal figure",
+      "lowestCash": "Lowest cash balance",
+      "breakEven": "Break-even month"
+    },
+    "legend": {
+      "title": "What the table marks mean",
+      "lowConfidence": "A pivotal figure you are not confident about",
+      "lowestCash": "Lowest cash balance",
+      "breakEven": "Break-even month"
+    },
+    "table": {
+      "item": "Item",
+      "scrollHint": "The table scrolls sideways"
+    },
+    "canvas": {
+      "legend": "What the marks mean",
+      "totals": "Totals calculated from your answers"
+    },
+    "link": {
+      "external": "Opens in a new window"
+    },
+    "none": {
+      "title": "Your answers are not enough for a report yet",
+      "lead": "The summary starts when you have answered 40% of the questions, and the full report at 80% with the core questions on price, costs and sales answered. We do not show a report built on a guess.",
+      "progress": "How complete your answers are now",
+      "missingTitle": "The most important missing questions",
+      "missingLead": "Answering these raises your project's completeness more than the others."
+    },
+    "notice": {
+      "title": "The numbers are not calculated yet",
+      "lead": "The report's numbers appear once these questions are answered:",
+      "failed": "We could not calculate the numbers right now. Your answers are safe; try again in a moment."
     }
   },
   "account": {

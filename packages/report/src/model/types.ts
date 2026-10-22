@@ -190,8 +190,8 @@ export const FULL_SECTION_IDS = [
   'appendix_disclaimer',
 ] as const;
 
-/** The two sections only the one-page summary has. */
-export const SUMMARY_SECTION_IDS = ['top_risks', 'break_even'] as const;
+/** The three sections only the one-page summary has (D-278 added the verdict). */
+export const SUMMARY_SECTION_IDS = ['verdict', 'top_risks', 'break_even'] as const;
 
 export type FullSectionId = (typeof FULL_SECTION_IDS)[number];
 export type SummarySectionId = (typeof SUMMARY_SECTION_IDS)[number];

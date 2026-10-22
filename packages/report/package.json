@@ -8,7 +8,8 @@
     "./canvas": "./src/canvas/index.ts",
     "./legal-path": "./src/legal-path/index.ts",
     "./model": "./src/model/index.ts",
-    "./testing": "./src/testing/index.ts"
+    "./testing": "./src/testing/index.ts",
+    "./testing/inputs": "./src/testing/inputs.ts"
   },
   "scripts": {
     "lint": "eslint . --max-warnings=0",

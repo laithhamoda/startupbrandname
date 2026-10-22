@@ -12,7 +12,7 @@ import { buildPricing } from './sections/pricing';
 import { buildProjection } from './sections/projection';
 import { buildScenarios } from './sections/scenarios';
 import { callout, hasLowConfidence } from './sections/shared';
-import { buildBreakEven, buildTopRisks } from './sections/summary';
+import { buildBreakEven, buildSummaryVerdict, buildTopRisks } from './sections/summary';
 import { buildValidationPlan } from './sections/validation';
 import { plain } from './inline';
 import {
@@ -137,12 +137,16 @@ function fullSections(ctx: Ctx, run: EngineRun): Section[] {
 }
 
 /**
- * The one-page summary (SPEC section 6): the project card, the three risks and the break-even
- * estimate are real; every other section is a locked title with no blocks, and the builder of a
+ * The one-page summary (SPEC section 6): the verdict word (D-278, only with a calculable run), the
+ * project card, the three risks and the break-even estimate are real; every other section is a locked title with no blocks, and the builder of a
  * locked section never runs, so no locked value is computed into the model (D-232, D-268).
  */
 function summarySections(ctx: Ctx): Section[] {
+  const { run } = ctx.input;
   return [
+    ...(run === null
+      ? []
+      : [open(ctx, 'verdict', buildSummaryVerdict(ctx, run, ctx.input.changes))]),
     open(ctx, 'project_card', buildProjectCard(ctx)),
     open(ctx, 'top_risks', buildTopRisks(ctx)),
     open(ctx, 'break_even', buildBreakEven(ctx)),

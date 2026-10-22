@@ -30,6 +30,11 @@ export function canvasPath(projectId: string): string {
   return `${projectPath(projectId)}/canvas`;
 }
 
+/** The project's report (M5 step 5b, D-273). */
+export function reportPath(projectId: string): string {
+  return `${projectPath(projectId)}/report`;
+}
+
 /** The value of `from` that sends a step page's founder back to the canvas after saving. */
 export const CANVAS_ORIGIN = 'canvas';
 

@@ -17,13 +17,15 @@ import { CompletenessPanel } from '@/components/diagnostic/progress';
 import { ButtonLink } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { TextLink } from '@/components/ui/text-link';
+import { getPreviewEmails } from '@/env/server';
 import { currentLocale } from '@/i18n/locale';
 import { requireAccount } from '@/lib/auth/session';
 import { countryOptions } from '@/lib/countries';
 import { deleteProject, switchMode } from '@/lib/diagnostic/actions';
 import { viewFinding } from '@/lib/diagnostic/findings';
 import { loadProject } from '@/lib/diagnostic/project';
-import { canvasPath, stepPath } from '@/lib/diagnostic/steps';
+import { canvasPath, reportPath, stepPath } from '@/lib/diagnostic/steps';
+import { accessFor, reportAccess } from '@/lib/entitlements';
 
 export async function generateMetadata({
   params,
@@ -37,13 +39,18 @@ export async function generateMetadata({
 /** Where the project stands: completeness, what is missing, notes to resolve, tasks to test. */
 export default async function ProjectPage({ params }: PageProps<'/[locale]/projects/[id]'>) {
   const locale = await currentLocale();
-  const { supabase } = await requireAccount(locale);
+  const { supabase, user } = await requireAccount(locale);
   const loaded = await loadProject(supabase, (await params).id);
   if (!loaded) notFound();
   const { project, answers } = loaded;
   const t = await getTranslations('diagnostic.overview');
 
   const score = completeness(answers);
+  // What the report page will show this account: the entry names it (D-277). The page decides again.
+  const reportEntry = reportAccess(
+    score.gate,
+    accessFor({ email: user.email, planId: null }, { previewEmails: getPreviewEmails().emails }),
+  );
   const resume = firstUnanswered(project.mode, answers);
   const notes = reviewProject(answers).map((finding) => viewFinding(finding, locale));
   const tasks = validationTasks(answers);
@@ -78,6 +85,13 @@ export default async function ProjectPage({ params }: PageProps<'/[locale]/proje
               </p>
             )}
             <ButtonLink href={canvasPath(project.id)}>{t('canvas')}</ButtonLink>
+            <ButtonLink href={reportPath(project.id)}>
+              {reportEntry === 'full'
+                ? t('report')
+                : reportEntry === 'none'
+                  ? t('reportNone')
+                  : t('reportSummary')}
+            </ButtonLink>
           </div>
         </header>
 

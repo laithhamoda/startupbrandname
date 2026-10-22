@@ -21,10 +21,16 @@ export const ar: ReportMessages = {
     appendix_assumptions: 'ملحق أ: سجل الافتراضات',
     appendix_sources: 'ملحق ب: المصادر',
     appendix_disclaimer: 'ملحق ج: إخلاء المسؤولية',
+    verdict: 'الحكم',
     top_risks: 'أهم ثلاث مخاطر',
     break_even: 'تقدير التعادل',
   },
   verdictWords: { go: 'امضِ', revise: 'عدّل', stop: 'توقّف' },
+  summaryVerdict: {
+    go: 'التقرير الكامل يشرح أسباب هذا الحكم وما ينبغي الانتباه إليه وأنت تمضي.',
+    revise: 'التقرير الكامل يشرح أسباب هذا الحكم وما الذي يستحق التعديل أولاً.',
+    stop: 'التقرير الكامل يشرح الأسباب بالتفصيل وما الذي يمكن أن يغيّر الحكم.',
+  },
   stopSentence: 'غير قابل للتنفيذ بصيغته الحالية',
   terms: {
     break_even: { name: 'نقطة التعادل', english: 'Break-even' },

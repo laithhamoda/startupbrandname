@@ -309,7 +309,7 @@ function changeRow(ctx: Ctx, change: Change, changes: SuggestedChanges): Row {
   return row(join(labels, ' + '), cells, notes.length === 0 ? null : join(notes, ' '));
 }
 
-function changeBlocks(ctx: Ctx, run: EngineRun, changes: SuggestedChanges | null): Block[] {
+export function changeBlocks(ctx: Ctx, run: EngineRun, changes: SuggestedChanges | null): Block[] {
   const words = ctx.m.executive;
   const code = run.verdict.verdict.value;
   if (code === 'go') return [];

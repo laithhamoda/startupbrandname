@@ -21,10 +21,16 @@ export const en: ReportMessages = {
     appendix_assumptions: 'Appendix A: assumptions register',
     appendix_sources: 'Appendix B: sources',
     appendix_disclaimer: 'Appendix C: disclaimer',
+    verdict: 'Verdict',
     top_risks: 'Top three risks',
     break_even: 'Break-even estimate',
   },
   verdictWords: { go: 'Go', revise: 'Revise', stop: 'Stop' },
+  summaryVerdict: {
+    go: 'The full report explains why, and what to watch as you go ahead.',
+    revise: 'The full report explains why, and what to change first.',
+    stop: 'The full report explains the reasons in detail and what could change the verdict.',
+  },
   stopSentence: 'Not viable in its current form',
   terms: {
     break_even: { name: 'Break-even', english: null },

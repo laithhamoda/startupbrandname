@@ -1,11 +1,18 @@
 import { describe, expect, it } from 'vitest';
-import { ar } from '../messages';
+import { ar, messagesFor } from '../messages';
 import { LOCALES, NAMES, modelOf, sectionOf } from '../testing/model-helpers';
-import { drop } from '../testing/report-inputs';
+import { drop, goldenReportInput } from '../testing/report-inputs';
+import { buildReportModel } from './build';
 import { modelText, stringsOf } from '../testing/model-text';
+import { inlineText } from './inline';
 import { FULL_SECTION_IDS, type Section } from './types';
 
-const OPEN = ['project_card', 'top_risks', 'break_even'];
+const OPEN = ['verdict', 'project_card', 'top_risks', 'break_even'];
+const VERDICT_OF: Readonly<Record<string, 'go' | 'revise' | 'stop'>> = {
+  'jo-service-subscription': 'revise',
+  'jo-home-ecommerce': 'stop',
+  'dz-auto-entrepreneur': 'go',
+};
 
 describe('the one-page summary (SPEC section 6)', () => {
   for (const name of NAMES) {
@@ -13,7 +20,7 @@ describe('the one-page summary (SPEC section 6)', () => {
       describe(`${name} in ${locale}`, () => {
         const model = modelOf(name, locale, { kind: 'summary', lockReason: 'plan' });
 
-        it('has the card, the risks and the break-even open, and every other section as a locked title', () => {
+        it('has the verdict, the card, the risks and the break-even open, and every other section as a locked title', () => {
           expect(model.kind).toBe('summary');
           expect(model.lockReason).toBe('plan');
           expect(
@@ -29,10 +36,32 @@ describe('the one-page summary (SPEC section 6)', () => {
           }
         });
 
-        it('shows no verdict and no key numbers: the verdict belongs to the executive summary (D-268)', () => {
-          const blocks = model.sections.flatMap((section) => section.blocks);
-          expect(blocks.some((block) => block.type === 'verdict')).toBe(false);
-          expect(blocks.some((block) => block.type === 'keyNumbers')).toBe(false);
+        it('shows the verdict word and one generic sentence, and no score, meter or key numbers (D-278)', () => {
+          const section = model.sections[0];
+          expect(section?.id).toBe('verdict');
+          const block = section?.blocks[0];
+          const code = VERDICT_OF[name];
+          expect(block?.type).toBe('verdict');
+          if (block?.type !== 'verdict' || code === undefined) return;
+          const words = messagesFor(locale);
+          expect(block.code).toBe(code);
+          expect(block.word).toBe(words.verdictWords[code]);
+          expect(block.meter).toBeNull();
+          expect(inlineText(block.reason)).toBe(words.summaryVerdict[code]);
+          expect(block.stopSentence).toBe(code === 'stop' ? words.stopSentence : null);
+          const all = model.sections.flatMap((entry) => entry.blocks);
+          expect(all.some((entry) => entry.type === 'keyNumbers')).toBe(false);
+          expect(all.filter((entry) => entry.type === 'verdict')).toHaveLength(1);
+        });
+
+        it('holds nothing more than the word and the sentence for a go or a revise, and the three changes for a stop', () => {
+          const blocks = model.sections[0]?.blocks ?? [];
+          if (VERDICT_OF[name] !== 'stop') {
+            expect(blocks).toHaveLength(1);
+            return;
+          }
+          const table = blocks.find((entry) => entry.type === 'table');
+          expect(table?.type === 'table' ? table.rows : []).toHaveLength(3);
         });
 
         it('lists at most three risks', () => {
@@ -81,6 +110,22 @@ describe('the one-page summary (SPEC section 6)', () => {
     });
     expect(model.meta.engineVersion).toBeNull();
     expect(model.sections.filter((section) => !section.locked)).toHaveLength(3);
+    // No calculable run, no verdict: the section is absent, not locked (D-278).
+    expect(model.sections.some((section) => section.id === 'verdict')).toBe(false);
+  });
+});
+
+describe('a stop whose changes could not be searched (D-278)', () => {
+  it('says so in words and shows no invented change', () => {
+    const input = goldenReportInput('jo-home-ecommerce', {
+      locale: 'en',
+      kind: 'summary',
+      lockReason: 'plan',
+    });
+    const model = buildReportModel({ ...input, changes: null });
+    const blocks = model.sections[0]?.blocks ?? [];
+    expect(blocks.some((entry) => entry.type === 'table')).toBe(false);
+    expect(blocks.some((entry) => entry.type === 'paragraph')).toBe(true);
   });
 });
 
@@ -109,11 +154,43 @@ describe('no locked value reaches the summary (D-232)', () => {
         });
 
         it('holds no block of a locked section of the full report, anywhere', () => {
+          // The one exemption is the verdict section (D-278): the changes block of a stop is the
+          // very block the executive summary builds, so it may occur in both.
+          const exempt = new Set(
+            summary.sections
+              .filter((section) => section.id === 'verdict')
+              .flatMap((section) => section.blocks.map((block) => JSON.stringify(block))),
+          );
           const blocks = lockedOf(full).flatMap((section) => section.blocks);
           expect(blocks.length).toBeGreaterThan(50);
           for (const block of blocks) {
+            if (exempt.has(JSON.stringify(block))) continue;
             expect(text.includes(JSON.stringify(block))).toBe(false);
           }
+        });
+
+        it('holds no string of a locked section except those of the verdict section (D-278)', () => {
+          const allowed = new Set(
+            summary.sections
+              .filter((entry) => entry.id === 'verdict')
+              .flatMap((entry) => stringsOf(entry.blocks)),
+          );
+          const open = new Set(
+            summary.sections
+              .filter((entry) => !entry.locked && entry.id !== 'verdict')
+              .flatMap((entry) => stringsOf(entry.blocks)),
+          );
+          const tokens = new Set(stringsOf(summary.sections.map((entry) => entry.blocks)));
+          const leaked = [
+            ...new Set(lockedOf(full).flatMap((entry) => stringsOf(entry.blocks))),
+          ].filter(
+            (candidate) =>
+              candidate.length >= 8 &&
+              tokens.has(candidate) &&
+              !allowed.has(candidate) &&
+              !open.has(candidate),
+          );
+          expect(leaked).toEqual([]);
         });
 
         it('holds none of the numbers only a locked section computes', () => {

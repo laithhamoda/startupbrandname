@@ -49,6 +49,23 @@
   },
   "sections": [
     {
+      "id": "verdict",
+      "title": "الحكم",
+      "locked": false,
+      "blocks": [
+        {
+          "type": "verdict",
+          "code": "revise",
+          "word": "عدّل",
+          "reason": [
+            "التقرير الكامل يشرح أسباب هذا الحكم وما الذي يستحق التعديل أولاً."
+          ],
+          "stopSentence": null,
+          "meter": null
+        }
+      ]
+    },
+    {
       "id": "project_card",
       "title": "بطاقة المشروع",
       "locked": false,

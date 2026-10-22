@@ -44,13 +44,19 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 // Internal page for design review, visual snapshots and accessibility checks. Hidden in production.
 export default async function DesignGalleryPage() {
   if (getServerEnv().VERCEL_ENV === 'production') notFound();
-  const c = galleryContent[await currentLocale()];
+  const locale = await currentLocale();
+  const c = galleryContent[locale];
   const money = await getTranslations('money');
 
   return (
     <div className="mx-auto max-w-[75rem] px-4 py-10 sm:px-6">
       <h1 className="text-h1 font-extrabold">{c.title}</h1>
       <p className="reading mt-2 text-muted">{c.lead}</p>
+      <p className="mt-2 text-small">
+        <TextLink href="/design/report">
+          {locale === 'ar' ? 'معرض التقرير' : 'Report gallery'}
+        </TextLink>
+      </p>
 
       <Section title={c.sections.type}>
         <div className="grid gap-4">
