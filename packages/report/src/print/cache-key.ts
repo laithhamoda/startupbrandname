@@ -26,8 +26,11 @@ export function canonicalJson(value: unknown): string {
  * run's input hash, the pack items' labels, the day and the words), so the same key always means
  * the same pages, and a changed number, word or day gives a new key (CLAUDE.md rule 4).
  */
-export function reportCacheKey(model: ReportModel): string {
+export function reportCacheKey(
+  model: ReportModel,
+  templateVersion: number = PRINT_TEMPLATE_VERSION,
+): string {
   return createHash('sha256')
-    .update(canonicalJson({ template: PRINT_TEMPLATE_VERSION, model }))
+    .update(canonicalJson({ template: templateVersion, model }))
     .digest('hex');
 }

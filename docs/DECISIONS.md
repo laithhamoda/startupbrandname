@@ -2384,7 +2384,9 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   file is never served because the address is signed only after the upload returned. No migration was
   needed. If the owner wants a failed try not to count, a small `record_report` change (or a delete
   policy for rows without a file) is the way; it is for a later step.
-- **Reason:** D-234, D-244; the lead may revisit the counting of failed uploads.
+- **Reason:** D-234, D-244; the lead may revisit the counting of failed uploads. Two identical
+  requests at the same moment (a double click) both render and both count; this is accepted for now,
+  the daily limit bounds it and the cache serves every later one.
 - **Status:** Active
 
 ### D-282 (2026-10-22): The hardening as built and the local measurements
@@ -2393,19 +2395,22 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   counted (the tests require zero), the CSP of step 0 in a meta, fonts embedded as `data:` URLs, a
   render timeout, the tagged PDF, a size ceiling (`MAX_PDF_BYTES`) checked before the file is recorded.
   `pnpm --filter @sbn/report run pdf:measure` renders the three golden reports in both languages on
-  the pinned Chromium (WSL, one shared browser) and prints pages, size, the first and a warm render
-  and the browser's peak resident memory. Numbers of 2026-10-22: jo-service-subscription ar 16 pages,
-  447 KB, 13.5 s first (the browser's launch included), 2.6 s warm; en 14 pages, 429 KB, 0.7 s warm;
+  the pinned Chromium (WSL) and prints pages, size, a cold render (a new browser per row, its launch
+  included) and a warm second render, and the browser's peak resident memory. Numbers of 2026-10-22:
+  jo-service-subscription ar 16 pages, 447 KB, 13.5 s cold on a first run with a cold disk cache
+  (later runs 0.7 to 1.9 s), 2.6 s warm on that run (0.5 to 0.7 s later); en 14 pages, 429 KB, 0.7 s warm;
   jo-home-ecommerce ar 15 pages, 441 KB, 0.8 s warm; en 15 pages, 425 KB, 1.1 s warm;
   dz-auto-entrepreneur ar 15 pages, 408 KB, 0.8 s warm; en 13 pages, 391 KB, 0.6 s warm. Peak
-  resident memory of the browser process is about 445 MB in every run. The rows after the first are
-  not cold launches, because the browser is shared. A real measurement on a Vercel preview is the
+  resident memory of the browser process is about 445 MB in every run. A real measurement on a Vercel preview is the
   lead's, through the spike route (D-285).
 - **Reason:** D-239 to D-242: measure before building around the limits.
 - **Status:** Active
 
 ### D-283 (2026-10-22): Deleting the stored files with the account
 
+- **Addendum:** deleting one project does the same for that project's folder `{user_id}/{project_id}/`
+  (`removeReportFiles` takes an optional project id) before the row is deleted, and keeps the project
+  if removal fails.
 - **Decision:** `deleteSignedInAccount` first calls `removeReportFiles` (`lib/report/delete-files.ts`):
   it lists the user's folder `{user_id}/` in the `reports` bucket (a folder per project, then the
   files, a page at a time) and removes every file through the Storage API with the user's own session,

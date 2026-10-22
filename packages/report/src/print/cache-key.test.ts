@@ -58,6 +58,7 @@ describe('reportCacheKey', () => {
 
   it('changes with the version of the template', () => {
     expect(PRINT_TEMPLATE_VERSION).toBeGreaterThan(0);
-    expect(reportCacheKey(model)).not.toBe(reportCacheKey({ ...model, version: 2 } as never));
+    expect(reportCacheKey(model, PRINT_TEMPLATE_VERSION)).toBe(reportCacheKey(model));
+    expect(reportCacheKey(model, PRINT_TEMPLATE_VERSION + 1)).not.toBe(reportCacheKey(model));
   });
 });
