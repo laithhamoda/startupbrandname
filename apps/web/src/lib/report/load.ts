@@ -73,10 +73,12 @@ export async function loadReportPage(
     };
   }
 
-  // The search for the changes that would change the verdict runs per request (about 200 ms), and
-  // only for the full report: the summary never shows it (D-268, D-273).
+  // The search for the changes that would change the verdict runs per request, and only when a
+  // page shows it: the full report for a revise or a stop, and the free summary for a stop, which
+  // always comes with its three changes (D-273, D-278).
   let changes: SuggestedChanges | null = null;
-  if (decided.kind === 'full' && run !== null && run.verdict.verdict.value !== 'go') {
+  const verdict = run?.verdict.verdict.value ?? 'go';
+  if (run !== null && (decided.kind === 'full' ? verdict !== 'go' : verdict === 'stop')) {
     try {
       changes = suggestChanges(run, { rules: source.taxRules }, {}, pricingOptionsOf(source));
     } catch (error) {
