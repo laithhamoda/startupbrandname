@@ -44,7 +44,7 @@ const nextConfig: NextConfig = {
   // the bundle, because the browser is unpacked from the package's own bin folder at run time.
   serverExternalPackages: ['puppeteer-core', '@sparticuz/chromium'],
   // What the tracer cannot see, because the code reads it by path: the browser's compressed files
-  // and the print fonts. The report route and the temporary measuring route need them (D-241, D-280).
+  // and the print fonts. The report route needs them (D-241, D-280).
   // Both are listed at their real pnpm path (.pnpm/<name>@<version>/node_modules/<name>), because
   // @sparticuz/chromium finds its bin folder from its own real location (import.meta.url) and the
   // function must carry the files there, not only behind the symlink of apps/web/node_modules
@@ -52,7 +52,6 @@ const nextConfig: NextConfig = {
   // which the fonts loader walks to when it cannot resolve the package.
   outputFileTracingIncludes: {
     '/api/projects/[id]/report/pdf': PDF_RENDERER_FILES,
-    '/api/internal/pdf-spike': PDF_RENDERER_FILES,
   },
   headers: () =>
     Promise.resolve([

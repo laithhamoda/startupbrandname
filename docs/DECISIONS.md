@@ -2401,8 +2401,12 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   (later runs 0.7 to 1.9 s), 2.6 s warm on that run (0.5 to 0.7 s later); en 14 pages, 429 KB, 0.7 s warm;
   jo-home-ecommerce ar 15 pages, 441 KB, 0.8 s warm; en 15 pages, 425 KB, 1.1 s warm;
   dz-auto-entrepreneur ar 15 pages, 408 KB, 0.8 s warm; en 13 pages, 391 KB, 0.6 s warm. Peak
-  resident memory of the browser process is about 445 MB in every run. A real measurement on a Vercel preview is the
-  lead's, through the spike route (D-285).
+  resident memory of the browser process is about 445 MB in every run. The lead measured a real report on the Vercel preview of this
+  branch on 2026-10-22: the Arabic report of the Jordanian service project (16 pages, 446 KB) took
+  5.3 s on the first call after the deployment (a cold start) and 0.9 to 2.6 s on the later calls
+  (about 1 s in most), the English one (419 KB) 0.9 to 1.0 s, and no call failed. The function's
+  peak memory was not read on Vercel; locally it is about 445 MB. D-242 stands: a Vercel function
+  is enough, and no render worker is needed.
 - **Reason:** D-239 to D-242: measure before building around the limits.
 - **Status:** Active
 
@@ -2444,4 +2448,4 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   `@sbn/report/testing/inputs` import it uses if nothing else needs it, and delete the spike notes in
   `docs/M5-PLAN.md` and `docs/architecture.md`.
 - **Reason:** D-242; the lead measures a real report before the route goes.
-- **Status:** Active
+- **Status:** Superseded: the route was removed in the last commit of this pull request, after the measurement recorded in D-282.
