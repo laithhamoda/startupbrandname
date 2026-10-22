@@ -1,21 +1,20 @@
 import { stepLabel } from '@sbn/question-bank';
 import type { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
+import { getMessages, getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { NotEnoughAnswers } from '@/components/report/not-enough';
 import { distinctReasons, ReportNotice } from '@/components/report/notice';
 import { ReportView } from '@/components/report/report-view';
 import { currentLocale } from '@/i18n/locale';
-import { catalogues } from '@/i18n/messages';
 import { requireAccount } from '@/lib/auth/session';
 import { projectPath, stepPath } from '@/lib/diagnostic/steps';
 import { loadReportPage } from '@/lib/report/load';
 
 export async function generateMetadata(): Promise<Metadata> {
-  const locale = await currentLocale();
+  const t = await getTranslations('report');
   // Never the project's title: the founder typed it, and it travels into browser history.
   return {
-    title: catalogues[locale].report.pageTitle,
+    title: t('pageTitle'),
     robots: { index: false, follow: false },
   };
 }
@@ -45,7 +44,7 @@ export default async function ReportPage({ params }: PageProps<'/[locale]/projec
   });
   if (!page) notFound();
 
-  const labels = catalogues[locale].report;
+  const labels = (await getMessages()).report;
   const backHref = projectPath(id);
 
   if (page.status === 'none') {

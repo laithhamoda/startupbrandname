@@ -1,12 +1,12 @@
 import { buildReportModel, type ReportInput } from '@sbn/report/model';
 import { drop, goldenReportInput } from '@sbn/report/testing/inputs';
 import type { Metadata } from 'next';
+import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { ReportView } from '@/components/report/report-view';
 import { TextLink } from '@/components/ui/text-link';
 import { getServerEnv } from '@/env/server';
 import { currentLocale } from '@/i18n/locale';
-import { catalogues } from '@/i18n/messages';
 
 const TITLE = { ar: 'معرض التقرير', en: 'Report gallery' } as const;
 const LEAD = {
@@ -106,7 +106,7 @@ export default async function ReportGalleryPage({
       </div>
       <ReportView
         model={model}
-        labels={catalogues[locale].report}
+        labels={(await getMessages()).report}
         hrefs={{ project: '/design', pricing: '/pricing' }}
       />
     </>
