@@ -122,6 +122,8 @@ export interface ReportMessages {
   readonly reportKind: string;
   readonly sections: Readonly<Record<SectionId, string>>;
   readonly verdictWords: Readonly<Record<Verdict, string>>;
+  /** One generic sentence per verdict for the free summary: no digit, no reason (D-278). */
+  readonly summaryVerdict: Readonly<Record<Verdict, string>>;
   /** «غير قابل للتنفيذ بصيغته الحالية» (D-227). */
   readonly stopSentence: string;
   readonly terms: Readonly<Record<TermKey, TermText>>;
