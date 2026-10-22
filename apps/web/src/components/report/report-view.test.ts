@@ -1,4 +1,4 @@
-import { buildReportModel, type ReportModel } from '@sbn/report/model';
+import { buildReportModel, inlineText, messagesFor, type ReportModel } from '@sbn/report/model';
 import { goldenReportInput } from '@sbn/report/testing/inputs';
 import { createElement, type ReactNode } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
@@ -148,7 +148,39 @@ describe('the locked report page (D-232, D-276)', () => {
     for (const section of lockedSections) expect(html).toContain(escapeHtml(section.title));
     expect(html).toContain(escapeHtml(catalogues.ar.report.lock.plan));
     expect(html).toContain('href="/pricing"');
-    expect(html).not.toContain('data-report-reveal');
+  });
+
+  it('shows the verdict word and one generic sentence, and no score, meter or key numbers (D-278)', () => {
+    const html = htmlOf(locked);
+    expect(html).toContain('data-report-reveal');
+    expect(html).toContain(escapeHtml(catalogues.ar.report.verdict.label));
+    expect(html).toContain('>عدّل<');
+    expect(html).toContain(escapeHtml(messagesFor('ar').summaryVerdict.revise));
+    expect(html).not.toContain('role="meter"');
+    // The reason of the full report, the funding need and the scenarios stay behind the lock.
+    const reason = full.sections
+      .flatMap((section) => section.blocks)
+      .find((block) => block.type === 'verdict');
+    expect(
+      reason?.type === 'verdict' ? html.includes(escapeHtml(inlineText(reason.reason))) : true,
+    ).toBe(false);
+    expect(html).not.toContain('18,400.000');
+  });
+
+  it('shows a stop with the fixed sentence and the three changes, and still no meter', () => {
+    const stop = buildReportModel(
+      goldenReportInput('jo-home-ecommerce', {
+        locale: 'ar',
+        kind: 'summary',
+        lockReason: 'plan',
+      }),
+    );
+    const html = htmlOf(stop);
+    expect(html).toContain('>توقّف<');
+    expect(html).toContain(escapeHtml(messagesFor('ar').stopSentence));
+    expect(html).not.toContain('role="meter"');
+    const table = stop.sections[0]?.blocks.find((block) => block.type === 'table');
+    expect(table?.type === 'table' ? table.rows : []).toHaveLength(3);
   });
 
   it('points a summary locked by the answers back to the questions', () => {

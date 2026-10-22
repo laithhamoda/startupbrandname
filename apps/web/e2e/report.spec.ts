@@ -1,0 +1,121 @@
+import { expect, test } from '@playwright/test';
+
+// The report on screen, checked on its gallery (M5 step 5b, D-275, D-276): the gallery builds the
+// same model from fixtures, so no database is needed. The real route is in e2e/auth/report.spec.ts.
+const GALLERY = '/ar/design/report';
+
+test.describe('the verdict reveal', () => {
+  test('has no animation under reduced motion', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto(GALLERY);
+
+    const slab = page.locator('[data-report-reveal]');
+    await expect(slab).toBeVisible();
+    const names = await slab.evaluate((element) => ({
+      slab: getComputedStyle(element).animationName,
+      word: getComputedStyle(element.querySelector('.verdict-word') ?? element).animationName,
+      running: element.getAnimations({ subtree: true }).length,
+    }));
+    expect(names).toEqual({ slab: 'none', word: 'none', running: 0 });
+  });
+
+  test('plays once and ends in the final position without it', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.goto(GALLERY);
+
+    const slab = page.locator('[data-report-reveal]');
+    await expect(slab).toBeVisible();
+    // The animation exists on the slab and on its word.
+    const before = await slab.evaluate((element) => ({
+      slab: getComputedStyle(element).animationName,
+      word: getComputedStyle(element.querySelector('.verdict-word') ?? element).animationName,
+    }));
+    expect(before).toEqual({ slab: 'sbn-report-reveal', word: 'sbn-report-settle' });
+
+    // It ends: uncovered from edge to edge, the word in its place, and the slab has the same size
+    // as at the start (the motion never moves the page).
+    const heightAtStart = await slab.evaluate((element) => element.getBoundingClientRect().height);
+    await slab.evaluate(async (element) => {
+      await Promise.all(element.getAnimations({ subtree: true }).map((a) => a.finished));
+    });
+    const after = await slab.evaluate((element) => ({
+      clip: getComputedStyle(element).clipPath,
+      transform: getComputedStyle(element.querySelector('.verdict-word') ?? element).transform,
+      height: element.getBoundingClientRect().height,
+    }));
+    expect(after.clip).toMatch(/^inset\(0(px)?( 0(px)?){0,3}\)$/);
+    expect(after.transform).toBe('none');
+    expect(after.height).toBe(heightAtStart);
+  });
+});
+
+test.describe('on a phone', () => {
+  test.use({ viewport: { width: 360, height: 800 } });
+
+  test('the page does not scroll sideways while a wide table scrolls in its own region', async ({
+    page,
+  }) => {
+    await page.goto('/en/design/report');
+    await page.evaluate(() => document.fonts.ready);
+
+    const page_ = await page.evaluate(() => ({
+      scroll: document.documentElement.scrollWidth,
+      client: document.documentElement.clientWidth,
+    }));
+    expect(page_.scroll).toBeLessThanOrEqual(page_.client);
+
+    const regions = page.locator('[role="region"][tabindex="0"]');
+    const scrolling = await regions.evaluateAll(
+      (nodes) => nodes.filter((node) => node.scrollWidth > node.clientWidth + 1).length,
+    );
+    expect(scrolling).toBeGreaterThan(0);
+    // Every such region is named, so a screen reader announces which table it is.
+    const unnamed = await regions.evaluateAll(
+      (nodes) => nodes.filter((node) => !node.getAttribute('aria-labelledby')).length,
+    );
+    expect(unnamed).toBe(0);
+  });
+
+  test('the contents list is a disclosure, not the sticky column', async ({ page }) => {
+    await page.goto('/en/design/report');
+    await expect(page.locator('details > summary')).toBeVisible();
+    await expect(page.locator('aside nav')).toBeHidden();
+    await page.locator('details > summary').click();
+    await expect(page.locator('details nav a').first()).toBeVisible();
+  });
+});
+
+test('the contents list is a column beside the report on a wide screen', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/en/design/report');
+  await expect(page.locator('aside nav a').first()).toBeVisible();
+  await expect(page.locator('details > summary')).toBeHidden();
+});
+
+test('a summary locked by the plan shows the verdict word, titles and the way on (D-278)', async ({
+  page,
+}) => {
+  await page.goto('/en/design/report?view=plan');
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+  await expect(page.locator('[data-report-reveal] .verdict-word')).toHaveText('Revise');
+  await expect(page.locator('[data-report-reveal] [role="meter"]')).toHaveCount(0);
+  await expect(page.getByText('Paid plans open later', { exact: false }).first()).toBeVisible();
+  await expect(page.getByRole('link', { name: 'See plans and prices' }).first()).toBeVisible();
+});
+
+test('a summary with no calculation has no verdict at all', async ({ page }) => {
+  await page.goto('/en/design/report?view=nocalc');
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+  await expect(page.locator('[data-report-reveal]')).toHaveCount(0);
+});
+
+test('the three projects show their three verdicts', async ({ page }) => {
+  for (const [project, word] of [
+    ['jo-service-subscription', 'Revise'],
+    ['dz-auto-entrepreneur', 'Go'],
+    ['jo-home-ecommerce', 'Stop'],
+  ] as const) {
+    await page.goto(`/en/design/report?project=${project}`);
+    await expect(page.locator('[data-report-reveal] .verdict-word')).toHaveText(word);
+  }
+});
