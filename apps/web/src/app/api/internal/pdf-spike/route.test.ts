@@ -4,6 +4,7 @@ const report = vi.hoisted(() => ({
   buildSpikeFixture: vi.fn(),
   getSharedBrowser: vi.fn(),
   renderPdf: vi.fn(),
+  renderReportPdf: vi.fn(),
 }));
 const log = vi.hoisted(() => ({ info: vi.fn(), error: vi.fn() }));
 
@@ -128,5 +129,70 @@ describe('the temporary PDF spike route', () => {
 
     expect(response.status).toBe(500);
     expect(await response.json()).toEqual({ error: 'unknown' });
+  });
+  describe('with ?report=golden (D-285)', () => {
+    beforeEach(() => {
+      report.renderReportPdf.mockResolvedValue({
+        pdf: new Uint8Array([37, 80, 68, 70, 45]),
+        aborted: 0,
+        ms: 456,
+      });
+    });
+
+    it('renders the golden report of the Jordanian service project with the real template', async () => {
+      vi.stubEnv('VERCEL_ENV', 'preview');
+
+      const response = await GET(request('?report=golden'));
+
+      expect(response.status).toBe(200);
+      expect(response.headers.get('x-pdf-ms')).toBe('456');
+      expect(response.headers.get('x-pdf-bytes')).toBe('5');
+      expect(response.headers.get('content-disposition')).toContain('golden-report-ar.pdf');
+      expect(report.renderReportPdf).toHaveBeenCalledTimes(1);
+      const call = report.renderReportPdf.mock.calls[0]?.[0] as {
+        model: { locale: string; kind: string; meta: { title: string } };
+        browser: unknown;
+      };
+      expect(call.model.locale).toBe('ar');
+      expect(call.model.kind).toBe('full');
+      expect(call.browser).toEqual({});
+      expect(report.buildSpikeFixture).not.toHaveBeenCalled();
+      expect(report.renderPdf).not.toHaveBeenCalled();
+    });
+
+    it('draws it in English for ?locale=en', async () => {
+      vi.stubEnv('VERCEL_ENV', 'preview');
+
+      const response = await GET(request('?report=golden&locale=en'));
+
+      expect(response.headers.get('content-disposition')).toContain('golden-report-en.pdf');
+      const call = report.renderReportPdf.mock.calls[0]?.[0] as { model: { locale: string } };
+      expect(call.model.locale).toBe('en');
+    });
+
+    for (const environment of ['production', undefined]) {
+      it(`is not available outside a preview either (VERCEL_ENV=${String(environment)})`, async () => {
+        vi.stubEnv('NODE_ENV', 'production');
+        vi.stubEnv('VERCEL_ENV', environment ?? '');
+
+        const response = await GET(request('?report=golden'));
+
+        expect(response.status).toBe(404);
+        expect(report.getSharedBrowser).not.toHaveBeenCalled();
+        expect(report.renderReportPdf).not.toHaveBeenCalled();
+      });
+    }
+
+    it('answers 500 with the code only when the template cannot be rendered', async () => {
+      vi.stubEnv('VERCEL_ENV', 'preview');
+      report.renderReportPdf.mockRejectedValue(
+        new PdfRenderError('render_failed', 'The page could not be turned into a PDF.'),
+      );
+
+      const response = await GET(request('?report=golden'));
+
+      expect(response.status).toBe(500);
+      expect(await response.json()).toEqual({ error: 'render_failed' });
+    });
   });
 });
