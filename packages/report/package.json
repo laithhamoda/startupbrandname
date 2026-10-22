@@ -15,7 +15,8 @@
     "lint": "eslint . --max-warnings=0",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --coverage",
-    "pdf:png": "node scripts/pdf-png.mjs"
+    "pdf:png": "node scripts/pdf-png.mjs",
+    "pdf:measure": "vitest run --config vitest.measure.config.ts"
   },
   "dependencies": {
     "@fontsource/cairo": "5.3.0",

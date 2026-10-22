@@ -18,8 +18,9 @@ item when the page says it or the legal review drops it:
   or more (Usage limits and cost records), nor how long Anthropic keeps what it receives.
 - It does not say that Vercel keeps runtime logs outside the EU (#34), or that the app's log lines
   carry project and question IDs (Hosting and logs).
-- It does not mention stored report PDFs (Stored reports); the page must say it before step 6 of M5
-  writes the first one.
+- It does not mention stored report PDFs (Stored reports); the page must say it before the first one
+  is written (M5 step 6 writes them: the file is removed with the account, D-283, and a repeat
+  request for an unchanged report serves the stored file, D-280).
 
 **[LEGAL REVIEW REQUIRED]:** every legal basis and transfer mechanism below is a working
 assumption until the legal review (#73). Items marked "to confirm" need a check with the provider.

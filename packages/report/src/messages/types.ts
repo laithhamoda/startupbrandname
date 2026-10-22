@@ -441,4 +441,14 @@ export interface ReportMessages {
     readonly disclaimer: readonly string[];
     readonly notAProbability: string;
   };
+
+  /** The words only the printed report adds (M5 step 6, D-279). */
+  readonly print: {
+    /** The strip under each experiment of the validation plan, filled by hand on paper. */
+    readonly fill: Readonly<
+      Record<'success' | 'result' | 'decision' | 'go' | 'revise' | 'stop', string>
+    >;
+    /** The line under the title of a section the summary keeps locked. */
+    readonly locked: string;
+  };
 }

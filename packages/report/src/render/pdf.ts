@@ -1,8 +1,10 @@
 import { performance } from 'node:perf_hooks';
 import type { Browser } from 'puppeteer-core';
 import { PRINT_CSP_META } from '../print/csp';
+import type { ReportModel } from '../model/types';
 import { loadFontFaceCss, type FontFace } from '../print/fonts';
 import type { PrintLocale } from '../print/locale';
+import { buildReportDocument, reportTitle } from '../print/report';
 import { PdfRenderError } from './errors';
 import { launchBrowser } from './launch';
 import { footerTemplate, headerTemplate } from './template';
@@ -29,6 +31,12 @@ export interface RenderPdfInput {
    * off by default for Arabic, on for English.
    */
   outline?: boolean;
+  /**
+   * Where the page number comes from. `footer` (the default) is the footer template, which the
+   * spike document of step 0 uses; `css` means the document draws it itself with an `@page` margin
+   * box (buildPrintCss, D-284) and the footer stays empty, so a page never carries two numbers.
+   */
+  pageNumbers?: 'footer' | 'css';
 }
 
 export interface RenderPdfResult {
@@ -86,7 +94,11 @@ export async function renderPdf(input: RenderPdfInput): Promise<RenderPdfResult>
         preferCSSPageSize: true,
         displayHeaderFooter: true,
         headerTemplate: headerTemplate({ locale, title: headerTitle, fontCss: templateFonts }),
-        footerTemplate: footerTemplate({ locale, fontCss: templateFonts }),
+        // A non-empty template, so Chromium does not draw its own date, title and address.
+        footerTemplate:
+          input.pageNumbers === 'css'
+            ? '<span></span>'
+            : footerTemplate({ locale, fontCss: templateFonts }),
         tagged: true,
         outline: input.outline ?? locale !== 'ar',
       });
@@ -102,4 +114,31 @@ export async function renderPdf(input: RenderPdfInput): Promise<RenderPdfResult>
   } finally {
     if (!input.browser) await browser.close().catch(() => undefined);
   }
+}
+
+export interface RenderReportInput {
+  readonly model: ReportModel;
+  /** A browser to reuse, as in renderPdf. */
+  readonly browser?: Browser;
+  /** Defaults to the print set, as in buildReportDocument. */
+  readonly fontCss?: string;
+}
+
+/**
+ * The PDF of a report (M5 step 6): the print document of the model, rendered with the page number
+ * drawn by the document and the project's title as the running header. The PDF's own title is the
+ * document title, which is the project's title too (D-279).
+ */
+export async function renderReportPdf(input: RenderReportInput): Promise<RenderPdfResult> {
+  const { model } = input;
+  const html = await buildReportDocument(model, {
+    ...(input.fontCss === undefined ? {} : { fontCss: input.fontCss }),
+  });
+  return renderPdf({
+    html,
+    locale: model.locale,
+    headerTitle: reportTitle(model),
+    pageNumbers: 'css',
+    ...(input.browser === undefined ? {} : { browser: input.browser }),
+  });
 }

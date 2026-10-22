@@ -30,6 +30,8 @@ export interface InspectedPdf {
   tagged: boolean;
   /** The text of all pages, one page after the other. */
   text: string;
+  /** The Title and Author of the document info; null when the PDF has none. */
+  info: { title: string | null; author: string | null };
 }
 
 interface Positioned extends Piece {
@@ -135,8 +137,13 @@ export async function inspectPdf(pdf: Uint8Array, options: InspectOptions): Prom
       const tree: unknown = await page.getStructTree();
       if (tree) tagged = true;
     }
+    const info = (await document.getMetadata()).info as Record<string, unknown>;
     return {
       pages,
+      info: {
+        title: typeof info.Title === 'string' ? info.Title : null,
+        author: typeof info.Author === 'string' ? info.Author : null,
+      },
       fonts: [...fonts].sort(),
       outline: flattenOutline(await document.getOutline()),
       tagged,

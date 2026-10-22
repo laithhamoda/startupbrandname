@@ -1,5 +1,6 @@
 import type { ReportModel, Section } from '@sbn/report/model';
 import { Lock } from 'lucide-react';
+import type { ReactNode } from 'react';
 import { TextLink } from '@/components/ui/text-link';
 import { ReportBlock } from './blocks';
 import type { ReportLabels } from './inline';
@@ -75,10 +76,13 @@ export function ReportView({
   model,
   labels,
   hrefs,
+  actions,
 }: {
   model: ReportModel;
   labels: ReportLabels;
   hrefs: ReportHrefs;
+  /** What the founder can do with the report, drawn under its title (the PDF download). */
+  actions?: ReactNode;
 }) {
   return (
     <div className="mx-auto max-w-[75rem] px-4 py-10 sm:px-6 lg:grid lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-12">
@@ -101,6 +105,7 @@ export function ReportView({
           {model.kind === 'summary' ? (
             <p className="reading text-muted">{labels.summaryLead}</p>
           ) : null}
+          {actions}
         </header>
 
         <details className="border-y border-hairline py-3 lg:hidden">

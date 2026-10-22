@@ -418,6 +418,17 @@
     "verdict": {
       "label": "Verdict"
     },
+    "pdf": {
+      "button": "Download the report as a PDF",
+      "hint": "A file ready to print and share, with the same numbers you see here.",
+      "errors": {
+        "limit": "You have reached the daily limit of PDF files. Try again tomorrow; what you made today stays available to download.",
+        "not_allowed": "This report cannot be downloaded right now. Sign in again and try once more.",
+        "render_failed": "The PDF could not be made. Try again in a moment.",
+        "storage_failed": "The file was made but could not be saved. Try again in a moment.",
+        "not_found": "We could not find this project."
+      }
+    },
     "marks": {
       "separator": ", ",
       "source": {

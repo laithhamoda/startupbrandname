@@ -12,6 +12,8 @@ export interface PrintDocumentInput {
   body: string;
   /** Defaults to the print set; a test passes its own to avoid reading the font files. */
   fontCss?: string;
+  /** Draws the page number with the stylesheet (D-284), for a document made without a footer. */
+  pageNumbers?: boolean;
 }
 
 /**
@@ -28,7 +30,7 @@ export async function buildPrintDocument(input: PrintDocumentInput): Promise<str
     '<meta charset="utf-8">',
     PRINT_CSP_META,
     `<title>${escapeHtml(title)}</title>`,
-    `<style>${fontCss}\n${buildPrintCss(locale)}</style>`,
+    `<style>${fontCss}\n${buildPrintCss(locale, { pageNumbers: input.pageNumbers === true })}</style>`,
     '</head>',
     `<body>${body}</body>`,
     '</html>',

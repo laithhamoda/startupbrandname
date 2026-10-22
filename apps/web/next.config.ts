@@ -21,6 +21,20 @@ const SECURITY_HEADERS = [
   { key: 'Strict-Transport-Security', value: 'max-age=63072000' },
 ];
 
+/**
+ * The files the PDF renderer reads by path (see outputFileTracingIncludes below), for every function that renders: the report
+ * route (M5 step 6) and the temporary measuring route of step 0.
+ */
+const PDF_RENDERER_FILES = [
+  '../../node_modules/.pnpm/@sparticuz+chromium@*/node_modules/@sparticuz/chromium/bin/**',
+  '../../node_modules/.pnpm/@fontsource+cairo@*/node_modules/@fontsource/cairo/files/cairo-{arabic,latin}-{600,700}-normal.woff2',
+  '../../node_modules/.pnpm/@fontsource+tajawal@*/node_modules/@fontsource/tajawal/files/tajawal-{arabic,latin}-{400,500,700}-normal.woff2',
+  '../../node_modules/.pnpm/@fontsource+{cairo,tajawal}@*/node_modules/@fontsource/{cairo,tajawal}/package.json',
+  './node_modules/@fontsource/cairo/files/cairo-{arabic,latin}-{600,700}-normal.woff2',
+  './node_modules/@fontsource/tajawal/files/tajawal-{arabic,latin}-{400,500,700}-normal.woff2',
+  './node_modules/@fontsource/{cairo,tajawal}/package.json',
+];
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
@@ -30,22 +44,14 @@ const nextConfig: NextConfig = {
   // the bundle, because the browser is unpacked from the package's own bin folder at run time.
   serverExternalPackages: ['puppeteer-core', '@sparticuz/chromium'],
   // What the tracer cannot see, because the code reads it by path: the browser's compressed files
-  // and the print fonts. Only the temporary measuring route needs them until step 6 (D-241).
+  // and the print fonts. The report route needs them (D-241, D-280).
   // Both are listed at their real pnpm path (.pnpm/<name>@<version>/node_modules/<name>), because
   // @sparticuz/chromium finds its bin folder from its own real location (import.meta.url) and the
   // function must carry the files there, not only behind the symlink of apps/web/node_modules
   // (D-239). The browser is listed only once: it is 68 MB. The fonts also keep the symlink path,
   // which the fonts loader walks to when it cannot resolve the package.
   outputFileTracingIncludes: {
-    '/api/internal/pdf-spike': [
-      '../../node_modules/.pnpm/@sparticuz+chromium@*/node_modules/@sparticuz/chromium/bin/**',
-      '../../node_modules/.pnpm/@fontsource+cairo@*/node_modules/@fontsource/cairo/files/cairo-{arabic,latin}-{600,700}-normal.woff2',
-      '../../node_modules/.pnpm/@fontsource+tajawal@*/node_modules/@fontsource/tajawal/files/tajawal-{arabic,latin}-{400,500,700}-normal.woff2',
-      '../../node_modules/.pnpm/@fontsource+{cairo,tajawal}@*/node_modules/@fontsource/{cairo,tajawal}/package.json',
-      './node_modules/@fontsource/cairo/files/cairo-{arabic,latin}-{600,700}-normal.woff2',
-      './node_modules/@fontsource/tajawal/files/tajawal-{arabic,latin}-{400,500,700}-normal.woff2',
-      './node_modules/@fontsource/{cairo,tajawal}/package.json',
-    ],
+    '/api/projects/[id]/report/pdf': PDF_RENDERER_FILES,
   },
   headers: () =>
     Promise.resolve([

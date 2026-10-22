@@ -3,7 +3,14 @@
 // The report content arrives in steps 5 and 6.
 export { escapeHtml } from './print/escape';
 export { PRINT_CSP, PRINT_CSP_META } from './print/csp';
-export { PRINT_TOKENS, WIDE_PAGE_NAME, buildPrintCss } from './print/css';
+export { PRINT_TOKENS, WIDE_PAGE_NAME, buildPrintCss, type PrintCssOptions } from './print/css';
+export { PRINT_TEMPLATE_VERSION, canonicalJson, reportCacheKey } from './print/cache-key';
+export {
+  buildReportDocument,
+  reportBodyHtml,
+  reportTitle,
+  type ReportDocumentOptions,
+} from './print/report';
 export {
   buildPrintDocument,
   isolatedLatin,
@@ -21,7 +28,13 @@ export {
 export { directionOf, type Direction, type PrintLocale } from './print/locale';
 export { PdfRenderError, type PdfErrorCode } from './render/errors';
 export { launchBrowser, resolveLocalExecutable, type LaunchOptions } from './render/launch';
-export { renderPdf, type RenderPdfInput, type RenderPdfResult } from './render/pdf';
+export {
+  renderPdf,
+  renderReportPdf,
+  type RenderPdfInput,
+  type RenderPdfResult,
+  type RenderReportInput,
+} from './render/pdf';
 export { closeSharedBrowser, getSharedBrowser } from './render/shared';
 export {
   HOSTILE_EFFECT,
