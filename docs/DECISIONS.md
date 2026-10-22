@@ -37,12 +37,12 @@ A decision may sit under several topics. A new decision joins its topics in the 
 - **Auth and accounts:** D-018, D-034, D-059, D-061, D-065, D-074, D-077, D-078, D-079, D-084,
   D-085, D-086, D-087, D-089, D-129, D-131, D-163, D-168, D-174.
 - **Markets, countries and languages:** D-026, D-063, D-066, D-067, D-068, D-069, D-070, D-075,
-  D-080, D-081, D-088, D-129, D-180, D-186, D-233, D-236, D-263 to D-266, D-269, D-270.
+  D-080, D-081, D-088, D-129, D-180, D-186, D-233, D-236, D-263 to D-266, D-269, D-270, D-273.
 - **Diagnostic and question bank:** D-072, D-102, D-104, D-105, D-106, D-108, D-110 to D-119, D-129,
   D-149, D-156 to D-161, D-163, D-165, D-167, D-182, D-183, D-197 to D-199, D-231, D-232, D-249, D-252.
 - **Calculation engine:** D-178 to D-190, D-193 to D-196, D-200 to D-224, D-227 to D-230,
   D-238, D-244, D-246 to D-248, D-251, D-260 to D-262.
-- **Report, canvases and PDF (M5):** D-225 to D-253, D-260 to D-272.
+- **Report, canvases and PDF (M5):** D-225 to D-253, D-260 to D-278.
 - **AI and cost:** D-062, D-071, D-072, D-073, D-082, D-103, D-107, D-119 to D-124, D-143, D-146 to
   D-152, D-155, D-183, D-191, D-226.
 - **Privacy, consent and security:** D-013, D-016, D-040, D-041, D-061, D-062, D-074, D-077,
@@ -2117,7 +2117,7 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   The changes of the executive summary are one row for each change of `suggestChanges`; for a stop
   the rows and the "rethink" list together are the three places of D-228.
 - **Reason:** SPEC sections 3 and 6; D-228, D-229, D-232, D-236.
-- **Status:** Active
+- **Status:** Amended by D-278
 
 ### D-269 (2026-10-12): The audience variants
 
@@ -2194,4 +2194,119 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   the validation plan on paper, page numbers and headers, and what a link opens. The FX test of T9 and
   the cash-flow notes are not in the model yet.
 - **Reason:** D-222, D-237; CLAUDE.md rule 11.
+- **Status:** Active
+
+### D-273 (2026-10-22): The report route and the access decision
+
+- **Decision:** `/[locale]/projects/[id]/report` is a server component with no client JavaScript.
+  It calls `requireAccount`, then `loadReportPage` (`apps/web/src/lib/report/load.ts`), which runs
+  `analyseProject` (the source, the engine, the run recorded by its hash), the completeness gate of
+  `@sbn/question-bank`, and `accessFor({ email, planId: null }, { previewEmails })` with the
+  server-only `FULL_REPORT_PREVIEW_EMAILS` list of D-245. A small pure helper (`access.ts`) maps the
+  gate and the access to `none` (no report: the page lists the most important missing questions with
+  links), `summary` (kind summary, lock reason completeness), `summary_locked` (kind summary, lock
+  reason plan) and `full`; a full report without a calculable run falls back to the summary with the
+  completeness lock, and the notice names the questions to answer. The model is built with
+  `buildReportModel` from the site locale, `audienceOfAnswers`, the server date (the canvas page's
+  `referenceDateOf`) and the currency symbol where the site has one. `suggestChanges` runs per
+  request, only when a page shows its result (the full report for a revise or a stop, and the free
+  summary for a stop, D-278); the three golden inputs, with their whole model, take 33 to 141 ms
+  (median of five), well under the 250 ms limit, so nothing is cached. Pack items are the project
+  country's `country_pack_items` rows, each validated with the legal-path schema; a row that fails is
+  skipped and logged. The title comes from the messages, never from the founder's project title, and
+  the page is `noindex, nofollow`. The run, the answers and any locked value stay on the server: the
+  page passes only the model and the chrome labels to its components. An unknown project is a 404.
+- **Reason:** D-232, D-245, D-268; CLAUDE.md rules 1, 6 and 9.
+- **Status:** Active
+
+### D-274 (2026-10-22): How the model is drawn
+
+- **Decision:** The components are in `apps/web/src/components/report/`. A string of an `Inline` is
+  text and React escapes it; `{ n }` becomes a `bdi` that isolates a left-to-right number and
+  `{ l }` a `bdi dir="ltr"`; nothing in the page sets HTML from a string. Every block type has a
+  renderer. A table is a labelled region that scrolls on its own (`overflow-x-auto`, `tabindex="0"`,
+  named by its caption, and `relative` so that the visually hidden marks inside it are clipped with
+  it: without that they escaped the region and made the whole page scroll sideways), with a caption,
+  `th scope`, numeric columns aligned at the end of the reading direction with tabular digits and
+  cells isolated left to right, the first column sticky at the inline start, the break-even column
+  and the lowest-cash cell marked by an edge and a legend entry (never by colour alone), and a
+  totals row. A low-confidence cell has a wash and a marker, and the section's callout says it.
+  Provenance marks reuse the canvas board's three (source, confidence, validated) with accessible
+  names. The canvas is a read-only board in the standard geometry (`dir="ltr"` in both languages)
+  with no links and the empty reasons in words. Links open only if they are `https`, with
+  `rel="noopener noreferrer"` and `target="_blank"`. A definition list shows the guide's tag and its
+  label «تحقّق من المصدر الرسمي». The contents list is a sticky column at the inline start on a wide
+  screen and a disclosure at the top on a phone. There is one `h1` (the founder's title, escaped,
+  `dir="auto"`) and one `h2` per section; a locked section is its title with a short note and a way
+  on (the questions for a completeness lock; the pricing page for a plan lock, with the words that
+  paid plans open later). Prose is at most 70 characters wide. All the page's own words are in the
+  `report` namespace of both message files; the report's words come from the model.
+- **Reason:** D-267, D-270, D-232; CLAUDE.md rule 11 and section 6.
+- **Status:** Active
+
+### D-275 (2026-10-22): The one reveal motion
+
+- **Decision:** The verdict slab is the one orchestrated motion of the report (CLAUDE.md section 6):
+  on first view it is uncovered from its top edge in 600 ms (`clip-path`) while its word settles
+  by 0.75 rem (`transform`). Nothing else is animated, no opacity (a half-faded word would fail
+  contrast), the slab keeps its size, and it is CSS only. Under `prefers-reduced-motion: reduce` both
+  animations are `none`. Playwright proves both: no animation under reduce; without it the two
+  animations exist, finish, leave the slab uncovered with the word in place, and the slab height is
+  the same at the start and at the end.
+- **Reason:** CLAUDE.md section 6 and rule 11.
+- **Status:** Active
+
+### D-276 (2026-10-22): The gallery and the leak test
+
+- **Decision:** `/design/report` builds models from the fixtures of the three golden projects with
+  `buildReportModel` (no database; `@sbn/report/testing/inputs` is test support and is imported only
+  by that page, so the real route's bundle does not carry it). By default it shows the Jordanian
+  service project as the full report (a Revise); `project` picks the Algerian (Go) or the
+  Jordanian shop (Stop), and `view` picks the full report, the summary locked by the plan, or the
+  summary with no calculable run. The day is fixed at 2026-10-12 and the input hash is null. The page
+  is `noindex`, not in the sitemap, 404 on production and linked from the design index. The leak
+  test (`report-view.test.ts`) builds the Jordanian service project as the plan-locked summary and as
+  the full report, renders the view to static HTML, and asserts that no text that only the locked
+  sections of the full model hold occurs in that HTML or in the JSON of what would cross to the
+  browser; the texts that the open sections, the section titles, the meta and the page's own words
+  also say are excluded, so a leak is a real one. Guard cases show the same texts present for the
+  full model, so the test cannot pass by emptiness. Further cases check that a summary shows the
+  verdict word, the generic sentence and no meter (D-278), and that a stop shows its fixed sentence
+  and three changes. The real route's end-to-end spec (`e2e/auth/report.spec.ts`) covers the gate
+  for a new account (no report, the missing questions, noindex, no founder title in the page title)
+  and accessibility; a project with 40 percent or 80 percent of the answers cannot be made quickly
+  through the browser, so the summary and the full report are proved by the view tests and the
+  gallery specs.
+- **Reason:** D-232, D-237; CLAUDE.md rule 9.
+- **Status:** Active
+
+### D-277 (2026-10-22): The project page entry and the route budget
+
+- **Decision:** The project page has a report entry beside the canvas link. Its text follows the
+  access the account has now: the report (full), the one-page summary (summary or plan-locked),
+  or "the report needs more answers" (none). The report page decides again; the entry only names it.
+  The report route's JavaScript budget in `scripts/check-bundle-budget.mjs` is 194,300 bytes gzipped,
+  its measured 176,573 plus about 10 percent (D-171): the page is a server component, so its client
+  JavaScript is the shared shell.
+- **Reason:** D-171, D-273.
+- **Status:** Active
+
+### D-278 (2026-10-22): The free summary shows the verdict
+
+- **Decision:** The owner decided on 2026-10-13, after step 5a, that the free one-page summary shows
+  the verdict. The model has a new summary section `verdict` (added to `SUMMARY_SECTION_IDS`, titled
+  in both catalogs) that comes first in the summary and holds the model's verdict block for the
+  run: the verdict word, one generic sentence per verdict from new catalog entries
+  (`summaryVerdict`, no digit, for example that the full report explains why and what to change), no
+  score, no meter and no number. For a stop it also holds the fixed stop sentence and the same
+  changes block the executive summary builds, so a stop always comes with exactly three changes
+  (CLAUDE.md section 3); for a go and a revise it holds nothing more. With no calculable run there is
+  no verdict and the section is absent, not locked. Everything else stays locked: the executive
+  summary, the key numbers, the reasons, the criteria table, the tables and the plan are titles only.
+  The proofs follow: the leak proof exempts exactly the blocks and strings of the verdict section,
+  and a new test checks that no other string of a locked section occurs in the summary; the builders
+  of locked sections still never run; the goldens were regenerated and the diff holds only the new
+  section. The report page loads the changes for a stop in the summary too. The summary view needs
+  no new component: the verdict slab draws the block without a meter.
+- **Reason:** The owner's decision of 2026-10-13; D-232; CLAUDE.md section 3.
 - **Status:** Active
