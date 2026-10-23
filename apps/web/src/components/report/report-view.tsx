@@ -77,12 +77,18 @@ export function ReportView({
   labels,
   hrefs,
   actions,
+  embedded = false,
 }: {
   model: ReportModel;
   labels: ReportLabels;
   hrefs: ReportHrefs;
   /** What the founder can do with the report, drawn under its title (the PDF download). */
   actions?: ReactNode;
+  /**
+   * The report sits inside a page that has its own h1 (the public sample report, D-293): the
+   * project's title is then an h2 and there is no link back to a project.
+   */
+  embedded?: boolean;
 }) {
   return (
     <div className="mx-auto max-w-[75rem] px-4 py-10 sm:px-6 lg:grid lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-12">
@@ -94,14 +100,22 @@ export function ReportView({
       </aside>
       <div className="grid min-w-0 content-start gap-10">
         <header className="grid gap-3">
-          <p className="text-small text-muted">
-            <TextLink href={hrefs.project}>{labels.back}</TextLink>
-          </p>
+          {embedded ? null : (
+            <p className="text-small text-muted">
+              <TextLink href={hrefs.project}>{labels.back}</TextLink>
+            </p>
+          )}
           <p className="text-caption text-muted">{labels.kind[model.kind]}</p>
-          <h1 className="text-h1 font-extrabold">
-            {/* Typed by the founder, in any script: its own direction. */}
-            <span dir="auto">{model.meta.title}</span>
-          </h1>
+          {embedded ? (
+            <h2 className="text-h2 font-extrabold">
+              <span dir="auto">{model.meta.title}</span>
+            </h2>
+          ) : (
+            <h1 className="text-h1 font-extrabold">
+              {/* Typed by the founder, in any script: its own direction. */}
+              <span dir="auto">{model.meta.title}</span>
+            </h1>
+          )}
           {model.kind === 'summary' ? (
             <p className="reading text-muted">{labels.summaryLead}</p>
           ) : null}
