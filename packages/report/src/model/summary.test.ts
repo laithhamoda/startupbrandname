@@ -54,10 +54,12 @@ describe('the one-page summary (SPEC section 6)', () => {
           expect(all.filter((entry) => entry.type === 'verdict')).toHaveLength(1);
         });
 
-        it('holds nothing more than the word and the sentence for a go or a revise, and the three changes for a stop', () => {
+        it('holds nothing more than the word and the sentence for a go or a revise (and the before-tax note, D-292), and the three changes for a stop', () => {
           const blocks = model.sections[0]?.blocks ?? [];
+          const notes = blocks.filter((entry) => entry.type === 'note');
+          expect(notes.length).toBeLessThanOrEqual(1);
           if (VERDICT_OF[name] !== 'stop') {
-            expect(blocks).toHaveLength(1);
+            expect(blocks).toHaveLength(1 + notes.length);
             return;
           }
           const table = blocks.find((entry) => entry.type === 'table');
@@ -112,6 +114,37 @@ describe('the one-page summary (SPEC section 6)', () => {
     expect(model.sections.filter((section) => !section.locked)).toHaveLength(3);
     // No calculable run, no verdict: the section is absent, not locked (D-278).
     expect(model.sections.some((section) => section.id === 'verdict')).toBe(false);
+  });
+});
+
+describe('the verdict says when tax was not calculated (D-292)', () => {
+  const noTax = { kind: 'summary', lockReason: 'plan', tax: { rules: [] } } as const;
+
+  for (const name of NAMES) {
+    for (const locale of LOCALES) {
+      it(`puts the before-tax sentence right after the word: ${name} in ${locale}`, () => {
+        const blocks = modelOf(name, locale, noTax).sections[0]?.blocks ?? [];
+        const note = blocks[1];
+        expect(blocks[0]?.type).toBe('verdict');
+        expect(note?.type).toBe('note');
+        expect(note?.type === 'note' ? inlineText(note.text) : '').toBe(
+          messagesFor(locale).executive.beforeTax,
+        );
+      });
+    }
+  }
+
+  it('keeps a stop’s three changes after the sentence, so the note never replaces them', () => {
+    const blocks = modelOf('jo-home-ecommerce', 'en', noTax).sections[0]?.blocks ?? [];
+    expect(blocks.map((entry) => entry.type).slice(0, 2)).toEqual(['verdict', 'note']);
+    const table = blocks.find((entry) => entry.type === 'table');
+    expect(table?.type === 'table' ? table.rows : []).toHaveLength(3);
+  });
+
+  it('says nothing about tax when a regime was calculated', () => {
+    const blocks = modelOf('jo-service-subscription', 'en', { kind: 'summary', lockReason: 'plan' })
+      .sections[0]?.blocks;
+    expect(blocks?.map((entry) => entry.type)).toEqual(['verdict']);
   });
 });
 
