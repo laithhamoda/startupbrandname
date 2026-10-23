@@ -65,11 +65,14 @@ export function ReportBlock({
   id,
   locale,
   labels,
+  still,
 }: {
   block: Block;
   id: string;
   locale: 'ar' | 'en';
   labels: ReportLabels;
+  /** Draw a verdict slab without its reveal motion (the project page, D-287). */
+  still?: boolean;
 }) {
   switch (block.type) {
     case 'paragraph':
@@ -122,7 +125,7 @@ export function ReportBlock({
         </ul>
       );
     case 'verdict':
-      return <ReportVerdict block={block} labels={labels} />;
+      return <ReportVerdict block={block} labels={labels} still={still} />;
     case 'table':
       return <ReportTable block={block} id={id} labels={labels} />;
     case 'definitionList':

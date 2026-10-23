@@ -15,6 +15,8 @@ const PAGES = [
   '/en/design/report',
   '/ar/design/report?project=jo-home-ecommerce&view=plan',
   '/en/design/report?project=dz-auto-entrepreneur',
+  '/ar/design/report?project=jo-home-ecommerce&view=result',
+  '/en/design/report?project=jo-service-subscription&view=result',
   '/ar/signup',
   '/en/signup',
   '/ar/login',

@@ -48,13 +48,15 @@ test.describe('design system snapshots', () => {
     }
   }
 
-  // The report on screen, the verdict of each golden project and a locked summary (M5 step 5b).
+  // The report on screen, the verdict of each golden project and a locked summary (M5 step 5b),
+  // and the four states of the result region on the project page (D-286).
   for (const locale of LOCALES) {
     for (const viewport of VIEWPORTS) {
       for (const scheme of SCHEMES) {
         for (const [name, query] of [
           ['full', 'project=jo-service-subscription'],
           ['stop', 'project=jo-home-ecommerce&view=plan'],
+          ['result', 'project=jo-home-ecommerce&view=result'],
         ] as const) {
           test(`${locale} report ${name} at ${viewport.name} width in ${scheme} theme`, async ({
             page,

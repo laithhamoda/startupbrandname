@@ -36,6 +36,11 @@ export interface ReportPageOptions {
   readonly locale: Language;
   /** The label after an amount in a currency: the symbol where the site has one, else the code. */
   readonly currencyLabel: (code: string) => string;
+  /**
+   * Build the one-page summary whatever the account may open. The project page draws the verdict
+   * from it and must not pay for a full report and a read of the pack (D-287).
+   */
+  readonly summaryOnly?: boolean;
   readonly now?: Date;
 }
 
@@ -73,12 +78,19 @@ export async function loadReportPage(
     };
   }
 
+  // The project page asks for the summary alone: an account that may open the full report gets the
+  // summary there, and the verdict is the same word in both kinds (D-287).
+  const shown: typeof decided =
+    options.summaryOnly === true && decided.kind === 'full'
+      ? { kind: 'summary', lockReason: 'completeness' }
+      : decided;
+
   // The search for the changes that would change the verdict runs per request, and only when a
   // page shows it: the full report for a revise or a stop, and the free summary for a stop, which
   // always comes with its three changes (D-273, D-278).
   let changes: SuggestedChanges | null = null;
   const verdict = run?.verdict.verdict.value ?? 'go';
-  if (run !== null && (decided.kind === 'full' ? verdict !== 'go' : verdict === 'stop')) {
+  if (run !== null && (shown.kind === 'full' ? verdict !== 'go' : verdict === 'stop')) {
     try {
       changes = suggestChanges(run, { rules: source.taxRules }, {}, pricingOptionsOf(source));
     } catch (error) {
@@ -86,7 +98,7 @@ export async function loadReportPage(
     }
   }
   const packItems =
-    decided.kind === 'full'
+    shown.kind === 'full'
       ? await loadPackItems(supabase, source.project.countryCode, projectId)
       : [];
 
@@ -94,8 +106,8 @@ export async function loadReportPage(
   try {
     const model = buildReportModel({
       locale: options.locale,
-      kind: decided.kind,
-      lockReason: decided.lockReason,
+      kind: shown.kind,
+      lockReason: shown.lockReason,
       audience: audienceOfAnswers(source.answers),
       project: {
         title: source.project.title,

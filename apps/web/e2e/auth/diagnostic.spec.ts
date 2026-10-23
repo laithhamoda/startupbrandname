@@ -87,6 +87,15 @@ test('a founder answers the quick diagnostic and unlocks the one-page summary', 
   await expect(page).toHaveURL(/\/ar\/projects\/[0-9a-f-]{36}$/);
   await expect(page.getByText('53%')).toBeVisible();
   await expect(page.getByText(/الملخّص في صفحة واحدة: من 40%\. متاح\./)).toBeVisible();
+
+  // The check result is on the page too. «لا أعرف» on the price, the costs and the sales cannot be
+  // calculated, so the region lists what to answer, each with a link, instead of a verdict (D-286).
+  const result = page.getByRole('region', { name: 'نتيجة الفحص' });
+  await expect(result.getByText('لم نحسب الأرقام بعد')).toBeVisible();
+  await expect(result.getByRole('link').first()).toBeVisible();
+  await expect(result.locator('[data-verdict]')).toHaveCount(0);
+  // With no question left, the way to the result is the primary action of the page.
+  await expect(page.getByRole('link', { name: 'نتيجة فحص مشروعك' })).toHaveClass(/bg-gold/);
   await expect(page.getByRole('heading', { name: 'مهام التحقّق' })).toBeVisible();
 });
 
