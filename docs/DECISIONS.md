@@ -42,7 +42,7 @@ A decision may sit under several topics. A new decision joins its topics in the 
   D-149, D-156 to D-161, D-163, D-165, D-167, D-182, D-183, D-197 to D-199, D-231, D-232, D-249, D-252.
 - **Calculation engine:** D-178 to D-190, D-193 to D-196, D-200 to D-224, D-227 to D-230,
   D-238, D-244, D-246 to D-248, D-251, D-260 to D-262.
-- **Report, canvases and PDF (M5):** D-225 to D-253, D-260 to D-285.
+- **Report, canvases and PDF (M5):** D-225 to D-253, D-260 to D-287.
 - **AI and cost:** D-062, D-071, D-072, D-073, D-082, D-103, D-107, D-119 to D-124, D-143, D-146 to
   D-152, D-155, D-183, D-191, D-226.
 - **Privacy, consent and security:** D-013, D-016, D-040, D-041, D-061, D-062, D-074, D-077,
@@ -2293,7 +2293,8 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   its measured 176,573 plus about 10 percent (D-171): the page is a server component, so its client
   JavaScript is the shared shell.
 - **Reason:** D-171, D-273.
-- **Status:** Active
+- **Status:** Amended by D-286: the entry is named «نتيجة فحص مشروعك» at every gate except for an
+  account that may open the full report, and the page draws the result itself.
 
 ### D-278 (2026-10-22): The free summary shows the verdict
 
@@ -2449,3 +2450,40 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   `docs/M5-PLAN.md` and `docs/architecture.md`.
 - **Reason:** D-242; the lead measures a real report before the route goes.
 - **Status:** Superseded: the route was removed in the last commit of this pull request, after the measurement recorded in D-282.
+
+### D-286 (2026-10-23): The check result on the project page
+
+- **Decision:** The project page draws the check result in its own region under the title, headed
+  «نتيجة الفحص» (Check result). By state it shows: the verdict slab of the one-page summary (the
+  verdict word, and for a stop its fixed sentence and its three changes) when the numbers could be
+  calculated; the report's own notice, with what to answer or correct and a link to each question,
+  when the answers are enough but the numbers cannot be calculated; one statement that the result
+  needs more answers below the summary gate; and one sentence when the calculation failed. The region
+  is the first section of the summary as the report builds it, so the page and the report never give
+  two readings of the same answers, and it shows no more than the free summary shows (D-278),
+  whatever the account may open. The entry to the report is named «نتيجة فحص مشروعك» (Your
+  project’s check result) at every gate, and «تقرير المشروع» for an account that may open the full
+  report; it is the primary action when the diagnostic has no question left. The sentence after the
+  last question says the result is below.
+- **Reason:** On 2026-10-23 the owner finished a project on the live site at 100%, could not find
+  the result and asked whether to go ahead, revise or stop. The result was behind a button named for
+  the summary, and the page after the last question did not mention it. CLAUDE.md section 3 ends the
+  analysis with the verdict, so a founder must meet it where the diagnostic ends.
+- **Status:** Active
+
+### D-287 (2026-10-23): How the project page gets its result
+
+- **Decision:** `loadReportPage` takes `summaryOnly`: an account that may open the full report is
+  given the summary there, so the project page never builds a full report or reads the pack.
+  `loadProjectResult` maps the page to the four states of D-286, never throws, and logs
+  `project.result_failed`. The search for the changes of a stop runs on each visit, as on the report
+  page: about 0.3 s for the golden Jordanian shop, measured in WSL (the summary searches for a stop
+  only, so a revise or a go costs no search). The region is not streamed with Suspense, because its
+  height differs by state and a placeholder would shift the page; revisit it if the time on Vercel
+  is felt. The slab is drawn `still` on the project page: the reveal is the one orchestrated motion
+  of the product (CLAUDE.md section 6) and belongs to the moment the report opens, not to every
+  visit of a page the founder uses all the time. The gallery has a `?view=result` view of the four
+  states, checked for accessibility and snapshotted.
+- **Reason:** One loader and one model, no second reading of the answers (rule 3); a cost that is
+  measured; a calm page to come back to.
+- **Status:** Active

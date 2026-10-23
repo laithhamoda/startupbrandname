@@ -152,3 +152,7 @@ Mixed currencies stay uncompared until #21 is answered (D-113).
 ## Added 2026-10-22
 
 100. `M5` Report PDF readings to confirm (D-279 to D-285). (a) The PDF of an account whose plan locks sections is the locked summary, with titles only, the same as the page shows. (b) The fill-in strip under each experiment (success line, result, decision) is on paper only; the screen does not show it. (c) The Arabic text layer (#95) is unchanged: the PDF is drawn correctly but copying Arabic from it is not reliable. (d) A try whose upload fails still counts against the daily limit, because the storage policy needs the report row before the file (D-281); changing that needs a small database change. (e) The page number is drawn by the document, and the running title is the project's title.
+
+## Added 2026-10-23
+
+101. `M5` Check result on the project page, readings to confirm (D-286, D-287). (a) The project page shows the verdict word to every account at or above the summary gate, as the free summary does (D-278); for a stop it also shows the three changes, which makes that page long, and showing the sentence with a link to the changes is a small change. (b) The entry is «نتيجة فحص مشروعك» at every gate and «تقرير المشروع» for an account that may open the full report. (c) The result is calculated on each visit of the project page, with no stored copy; a stop adds about 0.3 s.
