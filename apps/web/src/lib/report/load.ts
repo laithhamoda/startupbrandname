@@ -2,12 +2,11 @@ import 'server-only';
 import { type NotCalculableReason, suggestChanges, type SuggestedChanges } from '@sbn/engine';
 import { completeness, displayPercent, type Language, type StepId } from '@sbn/question-bank';
 import { audienceOfAnswers, buildReportModel, type ReportModel } from '@sbn/report/model';
-import { getPreviewEmails } from '@/env/server';
-import { accessFor } from '@/lib/entitlements';
 import { analyseProject, pricingOptionsOf, referenceDateOf } from '@/lib/engine/analyse';
 import { errorFields, log } from '@/lib/log';
 import type { SupabaseServerClient } from '@/lib/supabase/server';
 import { degradeWithoutRun, reportModeOf } from './access';
+import { accountAccess } from './account-access';
 import { loadPackItems } from './pack';
 
 /** How many missing questions the "not enough answers" page lists. */
@@ -61,12 +60,8 @@ export async function loadReportPage(
   const { source, outcome } = analysis;
   const score = completeness(source.answers);
 
-  const preview = getPreviewEmails();
-  if (!preview.valid) await log.warn('report.preview_list_invalid', { projectId });
-  const access = accessFor(
-    { email: options.email, planId: null },
-    { previewEmails: preview.emails },
-  );
+  const { access, previewListValid } = accountAccess(options.email);
+  if (!previewListValid) await log.warn('report.preview_list_invalid', { projectId });
   const mode = reportModeOf(score.gate, access);
   const run = outcome.status === 'ok' ? outcome.run : null;
   const decided = degradeWithoutRun(mode, run !== null);

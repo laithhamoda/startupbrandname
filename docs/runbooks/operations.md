@@ -258,19 +258,20 @@ ran again (Supabase → Integrations → Cron), and re-run any `DB deploy` that 
 Vercel applies a variable change to the next deployment only: redeploy after changing one.
 `NEXT_PUBLIC_` values are also built into the browser code.
 
-| Variable                                | Local (`apps/web/.env.local`)         | Preview (Vercel)                           | Production (Vercel)                         |
-| --------------------------------------- | ------------------------------------- | ------------------------------------------ | ------------------------------------------- |
-| `NEXT_PUBLIC_SUPABASE_URL`              | `http://127.0.0.1:54321`              | `https://mllysinjzlkhpcgbckil.supabase.co` | `https://blexotsepkuslrnawbbq.supabase.co`  |
-| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`  | Printed by `pnpm db:start`            | Staging publishable key                    | Production publishable key                  |
-| `LOG_LEVEL`                             | `info`                                | Unset (`info`)                             | Unset (`info`)                              |
-| `MARKET_DZ_ENABLED`                     | `true`                                | Unset (`true`, D-068)                      | Unset (`true`, D-068); the Algeria switch   |
-| `SITE_INDEXABLE`                        | `false`                               | Ignored outside production                 | `false` until public launch                 |
-| `AUTH_GOOGLE_ENABLED`                   | `false` (`test:e2e:auth` sets `true`) | `true` once Google is set up for staging   | `true` once Google is set up for production |
-| `AUTH_GOOGLE_VERIFY_PROVIDER`           | Unset; tests only                     | Never set                                  | Never set                                   |
-| `AI_PROVIDER`                           | `fake`                                | Unset (`anthropic`)                        | Unset (`anthropic`); `fake` turns AI off    |
-| `ANTHROPIC_API_KEY`                     | Unset                                 | Sensitive                                  | Sensitive                                   |
-| `FULL_REPORT_PREVIEW_EMAILS`            | Unset (nobody)                        | The owner's address, if needed             | The owner's address; removed with M7        |
-| `VERCEL`, `VERCEL_ENV`, `VERCEL_REGION` | Unset                                 | Set by Vercel                              | Set by Vercel                               |
+| Variable                                | Local (`apps/web/.env.local`)         | Preview (Vercel)                           | Production (Vercel)                              |
+| --------------------------------------- | ------------------------------------- | ------------------------------------------ | ------------------------------------------------ |
+| `NEXT_PUBLIC_SUPABASE_URL`              | `http://127.0.0.1:54321`              | `https://mllysinjzlkhpcgbckil.supabase.co` | `https://blexotsepkuslrnawbbq.supabase.co`       |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`  | Printed by `pnpm db:start`            | Staging publishable key                    | Production publishable key                       |
+| `LOG_LEVEL`                             | `info`                                | Unset (`info`)                             | Unset (`info`)                                   |
+| `MARKET_DZ_ENABLED`                     | `true`                                | Unset (`true`, D-068)                      | Unset (`true`, D-068); the Algeria switch        |
+| `SITE_INDEXABLE`                        | `false`                               | Ignored outside production                 | `false` until public launch                      |
+| `AUTH_GOOGLE_ENABLED`                   | `false` (`test:e2e:auth` sets `true`) | `true` once Google is set up for staging   | `true` once Google is set up for production      |
+| `AUTH_GOOGLE_VERIFY_PROVIDER`           | Unset; tests only                     | Never set                                  | Never set                                        |
+| `AI_PROVIDER`                           | `fake`                                | Unset (`anthropic`)                        | Unset (`anthropic`); `fake` turns AI off         |
+| `ANTHROPIC_API_KEY`                     | Unset                                 | Sensitive                                  | Sensitive                                        |
+| `FULL_REPORT_PREVIEW_EMAILS`            | Unset (nobody)                        | The owner's address, if needed             | The owner's address; removed with M7             |
+| `EARLY_ACCESS_FULL_REPORT`              | Unset (off)                           | Unset (off)                                | `true` while early access lasts; removed with M7 |
+| `VERCEL`, `VERCEL_ENV`, `VERCEL_REGION` | Unset                                 | Set by Vercel                              | Set by Vercel                                    |
 
 `FULL_REPORT_PREVIEW_EMAILS` (D-245) is a comma-separated list of addresses that see the full report
 before paid plans exist. The owner sets it on Vercel and changes it there; it is read on the next
@@ -278,6 +279,13 @@ deployment, and an empty or unset value means nobody. One malformed address (a s
 stray word) makes the whole list empty and logs `report.preview_list_invalid`, so nobody sees the
 full report and the rest of the site keeps working. It is removed with M7, when the entitlements
 come from the account's plan.
+
+`EARLY_ACCESS_FULL_REPORT` (D-290) is the switch for early access: exactly `true` opens the full report
+to every signed-in account whose answers reach the full-report gate (80% with the price, costs and
+sales answered); anything else, including a typo, is off, and the page does not fail. The owner sets
+it on Vercel for Production and redeploys; setting it back to `false` or removing it ends early access
+at the next deployment. While it is on, the pricing page says so, and the PDF download needs the M5
+migrations on that database (`reports` and its bucket). It is removed with M7.
 
 `LOG_LEVEL` sets the lowest level that `apps/web/src/lib/log.ts` writes to the server logs (D-126). The
 schemas are `apps/web/src/env/server.ts` and `client.ts`; a new variable follows the checklist in
