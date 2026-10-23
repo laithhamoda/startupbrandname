@@ -30,6 +30,7 @@ export function JsonLd({ data }: { data: WithContext<Thing> }) {
   );
 }
 
+export const LOGO_URL = `${site.origin}/brand/logo-512.png`;
 const ORGANIZATION_ID = `${site.origin}/#organization`;
 const WEBSITE_ID = `${site.origin}/#website`;
 
@@ -39,8 +40,9 @@ export function pageUrl(locale: Locale, path: string): string {
 }
 
 /**
- * Only facts that are true today; logo, founder and social profiles are added when they exist.
- * `descriptor` is the translated "Business Model Studio" for the page's language.
+ * Only facts that are true today; founder and social profiles are added when they exist.
+ * `descriptor` is the translated "Business Model Studio" for the page's language. The logo is the
+ * square 512 pixel image of the brand kit (D-289); Google asks for at least 112 pixels.
  */
 export function organizationJsonLd(descriptor: string): WithContext<Organization> {
   return {
@@ -50,6 +52,7 @@ export function organizationJsonLd(descriptor: string): WithContext<Organization
     name: site.name,
     alternateName: descriptor,
     url: site.origin,
+    logo: LOGO_URL,
   };
 }
 

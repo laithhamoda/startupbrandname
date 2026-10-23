@@ -51,7 +51,7 @@ A decision may sit under several topics. A new decision joins its topics in the 
 - **Legal:** D-059, D-066, D-068, D-082, D-086, D-137, D-145, D-147, D-154, D-186, D-233, D-263,
   D-266, D-270, D-271, D-279.
 - **Design and accessibility:** D-007, D-008, D-049 to D-053, D-055 to D-058, D-099, D-118, D-128,
-  D-131, D-158, D-159, D-161, D-162, D-170, D-231, D-249, D-250.
+  D-131, D-158, D-159, D-161, D-162, D-170, D-231, D-249, D-250, D-289.
 - **Public site and SEO:** D-027, D-054, D-076, D-090 to D-098, D-100, D-101, D-153.
 - **Performance:** D-054, D-150, D-151, D-167 to D-171, D-250.
 - **CI and repository:** D-001 to D-007, D-012 to D-016, D-020, D-023 to D-025, D-028, D-030 to
@@ -2502,4 +2502,29 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   fingerprint, so the same text anywhere else is still reported.
 - **Reason:** As D-125: a false positive in branch history; rewriting published history needs a force
   push, and a narrow ignore keeps the full-history scan strict.
+- **Status:** Active
+
+### D-289 (2026-10-23): The supplied logo becomes the website icons
+
+- **Decision:** The logo the owner supplied on 2026-10-23 (a 1024 by 559 raster with a light and a
+  dark version) is rebuilt as clean vector geometry in `apps/web/scripts/brand/mark.mjs`, traced from
+  the raster and regularised: it matches the original within about one pixel (mean difference 4 of
+  255 on the light version), with straight edges and seams that share their corners. The colours are
+  the brand's own: teal #1FA3C7 for the top faces, gold #D4A537 for the square, and one deeper teal
+  for the side faces, as in the logo. `pnpm brand:build` writes every image into `apps/web/public`:
+  the tab icon `icon.svg` (transparent; the top face of the arrowhead turns gold on a dark browser
+  theme, as in the owner's dark version) and `favicon.ico` (16, 32 and 48 pixels, as PNG images);
+  the app icons on the brand black (`apple-touch-icon.png` 180, `icon-192.png`, `icon-512.png`,
+  and `icon-maskable-512.png` whose mark stays inside the central 80% circle); `brand/logo-512.png`
+  (transparent, square) for the structured data; and the mark in four forms under `public/brand`
+  (light, on dark, mono black, mono white). The sizes of 32 pixels and below use a wider gap
+  between the two pieces, so it survives at 16 pixels. The layout declares the icons and the
+  manifest (`display: browser`: no promise of an installed app), the Organization structured data
+  carries the logo, and the share-image card carries the mark. The header keeps the name as live
+  text: the supplied wordmark is a raster in a font that is not known, so it cannot be rebuilt
+  faithfully. `docs/design/brand.md` is the kit's usage guide.
+- **Reason:** The owner asked for the logo as the website icon with the standards of an international
+  design. A raster of 150 pixels cannot serve a 512 pixel icon, and at 16 pixels the full mark is a
+  blur, so the master is a vector and the small sizes are drawn for their size. One generator keeps
+  every size in step when the mark changes.
 - **Status:** Active
