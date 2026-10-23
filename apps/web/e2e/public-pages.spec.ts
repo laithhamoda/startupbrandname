@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { inFooter, ogImageName, PUBLIC_PAGES } from '../src/config/public-pages';
+import { ogImageName, PUBLIC_PAGES } from '../src/config/public-pages';
 
 const LOCALES = ['ar', 'en'] as const;
 const ORIGIN = 'https://startupbrandname.com';
@@ -63,10 +63,15 @@ test('every public page is reachable from the footer', async ({ page }) => {
   await page.goto('/en');
   const footer = page.getByRole('navigation', { name: 'Platform pages' });
 
-  for (const { path } of PUBLIC_PAGES.filter(
-    (candidate) => candidate.path !== '' && inFooter(candidate),
-  )) {
+  for (const { path } of PUBLIC_PAGES.filter((candidate) => candidate.path !== '')) {
     await expect(footer.locator(`a[href="/en${path}"]`)).toHaveCount(1);
+  }
+});
+
+test('the home page leads to the sample report', async ({ page }) => {
+  for (const locale of LOCALES) {
+    await page.goto(`/${locale}`);
+    await expect(page.locator(`main a[href="/${locale}/sample-report"]`)).toHaveCount(1);
   }
 });
 

@@ -42,7 +42,7 @@ A decision may sit under several topics. A new decision joins its topics in the 
   D-149, D-156 to D-161, D-163, D-165, D-167, D-182, D-183, D-197 to D-199, D-231, D-232, D-249, D-252.
 - **Calculation engine:** D-178 to D-190, D-193 to D-196, D-200 to D-224, D-227 to D-230,
   D-238, D-244, D-246 to D-248, D-251, D-260 to D-262.
-- **Report, canvases and PDF (M5):** D-225 to D-253, D-260 to D-287, D-290, D-292, D-293.
+- **Report, canvases and PDF (M5):** D-225 to D-253, D-260 to D-287, D-290, D-292 to D-294.
 - **AI and cost:** D-062, D-071, D-072, D-073, D-082, D-103, D-107, D-119 to D-124, D-143, D-146 to
   D-152, D-155, D-183, D-191, D-226.
 - **Privacy, consent and security:** D-013, D-016, D-040, D-041, D-061, D-062, D-074, D-077,
@@ -52,7 +52,8 @@ A decision may sit under several topics. A new decision joins its topics in the 
   D-266, D-270, D-271, D-279.
 - **Design and accessibility:** D-007, D-008, D-049 to D-053, D-055 to D-058, D-099, D-118, D-128,
   D-131, D-158, D-159, D-161, D-162, D-170, D-231, D-249, D-250, D-289.
-- **Public site and SEO:** D-027, D-054, D-076, D-090 to D-098, D-100, D-101, D-153, D-291, D-293.
+- **Public site and SEO:** D-027, D-054, D-076, D-090 to D-098, D-100, D-101, D-153, D-291, D-293 to
+  D-295.
 - **Performance:** D-054, D-150, D-151, D-167 to D-171, D-250.
 - **CI and repository:** D-001 to D-007, D-012 to D-016, D-020, D-023 to D-025, D-028, D-030 to
   D-033, D-039 to D-041, D-048, D-055, D-083, D-097, D-125, D-127, D-134, D-136, D-139 to D-142,
@@ -2591,4 +2592,38 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   gives. The real view means the sample cannot look different from the product; a frozen model needs
   no database, account or cost. Country law and tax carry a source and a date, which a page that
   goes stale cannot keep.
+- **Status:** Active (the footer and home page part is superseded by D-295)
+
+### D-294 (2026-10-23): The sample report shows the verdict "go"
+
+- **Decision:** The owner asked for a sample with the verdict «امضِ». The golden project's own
+  forecast (200 subscribers from month 6) gives «عدّل», so the sample changes that one answer, the
+  sales forecast (F6), to 280 subscribers for months 6 to 12 and runs the engine's ordinary rules
+  on it: 8 of 10 criteria (80%, above the 75% line), no blocker, confidence high, tax not
+  calculated. The engine's threshold is 272 subscribers (271 stays "revise"); 280 is the smallest
+  multiple of ten above it, and it is the 7/5 factor that the engine's own change search proposes
+  for the 200 forecast (one of its three single changes, each of which reaches "go"). Everything
+  else in the sample, the golden fixtures and the engine are unchanged: every number on the page
+  is still the engine's. Two criteria stay unmet (funding
+  within the stated capital, and break-even in the conservative scenario) and the report lists
+  them as it does for any project. `sample-report.test.ts` builds the sample with the change and
+  asserts the verdict is "go", and the e2e check asserts one `data-verdict="go"` slab.
+- **Reason:** A first-time visitor should see what a positive result looks like, and the owner chose
+  it. Changing one answer of an existing fictional project, and letting the engine judge it, keeps
+  the sample honest: no verdict or number is written by hand (rule 1), and a future engine change
+  that flips the verdict fails the test and shows in review.
+- **Status:** Active
+
+### D-295 (2026-10-23): The sample report is linked from the footer and the home page
+
+- **Decision:** The owner asked for the link in the footer and on the home page. The footer's list
+  of pages gets "Sample report" after "Pricing" (message `nav.sampleReport`), and the home page's
+  first screen gets a second text link beside "How it works". The `footer: false` flag and the
+  `inFooter()` helper of D-293 are removed, so the e2e check that the footer links every public
+  page applies to all of them again; a second e2e check asserts that the home page leads to the
+  sample in both languages. The header menu is unchanged.
+- **Reason:** D-293 kept the page out of the footer so that its first pull request changed no
+  snapshot. With the page live and its verdict chosen by the owner, the footer and the home page
+  are where a founder looks for it. The footer is on every page, so the baselines of the pages
+  that show it and of the home page are regenerated with the manual workflow (D-055).
 - **Status:** Active

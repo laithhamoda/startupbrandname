@@ -40,6 +40,7 @@ export default async function HomePage() {
               {c.start}
             </ButtonLink>
             <TextLink href="/how-it-works">{c.secondary}</TextLink>
+            <TextLink href="/sample-report">{c.sample}</TextLink>
           </div>
           <p className="reading border-s-2 border-hairline ps-3 text-small text-muted">
             {c.status}
