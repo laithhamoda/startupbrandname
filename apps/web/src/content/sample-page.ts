@@ -28,7 +28,7 @@ export const SAMPLE_PAGE: Localized<SamplePageContent> = {
     heading: 'Sample report',
     lead: 'This is what you get when you finish the diagnostic of your project: a full report with a clear verdict and numbers that the engine calculates with fixed formulas, each carrying its source and its confidence.',
     notice:
-      'An illustrative sample for a fictional project: a monthly software subscription in Amman. All its figures and names are made up for the sample: they are not data about a real market and not a recommendation.',
+      'An illustrative sample for a fictional project: a monthly software subscription in Amman. All its figures and names are made up for the sample: they are not data about a real market and not a recommendation. The words its founder typed, such as the title and the names of the costs, stay in Arabic, as they would in your report.',
     omitted:
       'The sample leaves out the legal path and the tax notices: your report builds them from your country’s data, verified against its sources and dated, and we do not freeze them in a page that goes stale. When that data does not exist for your country, your report says so plainly and puts in no number of its own.',
     start: 'Start your diagnostic for free',
