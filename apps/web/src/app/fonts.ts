@@ -2,8 +2,8 @@ import localFont from 'next/font/local';
 
 // Cairo (headings) and Tajawal (text), both SIL OFL 1.1, are files in this repository, so a build
 // downloads nothing (D-254). They are the files `next/font/google` served until then, one per
-// script: a page preloads six of them, 102,924 B (D-170 counted 102,528 B of an earlier revision).
-// Their source, checksums and how to replace them: styles/fonts/README.md.
+// script: a page still preloads the same six, 102,528 B (D-170). Their source, checksums and how
+// to replace them: styles/fonts/README.md.
 //
 // `next/font/local` sets one `unicode-range` for a whole call and accepts literal values only, so
 // each script is its own call, as it was its own block of Google's stylesheet, and the ranges are

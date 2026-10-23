@@ -1869,9 +1869,12 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   `app/fonts.ts` loads them with `next/font/local`, one call per script, because `next/font/local`
   sets one `unicode-range` per call; the thirteen ranges are Google's, checked against its CSS on
   2026-10-23. `globals.css` joins the pieces into `--font-cairo` and `--font-tajawal`, so no other
-  style changes. The files are the revision Google serves on that day (Cairo v31, Tajawal v12),
-  which is also what the snapshot baselines drawn that day used. The six that a page preloads weigh
-  102,924 B (D-170 counted 102,528 B of an earlier revision).
+  style changes. The files are byte for byte the ones `next/font/google` downloaded, which Google
+  serves to the User-Agent that Next.js sends (checked by downloading them again, and the live site
+  serves the same bytes): a page still preloads the same six, 102,528 B (D-170). A current browser
+  gets other files, a few hundred bytes larger, that draw the text a little differently: a first
+  attempt with those files changed the height and the pixels of the pages and failed 80 snapshot
+  tests, so the README says not to take the files from a browser.
 - **Reason:** A preview build failed on 2026-10-12, and the CI build of a pull request failed on
   2026-10-23, because the build could not download the fonts from Google: a transient failure that
   blocks a deployment or a merge for no reason in the code. Pinning the files ends that, stops the
