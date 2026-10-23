@@ -42,7 +42,7 @@ A decision may sit under several topics. A new decision joins its topics in the 
   D-149, D-156 to D-161, D-163, D-165, D-167, D-182, D-183, D-197 to D-199, D-231, D-232, D-249, D-252.
 - **Calculation engine:** D-178 to D-190, D-193 to D-196, D-200 to D-224, D-227 to D-230,
   D-238, D-244, D-246 to D-248, D-251, D-260 to D-262.
-- **Report, canvases and PDF (M5):** D-225 to D-253, D-260 to D-287, D-290, D-292.
+- **Report, canvases and PDF (M5):** D-225 to D-253, D-260 to D-287, D-290, D-292, D-293.
 - **AI and cost:** D-062, D-071, D-072, D-073, D-082, D-103, D-107, D-119 to D-124, D-143, D-146 to
   D-152, D-155, D-183, D-191, D-226.
 - **Privacy, consent and security:** D-013, D-016, D-040, D-041, D-061, D-062, D-074, D-077,
@@ -52,7 +52,7 @@ A decision may sit under several topics. A new decision joins its topics in the 
   D-266, D-270, D-271, D-279.
 - **Design and accessibility:** D-007, D-008, D-049 to D-053, D-055 to D-058, D-099, D-118, D-128,
   D-131, D-158, D-159, D-161, D-162, D-170, D-231, D-249, D-250, D-289.
-- **Public site and SEO:** D-027, D-054, D-076, D-090 to D-098, D-100, D-101, D-153, D-291.
+- **Public site and SEO:** D-027, D-054, D-076, D-090 to D-098, D-100, D-101, D-153, D-291, D-293.
 - **Performance:** D-054, D-150, D-151, D-167 to D-171, D-250.
 - **CI and repository:** D-001 to D-007, D-012 to D-016, D-020, D-023 to D-025, D-028, D-030 to
   D-033, D-039 to D-041, D-048, D-055, D-083, D-097, D-125, D-127, D-134, D-136, D-139 to D-142,
@@ -2569,4 +2569,26 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   note.
 - **Reason:** No `tax_rules` row exists yet (D-233), so every verdict on the live site is before tax
   by design, and a founder who reads «امضِ» must not read it as after tax.
+- **Status:** Active
+
+### D-293 (2026-10-23): A public sample report: the real report view over a frozen model of a fictional project
+
+- **Decision:** `/sample-report` (Arabic and English) shows a full report drawn by the same
+  `ReportView` as the real one, over a frozen model in
+  `apps/web/src/content/sample-report/{ar,en}.json`. `ReportView` gets an `embedded` flag: the page
+  has its own h1, so the project title becomes an h2 and the back link goes. The model is the
+  fictional project of the golden fixture `jo-service-subscription` (a monthly software subscription
+  in Amman), built as a full report with no tax rule and no country-pack item, and the legal and tax
+  notices are removed from the "legal path and financing" section (only its list stays), so no
+  country data is frozen into a page (rule 8) and none is made up (rule 9). `sample-report.test.ts`
+  rebuilds the model and fails when the files differ, so the sample cannot drift from the engine or
+  the report; `UPDATE_SAMPLE=1` rewrites them and refuses to run in CI. The page says first what it
+  is and what it leaves out and why, offers sign-up and the plans, has no PDF button and needs no
+  database or account. It is in the sitemap and in the related links of "pricing" and "how it works";
+  it is not yet in the footer or on the home page (`footer: false` in `PUBLIC_PAGES`, read through
+  `inFooter()`), so the footer and every existing snapshot stay unchanged.
+- **Reason:** The address was a 404, and a founder decides to sign up by seeing what the product
+  gives. The real view means the sample cannot look different from the product; a frozen model needs
+  no database, account or cost. Country law and tax carry a source and a date, which a page that
+  goes stale cannot keep.
 - **Status:** Active

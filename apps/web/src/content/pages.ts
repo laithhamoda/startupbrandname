@@ -28,6 +28,12 @@ export const PAGE_META: Localized<Record<PublicPageId, PageMeta>> = {
         'خطط المنصة بالدولار الأمريكي: المجانية والأسبوعية والشهرية والسنوية، وما تتضمّنه كل خطة.',
       card: 'خطط واضحة بالدولار الأمريكي',
     },
+    sampleReport: {
+      title: 'تقرير نموذجي',
+      description:
+        'اطّلع على تقرير كامل لمشروع افتراضي: الحكم، والأرقام المحسوبة، والإسقاط المالي، والسيناريوهات، وخطة التحقق، قبل أن تبدأ تشخيص مشروعك.',
+      card: 'شاهد تقريرًا كاملًا قبل أن تبدأ',
+    },
     glossary: {
       title: 'مسرد مصطلحات نموذج العمل',
       description:
@@ -71,6 +77,12 @@ export const PAGE_META: Localized<Record<PublicPageId, PageMeta>> = {
       description:
         'The platform’s plans in US dollars: free, weekly, monthly and annual, and what each one includes.',
       card: 'Clear plans in US dollars',
+    },
+    sampleReport: {
+      title: 'Sample report',
+      description:
+        'See a full report for a fictional project: the verdict, calculated numbers, projection, scenarios and validation plan, before you start your own diagnostic.',
+      card: 'See a full report before you start',
     },
     glossary: {
       title: 'Business model glossary',

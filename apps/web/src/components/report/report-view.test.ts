@@ -264,6 +264,41 @@ describe('a founder text in the title', () => {
   });
 });
 
+describe('a report inside a page that has its own h1 (the sample report, D-293)', () => {
+  const embeddedHtml = (model: ReportModel) =>
+    renderToStaticMarkup(
+      createElement(ReportView, {
+        model,
+        labels: catalogues[model.locale].report,
+        hrefs: HREFS,
+        embedded: true,
+      }),
+    );
+
+  it('has no h1 of its own and shows the project title as an h2', () => {
+    const model = modelOf({ locale: 'en', kind: 'full' });
+    const html = embeddedHtml(model);
+    expect(html).not.toContain('<h1');
+    expect(html).toContain('<h2 class="text-h2 font-extrabold"><span dir="auto">');
+    expect(html).toContain(escapeHtml(model.meta.title));
+  });
+
+  it('has no link back to a project, but keeps the contents list and every section', () => {
+    const model = modelOf({ locale: 'ar', kind: 'full' });
+    const html = embeddedHtml(model);
+    expect(html).not.toContain(escapeHtml(catalogues.ar.report.back));
+    expect(html).toContain(escapeHtml(catalogues.ar.report.contents.title));
+    for (const section of model.sections) expect(html).toContain(`id="section-${section.id}"`);
+  });
+
+  it('leaves the ordinary report as it was: one h1 and the link back', () => {
+    const model = modelOf({ locale: 'en', kind: 'full' });
+    const html = htmlOf(model);
+    expect(html.match(/<h1/g)).toHaveLength(1);
+    expect(html).toContain(escapeHtml(catalogues.en.report.back));
+  });
+});
+
 describe('httpsUrl', () => {
   it('keeps https addresses and refuses everything else', () => {
     expect(httpsUrl('https://example.invalid/a?b=1')).toBe('https://example.invalid/a?b=1');
