@@ -2455,10 +2455,11 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
 
 - **Decision:** The project page draws the check result in its own region under the title, headed
   «نتيجة الفحص» (Check result). By state it shows: the verdict slab of the one-page summary (the
-  verdict word, and for a stop its fixed sentence and its three changes) when the numbers could be
-  calculated; the report's own notice, with what to answer or correct and a link to each question,
-  when the answers are enough but the numbers cannot be calculated; one statement that the result
-  needs more answers below the summary gate; and one sentence when the calculation failed. The region
+  verdict word and the summary's short generic sentence, and for a stop its fixed sentence and its
+  three changes) when the numbers could be calculated; the report's own notice, with what to answer
+  or correct and a link to each question, when the answers are enough but the numbers cannot be
+  calculated; a statement that the result needs more answers below the summary gate; and a short
+  notice when the calculation failed. The region
   is the first section of the summary as the report builds it, so the page and the report never give
   two readings of the same answers, and it shows no more than the free summary shows (D-278),
   whatever the account may open. The entry to the report is named «نتيجة فحص مشروعك» (Your
@@ -2475,12 +2476,16 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
 
 - **Decision:** `loadReportPage` takes `summaryOnly`: an account that may open the full report is
   given the summary there, so the project page never builds a full report or reads the pack.
-  `loadProjectResult` maps the page to the four states of D-286, never throws, and logs
-  `project.result_failed`. The search for the changes of a stop runs on each visit, as on the report
-  page: about 0.3 s for the golden Jordanian shop, measured in WSL (the summary searches for a stop
-  only, so a revise or a go costs no search). The region is not streamed with Suspense, because its
-  height differs by state and a placeholder would shift the page; revisit it if the time on Vercel
-  is felt. The slab is drawn `still` on the project page: the reveal is the one orchestrated motion
+  `loadProjectResult` maps the page to the four states of D-286. Below the summary gate it reads
+  nothing and runs nothing, since the page already knows its gate. Above it, it never throws
+  except with Next.js's own signals, logs `project.result_failed` or `project.result_missing`, and
+  adds the report loader's reads to the visit (the project and its answers again, the tax rules and
+  the record of the run: about five sequential reads, to be measured on Vercel, D-167). The search
+  for the changes of a stop runs on each visit, as on the report page: about 0.3 s for the golden
+  Jordanian shop, measured in WSL (the summary searches for a stop only, so a revise or a go costs
+  no search). The region is not streamed with Suspense, because its height differs by state and a
+  placeholder would shift the page; revisit it if the time on Vercel is felt. The slab is drawn
+  `still` on the project page: the reveal is the one orchestrated motion
   of the product (CLAUDE.md section 6) and belongs to the moment the report opens, not to every
   visit of a page the founder uses all the time. The gallery has a `?view=result` view of the four
   states, checked for accessibility and snapshotted.

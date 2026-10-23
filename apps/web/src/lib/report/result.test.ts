@@ -6,6 +6,8 @@ import type { SupabaseServerClient } from '@/lib/supabase/server';
 import { loadReportPage, type ReportPage } from './load';
 import { loadProjectResult } from './result';
 
+const rethrow = vi.hoisted(() => vi.fn());
+vi.mock('next/navigation', () => ({ unstable_rethrow: rethrow }));
 vi.mock('@/lib/log', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/lib/log')>()),
   log: { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() },
@@ -13,11 +15,12 @@ vi.mock('@/lib/log', async (importOriginal) => ({
 vi.mock('./load', () => ({ loadReportPage: vi.fn() }));
 
 const supabase = {} as SupabaseServerClient;
-const options = {
+const pageOptions = {
   email: 'owner@example.test',
   locale: 'en' as const,
   currencyLabel: (code: string) => code,
 };
+const options = { ...pageOptions, gate: 'summary' as const };
 
 function summaryModel(withoutRun = false): ReportModel {
   return buildReportModel(
@@ -48,12 +51,19 @@ describe('loadProjectResult (D-286)', () => {
     given({ status: 'none', percent: 10, missing: [] });
     await loadProjectResult(supabase, 'p', options);
     expect(loadReportPage).toHaveBeenCalledWith(supabase, 'p', {
-      ...options,
+      ...pageOptions,
       summaryOnly: true,
     });
   });
 
-  it('has no result below the summary gate', async () => {
+  it('reads nothing and runs nothing below the summary gate', async () => {
+    expect(await loadProjectResult(supabase, 'p', { ...options, gate: 'none' })).toEqual({
+      status: 'none',
+    });
+    expect(loadReportPage).not.toHaveBeenCalled();
+  });
+
+  it('has no result when the report loader says there is none', async () => {
     given({ status: 'none', percent: 10, missing: [] });
     expect(await loadProjectResult(supabase, 'p', options)).toEqual({ status: 'none' });
   });
@@ -85,11 +95,15 @@ describe('loadProjectResult (D-286)', () => {
     expect(await loadProjectResult(supabase, 'p', options)).toEqual({ status: 'failed' });
   });
 
-  it('fails softly when the report page could not be built or is not the account', async () => {
+  it('fails softly when the report page could not be built', async () => {
     given({ status: 'failed' });
     expect(await loadProjectResult(supabase, 'p', options)).toEqual({ status: 'failed' });
+  });
+
+  it('leaves a trace when the project the page just loaded comes back empty', async () => {
     given(null);
     expect(await loadProjectResult(supabase, 'p', options)).toEqual({ status: 'failed' });
+    expect(log.warn).toHaveBeenCalledWith('project.result_missing', { projectId: 'p' });
   });
 
   it('never throws into the project page: a throw is logged and the page goes on', async () => {
@@ -99,5 +113,16 @@ describe('loadProjectResult (D-286)', () => {
       'project.result_failed',
       expect.objectContaining({ projectId: 'p' }),
     );
+  });
+
+  it('lets a Next.js signal through, as the recorder does', async () => {
+    const signal = new Error('NEXT_REDIRECT');
+    vi.mocked(loadReportPage).mockRejectedValue(signal);
+    rethrow.mockImplementationOnce(() => {
+      throw signal;
+    });
+    await expect(loadProjectResult(supabase, 'p', options)).rejects.toBe(signal);
+    expect(rethrow).toHaveBeenCalledWith(signal);
+    expect(log.error).not.toHaveBeenCalled();
   });
 });

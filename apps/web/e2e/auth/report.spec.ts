@@ -34,7 +34,10 @@ test('a new account reaches the report route and is told what is missing, with n
   const result = page.getByRole('region', { name: 'نتيجة الفحص' });
   await expect(result.getByText('لا تكفي إجاباتك بعد لإصدار تقرير')).toBeVisible();
   await expect(result.locator('[data-verdict]')).toHaveCount(0);
-  await page.getByRole('link', { name: 'نتيجة فحص مشروعك' }).click();
+  // While questions remain, continuing is the primary action and the entry is not.
+  const entry = page.getByRole('link', { name: 'نتيجة فحص مشروعك' });
+  await expect(entry).not.toHaveClass(/bg-gold/);
+  await entry.click();
   await expect(page).toHaveURL(new RegExp(`/ar/projects/${id}/report$`));
 
   // The title never carries the founder's project title, and the page is kept out of search.

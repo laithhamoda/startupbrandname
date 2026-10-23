@@ -94,6 +94,8 @@ test('a founder answers the quick diagnostic and unlocks the one-page summary', 
   await expect(result.getByText('لم نحسب الأرقام بعد')).toBeVisible();
   await expect(result.getByRole('link').first()).toBeVisible();
   await expect(result.locator('[data-verdict]')).toHaveCount(0);
+  // With no question left, the way to the result is the primary action of the page.
+  await expect(page.getByRole('link', { name: 'نتيجة فحص مشروعك' })).toHaveClass(/bg-gold/);
   await expect(page.getByRole('heading', { name: 'مهام التحقّق' })).toBeVisible();
 });
 

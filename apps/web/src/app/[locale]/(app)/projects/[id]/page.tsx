@@ -69,6 +69,7 @@ export default async function ProjectPage({ params }: PageProps<'/[locale]/proje
   const result = await loadProjectResult(supabase, project.id, {
     email: user.email,
     locale,
+    gate: score.gate,
     currencyLabel: (code) => symbols[code] ?? code,
   });
   const resultView: ProjectResultView =

@@ -7,6 +7,7 @@ import type { RunSource } from '@/lib/engine/load';
 import { log } from '@/lib/log';
 import type { SupabaseServerClient } from '@/lib/supabase/server';
 import { loadReportPage } from './load';
+import { loadProjectResult } from './result';
 
 vi.mock('@/lib/log', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/lib/log')>()),
@@ -262,6 +263,36 @@ describe('loadReportPage (D-273)', () => {
       setup('jo-service-subscription', 'none');
       const page = await loadReportPage(client(), 'p', summaryOnly(OWNER));
       expect(page?.status).toBe('none');
+    });
+
+    // The result the project page draws, through the real loader (D-286): what crosses to the page
+    // for an account that may open the full report is the verdict section and nothing else.
+    it('gives the project page the verdict section alone, never a full or a locked section', async () => {
+      vi.stubEnv('FULL_REPORT_PREVIEW_EMAILS', OWNER);
+      setup('jo-service-subscription', 'full');
+      const result = await loadProjectResult(client(), 'p', { ...options(OWNER), gate: 'full' });
+      if (result.status !== 'verdict') throw new Error(`expected a verdict, got ${result.status}`);
+      expect(result.section.id).toBe('verdict');
+      expect(result.section.blocks.map((block) => block.type)).toEqual(['verdict']);
+      expect(JSON.stringify(result)).not.toContain(changesCaption('revise'));
+    });
+
+    it('keeps the three changes of a stop on the project page', async () => {
+      setup('jo-home-ecommerce', 'full');
+      const result = await loadProjectResult(client(), 'p', {
+        ...options('someone@example.test'),
+        gate: 'full',
+      });
+      if (result.status !== 'verdict') throw new Error(`expected a verdict, got ${result.status}`);
+      const table = result.section.blocks.find((block) => block.type === 'table');
+      expect(table?.type === 'table' ? table.rows : []).toHaveLength(3);
+    });
+
+    it('lists the reasons for the project page when the numbers cannot be calculated', async () => {
+      const reasons = [{ code: 'missing_answer' as const, questionId: 'F3' as const }];
+      setup('jo-service-subscription', 'full', { outcome: { status: 'not_calculable', reasons } });
+      const result = await loadProjectResult(client(), 'p', { ...options(OWNER), gate: 'full' });
+      expect(result).toEqual({ status: 'needs_answers', reasons });
     });
   });
 });
