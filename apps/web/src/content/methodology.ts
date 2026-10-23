@@ -199,7 +199,7 @@ export const METHODOLOGY: Localized<MethodologyContent> = {
         'يفهم إجاباتك بلهجتك ويعيد صياغتها بالعربية الفصحى لتؤكّدها.',
         'يصنّف الإجابات ليكشف المبهم والمتناقض منها.',
         'يصوغ نصوص التقرير ويشرح الأرقام بعد حسابها.',
-        'يدير حوار المرشد الذكي.',
+        'يدير حوار المرشد الذكي عند إطلاقه.',
       ],
     },
     aiDoesNot: {
@@ -374,7 +374,7 @@ export const METHODOLOGY: Localized<MethodologyContent> = {
         'Reads your answers in your dialect and restates them in Modern Standard Arabic for you to confirm.',
         'Classifies answers to catch vague or contradictory ones.',
         'Drafts the report’s text and explains the numbers once they are calculated.',
-        'Runs the conversation with the AI mentor.',
+        'Runs the conversation with the AI mentor once it opens.',
       ],
     },
     aiDoesNot: {

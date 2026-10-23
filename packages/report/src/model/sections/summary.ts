@@ -8,8 +8,9 @@ import { questionTitle, topRisks } from './risks';
 
 /**
  * The verdict section of the free summary (D-278): the word and one generic sentence, no score, no
- * meter and no number. A stop also holds the fixed stop sentence and the three changes, so the
- * locked phrasing of a stop is kept (CLAUDE.md section 3).
+ * meter and no number. When tax was not calculated, the sentence that says so follows the word, so
+ * a verdict is never read as after tax when it is not (D-292). A stop also holds the fixed stop
+ * sentence and the three changes, so the locked phrasing of a stop is kept (CLAUDE.md section 3).
  */
 export function buildSummaryVerdict(
   ctx: Ctx,
@@ -27,6 +28,7 @@ export function buildSummaryVerdict(
       meter: null,
     },
   ];
+  if (run.cash.tax.status === 'not_calculated') blocks.push(note(plain(ctx.m.executive.beforeTax)));
   if (code === 'stop') blocks.push(...changeBlocks(ctx, run, changes));
   return blocks;
 }

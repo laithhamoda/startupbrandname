@@ -176,6 +176,29 @@ describe('loadReportPage (D-273)', () => {
     expect(log.error).toHaveBeenCalledWith('report.model_failed', expect.anything());
   });
 
+  it('opens the full report to an account that is not on the list while early access is on (D-290)', async () => {
+    vi.stubEnv('EARLY_ACCESS_FULL_REPORT', 'true');
+    setup('jo-service-subscription', 'full');
+    const page = await loadReportPage(client(), 'p', options('someone@example.test'));
+    expect(page?.status === 'ready' && page.model.kind).toBe('full');
+  });
+
+  it('keeps the summary locked by the plan when early access is off or mistyped', async () => {
+    vi.stubEnv('EARLY_ACCESS_FULL_REPORT', 'yes');
+    setup('jo-service-subscription', 'full');
+    const page = await loadReportPage(client(), 'p', options('someone@example.test'));
+    expect(page?.status === 'ready' && page.model.kind).toBe('summary');
+    expect(page?.status === 'ready' && page.model.lockReason).toBe('plan');
+  });
+
+  it('shows no more than the summary below the full gate, even in early access', async () => {
+    vi.stubEnv('EARLY_ACCESS_FULL_REPORT', 'true');
+    setup('jo-service-subscription', 'summary');
+    const page = await loadReportPage(client(), 'p', options('someone@example.test'));
+    expect(page?.status === 'ready' && page.model.kind).toBe('summary');
+    expect(page?.status === 'ready' && page.model.lockReason).toBe('completeness');
+  });
+
   it('logs a malformed preview list and previews nobody', async () => {
     vi.stubEnv('FULL_REPORT_PREVIEW_EMAILS', 'owner@');
     setup('jo-service-subscription', 'full');

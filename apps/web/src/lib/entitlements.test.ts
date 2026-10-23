@@ -66,6 +66,39 @@ describe('accessFor', () => {
   });
 });
 
+describe('early access (D-290)', () => {
+  const ON = { previewEmails: [], earlyAccess: true };
+
+  it('opens the full report to every account, listed or not', () => {
+    for (const email of ['founder@example.com', '', null, undefined]) {
+      const access = accessFor({ email }, ON);
+      expect(access.fullReportPreview, String(email)).toBe(true);
+      expect(reportAccess('full', access)).toBe('full');
+    }
+  });
+
+  it('still shows the summary only, or nothing, below the full gate', () => {
+    const access = accessFor({ email: 'founder@example.com' }, ON);
+    expect(reportAccess('summary', access)).toBe('summary');
+    expect(reportAccess('none', access)).toBe('none');
+  });
+
+  it('changes nothing when it is off or missing', () => {
+    for (const options of [{ previewEmails: [] }, { previewEmails: [], earlyAccess: false }]) {
+      const access = accessFor({ email: 'founder@example.com' }, options);
+      expect(access.fullReportPreview).toBe(false);
+      expect(reportAccess('full', access)).toBe('summary_locked');
+    }
+  });
+
+  it('does not change the plan or its entitlements', () => {
+    const access = accessFor({ email: 'founder@example.com' }, ON);
+    expect(access.planId).toBe('free');
+    expect(access.entitlements).toBe(PLANS.free.entitlements);
+    expect(includesFullReport(access)).toBe(false);
+  });
+});
+
 describe('reportAccess', () => {
   const free = accessFor({ email: 'founder@example.com' }, NO_PREVIEW);
   const preview = accessFor(

@@ -19,7 +19,6 @@ import { noticeReasonsOf } from '@/components/report/notice';
 import { ButtonLink } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { TextLink } from '@/components/ui/text-link';
-import { getPreviewEmails } from '@/env/server';
 import { currentLocale } from '@/i18n/locale';
 import { requireAccount } from '@/lib/auth/session';
 import { countryOptions } from '@/lib/countries';
@@ -27,7 +26,8 @@ import { deleteProject, switchMode } from '@/lib/diagnostic/actions';
 import { viewFinding } from '@/lib/diagnostic/findings';
 import { loadProject } from '@/lib/diagnostic/project';
 import { canvasPath, reportPath, stepPath } from '@/lib/diagnostic/steps';
-import { accessFor, reportAccess } from '@/lib/entitlements';
+import { reportAccess } from '@/lib/entitlements';
+import { accountAccess } from '@/lib/report/account-access';
 import { loadProjectResult } from '@/lib/report/result';
 
 export async function generateMetadata({
@@ -53,10 +53,7 @@ export default async function ProjectPage({ params }: PageProps<'/[locale]/proje
 
   const score = completeness(answers);
   // What the report page will show this account: the entry names it (D-277). The page decides again.
-  const reportEntry = reportAccess(
-    score.gate,
-    accessFor({ email: user.email, planId: null }, { previewEmails: getPreviewEmails().emails }),
-  );
+  const reportEntry = reportAccess(score.gate, accountAccess(user.email).access);
 
   // The check result, drawn on this page so the founder meets it where the diagnostic ends (D-286).
   const money = await getTranslations('money');

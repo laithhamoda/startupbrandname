@@ -17,12 +17,20 @@ export interface AccessSubject {
 export interface AccessOptions {
   /** `FULL_REPORT_PREVIEW_EMAILS` (D-245): the addresses that see the full report before M7. */
   readonly previewEmails: readonly string[];
+  /**
+   * `EARLY_ACCESS_FULL_REPORT` (D-290): while it is on, every account opens the full report without
+   * the plan, as an address on the preview list does. Off when missing.
+   */
+  readonly earlyAccess?: boolean;
 }
 
 export interface Access {
   readonly planId: PlanId;
   readonly entitlements: Entitlements;
-  /** True for an address on the preview allow-list: the full report opens without the plan. */
+  /**
+   * True for an address on the preview allow-list, and for every account during early access: the
+   * full report opens without the plan.
+   */
   readonly fullReportPreview: boolean;
 }
 
@@ -36,8 +44,9 @@ export type ReportAccess = 'none' | 'summary' | 'summary_locked' | 'full';
 export function accessFor(subject: AccessSubject, options: AccessOptions): Access {
   const planId = subject.planId ?? 'free';
   const email = subject.email?.trim().toLowerCase() ?? '';
-  const fullReportPreview =
+  const listed =
     email !== '' && options.previewEmails.some((entry) => entry.trim().toLowerCase() === email);
+  const fullReportPreview = options.earlyAccess === true || listed;
   return { planId, entitlements: PLANS[planId].entitlements, fullReportPreview };
 }
 

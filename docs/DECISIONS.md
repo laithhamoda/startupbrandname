@@ -42,7 +42,7 @@ A decision may sit under several topics. A new decision joins its topics in the 
   D-149, D-156 to D-161, D-163, D-165, D-167, D-182, D-183, D-197 to D-199, D-231, D-232, D-249, D-252.
 - **Calculation engine:** D-178 to D-190, D-193 to D-196, D-200 to D-224, D-227 to D-230,
   D-238, D-244, D-246 to D-248, D-251, D-260 to D-262.
-- **Report, canvases and PDF (M5):** D-225 to D-253, D-260 to D-287.
+- **Report, canvases and PDF (M5):** D-225 to D-253, D-260 to D-287, D-290, D-292.
 - **AI and cost:** D-062, D-071, D-072, D-073, D-082, D-103, D-107, D-119 to D-124, D-143, D-146 to
   D-152, D-155, D-183, D-191, D-226.
 - **Privacy, consent and security:** D-013, D-016, D-040, D-041, D-061, D-062, D-074, D-077,
@@ -52,14 +52,14 @@ A decision may sit under several topics. A new decision joins its topics in the 
   D-266, D-270, D-271, D-279.
 - **Design and accessibility:** D-007, D-008, D-049 to D-053, D-055 to D-058, D-099, D-118, D-128,
   D-131, D-158, D-159, D-161, D-162, D-170, D-231, D-249, D-250, D-289.
-- **Public site and SEO:** D-027, D-054, D-076, D-090 to D-098, D-100, D-101, D-153.
+- **Public site and SEO:** D-027, D-054, D-076, D-090 to D-098, D-100, D-101, D-153, D-291.
 - **Performance:** D-054, D-150, D-151, D-167 to D-171, D-250.
 - **CI and repository:** D-001 to D-007, D-012 to D-016, D-020, D-023 to D-025, D-028, D-030 to
   D-033, D-039 to D-041, D-048, D-055, D-083, D-097, D-125, D-127, D-134, D-136, D-139 to D-142,
   D-144, D-164 to D-166, D-171 to D-174, D-176, D-178, D-192, D-288.
 - **Release and operations:** D-009 to D-012, D-017, D-019, D-021, D-022, D-029, D-036, D-042 to
   D-047, D-064, D-123, D-126, D-132, D-133, D-135, D-138, D-140, D-141, D-143, D-152, D-155, D-177,
-  D-191.
+  D-191, D-290.
 
 ## M0: repo, tooling, CI, environments
 
@@ -2527,4 +2527,46 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   design. A raster of 150 pixels cannot serve a 512 pixel icon, and at 16 pixels the full mark is a
   blur, so the master is a vector and the small sizes are drawn for their size. One generator keeps
   every size in step when the mark changes.
+- **Status:** Active
+
+### D-290 (2026-10-23): Early access: one switch opens the full report to every account
+
+- **Decision:** `EARLY_ACCESS_FULL_REPORT` is a server-only switch, off unless it is exactly `true`
+  (anything else, a typo included, is off and breaks no page). While it is on, every signed-in
+  account opens the full report as an address on the preview list does (D-245): the entitlement
+  table, the plans and the gates are untouched, so below the full-report gate (80% with the price,
+  costs and sales answered) an account still sees the summary, or nothing. `accountAccess` in
+  `apps/web/src/lib/report/account-access.ts` reads the preview list and this switch in one place,
+  and the report loader and the project page both call it. The pricing page says "early access"
+  while the switch is on, because its table still shows the full report as locked on the free plan.
+  The switch ships off: the owner turns it on in Vercel (Production) and redeploys, and removing it
+  ends early access at the next deployment. The PDF of a full report needs the M5 migrations on that
+  database. It is removed with M7.
+- **Reason:** Paid plans cannot open before M7 and the payment questions (#15), and a launch needs
+  founders to see what the full report gives. A switch keeps the entitlement design intact, is
+  reversible in one deployment, and starts off.
+- **Status:** Active
+
+### D-291 (2026-10-23): The AI mentor is marked "coming soon" wherever a public page promises it
+
+- **Decision:** The mentor (M6) is not built. The pricing table gets the "coming soon" mark on its
+  row, the same mark the competitor, deck and refresh rows carry, and each other public sentence
+  that offers the mentor now says it is coming: the free-plan answer in the FAQ, the step of "how it
+  works", the About summary, the home page description and the role list in the methodology. The
+  numbers of the free plan (3 messages a day) stay in the plan table and the FAQ answer, as the
+  plans' own entitlement.
+- **Reason:** CLAUDE.md rule 9 and the owner's own standard: the site does not offer what does not
+  exist. Marking is cheaper and truer than removing the mentor from the plan table, which is the
+  design of the paid plans.
+- **Status:** Active
+
+### D-292 (2026-10-23): The verdict says when tax was not calculated
+
+- **Decision:** In the verdict section of the summary, right after the verdict word, a one-sentence
+  note says that all figures are before tax when the run's tax was not calculated (the sentence the
+  executive summary already uses). The project page draws that section, so the note shows there
+  too; when a regime was calculated, nothing is added. For a stop, the three changes follow the
+  note.
+- **Reason:** No `tax_rules` row exists yet (D-233), so every verdict on the live site is before tax
+  by design, and a founder who reads «امضِ» must not read it as after tax.
 - **Status:** Active

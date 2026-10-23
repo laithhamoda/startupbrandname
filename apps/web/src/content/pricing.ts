@@ -8,6 +8,8 @@ export interface PricingContent {
   heading: string;
   lead: string;
   notice: string;
+  /** Shown only while early access is on (D-290): the full report is free, whatever the table says. */
+  earlyAccess: string;
   tableCaption: string;
   featureColumn: string;
   choosePlan: string;
@@ -46,6 +48,8 @@ export const PRICING: Localized<PricingContent> = {
     lead: 'اختر الخطة المناسبة لمرحلتك. لا خطة تخفي عنك الأرقام: الفرق في عدد المشاريع والتقارير والمرشد.',
     notice:
       'الاشتراكات المدفوعة غير متاحة بعد، وتُفتح في مرحلة لاحقة. إنشاء الحساب المجاني متاح الآن.',
+    earlyAccess:
+      'وصول مبكر: يُتاح التقرير الكامل الآن مجانًا لكل حساب تبلغ إجاباته 80% مع السعر والتكاليف والمبيعات، إلى أن تُفتح الاشتراكات.',
     tableCaption: 'مقارنة الخطط',
     featureColumn: 'الميزة',
     choosePlan: 'اختر خطة لعرض تفاصيلها',
@@ -78,7 +82,7 @@ export const PRICING: Localized<PricingContent> = {
       retention: 'مدة حفظ المشاريع',
     },
     soon: 'قريبًا',
-    soonFeatures: ['competitorEnrichment', 'pitchDeck', 'quarterlyRefresh'],
+    soonFeatures: ['mentorMessages', 'competitorEnrichment', 'pitchDeck', 'quarterlyRefresh'],
     included: 'متاح',
     notIncluded: 'غير متاح',
     locked: 'مقفل',
@@ -102,6 +106,8 @@ export const PRICING: Localized<PricingContent> = {
     lead: 'Choose the plan that fits your stage. No plan hides the numbers from you: plans differ in projects, reports and mentor use.',
     notice:
       'Paid plans are not available yet and open at a later stage. You can create a free account now.',
+    earlyAccess:
+      'Early access: the full report is free for now for every account whose answers reach 80%, with the price, costs and sales, until paid plans open.',
     tableCaption: 'Plan comparison',
     featureColumn: 'Feature',
     choosePlan: 'Choose a plan to see its details',
@@ -134,7 +140,7 @@ export const PRICING: Localized<PricingContent> = {
       retention: 'How long projects are kept',
     },
     soon: 'Coming soon',
-    soonFeatures: ['competitorEnrichment', 'pitchDeck', 'quarterlyRefresh'],
+    soonFeatures: ['mentorMessages', 'competitorEnrichment', 'pitchDeck', 'quarterlyRefresh'],
     included: 'Included',
     notIncluded: 'Not included',
     locked: 'Locked',

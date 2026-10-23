@@ -46,7 +46,7 @@ export const FAQ: Localized<FaqContent> = {
         id: 'free',
         question: 'ماذا أحصل عليه مجانًا؟',
         answer:
-          'مشروع واحد، وملخّص في صفحة واحدة حين تبلغ إجاباتك 40% من الاكتمال، و3 رسائل يوميًا مع المرشد الذكي. ويُحفظ المشروع المجاني 30 يومًا.',
+          'مشروع واحد، وملخّص في صفحة واحدة حين تبلغ إجاباتك 40% من الاكتمال، و3 رسائل يوميًا مع المرشد الذكي عند إطلاقه قريبًا. ويُحفظ المشروع المجاني 30 يومًا.',
       },
       {
         id: 'verdict',
@@ -129,7 +129,7 @@ export const FAQ: Localized<FaqContent> = {
         id: 'free',
         question: 'What do I get for free?',
         answer:
-          'One project, a one-page summary once your answers reach 40% completeness, and 3 messages a day with the AI mentor. A free project is kept for 30 days.',
+          'One project, a one-page summary once your answers reach 40% completeness, and 3 messages a day with the AI mentor once it opens, soon. A free project is kept for 30 days.',
       },
       {
         id: 'verdict',

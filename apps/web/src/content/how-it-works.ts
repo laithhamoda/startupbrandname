@@ -62,7 +62,7 @@ export const HOW_IT_WORKS: Localized<HowItWorksContent> = {
       },
       {
         id: 'mentor',
-        title: 'ناقش المرشد الذكي',
+        title: 'ناقش المرشد الذكي (قريبًا)',
         body: [
           'مرشد يسأل أكثر مما يجيب، ويشير إلى أضعف نقطة في نموذجك دون مجاملة، ويستند إلى إجاباتك بأرقامها.',
           'لا يخترع المرشد أرقامًا، ولا يقدّم استشارة قانونية أو ضريبية ملزمة. ويعمل فقط بموافقتك على معالجة محتوى مشروعك، دون اسمك أو بريدك، خارج بلدك.',
@@ -143,7 +143,7 @@ export const HOW_IT_WORKS: Localized<HowItWorksContent> = {
       },
       {
         id: 'mentor',
-        title: 'Talk it through with the AI mentor',
+        title: 'Talk it through with the AI mentor (coming soon)',
         body: [
           'A mentor that asks more than it answers, points to the weakest part of your model without flattery, and works from your own answers and numbers.',
           'The mentor never invents numbers and gives no binding legal or tax advice. It only runs with your consent to process your project content, without your name or email, outside your country.',
