@@ -58,7 +58,7 @@ export default async function PricingPage() {
         </p>
       </PageSection>
 
-      <RelatedPages ids={['howItWorks', 'faq', 'about']} />
+      <RelatedPages ids={['sampleReport', 'howItWorks', 'faq']} />
 
       <JsonLd data={applicationJsonLd(locale, 'pricing')} />
       <JsonLd data={await pageBreadcrumbJsonLd(locale, 'pricing')} />

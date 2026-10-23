@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { ogImageName, PUBLIC_PAGES } from '../src/config/public-pages';
+import { inFooter, ogImageName, PUBLIC_PAGES } from '../src/config/public-pages';
 
 const LOCALES = ['ar', 'en'] as const;
 const ORIGIN = 'https://startupbrandname.com';
@@ -10,6 +10,7 @@ const STRUCTURED_DATA: Record<(typeof PUBLIC_PAGES)[number]['id'], readonly stri
   howItWorks: ['HowTo', 'BreadcrumbList'],
   methodology: ['Article', 'BreadcrumbList'],
   pricing: ['WebApplication', 'BreadcrumbList'],
+  sampleReport: ['WebPage', 'BreadcrumbList'],
   glossary: ['DefinedTermSet', 'BreadcrumbList'],
   faq: ['FAQPage', 'BreadcrumbList'],
   about: ['AboutPage', 'BreadcrumbList'],
@@ -62,7 +63,9 @@ test('every public page is reachable from the footer', async ({ page }) => {
   await page.goto('/en');
   const footer = page.getByRole('navigation', { name: 'Platform pages' });
 
-  for (const { path } of PUBLIC_PAGES.filter((candidate) => candidate.path !== '')) {
+  for (const { path } of PUBLIC_PAGES.filter(
+    (candidate) => candidate.path !== '' && inFooter(candidate),
+  )) {
     await expect(footer.locator(`a[href="/en${path}"]`)).toHaveCount(1);
   }
 });

@@ -78,7 +78,7 @@ export default async function HowItWorksPage() {
         </table>
       </PageSection>
 
-      <RelatedPages ids={['methodology', 'pricing', 'faq']} />
+      <RelatedPages ids={['sampleReport', 'methodology', 'pricing']} />
 
       <JsonLd
         data={howToJsonLd(
