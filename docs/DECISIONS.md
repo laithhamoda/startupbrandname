@@ -56,7 +56,7 @@ A decision may sit under several topics. A new decision joins its topics in the 
 - **Performance:** D-054, D-150, D-151, D-167 to D-171, D-250.
 - **CI and repository:** D-001 to D-007, D-012 to D-016, D-020, D-023 to D-025, D-028, D-030 to
   D-033, D-039 to D-041, D-048, D-055, D-083, D-097, D-125, D-127, D-134, D-136, D-139 to D-142,
-  D-144, D-164 to D-166, D-171 to D-174, D-176, D-178, D-192.
+  D-144, D-164 to D-166, D-171 to D-174, D-176, D-178, D-192, D-288.
 - **Release and operations:** D-009 to D-012, D-017, D-019, D-021, D-022, D-029, D-036, D-042 to
   D-047, D-064, D-123, D-126, D-132, D-133, D-135, D-138, D-140, D-141, D-143, D-152, D-155, D-177,
   D-191.
@@ -2486,4 +2486,15 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   states, checked for accessibility and snapshotted.
 - **Reason:** One loader and one model, no second reading of the answers (rule 3); a cost that is
   measured; a calm page to come back to.
+- **Status:** Active
+
+### D-288 (2026-10-23): A second gitleaks fingerprint
+
+- **Decision:** `.gitleaksignore` lists a second fingerprint: commit 7ba03fb on the m5/5d branch,
+  where a unit test of the report notice spelled out the list key of a reason (its code, a hyphen
+  and its question ID) as the value of an object's key property, and gitleaks' generic-api-key rule
+  read that value as a secret. The line was replaced in the next commit; the ignore is by
+  fingerprint, so the same text anywhere else is still reported.
+- **Reason:** As D-125: a false positive in branch history; rewriting published history needs a force
+  push, and a narrow ignore keeps the full-history scan strict.
 - **Status:** Active

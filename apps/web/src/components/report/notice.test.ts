@@ -22,19 +22,20 @@ const REASONS = [
 
 describe('noticeReasonsOf (D-286)', () => {
   it('says each reason once, in words, and links it to the question to answer', () => {
-    expect(noticeReasonsOf(REASONS, 'p1', 'en', (code) => `says ${code}`)).toEqual([
+    const said = noticeReasonsOf(REASONS, 'p1', 'en', (code) => `says ${code}`);
+    expect(said.map(({ text, link }) => ({ text, link }))).toEqual([
       {
-        key: 'unknown_answer-F3',
         text: 'says unknown_answer',
         link: { label: 'Variable cost per unit', href: stepPath('p1', 'F3') },
       },
       {
-        key: 'currency_mismatch-F1',
         text: 'says currency_mismatch',
         link: { label: 'Selling price per unit or service', href: stepPath('p1', 'F1') },
       },
-      { key: 'invalid_project-', text: 'says invalid_project', link: null },
+      { text: 'says invalid_project', link: null },
     ]);
+    // A list key of a reason is its code and its question, so a repeated reason has one entry.
+    expect(new Set(said.map((reason) => reason.key)).size).toBe(3);
   });
 
   it('names the question in the language of the page', () => {
