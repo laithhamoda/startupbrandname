@@ -52,8 +52,8 @@ A decision may sit under several topics. A new decision joins its topics in the 
   D-266, D-270, D-271, D-279.
 - **Design and accessibility:** D-007, D-008, D-049 to D-053, D-055 to D-058, D-099, D-118, D-128,
   D-131, D-158, D-159, D-161, D-162, D-170, D-231, D-249, D-250, D-289.
-- **Public site and SEO:** D-027, D-054, D-076, D-090 to D-098, D-100, D-101, D-153, D-291, D-293,
-  D-294.
+- **Public site and SEO:** D-027, D-054, D-076, D-090 to D-098, D-100, D-101, D-153, D-291, D-293 to
+  D-295.
 - **Performance:** D-054, D-150, D-151, D-167 to D-171, D-250.
 - **CI and repository:** D-001 to D-007, D-012 to D-016, D-020, D-023 to D-025, D-028, D-030 to
   D-033, D-039 to D-041, D-048, D-055, D-083, D-097, D-125, D-127, D-134, D-136, D-139 to D-142,
@@ -2592,7 +2592,7 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   gives. The real view means the sample cannot look different from the product; a frozen model needs
   no database, account or cost. Country law and tax carry a source and a date, which a page that
   goes stale cannot keep.
-- **Status:** Active
+- **Status:** Active (the footer and home page part is superseded by D-295)
 
 ### D-294 (2026-10-23): The sample report shows the verdict "go"
 
@@ -2612,4 +2612,18 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   it. Changing one answer of an existing fictional project, and letting the engine judge it, keeps
   the sample honest: no verdict or number is written by hand (rule 1), and a future engine change
   that flips the verdict fails the test and shows in review.
+- **Status:** Active
+
+### D-295 (2026-10-23): The sample report is linked from the footer and the home page
+
+- **Decision:** The owner asked for the link in the footer and on the home page. The footer's list
+  of pages gets "Sample report" after "Pricing" (message `nav.sampleReport`), and the home page's
+  first screen gets a second text link beside "How it works". The `footer: false` flag and the
+  `inFooter()` helper of D-293 are removed, so the e2e check that the footer links every public
+  page applies to all of them again; a second e2e check asserts that the home page leads to the
+  sample in both languages. The header menu is unchanged.
+- **Reason:** D-293 kept the page out of the footer so that its first pull request changed no
+  snapshot. With the page live and its verdict chosen by the owner, the footer and the home page
+  are where a founder looks for it. The footer is on every page, so the baselines of the pages
+  that show it and of the home page are regenerated with the manual workflow (D-055).
 - **Status:** Active
