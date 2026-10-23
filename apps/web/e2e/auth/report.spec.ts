@@ -28,9 +28,13 @@ test('a new account reaches the report route and is told what is missing, with n
   await signUpByEmail(page, uniqueEmail('report'));
   const id = await createProject(page);
 
-  // The project page names the entry for the gate: there is nothing to show yet.
+  // The project page draws the check result in its own region, and below the gate it says there
+  // is nothing to show yet, with no verdict (D-286). The entry has one name for every gate.
   await page.goto(`/ar/projects/${id}`);
-  await page.getByRole('link', { name: 'التقرير يحتاج إلى مزيد من الإجابات' }).click();
+  const result = page.getByRole('region', { name: 'نتيجة الفحص' });
+  await expect(result.getByText('لا تكفي إجاباتك بعد لإصدار تقرير')).toBeVisible();
+  await expect(result.locator('[data-verdict]')).toHaveCount(0);
+  await page.getByRole('link', { name: 'نتيجة فحص مشروعك' }).click();
   await expect(page).toHaveURL(new RegExp(`/ar/projects/${id}/report$`));
 
   // The title never carries the founder's project title, and the page is kept out of search.

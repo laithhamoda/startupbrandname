@@ -220,4 +220,48 @@ describe('loadReportPage (D-273)', () => {
       expect.objectContaining({ projectId: 'p' }),
     );
   });
+
+  describe('for the project page (summaryOnly, D-287)', () => {
+    const summaryOnly = (email: string | null) => ({ ...options(email), summaryOnly: true });
+
+    it('gives an account that may open the full report the summary, and reads no pack', async () => {
+      vi.stubEnv('FULL_REPORT_PREVIEW_EMAILS', OWNER);
+      setup('jo-service-subscription', 'full');
+      const from = vi.fn();
+      const page = await loadReportPage(
+        { from } as unknown as SupabaseServerClient,
+        'p',
+        summaryOnly(OWNER),
+      );
+      if (page?.status !== 'ready') throw new Error('expected a page');
+      expect(page.model.kind).toBe('summary');
+      expect(page.model.sections[0]?.id).toBe('verdict');
+      expect(from).not.toHaveBeenCalled();
+    });
+
+    it('searches for changes for a stop only, as the free summary does', async () => {
+      vi.stubEnv('FULL_REPORT_PREVIEW_EMAILS', OWNER);
+      setup('jo-service-subscription', 'full');
+      const revise = await loadReportPage(client(), 'p', summaryOnly(OWNER));
+      expect(JSON.stringify(revise)).not.toContain(changesCaption('revise'));
+
+      setup('jo-home-ecommerce', 'full');
+      const stop = await loadReportPage(client(), 'p', summaryOnly(OWNER));
+      if (stop?.status !== 'ready') throw new Error('expected a page');
+      const table = stop.model.sections[0]?.blocks.find((block) => block.type === 'table');
+      expect(table?.type === 'table' ? table.rows : []).toHaveLength(3);
+    });
+
+    it('changes nothing for an account that may only open the summary', async () => {
+      setup('jo-service-subscription', 'full');
+      const page = await loadReportPage(client(), 'p', summaryOnly('someone@example.test'));
+      expect(page?.status === 'ready' && page.model.lockReason).toBe('plan');
+    });
+
+    it('still has no page below the summary gate', async () => {
+      setup('jo-service-subscription', 'none');
+      const page = await loadReportPage(client(), 'p', summaryOnly(OWNER));
+      expect(page?.status).toBe('none');
+    });
+  });
 });

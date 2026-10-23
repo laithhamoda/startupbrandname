@@ -1,8 +1,10 @@
 import { buildReportModel, type ReportInput } from '@sbn/report/model';
 import { drop, goldenReportInput } from '@sbn/report/testing/inputs';
 import type { Metadata } from 'next';
-import { getMessages } from 'next-intl/server';
+import { getMessages, getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import { ProjectResult, type ProjectResultView } from '@/components/diagnostic/project-result';
+import { noticeReasonsOf } from '@/components/report/notice';
 import { ReportView } from '@/components/report/report-view';
 import { TextLink } from '@/components/ui/text-link';
 import { getServerEnv } from '@/env/server';
@@ -23,6 +25,23 @@ const VIEWS = {
   full: { ar: 'التقرير الكامل', en: 'Full report' },
   plan: { ar: 'ملخص مقفل بالخطة', en: 'Summary locked by the plan' },
   nocalc: { ar: 'ملخص بلا حساب', en: 'Summary with no calculation' },
+  result: { ar: 'النتيجة في صفحة المشروع', en: 'Result on the project page' },
+} as const;
+
+/** The four states of the result region of the project page (D-286), named for the reviewer. */
+const RESULT_STATES = {
+  ar: {
+    verdict: 'الحكم جاهز',
+    needs: 'الإجابات كافية والأرقام لم تُحسب',
+    none: 'دون حدّ الملخص',
+    failed: 'تعذّر الحساب',
+  },
+  en: {
+    verdict: 'The verdict is ready',
+    needs: 'The answers are enough, the numbers are not calculated',
+    none: 'Below the summary gate',
+    failed: 'The calculation failed',
+  },
 } as const;
 
 const LISTS = {
@@ -58,6 +77,9 @@ function inputOf(project: ProjectName, view: ViewName, locale: 'ar' | 'en'): Rep
       },
     });
   }
+  if (view === 'result') {
+    return goldenReportInput(project, { locale, kind: 'summary', lockReason: 'completeness' });
+  }
   return goldenReportInput(project, { locale, kind: 'full' });
 }
 
@@ -76,6 +98,36 @@ export default async function ReportGalleryPage({
 
   const input = inputOf(project, view, locale);
   const model = buildReportModel(input);
+  const labels = (await getMessages()).report;
+
+  // The result view shows the four states of the region the project page draws (D-286), the
+  // verdict one from the same summary model the report builds.
+  const states: { key: keyof (typeof RESULT_STATES)['ar']; view: ProjectResultView }[] = [];
+  if (view === 'result') {
+    const verdict = model.sections.find((section) => section.id === 'verdict');
+    const reasonText = await getTranslations('canvas');
+    if (verdict) states.push({ key: 'verdict', view: { status: 'verdict', section: verdict } });
+    states.push(
+      {
+        key: 'needs',
+        view: {
+          status: 'needs_answers',
+          reasons: noticeReasonsOf(
+            [
+              { code: 'unknown_answer', questionId: 'F3' },
+              { code: 'currency_mismatch', questionId: 'F1', currency: 'USD' },
+            ],
+            'demo',
+            locale,
+            (code) => reasonText(`notice.reason.${code}`),
+          ),
+        },
+      },
+      { key: 'none', view: { status: 'none' } },
+      { key: 'failed', view: { status: 'failed' } },
+    );
+  }
+  const overview = await getTranslations('diagnostic.overview');
 
   return (
     <>
@@ -104,11 +156,27 @@ export default async function ReportGalleryPage({
           ))}
         </ul>
       </div>
-      <ReportView
-        model={model}
-        labels={(await getMessages()).report}
-        hrefs={{ project: '/design', pricing: '/pricing' }}
-      />
+      {view === 'result' ? (
+        <div className="mx-auto grid max-w-[75rem] gap-10 px-4 py-10 sm:px-6">
+          {states.map((state) => (
+            <div key={state.key} className="grid gap-2">
+              <p className="text-caption text-muted">{RESULT_STATES[locale][state.key]}</p>
+              <ProjectResult
+                view={state.view}
+                heading={overview('result.heading')}
+                locale={locale}
+                labels={labels}
+              />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <ReportView
+          model={model}
+          labels={labels}
+          hrefs={{ project: '/design', pricing: '/pricing' }}
+        />
+      )}
     </>
   );
 }

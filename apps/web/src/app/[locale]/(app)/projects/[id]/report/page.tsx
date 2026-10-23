@@ -4,7 +4,7 @@ import { getMessages, getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { NotEnoughAnswers } from '@/components/report/not-enough';
 import { PdfDownload } from '@/components/report/pdf-download';
-import { distinctReasons, ReportNotice } from '@/components/report/notice';
+import { noticeReasonsOf, ReportNotice } from '@/components/report/notice';
 import { ReportView } from '@/components/report/report-view';
 import { currentLocale } from '@/i18n/locale';
 import { requireAccount } from '@/lib/auth/session';
@@ -71,7 +71,7 @@ export default async function ReportPage({
     return (
       <div className="mx-auto grid max-w-[75rem] gap-6 px-4 py-10 sm:px-6">
         <h1 className="text-h1 font-extrabold">{labels.pageTitle}</h1>
-        <ReportNotice failed reasons={[]} labels={labels} />
+        <ReportNotice failed reasons={[]} labels={labels} className="mx-auto" />
       </div>
     );
   }
@@ -79,23 +79,19 @@ export default async function ReportPage({
   const notice = page.notice;
   const reasons =
     notice?.kind === 'not_calculable'
-      ? distinctReasons(notice.reasons).map((reason) => ({
-          key: `${reason.code}-${reason.questionId ?? ''}`,
-          text: reasonText(`notice.reason.${reason.code}`),
-          link: reason.questionId
-            ? {
-                label: stepLabel(reason.questionId)[locale],
-                href: stepPath(id, reason.questionId),
-              }
-            : null,
-        }))
+      ? noticeReasonsOf(notice.reasons, id, locale, (code) => reasonText(`notice.reason.${code}`))
       : [];
 
   return (
     <>
       {notice ? (
         <div className="px-4 pt-10 sm:px-6">
-          <ReportNotice failed={notice.kind === 'failed'} reasons={reasons} labels={labels} />
+          <ReportNotice
+            failed={notice.kind === 'failed'}
+            reasons={reasons}
+            labels={labels}
+            className="mx-auto"
+          />
         </div>
       ) : null}
       <ReportView

@@ -7,14 +7,24 @@ type VerdictBlock = Extract<Block, { type: 'verdict' }>;
  * The verdict slab (D-274, D-275): true black, the verdict word in gold, the reason in white, the
  * meter of the criteria that passed with the line of "Go" marked in gold, and for a stop the fixed
  * sentence. It carries the page's one orchestrated motion (`data-report-reveal`, globals.css): a
- * reveal on first view, and nothing at all under prefers-reduced-motion.
+ * reveal on first view, and nothing at all under prefers-reduced-motion. The project page shows the
+ * same slab `still`, with no reveal: the motion belongs to the moment the founder opens the report
+ * (D-287).
  */
-export function ReportVerdict({ block, labels }: { block: VerdictBlock; labels: ReportLabels }) {
+export function ReportVerdict({
+  block,
+  labels,
+  still = false,
+}: {
+  block: VerdictBlock;
+  labels: ReportLabels;
+  still?: boolean;
+}) {
   const meter = block.meter;
   return (
     <section
       aria-label={labels.verdict.label}
-      data-report-reveal
+      data-report-reveal={still ? undefined : true}
       data-verdict={block.code}
       className="grid gap-3 bg-slab p-6 text-slab-text sm:p-8"
     >
