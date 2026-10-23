@@ -35,7 +35,9 @@ for (const locale of ['ar', 'en'] as const) {
     }) => {
       await page.goto(`/${locale}/sample-report`);
 
+      // One verdict slab, and it says "go": the owner's choice for the sample (D-294).
       await expect(page.locator('[data-verdict]')).toHaveCount(1);
+      await expect(page.locator('[data-verdict="go"]')).toHaveCount(1);
       // The sections of the full report: a heading each, no lock note, no PDF button.
       expect(await page.locator('main h2, [id^="section-"] h2').count()).toBeGreaterThan(10);
       await expect(page.locator('[id^="section-"]')).toHaveCount(12);
