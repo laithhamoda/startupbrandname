@@ -64,3 +64,39 @@ test('a missing file outside the language routes answers 404', async ({ request 
 
   expect(response.status()).toBe(404);
 });
+
+// The icons of the brand kit (D-289): each page names them, none is redirected by the language
+// routing, and each one is served.
+for (const locale of ['ar', 'en'] as const) {
+  test(`the ${locale} home page declares its icons and the manifest, and all are served`, async ({
+    page,
+    request,
+  }) => {
+    await page.goto(`/${locale}`);
+    const hrefs = await page
+      .locator(
+        'head link[rel~="icon"], head link[rel="apple-touch-icon"], head link[rel="manifest"]',
+      )
+      .evaluateAll((nodes) => nodes.map((node) => node.getAttribute('href') ?? ''));
+    const paths = hrefs.map((href) => new URL(href, 'http://site.test').pathname);
+    expect(paths).toEqual(
+      expect.arrayContaining([
+        '/favicon.ico',
+        '/icon.svg',
+        '/apple-touch-icon.png',
+        '/manifest.webmanifest',
+      ]),
+    );
+
+    for (const path of paths) {
+      const response = await request.get(path, { maxRedirects: 0 });
+      expect(response.status(), path).toBe(200);
+    }
+    const manifest = (await (await request.get('/manifest.webmanifest')).json()) as {
+      icons: { src: string }[];
+    };
+    for (const icon of manifest.icons) {
+      expect((await request.get(icon.src, { maxRedirects: 0 })).status(), icon.src).toBe(200);
+    }
+  });
+}

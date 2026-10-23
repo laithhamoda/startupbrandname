@@ -13,6 +13,7 @@
     "test:e2e": "playwright test --project=site",
     "test:e2e:auth": "playwright test --project=auth",
     "og:images": "playwright test --project=og",
+    "brand:build": "node scripts/brand/build.mjs",
     "lighthouse": "node scripts/lighthouse.mjs"
   },
   "dependencies": {

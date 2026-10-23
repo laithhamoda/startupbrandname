@@ -29,6 +29,16 @@ export async function generateMetadata(): Promise<Metadata> {
     title: { default: title, template: `%s | ${site.name}` },
     description: t('description'),
     applicationName: site.name,
+    // The ICO says 32x32 on purpose: a browser that reads SVG then picks icon.svg, and the rest
+    // take the ICO. Files are in public/ and come from scripts/brand (D-289).
+    icons: {
+      icon: [
+        { url: '/favicon.ico', sizes: '32x32' },
+        { url: '/icon.svg', type: 'image/svg+xml' },
+      ],
+      apple: { url: '/apple-touch-icon.png', sizes: '180x180' },
+    },
+    manifest: '/manifest.webmanifest',
     openGraph: { ...openGraphBase(locale), title, description: t('description') },
     robots: isIndexable() ? { index: true, follow: true } : { index: false, follow: false },
   };
