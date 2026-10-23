@@ -13,6 +13,7 @@ export function SiteFooter() {
     { href: '/how-it-works', label: nav('howItWorks') },
     { href: '/methodology', label: nav('methodology') },
     { href: '/pricing', label: nav('pricing') },
+    { href: '/sample-report', label: nav('sampleReport') },
     { href: '/glossary', label: nav('glossary') },
     { href: '/faq', label: nav('faq') },
     { href: '/about', label: nav('about') },

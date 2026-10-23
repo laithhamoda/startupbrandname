@@ -7,6 +7,8 @@ export interface HomeContent {
   status: string;
   start: string;
   secondary: string;
+  /** The link from the hero to the sample report. */
+  sample: string;
   verdictLabel: string;
   verdict: readonly { word: string; meaning: string }[];
   stepsHeading: string;
@@ -33,6 +35,7 @@ export const HOME: Localized<HomeContent> = {
       'نبني المنصة على مراحل: إنشاء الحساب متاح الآن مجانًا، ويُطلق التشخيص ثم التقرير تباعًا.',
     start: 'ابدأ مجانًا',
     secondary: 'كيف تعمل المنصة',
+    sample: 'شاهد تقريرًا نموذجيًا',
     verdictLabel: 'الحكم في كل تقرير',
     verdict: [
       { word: 'امضِ', meaning: 'النموذج قابل للتنفيذ بصيغته الحالية.' },
@@ -94,6 +97,7 @@ export const HOME: Localized<HomeContent> = {
       'We are building the platform in stages: you can create a free account now, and the diagnostic and then the report follow.',
     start: 'Start for free',
     secondary: 'How it works',
+    sample: 'See a sample report',
     verdictLabel: 'The verdict in every report',
     verdict: [
       { word: 'Go', meaning: 'The model is viable in its current form.' },
