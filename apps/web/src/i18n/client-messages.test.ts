@@ -83,7 +83,8 @@ function resolveImport(from: string, specifier: string): string | null {
   const found = ['', '.ts', '.tsx', '/index.ts', '/index.tsx']
     .map((extension) => base + extension)
     .find((path) => existsSync(path) && statSync(path).isFile());
-  return found ?? null;
+  // A data file (JSON) is no module here: it renders nothing and reads no messages.
+  return found && /\.tsx?$/.test(found) ? found : null;
 }
 
 /** The local names an import clause binds: `X`, `* as X`, `{ A, B as C }` (type-only skipped). */
