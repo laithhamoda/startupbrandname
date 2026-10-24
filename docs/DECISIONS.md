@@ -47,7 +47,7 @@ A decision may sit under several topics. A new decision joins its topics in the 
   D-152, D-155, D-183, D-191, D-226, D-296.
 - **Privacy, consent and security:** D-013, D-016, D-040, D-041, D-061, D-062, D-074, D-077,
   D-082, D-085, D-092, D-098, D-103, D-107, D-126, D-130, D-137, D-138, D-142, D-144 to D-149,
-  D-153, D-154, D-175, D-232, D-234, D-235, D-244, D-245, D-280, D-281, D-283.
+  D-153, D-154, D-175, D-232, D-234, D-235, D-244, D-245, D-280, D-281, D-283, D-300.
 - **Legal:** D-059, D-066, D-068, D-082, D-086, D-137, D-145, D-147, D-154, D-186, D-233, D-263,
   D-266, D-270, D-271, D-279, D-299.
 - **Design and accessibility:** D-007, D-008, D-049 to D-053, D-055 to D-058, D-099, D-118, D-128,
@@ -60,7 +60,7 @@ A decision may sit under several topics. A new decision joins its topics in the 
   D-144, D-164 to D-166, D-171 to D-174, D-176, D-178, D-192, D-254, D-288, D-297, D-298.
 - **Release and operations:** D-009 to D-012, D-017, D-019, D-021, D-022, D-029, D-036, D-042 to
   D-047, D-064, D-123, D-126, D-132, D-133, D-135, D-138, D-140, D-141, D-143, D-152, D-155, D-177,
-  D-191, D-290.
+  D-191, D-290, D-300.
 
 ## M0: repo, tooling, CI, environments
 
@@ -2719,3 +2719,35 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   law and on our own errors, so the draft keeps both exceptions and lists the questions for the
   lawyer.
 - **Status:** Active (the text awaits legal review)
+
+### D-300 (2026-10-24): Hardening for the soft launch
+
+- **Decision:** The owner approved a short hardening before the first invited users.
+  1. **Security events in the logs** (M9 checklist, OBS-1): `auth.rate_limited` (a code request or
+     a verification refused for the rate, with its stage), `account.consent_changed` (reason
+     `given` or `withdrawn`) and `account.deleted` (reason `requested` or `closed_market`), through
+     the one logger, so no email address and no answer is ever in a line. Failed sign-ins were
+     already logged (`auth.code_rejected`, `auth.code_request_failed`).
+  2. **The Supabase security advisor warnings are accepted**, each for a reason. The eight
+     signed-in SECURITY DEFINER functions the advisor lists (`complete_onboarding`,
+     `create_project`, `delete_my_account`, `record_ai_run`, `record_engine_run`, `record_report`,
+     `reserve_ai_run`, `set_crossborder_consent`) are the app's own entry points: each sets its
+     `search_path`, reads the caller with `auth.uid()` inside, and is granted to `authenticated`
+     only (checked in the migrations on 2026-10-24; the advisor lists none for `anon`). The two
+     tables of the `private` schema with row level security and no policy are closed on purpose:
+     only those functions touch them. "Leaked password protection disabled" does not apply: nobody
+     has a password (email codes and Google).
+  3. **A rate limit at Vercel's edge and an uptime alert**, both set up by the owner in his own
+     dashboards, with the steps in `docs/runbooks/operations.md`: one Firewall rule for the POSTs to
+     the sign-in and sign-up pages (5 a minute for each address), and an UptimeRobot monitor on
+     `/api/health`.
+  4. **Not for the soft launch** (they stay in the M9 checklist): bot protection with Turnstile
+     (needs a Cloudflare account), a limiter inside the app per visitor, the content security
+     policy decision, HSTS preload, the restore drill (needs the paid Supabase plan), the data
+     download page, and an alert on the AI spend (the daily cap is already a hard stop, D-120).
+- **Reason:** A soft launch of a few dozen people needs protection against the cheap failures:
+  one visitor using up the shared sign-in allowance (Supabase sees Vercel's address for everyone),
+  the free email allowance (100 a day) running out, a site that is down without anybody knowing,
+  and a security incident with nothing in the logs. The edge rule and the monitor cost nothing and
+  need no code or migration; the log lines are three small changes with tests.
+- **Status:** Active

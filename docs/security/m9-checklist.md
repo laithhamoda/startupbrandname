@@ -27,25 +27,23 @@ did it.
 - [ ] **Bot protection.** Cloudflare Turnstile on sign-up and sign-in before public launch (D-074).
 - [ ] **Client IP.** Server Actions call Supabase Auth from Vercel (D-077), so Supabase's per-IP
       limits see Vercel's address, not the visitor's: forward the visitor's address or limit in
-      the app (SEC-6).
-- [ ] **Rate limits** on Server Actions and routes, including `saveAnswer` (CLAUDE.md §9).
+      the app (SEC-6). For the soft launch a Vercel Firewall rule limits each address at the edge
+      (D-300, [operations.md](../runbooks/operations.md#abuse-protection-and-uptime-for-the-soft-launch-d-300),
+      set by the owner); still open: a limit inside the app per visitor.
+- [ ] **Rate limits** on Server Actions and routes, including `saveAnswer` (CLAUDE.md §9). The
+      edge rule above covers the sign-in and sign-up pages only.
 - [ ] **Session lifetimes.** Supabase time-box and inactivity timeout; suggested 30 days and 7
       days, to decide in the M9 plan (SEC-7). `supabase/config.toml` leaves them unset.
 - [ ] **Account sharing.** More than two devices at once signs out the oldest session and tells
       the user (SPEC §10, CLAUDE.md §9).
 - [ ] **Voucher guessing.** `VIVA` + 8 hex is 32 bits, and per-account and per-IP locks do not stop
       guessing across many free accounts: monitor failed attempts globally (#14, M7 vouchers).
-- [ ] **Security advisor.** No open Supabase advisor warning except those accepted in D-085.
-      `create_project()` (M3a), `reserve_ai_run()` and `record_ai_run()` (D-146) are signed-in
-      SECURITY DEFINER functions of the same kind as those three, and no decision accepts them yet.
 
 ## Logging, monitoring and alerting
 
-- [ ] **Security events.** The structured logger exists since the audit fixes
-      (`apps/web/src/lib/log.ts`, D-126). Left for M9: log security events through it (failed and
-      rate-limited sign-ins, consent changes, account deletions, permission errors from database
-      functions), never answer text or an email address (OBS-1, SEC-11).
-- [ ] **Monitoring and alerting.** `/api/health` uptime, error rate, AI spend close to
+- [ ] **Monitoring and alerting.** The `/api/health` uptime monitor is in
+      [operations.md](../runbooks/operations.md#abuse-protection-and-uptime-for-the-soft-launch-d-300)
+      for the owner to set up (D-300). Left: error rate, AI spend close to
       `ai.limit.global_daily_usd` (the day's `cost_usd + held_usd` in `private.ai_spend_daily`,
       D-146), `ai.skipped` with `timeout`, `ai.error` and `proxy.refresh_timeout` in the
       logs (D-152, D-168), failed `DB deploy` runs and cron jobs, each alerting the owner (OBS-3).
@@ -120,6 +118,21 @@ Finished by the audit fixes A to D (2026-09-28 to 2026-10-05):
       per request (D-150, PERF-1).
 - [x] **Performance budget.** JavaScript per route, script and font bytes and layout shift per
       public page fail CI over budget (D-171, PERF-5).
+
+Finished for the soft launch (2026-10-24, D-300):
+
+- [x] **Security events.** A refused code request or verification (`auth.rate_limited`, with its
+      stage), a change of the cross-border consent (`account.consent_changed`) and an account
+      deletion (`account.deleted`) are logged through the one logger, with failed sign-ins already
+      there; the failure lines of database functions carry their `code`, which shows a permission
+      error. No email address and no answer is in any line (OBS-1, SEC-11).
+- [x] **Security advisor.** The eight signed-in SECURITY DEFINER functions (`complete_onboarding`,
+      `create_project`, `delete_my_account`, `record_ai_run`, `record_engine_run`, `record_report`,
+      `reserve_ai_run`, `set_crossborder_consent`) are accepted: each sets its `search_path`, reads
+      the caller with `auth.uid()` and is granted to `authenticated` only. The `private` tables
+      with row level security and no policy are closed on purpose, and the leaked-password warning
+      does not apply to a service with no passwords. Any new function of this kind needs the same
+      check and a line here.
 
 ## Sign-off
 

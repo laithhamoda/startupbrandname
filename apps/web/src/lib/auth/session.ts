@@ -177,6 +177,8 @@ export async function deleteSignedInAccount(
     await log.error('account.delete_failed', { ...errorFields(error), reason });
     return false;
   }
+  // An account deletion is a security event (M9): the reason only, never who.
+  await log.info('account.deleted', { reason });
   await endDeletedSession(supabase);
   return true;
 }
