@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import { BrandMark } from '@/components/brand/brand-mark';
 import { ogImageName, PUBLIC_PAGES } from '@/config/public-pages';
 import { site } from '@/config/site';
 import { PAGE_META } from '@/content/pages';
@@ -41,12 +42,15 @@ export default async function OgCardPage({ params }: PageProps<'/[locale]/og-car
       data-og-card
       className="flex h-[630px] w-[1200px] flex-col justify-between bg-slab px-20 py-16 text-slab-text"
     >
-      <p className="flex items-baseline gap-5">
-        <span lang="en" dir="ltr" className="font-display text-[40px] font-extrabold">
-          {site.name}
-        </span>
-        <span className="text-[30px] text-slab-muted">{meta('descriptor')}</span>
-      </p>
+      <div className="flex items-center gap-6">
+        <BrandMark variant="on-dark" height={72} />
+        <p className="flex items-baseline gap-5">
+          <span lang="en" dir="ltr" className="font-display text-[40px] font-extrabold">
+            {site.name}
+          </span>
+          <span className="text-[30px] text-slab-muted">{meta('descriptor')}</span>
+        </p>
+      </div>
       <div className="grid gap-8">
         <span aria-hidden className="block h-1.5 w-40 bg-gold" />
         <p className="max-w-[980px] font-display text-[68px] leading-[1.3] font-extrabold">

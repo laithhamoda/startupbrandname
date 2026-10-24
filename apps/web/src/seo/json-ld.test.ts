@@ -39,6 +39,7 @@ describe('structured data', () => {
       name: 'Startup Brand Name',
       alternateName: 'استوديو نموذج العمل',
       url: 'https://startupbrandname.com',
+      logo: 'https://startupbrandname.com/brand/logo-512.png',
     });
   });
 

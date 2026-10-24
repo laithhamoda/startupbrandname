@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { clientEnvSchema } from './client';
-import { booleanFlag, emailList, getPreviewEmails, serverEnvSchema } from './server';
+import {
+  booleanFlag,
+  emailList,
+  getEarlyAccess,
+  getPreviewEmails,
+  serverEnvSchema,
+} from './server';
 
 const validClient = {
   NEXT_PUBLIC_SUPABASE_URL: 'https://abc.supabase.co',
@@ -109,6 +115,23 @@ describe('serverEnvSchema', () => {
     expect(serverEnvSchema.parse({ AI_PROVIDER: 'fake' }).AI_PROVIDER).toBe('fake');
     expect(() => serverEnvSchema.parse({ AI_PROVIDER: 'openai' })).toThrow();
     expect(serverEnvSchema.parse({}).ANTHROPIC_API_KEY).toBeUndefined();
+  });
+});
+
+describe('getEarlyAccess', () => {
+  it('is off when missing or empty (D-290)', () => {
+    expect(getEarlyAccess(undefined)).toBe(false);
+    expect(getEarlyAccess('')).toBe(false);
+  });
+
+  it('is on only for exactly "true"', () => {
+    expect(getEarlyAccess('true')).toBe(true);
+  });
+
+  it('fails closed on anything else, a typo included, and never throws', () => {
+    for (const raw of ['false', 'TRUE', 'yes', '1', 'on', ' true', 'true;']) {
+      expect(getEarlyAccess(raw), raw).toBe(false);
+    }
   });
 });
 

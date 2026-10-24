@@ -110,6 +110,33 @@ test('a summary with no calculation has no verdict at all', async ({ page }) => 
   await expect(page.locator('[data-report-reveal]')).toHaveCount(0);
 });
 
+// The result region of the project page (D-286, D-287), on its gallery view: the verdict is drawn
+// still, a stop keeps its sentence and its three changes, and the other three states say in words
+// what is missing.
+test('the project page result shows the verdict still and the other states in words', async ({
+  page,
+}) => {
+  await page.goto('/en/design/report?project=jo-home-ecommerce&view=result');
+  const regions = page.getByRole('region', { name: 'Check result' });
+  await expect(regions).toHaveCount(4);
+
+  // A stop: the slab with no reveal motion (that belongs to the report page), and its three changes.
+  await expect(regions.nth(0).locator('[data-verdict="stop"] .verdict-word')).toHaveText('Stop');
+  await expect(page.locator('[data-report-reveal]')).toHaveCount(0);
+  await expect(regions.nth(0).locator('table tbody tr')).toHaveCount(3);
+
+  // The answers are enough but the numbers are not calculated: what to give, a link to each.
+  await expect(regions.nth(1).getByText('The numbers are not calculated yet')).toBeVisible();
+  await expect(regions.nth(1).getByRole('link')).toHaveCount(2);
+
+  // Below the gate, and a failure: one plain statement each, never a verdict.
+  await expect(
+    regions.nth(2).getByText('Your answers are not enough for a report yet'),
+  ).toBeVisible();
+  await expect(regions.nth(3).getByRole('note')).toContainText('We could not calculate');
+  await expect(page.locator('[data-verdict]')).toHaveCount(1);
+});
+
 test('the three projects show their three verdicts', async ({ page }) => {
   for (const [project, word] of [
     ['jo-service-subscription', 'Revise'],

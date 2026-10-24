@@ -42,7 +42,7 @@ A decision may sit under several topics. A new decision joins its topics in the 
   D-149, D-156 to D-161, D-163, D-165, D-167, D-182, D-183, D-197 to D-199, D-231, D-232, D-249, D-252.
 - **Calculation engine:** D-178 to D-190, D-193 to D-196, D-200 to D-224, D-227 to D-230,
   D-238, D-244, D-246 to D-248, D-251, D-260 to D-262.
-- **Report, canvases and PDF (M5):** D-225 to D-253, D-260 to D-285.
+- **Report, canvases and PDF (M5):** D-225 to D-253, D-260 to D-287, D-290, D-292 to D-294.
 - **AI and cost:** D-062, D-071, D-072, D-073, D-082, D-103, D-107, D-119 to D-124, D-143, D-146 to
   D-152, D-155, D-183, D-191, D-226.
 - **Privacy, consent and security:** D-013, D-016, D-040, D-041, D-061, D-062, D-074, D-077,
@@ -51,15 +51,16 @@ A decision may sit under several topics. A new decision joins its topics in the 
 - **Legal:** D-059, D-066, D-068, D-082, D-086, D-137, D-145, D-147, D-154, D-186, D-233, D-263,
   D-266, D-270, D-271, D-279.
 - **Design and accessibility:** D-007, D-008, D-049 to D-053, D-055 to D-058, D-099, D-118, D-128,
-  D-131, D-158, D-159, D-161, D-162, D-170, D-231, D-249, D-250.
-- **Public site and SEO:** D-027, D-054, D-076, D-090 to D-098, D-100, D-101, D-153.
-- **Performance:** D-054, D-150, D-151, D-167 to D-171, D-250.
+  D-131, D-158, D-159, D-161, D-162, D-170, D-231, D-249, D-250, D-289.
+- **Public site and SEO:** D-027, D-054, D-076, D-090 to D-098, D-100, D-101, D-153, D-291, D-293 to
+  D-295.
+- **Performance:** D-054, D-150, D-151, D-167 to D-171, D-250, D-254.
 - **CI and repository:** D-001 to D-007, D-012 to D-016, D-020, D-023 to D-025, D-028, D-030 to
   D-033, D-039 to D-041, D-048, D-055, D-083, D-097, D-125, D-127, D-134, D-136, D-139 to D-142,
-  D-144, D-164 to D-166, D-171 to D-174, D-176, D-178, D-192.
+  D-144, D-164 to D-166, D-171 to D-174, D-176, D-178, D-192, D-254, D-288.
 - **Release and operations:** D-009 to D-012, D-017, D-019, D-021, D-022, D-029, D-036, D-042 to
   D-047, D-064, D-123, D-126, D-132, D-133, D-135, D-138, D-140, D-141, D-143, D-152, D-155, D-177,
-  D-191.
+  D-191, D-290.
 
 ## M0: repo, tooling, CI, environments
 
@@ -1859,6 +1860,28 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   step 5, and the wording of a number in one place (rule 1).
 - **Status:** Active
 
+### D-254 (2026-10-23): Cairo and Tajawal are files in the repository, so a build downloads nothing
+
+- **Decision:** `apps/web/src/styles/fonts/` holds the seven WOFF2 files that `next/font/google`
+  downloaded at every build (Cairo: Arabic, Latin extended and Latin, one variable file each for
+  weights 600 to 800; Tajawal: Arabic and Latin at 400 and 700), the two SIL OFL 1.1 licences, and
+  a README with each file's source address, size and SHA-256 and the way to replace them.
+  `app/fonts.ts` loads them with `next/font/local`, one call per script, because `next/font/local`
+  sets one `unicode-range` per call; the thirteen ranges are Google's, checked against its CSS on
+  2026-10-23. `globals.css` joins the pieces into `--font-cairo` and `--font-tajawal`, so no other
+  style changes. The files are byte for byte the ones `next/font/google` downloaded, which Google
+  serves to the User-Agent that Next.js sends (checked by downloading them again, and the live site
+  serves the same bytes): a page still preloads the same six, 102,528 B (D-170). A current browser
+  gets other files, a few hundred bytes larger, that draw the text a little differently: a first
+  attempt with those files changed the height and the pixels of the pages and failed 80 snapshot
+  tests, so the README says not to take the files from a browser.
+- **Reason:** A preview build failed on 2026-10-12, and the CI build of a pull request failed on
+  2026-10-23, because the build could not download the fonts from Google: a transient failure that
+  blocks a deployment or a merge for no reason in the code. Pinning the files ends that, stops the
+  rendering from changing when Google revises a font (the snapshots would drift), and leaves no
+  request to Google at build time.
+- **Status:** Active
+
 ### D-260 (2026-10-12): The levers of the change search, their bounds and what they aim at
 
 - **Decision:** `suggestChanges` (D-228) moves five of the founder's own numbers. **Price** (F1) up to
@@ -2293,7 +2316,8 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   its measured 176,573 plus about 10 percent (D-171): the page is a server component, so its client
   JavaScript is the shared shell.
 - **Reason:** D-171, D-273.
-- **Status:** Active
+- **Status:** Amended by D-286: the entry is named «نتيجة فحص مشروعك» at every gate except for an
+  account that may open the full report, and the page draws the result itself.
 
 ### D-278 (2026-10-22): The free summary shows the verdict
 
@@ -2449,3 +2473,179 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   `docs/M5-PLAN.md` and `docs/architecture.md`.
 - **Reason:** D-242; the lead measures a real report before the route goes.
 - **Status:** Superseded: the route was removed in the last commit of this pull request, after the measurement recorded in D-282.
+
+### D-286 (2026-10-23): The check result on the project page
+
+- **Decision:** The project page draws the check result in its own region under the title, headed
+  «نتيجة الفحص» (Check result). By state it shows: the verdict slab of the one-page summary (the
+  verdict word and the summary's short generic sentence, and for a stop its fixed sentence and its
+  three changes) when the numbers could be calculated; the report's own notice, with what to answer
+  or correct and a link to each question, when the answers are enough but the numbers cannot be
+  calculated; a statement that the result needs more answers below the summary gate; and a short
+  notice when the calculation failed. The region
+  is the first section of the summary as the report builds it, so the page and the report never give
+  two readings of the same answers, and it shows no more than the free summary shows (D-278),
+  whatever the account may open. The entry to the report is named «نتيجة فحص مشروعك» (Your
+  project’s check result) at every gate, and «تقرير المشروع» for an account that may open the full
+  report; it is the primary action when the diagnostic has no question left. The sentence after the
+  last question says the result is below.
+- **Reason:** On 2026-10-23 the owner finished a project on the live site at 100%, could not find
+  the result and asked whether to go ahead, revise or stop. The result was behind a button named for
+  the summary, and the page after the last question did not mention it. CLAUDE.md section 3 ends the
+  analysis with the verdict, so a founder must meet it where the diagnostic ends.
+- **Status:** Active
+
+### D-287 (2026-10-23): How the project page gets its result
+
+- **Decision:** `loadReportPage` takes `summaryOnly`: an account that may open the full report is
+  given the summary there, so the project page never builds a full report or reads the pack.
+  `loadProjectResult` maps the page to the four states of D-286. Below the summary gate it reads
+  nothing and runs nothing, since the page already knows its gate. Above it, it never throws
+  except with Next.js's own signals, logs `project.result_failed` or `project.result_missing`, and
+  adds the report loader's reads to the visit (the project and its answers again, the tax rules and
+  the record of the run: about five sequential reads, to be measured on Vercel, D-167). The search
+  for the changes of a stop runs on each visit, as on the report page: about 0.3 s for the golden
+  Jordanian shop, measured in WSL (the summary searches for a stop only, so a revise or a go costs
+  no search). The region is not streamed with Suspense, because its height differs by state and a
+  placeholder would shift the page; revisit it if the time on Vercel is felt. The slab is drawn
+  `still` on the project page: the reveal is the one orchestrated motion
+  of the product (CLAUDE.md section 6) and belongs to the moment the report opens, not to every
+  visit of a page the founder uses all the time. The gallery has a `?view=result` view of the four
+  states, checked for accessibility and snapshotted.
+- **Reason:** One loader and one model, no second reading of the answers (rule 3); a cost that is
+  measured; a calm page to come back to.
+- **Status:** Active
+
+### D-288 (2026-10-23): A second gitleaks fingerprint
+
+- **Decision:** `.gitleaksignore` lists a second fingerprint: commit 7ba03fb on the m5/5d branch,
+  where a unit test of the report notice spelled out the list key of a reason (its code, a hyphen
+  and its question ID) as the value of an object's key property, and gitleaks' generic-api-key rule
+  read that value as a secret. The line was replaced in the next commit; the ignore is by
+  fingerprint, so the same text anywhere else is still reported.
+- **Reason:** As D-125: a false positive in branch history; rewriting published history needs a force
+  push, and a narrow ignore keeps the full-history scan strict.
+- **Status:** Active
+
+### D-289 (2026-10-23): The supplied logo becomes the website icons
+
+- **Decision:** The logo the owner supplied on 2026-10-23 (a 1024 by 559 raster with a light and a
+  dark version) is rebuilt as clean vector geometry in `apps/web/scripts/brand/mark.mjs`, traced from
+  the raster and regularised: it matches the original within about one pixel (mean difference 4 of
+  255 on the light version), with straight edges and seams that share their corners. The colours are
+  the brand's own: teal #1FA3C7 for the top faces, gold #D4A537 for the square, and one deeper teal
+  for the side faces, as in the logo. `pnpm brand:build` writes every image into `apps/web/public`:
+  the tab icon `icon.svg` (transparent; the top face of the arrowhead turns gold on a dark browser
+  theme, as in the owner's dark version) and `favicon.ico` (16, 32 and 48 pixels, as PNG images);
+  the app icons on the brand black (`apple-touch-icon.png` 180, `icon-192.png`, `icon-512.png`,
+  and `icon-maskable-512.png` whose mark stays inside the central 80% circle); `brand/logo-512.png`
+  (transparent, square) for the structured data; and the mark in four forms under `public/brand`
+  (light, on dark, mono black, mono white). The sizes of 32 pixels and below use a wider gap
+  between the two pieces, so it survives at 16 pixels. The layout declares the icons and the
+  manifest (`display: browser`: no promise of an installed app), the Organization structured data
+  carries the logo, and the share-image card carries the mark. The header keeps the name as live
+  text: the supplied wordmark is a raster in a font that is not known, so it cannot be rebuilt
+  faithfully. `docs/design/brand.md` is the kit's usage guide.
+- **Reason:** The owner asked for the logo as the website icon with the standards of an international
+  design. A raster of 150 pixels cannot serve a 512 pixel icon, and at 16 pixels the full mark is a
+  blur, so the master is a vector and the small sizes are drawn for their size. One generator keeps
+  every size in step when the mark changes.
+- **Status:** Active
+
+### D-290 (2026-10-23): Early access: one switch opens the full report to every account
+
+- **Decision:** `EARLY_ACCESS_FULL_REPORT` is a server-only switch, off unless it is exactly `true`
+  (anything else, a typo included, is off and breaks no page). While it is on, every signed-in
+  account opens the full report as an address on the preview list does (D-245): the entitlement
+  table, the plans and the gates are untouched, so below the full-report gate (80% with the price,
+  costs and sales answered) an account still sees the summary, or nothing. `accountAccess` in
+  `apps/web/src/lib/report/account-access.ts` reads the preview list and this switch in one place,
+  and the report loader and the project page both call it. The pricing page says "early access"
+  while the switch is on, because its table still shows the full report as locked on the free plan.
+  The switch ships off: the owner turns it on in Vercel (Production) and redeploys, and removing it
+  ends early access at the next deployment. The PDF of a full report needs the M5 migrations on that
+  database. It is removed with M7.
+- **Reason:** Paid plans cannot open before M7 and the payment questions (#15), and a launch needs
+  founders to see what the full report gives. A switch keeps the entitlement design intact, is
+  reversible in one deployment, and starts off.
+- **Status:** Active
+
+### D-291 (2026-10-23): The AI mentor is marked "coming soon" wherever a public page promises it
+
+- **Decision:** The mentor (M6) is not built. The pricing table gets the "coming soon" mark on its
+  row, the same mark the competitor, deck and refresh rows carry, and each other public sentence
+  that offers the mentor now says it is coming: the free-plan answer in the FAQ, the step of "how it
+  works", the About summary, the home page description and the role list in the methodology. The
+  numbers of the free plan (3 messages a day) stay in the plan table and the FAQ answer, as the
+  plans' own entitlement.
+- **Reason:** CLAUDE.md rule 9 and the owner's own standard: the site does not offer what does not
+  exist. Marking is cheaper and truer than removing the mentor from the plan table, which is the
+  design of the paid plans.
+- **Status:** Active
+
+### D-292 (2026-10-23): The verdict says when tax was not calculated
+
+- **Decision:** In the verdict section of the summary, right after the verdict word, a one-sentence
+  note says that all figures are before tax when the run's tax was not calculated (the sentence the
+  executive summary already uses). The project page draws that section, so the note shows there
+  too; when a regime was calculated, nothing is added. For a stop, the three changes follow the
+  note.
+- **Reason:** No `tax_rules` row exists yet (D-233), so every verdict on the live site is before tax
+  by design, and a founder who reads «امضِ» must not read it as after tax.
+- **Status:** Active
+
+### D-293 (2026-10-23): A public sample report: the real report view over a frozen model of a fictional project
+
+- **Decision:** `/sample-report` (Arabic and English) shows a full report drawn by the same
+  `ReportView` as the real one, over a frozen model in
+  `apps/web/src/content/sample-report/{ar,en}.json`. `ReportView` gets an `embedded` flag: the page
+  has its own h1, so the project title becomes an h2 and the back link goes. The model is the
+  fictional project of the golden fixture `jo-service-subscription` (a monthly software subscription
+  in Amman), built as a full report with no tax rule and no country-pack item, and the legal and tax
+  notices are removed from the "legal path and financing" section (only its list stays), so no
+  country data is frozen into a page (rule 8) and none is made up (rule 9). `sample-report.test.ts`
+  rebuilds the model and fails when the files differ, so the sample cannot drift from the engine or
+  the report; `UPDATE_SAMPLE=1` rewrites them and refuses to run in CI. The page says first what it
+  is and what it leaves out and why, offers sign-up and the plans, has no PDF button and needs no
+  database or account. It is in the sitemap and in the related links of "pricing" and "how it works";
+  it is not yet in the footer or on the home page (`footer: false` in `PUBLIC_PAGES`, read through
+  `inFooter()`), so the footer and every existing snapshot stay unchanged.
+- **Reason:** The address was a 404, and a founder decides to sign up by seeing what the product
+  gives. The real view means the sample cannot look different from the product; a frozen model needs
+  no database, account or cost. Country law and tax carry a source and a date, which a page that
+  goes stale cannot keep.
+- **Status:** Active (the footer and home page part is superseded by D-295)
+
+### D-294 (2026-10-23): The sample report shows the verdict "go"
+
+- **Decision:** The owner asked for a sample with the verdict «امضِ». The golden project's own
+  forecast (200 subscribers from month 6) gives «عدّل», so the sample changes that one answer, the
+  sales forecast (F6), to 280 subscribers for months 6 to 12 and runs the engine's ordinary rules
+  on it: 8 of 10 criteria (80%, above the 75% line), no blocker, confidence high, tax not
+  calculated. The engine's threshold is 272 subscribers (271 stays "revise"); 280 is the smallest
+  multiple of ten above it, and it is the 7/5 factor that the engine's own change search proposes
+  for the 200 forecast (one of its three single changes, each of which reaches "go"). Everything
+  else in the sample, the golden fixtures and the engine are unchanged: every number on the page
+  is still the engine's. Two criteria stay unmet (funding
+  within the stated capital, and break-even in the conservative scenario) and the report lists
+  them as it does for any project. `sample-report.test.ts` builds the sample with the change and
+  asserts the verdict is "go", and the e2e check asserts one `data-verdict="go"` slab.
+- **Reason:** A first-time visitor should see what a positive result looks like, and the owner chose
+  it. Changing one answer of an existing fictional project, and letting the engine judge it, keeps
+  the sample honest: no verdict or number is written by hand (rule 1), and a future engine change
+  that flips the verdict fails the test and shows in review.
+- **Status:** Active
+
+### D-295 (2026-10-23): The sample report is linked from the footer and the home page
+
+- **Decision:** The owner asked for the link in the footer and on the home page. The footer's list
+  of pages gets "Sample report" after "Pricing" (message `nav.sampleReport`), and the home page's
+  first screen gets a second text link beside "How it works". The `footer: false` flag and the
+  `inFooter()` helper of D-293 are removed, so the e2e check that the footer links every public
+  page applies to all of them again; a second e2e check asserts that the home page leads to the
+  sample in both languages. The header menu is unchanged.
+- **Reason:** D-293 kept the page out of the footer so that its first pull request changed no
+  snapshot. With the page live and its verdict chosen by the owner, the footer and the home page
+  are where a founder looks for it. The footer is on every page, so the baselines of the pages
+  that show it and of the home page are regenerated with the manual workflow (D-055).
+- **Status:** Active

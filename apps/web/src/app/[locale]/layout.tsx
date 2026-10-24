@@ -14,7 +14,7 @@ import { isIndexable } from '@/seo/indexing';
 import { JsonLd, organizationJsonLd, websiteJsonLd } from '@/seo/json-ld';
 import { openGraphBase } from '@/seo/page-metadata';
 import { countVisits } from '@/lib/analytics';
-import { cairo, tajawal } from '../fonts';
+import { FONT_VARIABLES } from '../fonts';
 import '../globals.css';
 
 export function generateStaticParams() {
@@ -29,6 +29,16 @@ export async function generateMetadata(): Promise<Metadata> {
     title: { default: title, template: `%s | ${site.name}` },
     description: t('description'),
     applicationName: site.name,
+    // The ICO says 32x32 on purpose: a browser that reads SVG then picks icon.svg, and the rest
+    // take the ICO. Files are in public/ and come from scripts/brand (D-289).
+    icons: {
+      icon: [
+        { url: '/favicon.ico', sizes: '32x32' },
+        { url: '/icon.svg', type: 'image/svg+xml' },
+      ],
+      apple: { url: '/apple-touch-icon.png', sizes: '180x180' },
+    },
+    manifest: '/manifest.webmanifest',
     openGraph: { ...openGraphBase(locale), title, description: t('description') },
     robots: isIndexable() ? { index: true, follow: true } : { index: false, follow: false },
   };
@@ -49,12 +59,7 @@ export default async function LocaleLayout({ children }: Readonly<{ children: Re
   const meta = await getTranslations('meta');
 
   return (
-    <html
-      lang={locale}
-      dir={DIRECTION[locale]}
-      className={`${cairo.variable} ${tajawal.variable}`}
-      suppressHydrationWarning
-    >
+    <html lang={locale} dir={DIRECTION[locale]} className={FONT_VARIABLES} suppressHydrationWarning>
       <head>
         {/* Applies a saved light/dark choice before first paint (D-052). */}
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />

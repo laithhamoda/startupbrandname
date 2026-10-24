@@ -7,6 +7,7 @@ import type { RunSource } from '@/lib/engine/load';
 import { log } from '@/lib/log';
 import type { SupabaseServerClient } from '@/lib/supabase/server';
 import { loadReportPage } from './load';
+import { loadProjectResult } from './result';
 
 vi.mock('@/lib/log', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/lib/log')>()),
@@ -175,6 +176,29 @@ describe('loadReportPage (D-273)', () => {
     expect(log.error).toHaveBeenCalledWith('report.model_failed', expect.anything());
   });
 
+  it('opens the full report to an account that is not on the list while early access is on (D-290)', async () => {
+    vi.stubEnv('EARLY_ACCESS_FULL_REPORT', 'true');
+    setup('jo-service-subscription', 'full');
+    const page = await loadReportPage(client(), 'p', options('someone@example.test'));
+    expect(page?.status === 'ready' && page.model.kind).toBe('full');
+  });
+
+  it('keeps the summary locked by the plan when early access is off or mistyped', async () => {
+    vi.stubEnv('EARLY_ACCESS_FULL_REPORT', 'yes');
+    setup('jo-service-subscription', 'full');
+    const page = await loadReportPage(client(), 'p', options('someone@example.test'));
+    expect(page?.status === 'ready' && page.model.kind).toBe('summary');
+    expect(page?.status === 'ready' && page.model.lockReason).toBe('plan');
+  });
+
+  it('shows no more than the summary below the full gate, even in early access', async () => {
+    vi.stubEnv('EARLY_ACCESS_FULL_REPORT', 'true');
+    setup('jo-service-subscription', 'summary');
+    const page = await loadReportPage(client(), 'p', options('someone@example.test'));
+    expect(page?.status === 'ready' && page.model.kind).toBe('summary');
+    expect(page?.status === 'ready' && page.model.lockReason).toBe('completeness');
+  });
+
   it('logs a malformed preview list and previews nobody', async () => {
     vi.stubEnv('FULL_REPORT_PREVIEW_EMAILS', 'owner@');
     setup('jo-service-subscription', 'full');
@@ -219,5 +243,79 @@ describe('loadReportPage (D-273)', () => {
       'report.pack_unavailable',
       expect.objectContaining({ projectId: 'p' }),
     );
+  });
+
+  describe('for the project page (summaryOnly, D-287)', () => {
+    const summaryOnly = (email: string | null) => ({ ...options(email), summaryOnly: true });
+
+    it('gives an account that may open the full report the summary, and reads no pack', async () => {
+      vi.stubEnv('FULL_REPORT_PREVIEW_EMAILS', OWNER);
+      setup('jo-service-subscription', 'full');
+      const from = vi.fn();
+      const page = await loadReportPage(
+        { from } as unknown as SupabaseServerClient,
+        'p',
+        summaryOnly(OWNER),
+      );
+      if (page?.status !== 'ready') throw new Error('expected a page');
+      expect(page.model.kind).toBe('summary');
+      expect(page.model.sections[0]?.id).toBe('verdict');
+      expect(from).not.toHaveBeenCalled();
+    });
+
+    it('searches for changes for a stop only, as the free summary does', async () => {
+      vi.stubEnv('FULL_REPORT_PREVIEW_EMAILS', OWNER);
+      setup('jo-service-subscription', 'full');
+      const revise = await loadReportPage(client(), 'p', summaryOnly(OWNER));
+      expect(JSON.stringify(revise)).not.toContain(changesCaption('revise'));
+
+      setup('jo-home-ecommerce', 'full');
+      const stop = await loadReportPage(client(), 'p', summaryOnly(OWNER));
+      if (stop?.status !== 'ready') throw new Error('expected a page');
+      const table = stop.model.sections[0]?.blocks.find((block) => block.type === 'table');
+      expect(table?.type === 'table' ? table.rows : []).toHaveLength(3);
+    });
+
+    it('changes nothing for an account that may only open the summary', async () => {
+      setup('jo-service-subscription', 'full');
+      const page = await loadReportPage(client(), 'p', summaryOnly('someone@example.test'));
+      expect(page?.status === 'ready' && page.model.lockReason).toBe('plan');
+    });
+
+    it('still has no page below the summary gate', async () => {
+      setup('jo-service-subscription', 'none');
+      const page = await loadReportPage(client(), 'p', summaryOnly(OWNER));
+      expect(page?.status).toBe('none');
+    });
+
+    // The result the project page draws, through the real loader (D-286): what crosses to the page
+    // for an account that may open the full report is the verdict section and nothing else.
+    it('gives the project page the verdict section alone, never a full or a locked section', async () => {
+      vi.stubEnv('FULL_REPORT_PREVIEW_EMAILS', OWNER);
+      setup('jo-service-subscription', 'full');
+      const result = await loadProjectResult(client(), 'p', { ...options(OWNER), gate: 'full' });
+      if (result.status !== 'verdict') throw new Error(`expected a verdict, got ${result.status}`);
+      expect(result.section.id).toBe('verdict');
+      expect(result.section.blocks.map((block) => block.type)).toEqual(['verdict']);
+      expect(JSON.stringify(result)).not.toContain(changesCaption('revise'));
+    });
+
+    it('keeps the three changes of a stop on the project page', async () => {
+      setup('jo-home-ecommerce', 'full');
+      const result = await loadProjectResult(client(), 'p', {
+        ...options('someone@example.test'),
+        gate: 'full',
+      });
+      if (result.status !== 'verdict') throw new Error(`expected a verdict, got ${result.status}`);
+      const table = result.section.blocks.find((block) => block.type === 'table');
+      expect(table?.type === 'table' ? table.rows : []).toHaveLength(3);
+    });
+
+    it('lists the reasons for the project page when the numbers cannot be calculated', async () => {
+      const reasons = [{ code: 'missing_answer' as const, questionId: 'F3' as const }];
+      setup('jo-service-subscription', 'full', { outcome: { status: 'not_calculable', reasons } });
+      const result = await loadProjectResult(client(), 'p', { ...options(OWNER), gate: 'full' });
+      expect(result).toEqual({ status: 'needs_answers', reasons });
+    });
   });
 });

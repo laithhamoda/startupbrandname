@@ -10,6 +10,7 @@ const STRUCTURED_DATA: Record<(typeof PUBLIC_PAGES)[number]['id'], readonly stri
   howItWorks: ['HowTo', 'BreadcrumbList'],
   methodology: ['Article', 'BreadcrumbList'],
   pricing: ['WebApplication', 'BreadcrumbList'],
+  sampleReport: ['WebPage', 'BreadcrumbList'],
   glossary: ['DefinedTermSet', 'BreadcrumbList'],
   faq: ['FAQPage', 'BreadcrumbList'],
   about: ['AboutPage', 'BreadcrumbList'],
@@ -64,6 +65,13 @@ test('every public page is reachable from the footer', async ({ page }) => {
 
   for (const { path } of PUBLIC_PAGES.filter((candidate) => candidate.path !== '')) {
     await expect(footer.locator(`a[href="/en${path}"]`)).toHaveCount(1);
+  }
+});
+
+test('the home page leads to the sample report', async ({ page }) => {
+  for (const locale of LOCALES) {
+    await page.goto(`/${locale}`);
+    await expect(page.locator(`main a[href="/${locale}/sample-report"]`)).toHaveCount(1);
   }
 });
 

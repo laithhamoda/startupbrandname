@@ -5,6 +5,7 @@ import { PlanPrice, PricingTable } from '@/components/marketing/pricing-table';
 import { RelatedPages } from '@/components/marketing/related-pages';
 import { COURSE_PLANS } from '@/config/plans';
 import { PRICING } from '@/content/pricing';
+import { getEarlyAccess } from '@/env/server';
 import { currentLocale } from '@/i18n/locale';
 import { JsonLd } from '@/seo/json-ld';
 import { applicationJsonLd, innerPageMetadata, pageBreadcrumbJsonLd } from '@/seo/public-page';
@@ -23,6 +24,14 @@ export default async function PricingPage() {
         <p role="note" className="reading border-s-[3px] border-ink bg-sunken px-4 py-3 text-small">
           {text.notice}
         </p>
+        {getEarlyAccess() ? (
+          <p
+            role="note"
+            className="reading border-s-[3px] border-gold-ink bg-sunken px-4 py-3 text-small"
+          >
+            {text.earlyAccess}
+          </p>
+        ) : null}
       </PageIntro>
 
       <PricingTable text={text} />
@@ -49,7 +58,7 @@ export default async function PricingPage() {
         </p>
       </PageSection>
 
-      <RelatedPages ids={['howItWorks', 'faq', 'about']} />
+      <RelatedPages ids={['sampleReport', 'howItWorks', 'faq']} />
 
       <JsonLd data={applicationJsonLd(locale, 'pricing')} />
       <JsonLd data={await pageBreadcrumbJsonLd(locale, 'pricing')} />

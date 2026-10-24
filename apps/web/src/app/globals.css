@@ -58,6 +58,11 @@
 
 @layer base {
   html {
+    /* Each script is its own font (fonts.ts), so these join them: Arabic first, the rare Latin
+       letters next, then the Latin font with its size-adjusted fallback. The fallback comes last
+       because it matches every character. */
+    --font-cairo: var(--font-cairo-arabic), var(--font-cairo-latin-ext), var(--font-cairo-latin);
+    --font-tajawal: var(--font-tajawal-arabic), var(--font-tajawal-latin);
     background-color: var(--sbn-paper);
     color: var(--sbn-ink);
   }

@@ -75,3 +75,15 @@ export function getPreviewEmails(
   const parsed = previewEmailsSchema.safeParse(raw);
   return parsed.success ? { emails: parsed.data, valid: true } : { emails: [], valid: false };
 }
+
+/**
+ * Early access (D-290): "true" opens the full report to every signed-in account while paid plans do
+ * not exist. Fail-closed, and read apart from `serverEnvSchema` like the preview list, so a typo in
+ * this temporary variable switches nothing on and cannot take a page down. Remove it with M7.
+ */
+export function getEarlyAccess(
+  raw: string | undefined = process.env.EARLY_ACCESS_FULL_REPORT,
+): boolean {
+  const parsed = booleanFlag.safeParse(raw);
+  return parsed.success && parsed.data;
+}

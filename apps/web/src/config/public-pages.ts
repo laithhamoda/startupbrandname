@@ -1,12 +1,14 @@
 /**
  * The public, indexable pages (M2b). One list feeds the sitemap, llms.txt, the share images and
- * the Lighthouse checks. Slugs are English in both languages (D-091).
+ * the Lighthouse checks. Slugs are English in both languages (D-091). The footer links every page
+ * of the list (e2e/public-pages.spec.ts keeps it so).
  */
 export const PUBLIC_PAGES = [
   { id: 'home', path: '', priority: 1 },
   { id: 'howItWorks', path: '/how-it-works', priority: 0.9 },
   { id: 'methodology', path: '/methodology', priority: 0.8 },
   { id: 'pricing', path: '/pricing', priority: 0.9 },
+  { id: 'sampleReport', path: '/sample-report', priority: 0.8 },
   { id: 'glossary', path: '/glossary', priority: 0.7 },
   { id: 'faq', path: '/faq', priority: 0.7 },
   { id: 'about', path: '/about', priority: 0.6 },

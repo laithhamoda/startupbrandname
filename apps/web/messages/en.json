@@ -26,6 +26,7 @@
     "howItWorks": "How it works",
     "methodology": "Methodology",
     "pricing": "Pricing",
+    "sampleReport": "Sample report",
     "faq": "FAQ",
     "glossary": "Glossary",
     "about": "About",
@@ -261,8 +262,8 @@
       "modeFull": "Full version",
       "start": "Start the diagnostic",
       "resume": "Continue where you stopped",
-      "quickDone": "You have answered every quick-version question. Switch to the full version for a deeper report.",
-      "allDone": "You have answered every question.",
+      "quickDone": "You have answered every quick-version question. The check result is below; switch to the full version for a deeper report.",
+      "allDone": "You have answered every question. The check result is below.",
       "axes": "Axes",
       "next": "Most important missing questions",
       "nextLead": "Answering these raises completeness the most.",
@@ -288,8 +289,10 @@
       "deleteConfirm": "Yes, delete the project",
       "canvas": "Canvases",
       "report": "Project report",
-      "reportSummary": "One-page summary",
-      "reportNone": "The report needs more answers"
+      "result": {
+        "heading": "Check result",
+        "open": "Your project’s check result"
+      }
     },
     "backToCanvas": "Back to the canvases"
   },

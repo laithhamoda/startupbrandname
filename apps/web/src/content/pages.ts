@@ -7,7 +7,7 @@ export const PAGE_META: Localized<Record<PublicPageId, PageMeta>> = {
     home: {
       title: 'استوديو نموذج العمل',
       description:
-        'حوّل فكرتك إلى نموذج عمل بأرقام محسوبة: تشخيص منظّم، وتقرير عربي بحكم واضح، ومرشد ذكي.',
+        'حوّل فكرتك إلى نموذج عمل بأرقام محسوبة: تشخيص منظّم، وتقرير عربي بحكم واضح، ومرشد ذكي قريبًا.',
       card: 'حوّل فكرتك إلى نموذج عمل بأرقام محسوبة، لا مكتوبة',
     },
     howItWorks: {
@@ -27,6 +27,12 @@ export const PAGE_META: Localized<Record<PublicPageId, PageMeta>> = {
       description:
         'خطط المنصة بالدولار الأمريكي: المجانية والأسبوعية والشهرية والسنوية، وما تتضمّنه كل خطة.',
       card: 'خطط واضحة بالدولار الأمريكي',
+    },
+    sampleReport: {
+      title: 'تقرير نموذجي',
+      description:
+        'اطّلع على تقرير كامل لمشروع افتراضي: الحكم، والأرقام المحسوبة، والإسقاط المالي، والسيناريوهات، وخطة التحقق، قبل أن تبدأ تشخيص مشروعك.',
+      card: 'شاهد تقريرًا كاملًا قبل أن تبدأ',
     },
     glossary: {
       title: 'مسرد مصطلحات نموذج العمل',
@@ -51,7 +57,7 @@ export const PAGE_META: Localized<Record<PublicPageId, PageMeta>> = {
     home: {
       title: 'Business Model Studio',
       description:
-        'Turn your idea into a business model with calculated numbers: a structured diagnostic, an Arabic report with a clear verdict, and an AI mentor.',
+        'Turn your idea into a business model with calculated numbers: a structured diagnostic, an Arabic report with a clear verdict, and an AI mentor soon.',
       card: 'Turn your idea into a business model with numbers that are calculated, not written',
     },
     howItWorks: {
@@ -71,6 +77,12 @@ export const PAGE_META: Localized<Record<PublicPageId, PageMeta>> = {
       description:
         'The platform’s plans in US dollars: free, weekly, monthly and annual, and what each one includes.',
       card: 'Clear plans in US dollars',
+    },
+    sampleReport: {
+      title: 'Sample report',
+      description:
+        'See a full report for a fictional project: the verdict, calculated numbers, projection, scenarios and validation plan, before you start your own diagnostic.',
+      card: 'See a full report before you start',
     },
     glossary: {
       title: 'Business model glossary',

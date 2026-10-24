@@ -1,0 +1,3845 @@
+{
+  "version": 1,
+  "locale": "en",
+  "kind": "full",
+  "lockReason": null,
+  "audience": "investor",
+  "meta": {
+    "title": "خدمة برمجية بالاشتراك الشهري",
+    "countryCode": "JO",
+    "currencyLabel": "JOD",
+    "issuedOn": "2026-10-12",
+    "engineVersion": "1.1.0",
+    "inputHash": null,
+    "completeness": { "percent": 86, "gate": "full" },
+    "confidence": {
+      "level": "high",
+      "sound": 5,
+      "pivotal": [
+        { "id": "F1", "level": "high", "sound": true },
+        { "id": "F3", "level": "medium", "sound": true },
+        { "id": "F4", "level": "high", "sound": true },
+        { "id": "F5", "level": "high", "sound": true },
+        { "id": "F6", "level": "high", "sound": true }
+      ]
+    }
+  },
+  "sections": [
+    {
+      "id": "cover",
+      "title": "Cover",
+      "locked": false,
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": [
+            "Every number in this report is calculated by the engine with fixed formulas and carries its source and its level of confidence. No language model writes any number."
+          ]
+        },
+        {
+          "type": "definitionList",
+          "title": null,
+          "items": [
+            {
+              "term": ["Project"],
+              "definition": {
+                "text": ["خدمة برمجية بالاشتراك الشهري"],
+                "provenance": null,
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            },
+            {
+              "term": ["Country"],
+              "definition": {
+                "text": ["Jordan"],
+                "provenance": null,
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            },
+            {
+              "term": ["Report currency"],
+              "definition": {
+                "text": ["Jordanian Dinar (", { "l": "JOD" }, ")"],
+                "provenance": null,
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            },
+            {
+              "term": ["Issued on"],
+              "definition": {
+                "text": [{ "n": "2026-10-12" }],
+                "provenance": null,
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            },
+            {
+              "term": ["Engine version"],
+              "definition": {
+                "text": [{ "n": "1.1.0" }],
+                "provenance": null,
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            },
+            {
+              "term": ["Answers completed"],
+              "definition": {
+                "text": [{ "n": "86%" }],
+                "provenance": null,
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            },
+            {
+              "term": ["Overall confidence"],
+              "definition": {
+                "text": ["High (", { "n": "5" }, " of ", { "n": "5" }, " key answers are sound)"],
+                "provenance": null,
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "executive_summary",
+      "title": "Executive summary",
+      "locked": false,
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": [
+            "This report is addressed to a prospective investor, so it opens with what matters most to one: first-year profit, then the break-even month, then the funding you need."
+          ]
+        },
+        {
+          "type": "verdict",
+          "code": "go",
+          "word": "Go",
+          "reason": [
+            { "n": "8" },
+            " of ",
+            { "n": "10" },
+            " feasibility criteria pass (",
+            { "n": "80%" },
+            "), which reaches or exceeds the Go line (",
+            { "n": "75%" },
+            "); no criterion blocks, and your confidence in the key figures is sufficient. The score is not a probability of success; it is the share of criteria that pass."
+          ],
+          "stopSentence": null,
+          "meter": {
+            "passed": 8,
+            "evaluated": 10,
+            "linePercent": 75,
+            "caption": [
+              "Feasibility criteria met: ",
+              { "n": "8" },
+              " of ",
+              { "n": "10" },
+              ". The Go line is at ",
+              { "n": "75%" },
+              "."
+            ]
+          }
+        },
+        {
+          "type": "keyNumbers",
+          "items": [
+            {
+              "label": ["Year-one operating profit"],
+              "value": {
+                "text": [{ "n": "15,780.000" }, " ", { "l": "JOD" }],
+                "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                "lowConfidence": false,
+                "mark": null
+              },
+              "caption": ["Operating profit before tax"]
+            },
+            {
+              "label": ["Break-even month"],
+              "value": {
+                "text": ["Month ", { "n": "3" }],
+                "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                "lowConfidence": false,
+                "mark": null
+              },
+              "caption": ["Break-even: the first month income covers costs"]
+            },
+            {
+              "label": ["Funding need"],
+              "value": {
+                "text": [{ "n": "15,856.000" }, " ", { "l": "JOD" }],
+                "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                "lowConfidence": false,
+                "mark": null
+              },
+              "caption": ["Lowest cash balance, in Month ", { "n": "2" }]
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "title": ["Main risks"],
+          "ordered": false,
+          "items": [
+            [
+              "Set-up costs (",
+              { "n": "12,000.000" },
+              " ",
+              { "l": "JOD" },
+              ") are above your smallest available capital (",
+              { "n": "8,000.000" },
+              " ",
+              { "l": "JOD" },
+              ") and below your largest (",
+              { "n": "15,000.000" },
+              " ",
+              { "l": "JOD" },
+              ")."
+            ],
+            ["Your own worry: “هل سيقبل العملاء دفع اشتراك شهري بهذا السعر؟”."]
+          ]
+        },
+        { "type": "note", "text": ["All figures are before tax, because tax was not calculated."] },
+        {
+          "type": "note",
+          "text": [
+            "Overall confidence in your answers is High (",
+            { "n": "5" },
+            " of ",
+            { "n": "5" },
+            " key answers are sound)."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "project_card",
+      "title": "Project card",
+      "locked": false,
+      "blocks": [
+        {
+          "type": "definitionList",
+          "title": null,
+          "items": [
+            {
+              "term": ["Team"],
+              "definition": {
+                "text": ["سامر: شريك مؤسس"],
+                "provenance": { "source": "user", "confidence": "high", "validated": true },
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            },
+            {
+              "term": ["The idea"],
+              "definition": {
+                "text": ["منصة برمجية تدير حجوزات العيادات الصغيرة باشتراك شهري."],
+                "provenance": { "source": "user", "confidence": "high", "validated": true },
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            },
+            {
+              "term": ["Who pays"],
+              "definition": {
+                "text": ["Businesses (B2B)"],
+                "provenance": { "source": "user", "confidence": "high", "validated": true },
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            },
+            {
+              "term": ["Location"],
+              "definition": {
+                "text": ["عمّان, Jordan"],
+                "provenance": { "source": "user", "confidence": "high", "validated": true },
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            },
+            {
+              "term": ["Where you work"],
+              "definition": {
+                "text": ["An office"],
+                "provenance": { "source": "user", "confidence": "high", "validated": true },
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            },
+            {
+              "term": ["Sector"],
+              "definition": {
+                "text": ["Information and communication"],
+                "provenance": { "source": "user", "confidence": "high", "validated": true },
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            },
+            {
+              "term": ["Project type"],
+              "definition": {
+                "text": ["Digital product"],
+                "provenance": { "source": "user", "confidence": "high", "validated": true },
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            },
+            {
+              "term": ["Pricing model"],
+              "definition": {
+                "text": ["Subscription"],
+                "provenance": { "source": "user", "confidence": "high", "validated": true },
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            },
+            {
+              "term": ["Selling price"],
+              "definition": {
+                "text": [{ "n": "30.000" }, " ", { "l": "JOD" }],
+                "provenance": { "source": "user", "confidence": "high", "validated": true },
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            },
+            {
+              "term": ["Available capital"],
+              "definition": {
+                "text": [
+                  "from ",
+                  { "n": "8,000.000" },
+                  " ",
+                  { "l": "JOD" },
+                  " to ",
+                  { "n": "15,000.000" },
+                  " ",
+                  { "l": "JOD" }
+                ],
+                "provenance": { "source": "user", "confidence": "high", "validated": true },
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            },
+            {
+              "term": ["Goal of the project"],
+              "definition": {
+                "text": ["A company that can scale"],
+                "provenance": { "source": "user", "confidence": "high", "validated": true },
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "canvases",
+      "title": "Business model canvases",
+      "locked": false,
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": [
+            "Each cell shows your own words as you wrote them, with their source and level of confidence; the platform writes no text for you."
+          ]
+        },
+        {
+          "type": "canvas",
+          "kind": "business_model",
+          "title": "Business Model Canvas",
+          "blocks": [
+            {
+              "id": "customerSegments",
+              "title": "Customer segments",
+              "chips": [
+                {
+                  "key": "C1",
+                  "questionId": "C1",
+                  "label": null,
+                  "text": "Businesses (B2B)",
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false
+                }
+              ],
+              "empty": null,
+              "totals": []
+            },
+            {
+              "id": "valuePropositions",
+              "title": "Value propositions",
+              "chips": [
+                {
+                  "key": "B1",
+                  "questionId": "B1",
+                  "label": null,
+                  "text": "منصة برمجية تدير حجوزات العيادات الصغيرة باشتراك شهري.",
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false
+                }
+              ],
+              "empty": null,
+              "totals": []
+            },
+            {
+              "id": "channels",
+              "title": "Channels",
+              "chips": [],
+              "empty": ["You have not yet answered the question behind this cell."],
+              "totals": []
+            },
+            {
+              "id": "customerRelationships",
+              "title": "Customer relationships",
+              "chips": [],
+              "empty": ["You have not yet answered the question behind this cell."],
+              "totals": []
+            },
+            {
+              "id": "revenueStreams",
+              "title": "Revenue streams",
+              "chips": [
+                {
+                  "key": "F1",
+                  "questionId": "F1",
+                  "label": null,
+                  "text": "30 JOD",
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false
+                },
+                {
+                  "key": "F2",
+                  "questionId": "F2",
+                  "label": null,
+                  "text": "Subscription",
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false
+                },
+                {
+                  "key": "F7",
+                  "questionId": "F7",
+                  "label": null,
+                  "text": "Cash on purchase",
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false
+                }
+              ],
+              "empty": null,
+              "totals": []
+            },
+            {
+              "id": "keyResources",
+              "title": "Key resources",
+              "chips": [
+                {
+                  "key": "E6",
+                  "questionId": "E6",
+                  "label": null,
+                  "text": "An office",
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false
+                }
+              ],
+              "empty": null,
+              "totals": []
+            },
+            {
+              "id": "keyActivities",
+              "title": "Key activities",
+              "chips": [],
+              "empty": ["You have not yet answered the question behind this cell."],
+              "totals": []
+            },
+            {
+              "id": "keyPartners",
+              "title": "Key partners",
+              "chips": [
+                {
+                  "key": "A4:0",
+                  "questionId": "A4",
+                  "label": "سامر",
+                  "text": "شريك مؤسس",
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false
+                }
+              ],
+              "empty": null,
+              "totals": []
+            },
+            {
+              "id": "costStructure",
+              "title": "Cost structure",
+              "chips": [
+                {
+                  "key": "F3:0",
+                  "questionId": "F3",
+                  "label": "الاستضافة والخدمات السحابية",
+                  "text": "4 JOD",
+                  "provenance": { "source": "user", "confidence": "medium", "validated": true },
+                  "lowConfidence": false
+                },
+                {
+                  "key": "F3:1",
+                  "questionId": "F3",
+                  "label": "دعم العملاء",
+                  "text": "2 JOD",
+                  "provenance": { "source": "user", "confidence": "medium", "validated": true },
+                  "lowConfidence": false
+                },
+                {
+                  "key": "F4:0",
+                  "questionId": "F4",
+                  "label": "إيجار المكتب",
+                  "text": "1200 JOD",
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false
+                },
+                {
+                  "key": "F4:1",
+                  "questionId": "F4",
+                  "label": "البرمجيات والاشتراكات",
+                  "text": "800 JOD",
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false
+                },
+                {
+                  "key": "F4.1",
+                  "questionId": "F4.1",
+                  "label": null,
+                  "text": "600 JOD",
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false
+                },
+                {
+                  "key": "F5:0",
+                  "questionId": "F5",
+                  "label": "المعدات",
+                  "text": "7000 JOD",
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false
+                },
+                {
+                  "key": "F5:1",
+                  "questionId": "F5",
+                  "label": "التسجيل والاستشارة القانونية",
+                  "text": "3000 JOD",
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false
+                },
+                {
+                  "key": "F5:2",
+                  "questionId": "F5",
+                  "label": "إطلاق المنتج",
+                  "text": "2000 JOD",
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false
+                },
+                {
+                  "key": "E8:0",
+                  "questionId": "E8",
+                  "label": "مطوّر برمجيات",
+                  "text": "1500 JOD",
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false
+                }
+              ],
+              "empty": null,
+              "totals": [
+                {
+                  "label": ["Total fixed costs per month"],
+                  "value": {
+                    "text": [{ "n": "2,000.000" }, " ", { "l": "JOD" }],
+                    "provenance": { "source": "user", "confidence": "high", "validated": true },
+                    "lowConfidence": false,
+                    "mark": null
+                  }
+                },
+                {
+                  "label": ["Variable cost per unit"],
+                  "value": {
+                    "text": [{ "n": "6.000" }, " ", { "l": "JOD" }],
+                    "provenance": { "source": "user", "confidence": "medium", "validated": true },
+                    "lowConfidence": false,
+                    "mark": null
+                  }
+                },
+                {
+                  "label": ["Total set-up costs"],
+                  "value": {
+                    "text": [{ "n": "12,000.000" }, " ", { "l": "JOD" }],
+                    "provenance": { "source": "user", "confidence": "high", "validated": true },
+                    "lowConfidence": false,
+                    "mark": null
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "canvas",
+          "kind": "lean",
+          "title": "Lean Canvas",
+          "blocks": [
+            {
+              "id": "customerSegments",
+              "title": "Customer segments",
+              "chips": [],
+              "empty": ["You have not yet answered the question behind this cell."],
+              "totals": []
+            },
+            {
+              "id": "problem",
+              "title": "Problem",
+              "chips": [],
+              "empty": ["You have not yet answered the question behind this cell."],
+              "totals": []
+            },
+            {
+              "id": "uniqueValueProposition",
+              "title": "Unique value proposition",
+              "chips": [
+                {
+                  "key": "B1",
+                  "questionId": "B1",
+                  "label": null,
+                  "text": "منصة برمجية تدير حجوزات العيادات الصغيرة باشتراك شهري.",
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false
+                }
+              ],
+              "empty": null,
+              "totals": []
+            },
+            {
+              "id": "solution",
+              "title": "Solution",
+              "chips": [
+                {
+                  "key": "B1",
+                  "questionId": "B1",
+                  "label": null,
+                  "text": "منصة برمجية تدير حجوزات العيادات الصغيرة باشتراك شهري.",
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false
+                }
+              ],
+              "empty": null,
+              "totals": []
+            },
+            {
+              "id": "channels",
+              "title": "Channels",
+              "chips": [],
+              "empty": ["You have not yet answered the question behind this cell."],
+              "totals": []
+            },
+            {
+              "id": "revenueStreams",
+              "title": "Revenue streams",
+              "chips": [
+                {
+                  "key": "F1",
+                  "questionId": "F1",
+                  "label": null,
+                  "text": "30 JOD",
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false
+                },
+                {
+                  "key": "F2",
+                  "questionId": "F2",
+                  "label": null,
+                  "text": "Subscription",
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false
+                },
+                {
+                  "key": "F7",
+                  "questionId": "F7",
+                  "label": null,
+                  "text": "Cash on purchase",
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false
+                }
+              ],
+              "empty": null,
+              "totals": []
+            },
+            {
+              "id": "costStructure",
+              "title": "Cost structure",
+              "chips": [
+                {
+                  "key": "F3:0",
+                  "questionId": "F3",
+                  "label": "الاستضافة والخدمات السحابية",
+                  "text": "4 JOD",
+                  "provenance": { "source": "user", "confidence": "medium", "validated": true },
+                  "lowConfidence": false
+                },
+                {
+                  "key": "F3:1",
+                  "questionId": "F3",
+                  "label": "دعم العملاء",
+                  "text": "2 JOD",
+                  "provenance": { "source": "user", "confidence": "medium", "validated": true },
+                  "lowConfidence": false
+                },
+                {
+                  "key": "F4:0",
+                  "questionId": "F4",
+                  "label": "إيجار المكتب",
+                  "text": "1200 JOD",
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false
+                },
+                {
+                  "key": "F4:1",
+                  "questionId": "F4",
+                  "label": "البرمجيات والاشتراكات",
+                  "text": "800 JOD",
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false
+                },
+                {
+                  "key": "F4.1",
+                  "questionId": "F4.1",
+                  "label": null,
+                  "text": "600 JOD",
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false
+                },
+                {
+                  "key": "F5:0",
+                  "questionId": "F5",
+                  "label": "المعدات",
+                  "text": "7000 JOD",
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false
+                },
+                {
+                  "key": "F5:1",
+                  "questionId": "F5",
+                  "label": "التسجيل والاستشارة القانونية",
+                  "text": "3000 JOD",
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false
+                },
+                {
+                  "key": "F5:2",
+                  "questionId": "F5",
+                  "label": "إطلاق المنتج",
+                  "text": "2000 JOD",
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false
+                },
+                {
+                  "key": "E8:0",
+                  "questionId": "E8",
+                  "label": "مطوّر برمجيات",
+                  "text": "1500 JOD",
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false
+                }
+              ],
+              "empty": null,
+              "totals": [
+                {
+                  "label": ["Total fixed costs per month"],
+                  "value": {
+                    "text": [{ "n": "2,000.000" }, " ", { "l": "JOD" }],
+                    "provenance": { "source": "user", "confidence": "high", "validated": true },
+                    "lowConfidence": false,
+                    "mark": null
+                  }
+                },
+                {
+                  "label": ["Variable cost per unit"],
+                  "value": {
+                    "text": [{ "n": "6.000" }, " ", { "l": "JOD" }],
+                    "provenance": { "source": "user", "confidence": "medium", "validated": true },
+                    "lowConfidence": false,
+                    "mark": null
+                  }
+                },
+                {
+                  "label": ["Total set-up costs"],
+                  "value": {
+                    "text": [{ "n": "12,000.000" }, " ", { "l": "JOD" }],
+                    "provenance": { "source": "user", "confidence": "high", "validated": true },
+                    "lowConfidence": false,
+                    "mark": null
+                  }
+                }
+              ]
+            },
+            {
+              "id": "keyMetrics",
+              "title": "Key metrics",
+              "chips": [],
+              "empty": ["You have not yet answered the question behind this cell."],
+              "totals": []
+            },
+            {
+              "id": "unfairAdvantage",
+              "title": "Unfair advantage",
+              "chips": [],
+              "empty": ["You have not yet answered the question behind this cell."],
+              "totals": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pricing_unit_economics",
+      "title": "Pricing and unit economics",
+      "locked": false,
+      "blocks": [
+        {
+          "type": "table",
+          "caption": ["Unit economics and break-even"],
+          "headHeader": ["Item"],
+          "columns": [{ "header": ["Value"], "align": "end", "numeric": true, "mark": null }],
+          "rows": [
+            {
+              "head": ["Selling price per unit"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "30.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Variable cost per unit"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "6.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "user", "confidence": "medium", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Fixed costs you entered, per month"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "2,000.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Contribution margin per unit"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "24.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "user", "confidence": "medium", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Margin rate"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "80%" }],
+                  "provenance": { "source": "user", "confidence": "medium", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Total fixed costs per month as the engine counts them"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "4,100.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Break-even units per month"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "171" }],
+                  "provenance": { "source": "user", "confidence": "medium", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Break-even revenue per month"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "5,125.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "user", "confidence": "medium", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Break-even month"],
+              "note": null,
+              "cells": [
+                {
+                  "text": ["Month ", { "n": "3" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            }
+          ],
+          "total": null,
+          "numeric": true
+        },
+        {
+          "type": "paragraph",
+          "text": [
+            "You gave no maximum monthly capacity, so break-even units are not compared with one."
+          ]
+        },
+        {
+          "type": "table",
+          "caption": ["Subscription measures"],
+          "headHeader": ["Item"],
+          "columns": [{ "header": ["Value"], "align": "end", "numeric": true, "mark": null }],
+          "rows": [
+            {
+              "head": ["Average revenue per subscriber per month"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "30.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Monthly churn"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "5%" }],
+                  "provenance": { "source": "user", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Customer lifetime value (LTV)"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "480.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "user", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["New subscribers per month"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "14" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Customer acquisition cost (CAC)"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "42.857" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Customer value to acquisition cost"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "11.2" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            }
+          ],
+          "total": null,
+          "numeric": true
+        },
+        {
+          "type": "table",
+          "caption": ["Price positions in the market"],
+          "headHeader": ["Item"],
+          "columns": [{ "header": ["Value"], "align": "end", "numeric": true, "mark": null }],
+          "rows": [
+            {
+              "head": ["Price floor"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "23.738" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Lowest competitor price"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "28.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Median competitor price"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "32.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Highest competitor price"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "35.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Penetration price"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "28.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Market price"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "32.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            }
+          ],
+          "total": null,
+          "numeric": true
+        },
+        {
+          "type": "paragraph",
+          "text": [
+            "A premium price needs a measurable difference in your offer, and your answer does not show one yet."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "projection",
+      "title": "Financial projection",
+      "locked": false,
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": [
+            "Revenue is collected in cash in the same month. Figures are before tax unless stated otherwise."
+          ]
+        },
+        {
+          "type": "table",
+          "caption": ["Year one, month by month"],
+          "headHeader": ["Month"],
+          "columns": [
+            { "header": [{ "n": "1" }], "align": "end", "numeric": true, "mark": null },
+            { "header": [{ "n": "2" }], "align": "end", "numeric": true, "mark": null },
+            { "header": [{ "n": "3" }], "align": "end", "numeric": true, "mark": "break_even" },
+            { "header": [{ "n": "4" }], "align": "end", "numeric": true, "mark": null },
+            { "header": [{ "n": "5" }], "align": "end", "numeric": true, "mark": null },
+            { "header": [{ "n": "6" }], "align": "end", "numeric": true, "mark": null },
+            { "header": [{ "n": "7" }], "align": "end", "numeric": true, "mark": null },
+            { "header": [{ "n": "8" }], "align": "end", "numeric": true, "mark": null },
+            { "header": [{ "n": "9" }], "align": "end", "numeric": true, "mark": null },
+            { "header": [{ "n": "10" }], "align": "end", "numeric": true, "mark": null },
+            { "header": [{ "n": "11" }], "align": "end", "numeric": true, "mark": null },
+            { "header": [{ "n": "12" }], "align": "end", "numeric": true, "mark": null },
+            { "header": ["Year total"], "align": "end", "numeric": true, "mark": null }
+          ],
+          "rows": [
+            {
+              "head": ["Units sold"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "0" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "56" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "112" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "168" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "224" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "280" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "280" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "280" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "280" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "280" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "280" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "280" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "2,520" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Revenue"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "0.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "1,680.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "3,360.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "5,040.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "6,720.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "8,400.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "8,400.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "8,400.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "8,400.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "8,400.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "8,400.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "8,400.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "75,600.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Cost of sales"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "0.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "336.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "672.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "1,008.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "1,344.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "1,680.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "1,680.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "1,680.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "1,680.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "1,680.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "1,680.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "1,680.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "15,120.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Gross profit"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "0.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "1,344.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "2,688.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "4,032.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "5,376.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "6,720.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "6,720.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "6,720.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "6,720.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "6,720.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "6,720.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "6,720.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "60,480.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Operating costs"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "2,600.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "2,600.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "2,600.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "4,100.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "4,100.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "4,100.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "4,100.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "4,100.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "4,100.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "4,100.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "4,100.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "4,100.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "44,700.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Operating profit"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "−2,600.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "−1,256.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "88.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "−68.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "1,276.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "2,620.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "2,620.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "2,620.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "2,620.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "2,620.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "2,620.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "2,620.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "15,780.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Net cash"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "−2,600.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "−1,256.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "88.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "−68.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "1,276.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "2,620.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "2,620.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "2,620.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "2,620.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "2,620.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "2,620.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "2,620.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "15,780.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Cumulative cash balance before tax"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "−14,600.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "−15,856.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": "lowest_cash"
+                },
+                {
+                  "text": [{ "n": "−15,768.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "−15,836.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "−14,560.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "−11,940.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "−9,320.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "−6,700.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "−4,080.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "−1,460.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "1,160.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "3,780.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "3,780.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            }
+          ],
+          "total": null,
+          "numeric": true
+        },
+        {
+          "type": "note",
+          "text": [
+            "The cash balance starts from ",
+            { "n": "−12,000.000" },
+            " ",
+            { "l": "JOD" },
+            ", which is the set-up costs."
+          ]
+        },
+        {
+          "type": "note",
+          "text": [
+            "The lowest cash balance is in Month ",
+            { "n": "2" },
+            "; it is the funding need."
+          ]
+        },
+        {
+          "type": "note",
+          "text": [
+            "Break-even: the first month operations make a profit, which is Month ",
+            { "n": "3" },
+            "."
+          ]
+        },
+        {
+          "type": "note",
+          "text": [
+            "Payback period: the capital you spent is recovered in Month ",
+            { "n": "11" },
+            "."
+          ]
+        },
+        {
+          "type": "table",
+          "caption": ["Year ", { "n": "2" }, ": by quarter (each quarter is three months)"],
+          "headHeader": ["Item"],
+          "columns": [
+            { "header": ["Quarter ", { "n": "1" }], "align": "end", "numeric": true, "mark": null },
+            { "header": ["Quarter ", { "n": "2" }], "align": "end", "numeric": true, "mark": null },
+            { "header": ["Quarter ", { "n": "3" }], "align": "end", "numeric": true, "mark": null },
+            { "header": ["Quarter ", { "n": "4" }], "align": "end", "numeric": true, "mark": null },
+            { "header": ["Year total"], "align": "end", "numeric": true, "mark": null }
+          ],
+          "rows": [
+            {
+              "head": ["Revenue"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "25,200.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "25,200.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "25,200.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "25,200.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "100,800.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Cost of sales"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "5,040.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "5,040.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "5,040.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "5,040.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "20,160.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Operating costs"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "12,300.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "12,300.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "12,300.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "12,300.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "49,200.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Operating profit"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "7,860.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "7,860.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "7,860.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "7,860.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "31,440.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Net cash"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "7,860.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "7,860.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "7,860.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "7,860.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "31,440.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Cumulative cash balance before tax"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "11,640.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "19,500.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "27,360.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "35,220.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                { "text": ["—"], "provenance": null, "lowConfidence": false, "mark": null }
+              ]
+            }
+          ],
+          "total": null,
+          "numeric": true
+        },
+        {
+          "type": "table",
+          "caption": ["Year ", { "n": "3" }, ": by quarter (each quarter is three months)"],
+          "headHeader": ["Item"],
+          "columns": [
+            { "header": ["Quarter ", { "n": "1" }], "align": "end", "numeric": true, "mark": null },
+            { "header": ["Quarter ", { "n": "2" }], "align": "end", "numeric": true, "mark": null },
+            { "header": ["Quarter ", { "n": "3" }], "align": "end", "numeric": true, "mark": null },
+            { "header": ["Quarter ", { "n": "4" }], "align": "end", "numeric": true, "mark": null },
+            { "header": ["Year total"], "align": "end", "numeric": true, "mark": null }
+          ],
+          "rows": [
+            {
+              "head": ["Revenue"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "25,200.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "25,200.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "25,200.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "25,200.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "100,800.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Cost of sales"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "5,040.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "5,040.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "5,040.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "5,040.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "20,160.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Operating costs"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "12,300.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "12,300.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "12,300.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "12,300.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "49,200.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Operating profit"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "7,860.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "7,860.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "7,860.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "7,860.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "31,440.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Net cash"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "7,860.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "7,860.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "7,860.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "7,860.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "31,440.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Cumulative cash balance before tax"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "43,080.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "50,940.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "58,800.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "66,660.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                { "text": ["—"], "provenance": null, "lowConfidence": false, "mark": null }
+              ]
+            }
+          ],
+          "total": null,
+          "numeric": true
+        },
+        {
+          "type": "callout",
+          "tone": "tax",
+          "text": [
+            "Tax is not included in these figures. No documented, verified tax rule exists for this case, so we do not calculate a number of our own."
+          ]
+        },
+        {
+          "type": "callout",
+          "tone": "adviser",
+          "text": ["We recommend consulting a tax adviser in your country before any decision."]
+        },
+        {
+          "type": "note",
+          "text": [
+            "The data for this country holds no official link for the tax authority yet, and we will not put one of our own."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "scenarios_sensitivity",
+      "title": "Scenarios and sensitivity",
+      "locked": false,
+      "blocks": [
+        {
+          "type": "table",
+          "caption": ["The three scenarios"],
+          "headHeader": null,
+          "columns": [
+            { "header": ["Conservative"], "align": "end", "numeric": true, "mark": null },
+            { "header": ["Base"], "align": "end", "numeric": true, "mark": null },
+            { "header": ["Optimistic"], "align": "end", "numeric": true, "mark": null }
+          ],
+          "rows": [
+            {
+              "head": ["Assumptions"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [
+                    "Sales × ",
+                    { "n": "0.6" },
+                    ", variable cost × ",
+                    { "n": "1.1" },
+                    ", launch delayed by ",
+                    { "n": "3" },
+                    " months"
+                  ],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": ["Your numbers as entered"],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": ["Sales × ", { "n": "1.3" }, ", variable cost × ", { "n": "0.95" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Break-even month"],
+              "note": null,
+              "cells": [
+                {
+                  "text": ["no break-even within ", { "n": "36" }, " months"],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": ["Month ", { "n": "3" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": ["Month ", { "n": "3" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Funding need"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "37,164.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "15,856.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "15,426.100" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Year-one operating profit"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "−21,112.800" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "15,780.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "34,906.800" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            }
+          ],
+          "total": null,
+          "numeric": true
+        },
+        {
+          "type": "table",
+          "caption": [
+            "Sensitivity analysis: the four numbers ranked by their effect on year-one profit, each moved ",
+            { "n": "20%" },
+            " up and down"
+          ],
+          "headHeader": ["Number"],
+          "columns": [
+            {
+              "header": ["Year-one profit at the low end"],
+              "align": "end",
+              "numeric": true,
+              "mark": null
+            },
+            {
+              "header": ["Year-one profit at the high end"],
+              "align": "end",
+              "numeric": true,
+              "mark": null
+            },
+            { "header": ["Swing"], "align": "end", "numeric": true, "mark": null }
+          ],
+          "rows": [
+            {
+              "head": ["Price"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "660.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "30,900.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "30,240.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Sales"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "3,684.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "27,876.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "24,192.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Fixed costs"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "24,720.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "6,840.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "17,880.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Variable cost"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "18,804.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "12,756.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "6,048.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            }
+          ],
+          "total": null,
+          "numeric": true
+        },
+        {
+          "type": "note",
+          "text": [
+            "The number at the top of the table is the one most worth testing before you spend."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "legal_path_financing",
+      "title": "Legal path and financing",
+      "locked": false,
+      "blocks": [
+        {
+          "type": "list",
+          "title": ["Financing"],
+          "ordered": false,
+          "items": [
+            [
+              "The funding need (",
+              { "n": "15,856.000" },
+              " ",
+              { "l": "JOD" },
+              ") is above the largest capital you named (",
+              { "n": "15,000.000" },
+              " ",
+              { "l": "JOD" },
+              "): the difference needs an outside source or a change in your numbers."
+            ],
+            ["Outside funding sources you chose: An investor."]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "validation_plan",
+      "title": "Validation plan",
+      "locked": false,
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": [
+            "A test plan of ",
+            { "n": "30" },
+            " days: test the most important assumptions before you spend on them, ranked by how much each moves your profit and how confident you are in it."
+          ]
+        },
+        {
+          "type": "callout",
+          "tone": "worry",
+          "text": ["“هل سيقبل العملاء دفع اشتراك شهري بهذا السعر؟”"]
+        },
+        {
+          "type": "definitionList",
+          "title": ["Your own worry"],
+          "items": [
+            {
+              "term": ["The test"],
+              "definition": {
+                "text": [
+                  "The smallest test that answers your worry alone: show your idea to prospective customers and ask for a decision, not an opinion."
+                ],
+                "provenance": null,
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            },
+            {
+              "term": ["Success line"],
+              "definition": {
+                "text": [
+                  "The worry is yours, so the line you accept is your choice. This is the protocol’s default description; you set the number you will accept before you start."
+                ],
+                "provenance": null,
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            },
+            {
+              "term": ["If it fails"],
+              "definition": {
+                "text": ["Ask an expert in your field before you go on."],
+                "provenance": null,
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            },
+            {
+              "term": ["Cost"],
+              "definition": {
+                "text": ["Your time"],
+                "provenance": null,
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            }
+          ]
+        },
+        {
+          "type": "definitionList",
+          "title": ["Test ", { "n": "2" }],
+          "items": [
+            {
+              "term": ["Why"],
+              "definition": {
+                "text": [
+                  "Your price is ",
+                  { "n": "30.000" },
+                  " ",
+                  { "l": "JOD" },
+                  ". Changing it by ",
+                  { "n": "20%" },
+                  " moves year-one profit by ",
+                  { "n": "30,240.000" },
+                  " ",
+                  { "l": "JOD" },
+                  ". Your confidence in it is High."
+                ],
+                "provenance": { "source": "user", "confidence": "high", "validated": true },
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            },
+            {
+              "term": ["The test"],
+              "definition": {
+                "text": [
+                  "Offer the product or service at this price to prospective customers and record who actually agrees to pay."
+                ],
+                "provenance": null,
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            },
+            {
+              "term": ["Success line"],
+              "definition": {
+                "text": [
+                  "The share of those you ask who actually agree to pay, not those who merely like the offer. This is the protocol’s default description; you set the number you will accept before you start."
+                ],
+                "provenance": null,
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            },
+            {
+              "term": ["If it fails"],
+              "definition": {
+                "text": ["Try a second price on a new group."],
+                "provenance": null,
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            },
+            {
+              "term": ["Cost"],
+              "definition": {
+                "text": ["Your time"],
+                "provenance": null,
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            }
+          ]
+        },
+        {
+          "type": "definitionList",
+          "title": ["Test ", { "n": "3" }],
+          "items": [
+            {
+              "term": ["Why"],
+              "definition": {
+                "text": [
+                  "You forecast ",
+                  { "n": "280" },
+                  " units a month in month twelve. Changing that by ",
+                  { "n": "20%" },
+                  " moves year-one profit by ",
+                  { "n": "24,192.000" },
+                  " ",
+                  { "l": "JOD" },
+                  ". Your confidence in it is High."
+                ],
+                "provenance": { "source": "user", "confidence": "high", "validated": true },
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            },
+            {
+              "term": ["The test"],
+              "definition": {
+                "text": ["Collect paid pre-orders from real customers."],
+                "provenance": null,
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            },
+            {
+              "term": ["Success line"],
+              "definition": {
+                "text": [
+                  "The number of pre-orders against your forecast for month one. This is the protocol’s default description; you set the number you will accept before you start."
+                ],
+                "provenance": null,
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            },
+            {
+              "term": ["If it fails"],
+              "definition": {
+                "text": ["Revise the sales forecast and run the numbers again."],
+                "provenance": null,
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            },
+            {
+              "term": ["Cost"],
+              "definition": {
+                "text": ["A small amount of cash"],
+                "provenance": null,
+                "lowConfidence": false,
+                "mark": null
+              },
+              "tag": null,
+              "label": null,
+              "url": null
+            }
+          ]
+        },
+        {
+          "type": "table",
+          "caption": ["How the tests were ranked"],
+          "headHeader": ["Assumption"],
+          "columns": [
+            { "header": ["Your confidence"], "align": "start", "numeric": false, "mark": null },
+            {
+              "header": ["Rank of effect on profit"],
+              "align": "end",
+              "numeric": true,
+              "mark": null
+            },
+            { "header": ["Priority"], "align": "end", "numeric": true, "mark": null }
+          ],
+          "rows": [
+            {
+              "head": ["Price"],
+              "note": null,
+              "cells": [
+                {
+                  "text": ["High"],
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "1" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "4" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Variable cost"],
+              "note": null,
+              "cells": [
+                {
+                  "text": ["Medium"],
+                  "provenance": { "source": "user", "confidence": "medium", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "4" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "2" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Sales"],
+              "note": null,
+              "cells": [
+                {
+                  "text": ["High"],
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "2" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "3" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Fixed costs"],
+              "note": null,
+              "cells": [
+                {
+                  "text": ["High"],
+                  "provenance": { "source": "user", "confidence": "high", "validated": true },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "3" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": [{ "n": "2" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            }
+          ],
+          "total": null,
+          "numeric": true
+        },
+        {
+          "type": "note",
+          "text": [
+            "Priority = (",
+            { "n": "4" },
+            " − confidence) × (",
+            { "n": "5" },
+            " − effect rank), with confidence scored high ",
+            { "n": "3" },
+            ", medium ",
+            { "n": "2" },
+            ", low ",
+            { "n": "1" },
+            "."
+          ]
+        },
+        { "type": "note", "text": ["Your own worry always takes the first place."] }
+      ]
+    },
+    {
+      "id": "appendix_assumptions",
+      "title": "Appendix A: assumptions register",
+      "locked": false,
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": [
+            "This register lists every number in the report that is an assumption or has low confidence, with its source and level of confidence; test these numbers before you build a decision on them."
+          ]
+        },
+        {
+          "type": "table",
+          "caption": ["Numbers that are assumptions or have low confidence"],
+          "headHeader": ["Number"],
+          "columns": [
+            { "header": ["Value"], "align": "end", "numeric": true, "mark": null },
+            { "header": ["Source"], "align": "start", "numeric": false, "mark": null },
+            { "header": ["Confidence"], "align": "start", "numeric": false, "mark": null },
+            { "header": ["Confirmed"], "align": "start", "numeric": false, "mark": null }
+          ],
+          "rows": [
+            {
+              "head": ["Maximum capacity"],
+              "note": null,
+              "cells": [
+                {
+                  "text": ["—"],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": ["Assumption"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                { "text": ["Low"], "provenance": null, "lowConfidence": false, "mark": null },
+                {
+                  "text": ["Not confirmed"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Churn"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "5%" }],
+                  "provenance": { "source": "user", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": ["From your answers"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                { "text": ["Low"], "provenance": null, "lowConfidence": false, "mark": null },
+                {
+                  "text": ["Not confirmed"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Funding need"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "15,856.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": ["Assumption"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                { "text": ["Low"], "provenance": null, "lowConfidence": false, "mark": null },
+                {
+                  "text": ["Not confirmed"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Break-even month"],
+              "note": null,
+              "cells": [
+                {
+                  "text": ["Month ", { "n": "3" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": ["Assumption"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                { "text": ["Low"], "provenance": null, "lowConfidence": false, "mark": null },
+                {
+                  "text": ["Not confirmed"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Year-one operating profit"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "15,780.000" }, " ", { "l": "JOD" }],
+                  "provenance": { "source": "assumption", "confidence": "low", "validated": false },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": ["Assumption"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                { "text": ["Low"], "provenance": null, "lowConfidence": false, "mark": null },
+                {
+                  "text": ["Not confirmed"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            }
+          ],
+          "total": null,
+          "numeric": true
+        },
+        {
+          "type": "list",
+          "title": ["Engine notes on your answers"],
+          "ordered": false,
+          "items": [
+            ["The maximum capacity was not given, so there is no cap on units."],
+            ["No inflation was applied to costs because no rate with a documented source exists."]
+          ]
+        },
+        {
+          "type": "table",
+          "caption": ["The engine’s named assumptions"],
+          "headHeader": ["Assumption"],
+          "columns": [
+            { "header": ["Value"], "align": "end", "numeric": true, "mark": null },
+            { "header": ["Source"], "align": "start", "numeric": false, "mark": null },
+            { "header": ["Confidence"], "align": "start", "numeric": false, "mark": null },
+            { "header": ["Confirmed"], "align": "start", "numeric": false, "mark": null }
+          ],
+          "rows": [
+            {
+              "head": ["Projection horizon"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "36" }, " months"],
+                  "provenance": {
+                    "source": "assumption",
+                    "confidence": "medium",
+                    "validated": false
+                  },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": ["Assumption"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                { "text": ["Medium"], "provenance": null, "lowConfidence": false, "mark": null },
+                {
+                  "text": ["Not confirmed"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Ceiling of the yearly growth estimate"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "25%" }],
+                  "provenance": {
+                    "source": "assumption",
+                    "confidence": "medium",
+                    "validated": false
+                  },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": ["Assumption"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                { "text": ["Medium"], "provenance": null, "lowConfidence": false, "mark": null },
+                {
+                  "text": ["Not confirmed"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Share of your own growth the estimate keeps"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "50%" }],
+                  "provenance": {
+                    "source": "assumption",
+                    "confidence": "medium",
+                    "validated": false
+                  },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": ["Assumption"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                { "text": ["Medium"], "provenance": null, "lowConfidence": false, "mark": null },
+                {
+                  "text": ["Not confirmed"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Share of year-two growth applied to year three"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "50%" }],
+                  "provenance": {
+                    "source": "assumption",
+                    "confidence": "medium",
+                    "validated": false
+                  },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": ["Assumption"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                { "text": ["Medium"], "provenance": null, "lowConfidence": false, "mark": null },
+                {
+                  "text": ["Not confirmed"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Peak-month factor"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "1.5" }],
+                  "provenance": {
+                    "source": "assumption",
+                    "confidence": "medium",
+                    "validated": false
+                  },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": ["Assumption"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                { "text": ["Medium"], "provenance": null, "lowConfidence": false, "mark": null },
+                {
+                  "text": ["Not confirmed"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Yearly cost inflation"],
+              "note": null,
+              "cells": [
+                {
+                  "text": ["Not applied: no documented rate"],
+                  "provenance": {
+                    "source": "assumption",
+                    "confidence": "medium",
+                    "validated": false
+                  },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": ["Assumption"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                { "text": ["Medium"], "provenance": null, "lowConfidence": false, "mark": null },
+                {
+                  "text": ["Not confirmed"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Conservative scenario: sales multiplier"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "0.6" }],
+                  "provenance": {
+                    "source": "assumption",
+                    "confidence": "medium",
+                    "validated": false
+                  },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": ["Assumption"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                { "text": ["Medium"], "provenance": null, "lowConfidence": false, "mark": null },
+                {
+                  "text": ["Not confirmed"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Optimistic scenario: sales multiplier"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "1.3" }],
+                  "provenance": {
+                    "source": "assumption",
+                    "confidence": "medium",
+                    "validated": false
+                  },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": ["Assumption"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                { "text": ["Medium"], "provenance": null, "lowConfidence": false, "mark": null },
+                {
+                  "text": ["Not confirmed"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Conservative scenario: variable cost multiplier"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "1.1" }],
+                  "provenance": {
+                    "source": "assumption",
+                    "confidence": "medium",
+                    "validated": false
+                  },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": ["Assumption"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                { "text": ["Medium"], "provenance": null, "lowConfidence": false, "mark": null },
+                {
+                  "text": ["Not confirmed"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Optimistic scenario: variable cost multiplier"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "0.95" }],
+                  "provenance": {
+                    "source": "assumption",
+                    "confidence": "medium",
+                    "validated": false
+                  },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": ["Assumption"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                { "text": ["Medium"], "provenance": null, "lowConfidence": false, "mark": null },
+                {
+                  "text": ["Not confirmed"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Conservative scenario: launch delay"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "3" }, " months"],
+                  "provenance": {
+                    "source": "assumption",
+                    "confidence": "medium",
+                    "validated": false
+                  },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": ["Assumption"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                { "text": ["Medium"], "provenance": null, "lowConfidence": false, "mark": null },
+                {
+                  "text": ["Not confirmed"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Penetration price factor above the lowest price that covers costs"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "1.1" }],
+                  "provenance": {
+                    "source": "assumption",
+                    "confidence": "medium",
+                    "validated": false
+                  },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": ["Assumption"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                { "text": ["Medium"], "provenance": null, "lowConfidence": false, "mark": null },
+                {
+                  "text": ["Not confirmed"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Minimum accepted customer value to acquisition cost"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "3" }],
+                  "provenance": {
+                    "source": "assumption",
+                    "confidence": "medium",
+                    "validated": false
+                  },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": ["Assumption"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                { "text": ["Medium"], "provenance": null, "lowConfidence": false, "mark": null },
+                {
+                  "text": ["Not confirmed"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Imported-cost shocks in the currency test"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [
+                    { "n": "−20%" },
+                    "; ",
+                    { "n": "−10%" },
+                    "; ",
+                    { "n": "+10%" },
+                    "; ",
+                    { "n": "+20%" }
+                  ],
+                  "provenance": {
+                    "source": "assumption",
+                    "confidence": "medium",
+                    "validated": false
+                  },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": ["Assumption"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                { "text": ["Medium"], "provenance": null, "lowConfidence": false, "mark": null },
+                {
+                  "text": ["Not confirmed"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["How far each number moves when ranking effect"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "20%" }],
+                  "provenance": {
+                    "source": "assumption",
+                    "confidence": "medium",
+                    "validated": false
+                  },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": ["Assumption"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                { "text": ["Medium"], "provenance": null, "lowConfidence": false, "mark": null },
+                {
+                  "text": ["Not confirmed"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Feasibility window for break-even and recovery"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "36" }, " months"],
+                  "provenance": {
+                    "source": "assumption",
+                    "confidence": "medium",
+                    "validated": false
+                  },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": ["Assumption"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                { "text": ["Medium"], "provenance": null, "lowConfidence": false, "mark": null },
+                {
+                  "text": ["Not confirmed"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Score line for the Go verdict"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "75%" }],
+                  "provenance": {
+                    "source": "assumption",
+                    "confidence": "medium",
+                    "validated": false
+                  },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": ["Assumption"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                { "text": ["Medium"], "provenance": null, "lowConfidence": false, "mark": null },
+                {
+                  "text": ["Not confirmed"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Funding blocker: multiple of the largest capital"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "2" }],
+                  "provenance": {
+                    "source": "assumption",
+                    "confidence": "medium",
+                    "validated": false
+                  },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": ["Assumption"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                { "text": ["Medium"], "provenance": null, "lowConfidence": false, "mark": null },
+                {
+                  "text": ["Not confirmed"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Line for high overall confidence"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "75%" }],
+                  "provenance": {
+                    "source": "assumption",
+                    "confidence": "medium",
+                    "validated": false
+                  },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": ["Assumption"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                { "text": ["Medium"], "provenance": null, "lowConfidence": false, "mark": null },
+                {
+                  "text": ["Not confirmed"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            },
+            {
+              "head": ["Line for medium overall confidence"],
+              "note": null,
+              "cells": [
+                {
+                  "text": [{ "n": "50%" }],
+                  "provenance": {
+                    "source": "assumption",
+                    "confidence": "medium",
+                    "validated": false
+                  },
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                {
+                  "text": ["Assumption"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                },
+                { "text": ["Medium"], "provenance": null, "lowConfidence": false, "mark": null },
+                {
+                  "text": ["Not confirmed"],
+                  "provenance": null,
+                  "lowConfidence": false,
+                  "mark": null
+                }
+              ]
+            }
+          ],
+          "total": null,
+          "numeric": true
+        }
+      ]
+    },
+    {
+      "id": "appendix_sources",
+      "title": "Appendix B: sources",
+      "locked": false,
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": [
+            "The official sources behind the steps of the legal path, with the date each was last verified."
+          ]
+        },
+        { "type": "paragraph", "text": ["This report holds no verified sources for your country."] }
+      ]
+    },
+    {
+      "id": "appendix_disclaimer",
+      "title": "Appendix C: disclaimer",
+      "locked": false,
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": [
+            "This report is a planning tool built on the numbers you entered and on the engine’s assumptions listed in Appendix A; it is not legal, tax, financial or investment advice."
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": [
+            "Neither the verdict nor any number guarantees how the project will fare in the market; test the assumptions with the validation plan before you spend on them."
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": [
+            "The legal and regulatory values in the report are taken from dated official sources, and anything old or unverified carries the line “Check the official source”."
+          ]
+        },
+        {
+          "type": "note",
+          "text": [
+            "The feasibility score and the share of criteria met are not a probability of success."
+          ]
+        },
+        {
+          "type": "callout",
+          "tone": "adviser",
+          "text": ["We recommend consulting a tax adviser in your country before any decision."]
+        },
+        {
+          "type": "note",
+          "text": [
+            "The data for this country holds no official link for the tax authority yet, and we will not put one of our own."
+          ]
+        }
+      ]
+    }
+  ]
+}
