@@ -50,8 +50,12 @@ const nextConfig: NextConfig = {
   // function must carry the files there, not only behind the symlink of apps/web/node_modules
   // (D-239). The browser is listed only once: it is 68 MB. The fonts also keep the symlink path,
   // which the fonts loader walks to when it cannot resolve the package.
+  // The key is matched against the route's name as a glob, so it must have no bracket: written
+  // '/api/projects/[id]/report/pdf' it matched nothing, the function went out without its browser
+  // and every PDF failed on Vercel (D-298). The star stands for the project id; scripts/
+  // check-pdf-trace.mjs fails the build when the files are missing from the function's trace.
   outputFileTracingIncludes: {
-    '/api/projects/[id]/report/pdf': PDF_RENDERER_FILES,
+    '/api/projects/*/report/pdf': PDF_RENDERER_FILES,
   },
   headers: () =>
     Promise.resolve([
