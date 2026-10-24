@@ -48,6 +48,10 @@ jobs:
       # Gzipped JavaScript of the home page, signup, onboarding and a diagnostic step (D-171).
       - name: JavaScript per route within its budget
         run: node scripts/check-bundle-budget.mjs
+      # The PDF function must carry the browser and the print fonts: a route key that matches
+      # nothing leaves them out and every PDF fails on Vercel (D-298).
+      - name: PDF function carries the browser and the print fonts
+        run: node scripts/check-pdf-trace.mjs
 
   e2e-smoke:
     name: E2E, accessibility and RTL snapshots (Chromium)
