@@ -42,7 +42,7 @@ A decision may sit under several topics. A new decision joins its topics in the 
   D-149, D-156 to D-161, D-163, D-165, D-167, D-182, D-183, D-197 to D-199, D-231, D-232, D-249, D-252.
 - **Calculation engine:** D-178 to D-190, D-193 to D-196, D-200 to D-224, D-227 to D-230,
   D-238, D-244, D-246 to D-248, D-251, D-260 to D-262.
-- **Report, canvases and PDF (M5):** D-225 to D-253, D-260 to D-287, D-290, D-292 to D-294.
+- **Report, canvases and PDF (M5):** D-225 to D-253, D-260 to D-287, D-290, D-292 to D-294, D-298.
 - **AI and cost:** D-062, D-071, D-072, D-073, D-082, D-103, D-107, D-119 to D-124, D-143, D-146 to
   D-152, D-155, D-183, D-191, D-226, D-296.
 - **Privacy, consent and security:** D-013, D-016, D-040, D-041, D-061, D-062, D-074, D-077,
@@ -57,7 +57,7 @@ A decision may sit under several topics. A new decision joins its topics in the 
 - **Performance:** D-054, D-150, D-151, D-167 to D-171, D-250, D-254.
 - **CI and repository:** D-001 to D-007, D-012 to D-016, D-020, D-023 to D-025, D-028, D-030 to
   D-033, D-039 to D-041, D-048, D-055, D-083, D-097, D-125, D-127, D-134, D-136, D-139 to D-142,
-  D-144, D-164 to D-166, D-171 to D-174, D-176, D-178, D-192, D-254, D-288, D-297.
+  D-144, D-164 to D-166, D-171 to D-174, D-176, D-178, D-192, D-254, D-288, D-297, D-298.
 - **Release and operations:** D-009 to D-012, D-017, D-019, D-021, D-022, D-029, D-036, D-042 to
   D-047, D-064, D-123, D-126, D-132, D-133, D-135, D-138, D-140, D-141, D-143, D-152, D-155, D-177,
   D-191, D-290.
@@ -2679,3 +2679,24 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   updates should not wait for an approval cycle: the Next.js advisories of 2026-10-23 were fixed
   in production within a day only because the owner approved that pull request at once.
 - **Status:** Active
+
+### D-298 (2026-10-24): The PDF function's trace key has no bracket, and the build checks it
+
+- **Decision:** In `apps/web/next.config.ts` the `outputFileTracingIncludes` key of the report PDF
+  route is `'/api/projects/*/report/pdf'`, not `'/api/projects/[id]/report/pdf'`. `scripts/
+check-pdf-trace.mjs` runs after `pnpm build` (in the `checks` job, in `pnpm verify`, with its own
+  unit test) and fails when the function's file trace lacks the browser's four files
+  (`chromium.br`, `al2023.tar.br`, `fonts.tar.br`, `swiftshader.tar.br`) or any of the ten print
+  fonts. D-239 describes the same check done by hand for the temporary measuring route, whose key
+  had no bracket.
+- **Reason:** On 2026-10-24, the first real PDF on production ended on the report page with
+  `render_failed`. A temporary diagnostic route on a preview (the branch was deleted, never
+  merged) showed the cause on Vercel's runtime: the function had no `bin` folder, "The input
+  directory ... does not exist". A production build confirmed it: with the bracket key the
+  function's trace held none of the fourteen files, with the star key all of them, and on a preview
+  the browser then started (`HeadlessChrome/153`, 4.2 s cold, 0.5 s warm). The key is matched as a
+  glob, where `[id]` is a character class and never equals the route's name. Nothing caught it:
+  step 6 measured the real report through the measuring route (static key), not through this
+  route, and the route's end-to-end test cannot run a real browser in the function's layout. The
+  check turns the missing files into a failed build.
+- **Status:** Active (amends D-239, whose key and check concerned the measuring route)
