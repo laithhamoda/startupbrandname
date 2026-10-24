@@ -49,7 +49,7 @@ A decision may sit under several topics. A new decision joins its topics in the 
   D-082, D-085, D-092, D-098, D-103, D-107, D-126, D-130, D-137, D-138, D-142, D-144 to D-149,
   D-153, D-154, D-175, D-232, D-234, D-235, D-244, D-245, D-280, D-281, D-283, D-300.
 - **Legal:** D-059, D-066, D-068, D-082, D-086, D-137, D-145, D-147, D-154, D-186, D-233, D-263,
-  D-266, D-270, D-271, D-279, D-299.
+  D-266, D-270, D-271, D-279, D-299, D-302.
 - **Design and accessibility:** D-007, D-008, D-049 to D-053, D-055 to D-058, D-099, D-118, D-128,
   D-131, D-158, D-159, D-161, D-162, D-170, D-231, D-249, D-250, D-289.
 - **Public site and SEO:** D-027, D-054, D-076, D-090 to D-098, D-100, D-101, D-153, D-291, D-293 to
@@ -2718,7 +2718,7 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   enforceable in few places toward consumers, and card and PayPal disputes are decided on mandatory
   law and on our own errors, so the draft keeps both exceptions and lists the questions for the
   lawyer.
-- **Status:** Active (the text awaits legal review)
+- **Status:** Superseded by D-302 (the owner changed the rule on 2026-10-24)
 
 ### D-300 (2026-10-24): Hardening for the soft launch
 
@@ -2751,3 +2751,18 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   and a security incident with nothing in the logs. The edge rule and the monitor cost nothing and
   need no code or migration; the log lines are three small changes with tests.
 - **Status:** Active
+
+### D-302 (2026-10-24): A refund within 3 days and below 20% of mentor use, with no other exceptions
+
+- **Decision:** The owner replaced «no refunds» with a conditional refund. A buyer gets the full amount
+  back if the request comes within 3 days of the confirmed payment and the mentor was used below 20%
+  of the purchased plan's messages. A PDF download counts as full use of the service and ends the
+  right. The owner set no other exceptions. The lead kept clause 5 of the draft (the rights of
+  mandatory consumer law stay), as a flagged item the owner may remove; the lawyer decides it. The
+  text is `docs/legal/refund-policy-draft.md`, in Arabic and English, awaiting legal review; it is not
+  on the site, and the terms page keeps its placeholder until review and before the first payment (M7).
+- **Reason:** A refund that depends on early and light use keeps the price fair without a flat refusal,
+  and the owner's rule is simple to check with two numbers the system already records (the mentor
+  messages and the payment time). A contract cannot remove the consumer rights of the EU and the UK for
+  digital services, so the clause stays, and card and PayPal disputes are decided on that law.
+- **Status:** Active (the text awaits legal review)
