@@ -133,6 +133,45 @@ A settings change made in the SQL editor exists only in that database. If it sta
 incident, add a migration with the same value, so staging, local databases and a later settings
 migration agree with production, and record the change in [DECISIONS.md](../DECISIONS.md).
 
+## Abuse protection and uptime, for the soft launch (D-300)
+
+Two protections that the owner sets up in other dashboards, because they need his accounts. Both
+are free.
+
+**A rate limit on sign-in and sign-up (Vercel Firewall).** Supabase Auth counts requests per
+address and sees Vercel's address, not the visitor's (SEC-6), so one visitor who presses the button
+in a loop can use up the allowance of everybody. The rule stops a visitor at Vercel's edge, before
+any function runs and before Supabase counts anything. The sign-in forms post to their own page.
+
+1. Vercel → the project → **Firewall** → **Configure** → **Add rule** (a rate-limit rule). The labels
+   may differ a little from these.
+2. Name it `Limit sign-in and sign-up`. Condition: **Request path** matches the expression
+   `^/(ar|en)/(login|signup)$`, and **Request method** equals `POST`.
+3. Action: **Rate limit**, a fixed window of 60 seconds, 5 requests, keyed by **IP address**, and
+   when it is exceeded answer **429 (Too Many Requests)**.
+4. Save and **Publish** the change.
+5. Check: send the code from the sign-in page six times within a minute; the sixth is refused, and
+   after a minute it works again. A person who signs in uses two or three requests.
+
+The Hobby plan allows one rate-limit rule, and this is the one to use it on. It does not stop a
+botnet; Turnstile on the forms does, before the public launch (M9 checklist).
+
+**An alert when the site is down (UptimeRobot, free).**
+
+1. uptimerobot.com → create an account → **Add New Monitor**.
+2. Type **HTTP(s)**, URL `https://startupbrandname.com/api/health`, interval 5 minutes, alert
+   contact: the owner's email.
+3. The address answers `200` and `{"status":"ok"}` when the site and Supabase are reachable, and
+   `503` when Supabase is not, so the plain HTTP check catches both. The pings may also keep the
+   free Supabase project from pausing after a week of low use; that is not guaranteed.
+
+**Reading the security events.** In Vercel → **Logs**, search for the event names: `auth.rate_limited`
+(a request refused for the rate, with its stage `signup`, `login` or `verify`), `auth.code_rejected`
+(a wrong or expired code), `auth.code_request_failed`, `account.consent_changed` (reason `given`
+or `withdrawn`), `account.deleted` (reason `requested` or `closed_market`) and `account.delete_failed`.
+A burst of `auth.rate_limited` means somebody is hammering sign-in; one line means a person who
+pressed twice. No line carries an email address or an answer (D-126).
+
 ## Changing the model or its price before M7
 
 Until the admin area exists (M7), the model and prices change by migration (D-122), following the
