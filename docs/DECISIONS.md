@@ -54,10 +54,10 @@ A decision may sit under several topics. A new decision joins its topics in the 
   D-131, D-158, D-159, D-161, D-162, D-170, D-231, D-249, D-250, D-289.
 - **Public site and SEO:** D-027, D-054, D-076, D-090 to D-098, D-100, D-101, D-153, D-291, D-293 to
   D-295.
-- **Performance:** D-054, D-150, D-151, D-167 to D-171, D-250.
+- **Performance:** D-054, D-150, D-151, D-167 to D-171, D-250, D-254.
 - **CI and repository:** D-001 to D-007, D-012 to D-016, D-020, D-023 to D-025, D-028, D-030 to
   D-033, D-039 to D-041, D-048, D-055, D-083, D-097, D-125, D-127, D-134, D-136, D-139 to D-142,
-  D-144, D-164 to D-166, D-171 to D-174, D-176, D-178, D-192, D-288.
+  D-144, D-164 to D-166, D-171 to D-174, D-176, D-178, D-192, D-254, D-288.
 - **Release and operations:** D-009 to D-012, D-017, D-019, D-021, D-022, D-029, D-036, D-042 to
   D-047, D-064, D-123, D-126, D-132, D-133, D-135, D-138, D-140, D-141, D-143, D-152, D-155, D-177,
   D-191, D-290.
@@ -1858,6 +1858,28 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   budget is in `docs/runbooks/operations.md`.
 - **Reason:** Keeps the canvas free of the PDF code, the report package free of the engine until
   step 5, and the wording of a number in one place (rule 1).
+- **Status:** Active
+
+### D-254 (2026-10-23): Cairo and Tajawal are files in the repository, so a build downloads nothing
+
+- **Decision:** `apps/web/src/styles/fonts/` holds the seven WOFF2 files that `next/font/google`
+  downloaded at every build (Cairo: Arabic, Latin extended and Latin, one variable file each for
+  weights 600 to 800; Tajawal: Arabic and Latin at 400 and 700), the two SIL OFL 1.1 licences, and
+  a README with each file's source address, size and SHA-256 and the way to replace them.
+  `app/fonts.ts` loads them with `next/font/local`, one call per script, because `next/font/local`
+  sets one `unicode-range` per call; the thirteen ranges are Google's, checked against its CSS on
+  2026-10-23. `globals.css` joins the pieces into `--font-cairo` and `--font-tajawal`, so no other
+  style changes. The files are byte for byte the ones `next/font/google` downloaded, which Google
+  serves to the User-Agent that Next.js sends (checked by downloading them again, and the live site
+  serves the same bytes): a page still preloads the same six, 102,528 B (D-170). A current browser
+  gets other files, a few hundred bytes larger, that draw the text a little differently: a first
+  attempt with those files changed the height and the pixels of the pages and failed 80 snapshot
+  tests, so the README says not to take the files from a browser.
+- **Reason:** A preview build failed on 2026-10-12, and the CI build of a pull request failed on
+  2026-10-23, because the build could not download the fonts from Google: a transient failure that
+  blocks a deployment or a merge for no reason in the code. Pinning the files ends that, stops the
+  rendering from changing when Google revises a font (the snapshots would drift), and leaves no
+  request to Google at build time.
 - **Status:** Active
 
 ### D-260 (2026-10-12): The levers of the change search, their bounds and what they aim at

@@ -14,7 +14,7 @@ import { isIndexable } from '@/seo/indexing';
 import { JsonLd, organizationJsonLd, websiteJsonLd } from '@/seo/json-ld';
 import { openGraphBase } from '@/seo/page-metadata';
 import { countVisits } from '@/lib/analytics';
-import { cairo, tajawal } from '../fonts';
+import { FONT_VARIABLES } from '../fonts';
 import '../globals.css';
 
 export function generateStaticParams() {
@@ -59,12 +59,7 @@ export default async function LocaleLayout({ children }: Readonly<{ children: Re
   const meta = await getTranslations('meta');
 
   return (
-    <html
-      lang={locale}
-      dir={DIRECTION[locale]}
-      className={`${cairo.variable} ${tajawal.variable}`}
-      suppressHydrationWarning
-    >
+    <html lang={locale} dir={DIRECTION[locale]} className={FONT_VARIABLES} suppressHydrationWarning>
       <head>
         {/* Applies a saved light/dark choice before first paint (D-052). */}
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />

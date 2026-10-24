@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { GLOBAL_ERROR_TEXT } from '@/i18n/global-error';
-import { cairo, tajawal } from './fonts';
+import { FONT_VARIABLES } from './fonts';
 import './globals.css';
 
 const { ar, en } = GLOBAL_ERROR_TEXT;
@@ -22,7 +22,7 @@ export default function GlobalError({
   retry: () => void;
 }) {
   return (
-    <html lang="ar" dir="rtl" className={`${cairo.variable} ${tajawal.variable}`}>
+    <html lang="ar" dir="rtl" className={FONT_VARIABLES}>
       <body className="flex min-h-dvh flex-col">
         <title>{`${ar.title} | ${en.title}`}</title>
         <main
