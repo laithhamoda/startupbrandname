@@ -38,8 +38,31 @@ export function TermsAr() {
         <p>يمكنك حذف حسابك في أي وقت من صفحة حسابك.</p>
       </section>
       <section>
-        <h2>ما يُستكمل لاحقًا</h2>
-        <p>[الأسعار وسياسة الاسترداد والقانون الواجب التطبيق تُضاف بعد المراجعة القانونية.]</p>
+        <h2>سياسة الاسترداد</h2>
+        <p role="note">
+          المدفوعات لم تُفعَّل بعد، والنص التالي قيد المراجعة القانونية، ولا يسري على أي دفعة قبل
+          تفعيلها.
+        </p>
+        <ol>
+          <li>
+            يُسترد المبلغ كاملًا إذا طلبت ذلك خلال 3 أيام من وقت الدفع، وكان استهلاكك من رسائل
+            المرشد الذكي أقل من 20% من رسائل الخطة التي اشتريتها، ولم تُنزّل تقرير PDF.
+          </li>
+          <li>
+            تُحسب الأيام من لحظة الدفع المؤكدة، وتُحسب النسبة بقسمة الرسائل المستهلكة على إجمالي
+            رسائل الخطة. يُعدّ تنزيل ملف PDF استهلاكًا كاملًا للخدمة.
+          </li>
+          <li>
+            بعد أي من الشرطين أو تنزيل الملف، لا يُسترد المبلغ، ولا يُسترد جزء منه عن مدة لم
+            تُستخدم.
+          </li>
+          <li>يُعاد المبلغ إلى وسيلة الدفع الأصلية خلال [عدد] أيام عمل من الموافقة على الطلب.</li>
+          <li>
+            لا يقيّد هذا النص الحقوق التي يمنحها لك القانون الإلزامي في بلد إقامتك، ومنها حقوق
+            المستهلك في الخدمات الرقمية.
+          </li>
+          <li>أرسل طلبك إلى [بريد التواصل] مع بريد حسابك، وسنرد خلال [عدد] أيام عمل.</li>
+        </ol>
       </section>
     </>
   );
@@ -81,8 +104,38 @@ export function TermsEn() {
         <p>You can delete your account at any time from your account page.</p>
       </section>
       <section>
-        <h2>To be completed</h2>
-        <p>[Prices, the refund policy and the governing law will be added after legal review.]</p>
+        <h2>Refund policy</h2>
+        <p role="note">
+          Payments are not active yet. The text below is under legal review and does not apply to
+          any payment before payments are switched on.
+        </p>
+        <ol>
+          <li>
+            A full refund is given if you ask within 3 days of payment, your use of the AI mentor is
+            below 20% of the messages in the plan you bought, and you have not downloaded the PDF
+            report.
+          </li>
+          <li>
+            Days are counted from the confirmed payment. The percentage is the messages you used
+            divided by the messages in your plan. Downloading the PDF counts as full use of the
+            service.
+          </li>
+          <li>
+            After either condition is passed, or after a PDF download, no refund is given, and no
+            part of the payment is returned for time not used.
+          </li>
+          <li>
+            The amount is returned to the original payment method within [number] working days.
+          </li>
+          <li>
+            This text does not limit the rights that mandatory law gives you in the country where
+            you live, including consumer rights for digital services.
+          </li>
+          <li>
+            Send your request to [contact email] with your account email; we reply within [number]
+            working days.
+          </li>
+        </ol>
       </section>
     </>
   );

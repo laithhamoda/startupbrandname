@@ -9,5 +9,5 @@
  * `consent.crossborder.accepted_versions` (D-147), so a new version needs a migration that lists
  * it. Consents to an earlier text are renewed on the account page.
  */
-export const TERMS_VERSION = '2026-10-draft-2';
+export const TERMS_VERSION = '2026-10-draft-3';
 export const CROSSBORDER_VERSION = '2026-10-draft-2';
