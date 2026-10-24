@@ -33,7 +33,7 @@ earlier decision, that decision's Status changes in the same pull request:
 A decision may sit under several topics. A new decision joins its topics in the same pull request.
 
 - **Product, plans and vouchers:** D-022, D-035, D-037, D-038, D-050, D-060, D-071, D-094, D-109,
-  D-174.
+  D-174, D-299.
 - **Auth and accounts:** D-018, D-034, D-059, D-061, D-065, D-074, D-077, D-078, D-079, D-084,
   D-085, D-086, D-087, D-089, D-129, D-131, D-163, D-168, D-174.
 - **Markets, countries and languages:** D-026, D-063, D-066, D-067, D-068, D-069, D-070, D-075,
@@ -49,7 +49,7 @@ A decision may sit under several topics. A new decision joins its topics in the 
   D-082, D-085, D-092, D-098, D-103, D-107, D-126, D-130, D-137, D-138, D-142, D-144 to D-149,
   D-153, D-154, D-175, D-232, D-234, D-235, D-244, D-245, D-280, D-281, D-283.
 - **Legal:** D-059, D-066, D-068, D-082, D-086, D-137, D-145, D-147, D-154, D-186, D-233, D-263,
-  D-266, D-270, D-271, D-279.
+  D-266, D-270, D-271, D-279, D-299.
 - **Design and accessibility:** D-007, D-008, D-049 to D-053, D-055 to D-058, D-099, D-118, D-128,
   D-131, D-158, D-159, D-161, D-162, D-170, D-231, D-249, D-250, D-289.
 - **Public site and SEO:** D-027, D-054, D-076, D-090 to D-098, D-100, D-101, D-153, D-291, D-293 to
@@ -2683,9 +2683,9 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
 ### D-298 (2026-10-24): The PDF function's trace key has no bracket, and the build checks it
 
 - **Decision:** In `apps/web/next.config.ts` the `outputFileTracingIncludes` key of the report PDF
-  route is `'/api/projects/*/report/pdf'`, not `'/api/projects/[id]/report/pdf'`. `scripts/
-check-pdf-trace.mjs` runs after `pnpm build` (in the `checks` job, in `pnpm verify`, with its own
-  unit test) and fails when the function's file trace lacks the browser's four files
+  route is `'/api/projects/*/report/pdf'`, not `'/api/projects/[id]/report/pdf'`.
+  `scripts/check-pdf-trace.mjs` runs after `pnpm build` (in the `checks` job, in `pnpm verify`, with
+  its own unit test) and fails when the function's file trace lacks the browser's four files
   (`chromium.br`, `al2023.tar.br`, `fonts.tar.br`, `swiftshader.tar.br`) or any of the ten print
   fonts. D-239 describes the same check done by hand for the temporary measuring route, whose key
   had no bracket.
@@ -2700,3 +2700,22 @@ check-pdf-trace.mjs` runs after `pnpm build` (in the `checks` job, in `pnpm veri
   route, and the route's end-to-end test cannot run a real browser in the function's layout. The
   check turns the missing files into a failed build.
 - **Status:** Active (amends D-239, whose key and check concerned the measuring route)
+
+### D-299 (2026-10-24): No refunds; the policy is drafted and not yet on the site
+
+- **Decision:** The owner chose that there are no refunds. The draft is
+  `docs/legal/refund-policy-draft.md`, in Arabic and English: the payment buys the analysis, not a
+  result; payments are final on every plan; the free diagnostic, the one-page summary and the sample
+  report let a buyer try first; the weekly and annual plans do not renew and the monthly and alumni
+  plans renew until cancelled, with access to the end of the paid period. The lead added two
+  exceptions that the owner may remove: what mandatory consumer law gives the buyer, and our own
+  billing or technical error. The draft is not on the site: the terms page keeps its bracketed
+  placeholder until a lawyer has reviewed the text, and before the first payment (M7). The purchase
+  step will show it, with a checkbox that the buyer must tick (non-refundable, and the digital
+  service starts at once), the pricing page will carry a line, and the confirmation email too.
+- **Reason:** CLAUDE.md §10 lists the refund policy as open for legal review ("payment is for
+  analysis, not a positive outcome"), and the owner asked for a draft. A flat "no refunds" is
+  enforceable in few places toward consumers, and card and PayPal disputes are decided on mandatory
+  law and on our own errors, so the draft keeps both exceptions and lists the questions for the
+  lawyer.
+- **Status:** Active (the text awaits legal review)
