@@ -4,6 +4,8 @@ import { log } from '@/lib/log';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import {
   deleteAccount,
+  requestLoginCode,
+  requestSignupCode,
   setCrossborderConsent,
   startGoogleLogin,
   submitOnboarding,
@@ -316,11 +318,22 @@ describe('setCrossborderConsent', () => {
     );
   });
 
+  it('logs a change of consent as a security event, given or withdrawn, and nothing else', async () => {
+    signedIn();
+
+    await setCrossborderConsent('ar', false);
+    await setCrossborderConsent('ar', true);
+
+    expect(log.info).toHaveBeenCalledWith('account.consent_changed', { reason: 'withdrawn' });
+    expect(log.info).toHaveBeenCalledWith('account.consent_changed', { reason: 'given' });
+  });
+
   it('reports a failure to the form instead of throwing', async () => {
     signedIn({ set_crossborder_consent: { error: { code: '42501' } } });
 
     expect(await setCrossborderConsent('en', true)).toEqual({ status: 'error' });
     expect(log.error).toHaveBeenCalledWith('account.consent_failed', { code: '42501' });
+    expect(log.info).not.toHaveBeenCalledWith('account.consent_changed', expect.anything());
   });
 });
 
@@ -332,6 +345,14 @@ describe('deleteAccount', () => {
     expect(rpc).toHaveBeenCalledWith('delete_my_account');
   });
 
+  it('logs the deletion as a security event with its reason only', async () => {
+    signedIn();
+
+    await redirectTarget(deleteAccount('en'));
+
+    expect(log.info).toHaveBeenCalledWith('account.deleted', { reason: 'requested' });
+  });
+
   it('keeps the dialog when nothing could be deleted', async () => {
     signedIn({ delete_my_account: { error: { code: '57014' } } });
 
@@ -340,5 +361,72 @@ describe('deleteAccount', () => {
       code: '57014',
       reason: 'requested',
     });
+    expect(log.info).not.toHaveBeenCalledWith('account.deleted', expect.anything());
+  });
+});
+
+/** A client whose one-time-code calls fail with `error` (or succeed when it is null). */
+function codeClient(error: unknown) {
+  const signInWithOtp = vi.fn(() => Promise.resolve({ data: {}, error }));
+  const verifyOtp = vi.fn(() => Promise.resolve({ data: {}, error }));
+  vi.mocked(createSupabaseServerClient).mockResolvedValue({
+    auth: { signInWithOtp, verifyOtp },
+  } as unknown as Awaited<ReturnType<typeof createSupabaseServerClient>>);
+}
+
+function emailForm(): FormData {
+  const form = new FormData();
+  form.set('email', 'founder@example.test');
+  return form;
+}
+
+describe('rate limited code requests', () => {
+  const RATE_LIMITED = { status: 429, code: 'over_email_send_rate_limit' };
+
+  it('tells the visitor and logs one security event when a sign-in code is refused for the rate', async () => {
+    codeClient(RATE_LIMITED);
+
+    expect(await requestLoginCode('ar', { status: 'idle' }, emailForm())).toEqual({
+      status: 'error',
+      error: 'rateLimited',
+    });
+    expect(log.warn).toHaveBeenCalledWith('auth.rate_limited', { stage: 'login' });
+  });
+
+  it('does not log a rate limit for an address with no account, and still says "sent"', async () => {
+    codeClient({ status: 422, code: 'signup_disabled' });
+
+    expect(await requestLoginCode('ar', { status: 'idle' }, emailForm())).toEqual({
+      status: 'sent',
+      email: 'founder@example.test',
+    });
+    expect(log.warn).not.toHaveBeenCalledWith('auth.rate_limited', expect.anything());
+  });
+
+  it('logs the same event for a signup code and for a verification', async () => {
+    codeClient(RATE_LIMITED);
+    const signup = emailForm();
+    for (const [name, value] of gateForm('JO')) signup.set(name, value);
+
+    expect(await requestSignupCode('ar', { status: 'idle' }, signup)).toEqual({
+      status: 'error',
+      error: 'rateLimited',
+    });
+    expect(await verifyEmailCode('ar', { status: 'idle' }, codeForm('12345678'))).toEqual({
+      status: 'error',
+      error: 'rateLimited',
+    });
+    expect(log.warn).toHaveBeenCalledWith('auth.rate_limited', { stage: 'signup' });
+    expect(log.warn).toHaveBeenCalledWith('auth.rate_limited', { stage: 'verify' });
+  });
+
+  it('does not log a rate limit for a wrong code', async () => {
+    codeClient({ status: 400, code: 'otp_expired' });
+
+    expect(await verifyEmailCode('ar', { status: 'idle' }, codeForm('12345678'))).toEqual({
+      status: 'error',
+      error: 'invalidCode',
+    });
+    expect(log.warn).not.toHaveBeenCalledWith('auth.rate_limited', expect.anything());
   });
 });

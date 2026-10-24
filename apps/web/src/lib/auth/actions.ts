@@ -92,6 +92,18 @@ async function forgetSignupAnswers(): Promise<void> {
   (await cookies()).delete(SIGNUP_INTENT_COOKIE);
 }
 
+/**
+ * A request that Supabase Auth refused for rate limiting is a security event of its own (M9): one
+ * `auth.rate_limited` line per refusal, with where it happened, so that a burst can be counted.
+ * Supabase counts per address and sees Vercel's, so one visitor can use up everyone's allowance.
+ */
+async function logRateLimited(
+  stage: 'signup' | 'login' | 'verify',
+  error: Parameters<typeof errorCodeOf>[0],
+): Promise<void> {
+  if (errorCodeOf(error) === 'rateLimited') await log.warn('auth.rate_limited', { stage });
+}
+
 // -----------------------------------------------------------------------------------------------
 // Email code
 // -----------------------------------------------------------------------------------------------
@@ -117,6 +129,7 @@ export async function requestSignupCode(
   });
   if (error) {
     await log.warn('auth.code_request_failed', { ...errorFields(error), stage: 'signup' });
+    await logRateLimited('signup', error);
     return { status: 'error', error: errorCodeOf(error) };
   }
   return { status: 'sent', email: email.data };
@@ -140,9 +153,10 @@ export async function requestLoginCode(
   });
   // An unknown email fails with "signups not allowed"; answering "sent" either way stops anyone
   // from checking which addresses have an account.
-  if (error) await log.info('auth.code_request_failed', { ...errorFields(error), stage: 'login' });
-  if (error && errorCodeOf(error) === 'rateLimited') {
-    return { status: 'error', error: 'rateLimited' };
+  if (error) {
+    await log.info('auth.code_request_failed', { ...errorFields(error), stage: 'login' });
+    await logRateLimited('login', error);
+    if (errorCodeOf(error) === 'rateLimited') return { status: 'error', error: 'rateLimited' };
   }
   return { status: 'sent', email: email.data };
 }
@@ -170,6 +184,7 @@ export async function verifyEmailCode(
   });
   if (error) {
     await log.info('auth.code_rejected', errorFields(error));
+    await logRateLimited('verify', error);
     const reason = errorCodeOf(error);
     return { status: 'error', error: reason === 'failed' ? 'invalidCode' : reason };
   }
@@ -340,6 +355,8 @@ export async function setCrossborderConsent(
     await log.error('account.consent_failed', errorFields(error));
     return { status: 'error' };
   }
+  // A consent change is a security event (M9): given or withdrawn, never the text or the person.
+  await log.info('account.consent_changed', { reason: given ? 'given' : 'withdrawn' });
   revalidatePath(`/${locale}/account`);
   return { status: 'saved' };
 }

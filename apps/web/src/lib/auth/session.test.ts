@@ -235,6 +235,14 @@ describe('deleteSignedInAccount', () => {
     expect(signOut).toHaveBeenCalled();
   });
 
+  it('logs each deletion as a security event with its reason, and only after it happened', async () => {
+    const { client } = fakeClient({});
+
+    expect(await deleteSignedInAccount(client, 'closed_market')).toBe(true);
+
+    expect(log.info).toHaveBeenCalledWith('account.deleted', { reason: 'closed_market' });
+  });
+
   it('keeps the account, and says why, when a file cannot be removed', async () => {
     removeReportFiles.mockResolvedValueOnce(false);
     const { client, rpc, signOut } = fakeClient({});
@@ -247,6 +255,7 @@ describe('deleteSignedInAccount', () => {
       stage: 'reports_files',
       reason: 'requested',
     });
+    expect(log.info).not.toHaveBeenCalledWith('account.deleted', expect.anything());
   });
 
   it('leaves the files alone when nobody is signed in, and lets the database refuse', async () => {
