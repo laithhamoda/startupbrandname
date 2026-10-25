@@ -41,10 +41,10 @@ export const PAGE_META: Localized<Record<PublicPageId, PageMeta>> = {
       card: 'عشرون سؤالًا يبدأ بها تشخيص فكرتك',
     },
     ideaGuide: {
-      title: 'كيف تختبر فكرة مشروعك قبل أن تنفق عليها',
+      title: 'كيف تختبر فكرة مشروعك الإلكتروني قبل أن تنفق عليه',
       description:
-        'دليل عملي من سبع خطوات لاختبار الفكرة: المشكلة، والاستعداد للدفع، والأرقام، وتكلفة الوصول إلى العميل، ثم قرار امضِ أو عدّل أو توقّف.',
-      card: 'سبع خطوات لاختبار فكرتك قبل أن تنفق',
+        'دليل عملي من سبع خطوات لاختبار فكرة متجر إلكتروني أو منتج رقمي أو اشتراك: المشكلة، والاستعداد للدفع، والأرقام، وتكلفة الوصول، ثم قرار امضِ أو عدّل أو توقّف.',
+      card: 'سبع خطوات لاختبار مشروعك الإلكتروني قبل أن تنفق',
     },
     glossary: {
       title: 'مسرد مصطلحات نموذج العمل',
@@ -103,10 +103,10 @@ export const PAGE_META: Localized<Record<PublicPageId, PageMeta>> = {
       card: 'Twenty questions to start diagnosing your idea',
     },
     ideaGuide: {
-      title: 'How to test a business idea before you spend on it',
+      title: 'How to test an online business idea before you spend on it',
       description:
-        'A seven-step guide to testing a business idea: the problem, willingness to pay, the numbers, the cost of reaching customers, then a go, revise or stop decision.',
-      card: 'Seven steps to test your idea before you spend',
+        'Seven steps to test an online store, digital product or subscription idea: the problem, willingness to pay, the numbers, customer cost, then go, revise or stop.',
+      card: 'Seven steps to test your online business before you spend',
     },
     glossary: {
       title: 'Business model glossary',
