@@ -2906,3 +2906,41 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   its fee on items under $10, and the countries it sells to. If Jordan is refused, the owner
   decides again.
 - **Status:** Open
+
+### D-310 (2026-10-25): The payment webhook uses a Supabase secret key
+
+- **Decision:** `SUPABASE_SECRET_KEY` enters the app, as an exception to D-077 (no Supabase
+  secret key in the app). Only `lib/supabase/admin.ts` reads it, and only the payment webhook
+  (`/api/payments/webhook`) calls it, because a provider's notification carries no user session.
+  It reads `billing_products` and runs `apply_payment_event()`, which only the service role may run.
+  The key is server-only (`server-only`, never `NEXT_PUBLIC_`), a Sensitive variable in Vercel, and
+  the webhook answers 503 while it or `PADDLE_WEBHOOK_SECRET` is missing.
+- **Reason:** Access must change from the verified webhook alone (D-309), and a function open to
+  any signed-in user or visitor would let anyone call it. The alternative, a shared secret checked
+  inside the database, puts the same secret in more places for no gain.
+- **Status:** Active
+
+### D-311 (2026-10-25): Paddle accepts the Jordan-registered seller
+
+- **Decision:** The owner reports that Paddle accepts the platform's Jordan-registered seller
+  account, which was the gate of M7 step 0 (D-309). The work on payments goes on with Paddle.
+  Still to confirm with Paddle and record when known: the payout method, the fee on items under
+  $10, and an Arabic checkout.
+- **Reason:** D-309 depended on this answer; with it, the fallback to direct PayPal is not needed.
+- **Status:** Active
+
+### D-312 (2026-10-25): Founders pay per project, not per period
+
+- **Decision:** The owner chose payment per project over the time-based plans of CLAUDE.md §3
+  (weekly, monthly, annual, alumni). A purchase is bound to one project: the checkout names the
+  project, and the access it gives carries it (`checkout_refs.project_id`,
+  `subscriptions.project_id`); a purchase without a project still covers the whole account, for
+  vouchers and any account-wide plan kept later. Deleting the project deletes the access bought for
+  it. The levels, prices, the AI mentor's message quota, how long a project stays open and which
+  time-based plans remain are the owner's to confirm from the proposal of 2026-10-24; until then
+  `config/plans.ts` and the pricing page are unchanged, and CLAUDE.md §3 changes once they are
+  confirmed.
+- **Reason:** One founder, one idea, one diagnosis: a one-off need. One-time payments also avoid
+  recurring billing and auto-renewal rules, cap the mentor's cost per project, and suit the no-refund
+  position (D-299), which Paddle's buyer terms still bound (D-309).
+- **Status:** Open

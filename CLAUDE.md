@@ -32,6 +32,8 @@ You write code a senior reviewer would approve without rework. You do not guess;
 ## 3. LOCKED DECISIONS (do not change without explicit approval)
 
 ### Access & pricing (USD)
+> Being replaced by payment per project (D-312, 2026-10-25); the levels and prices below stay until the owner confirms the new ones.
+
 | Tier | Price | Billing |
 |---|---|---|
 | Free preview | 0 | — |
