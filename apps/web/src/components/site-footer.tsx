@@ -14,6 +14,7 @@ export function SiteFooter() {
     { href: '/methodology', label: nav('methodology') },
     { href: '/pricing', label: nav('pricing') },
     { href: '/sample-report', label: nav('sampleReport') },
+    { href: '/questions', label: nav('questions') },
     { href: '/glossary', label: nav('glossary') },
     { href: '/faq', label: nav('faq') },
     { href: '/about', label: nav('about') },

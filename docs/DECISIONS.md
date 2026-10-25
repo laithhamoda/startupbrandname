@@ -53,7 +53,7 @@ A decision may sit under several topics. A new decision joins its topics in the 
 - **Design and accessibility:** D-007, D-008, D-049 to D-053, D-055 to D-058, D-099, D-118, D-128,
   D-131, D-158, D-159, D-161, D-162, D-170, D-231, D-249, D-250, D-289.
 - **Public site and SEO:** D-027, D-054, D-076, D-090 to D-098, D-100, D-101, D-153, D-291, D-293 to
-  D-295, D-303.
+  D-295, D-303, D-304.
 - **Performance:** D-054, D-150, D-151, D-167 to D-171, D-250, D-254.
 - **CI and repository:** D-001 to D-007, D-012 to D-016, D-020, D-023 to D-025, D-028, D-030 to
   D-033, D-039 to D-041, D-048, D-055, D-083, D-097, D-125, D-127, D-134, D-136, D-139 to D-142,
@@ -2790,4 +2790,23 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   the real protection of the private questions is that they are never sent to a browser before
   sign-in. D-090 (open to everyone at launch) and D-027 (nothing open before launch) stay in force for
   everyone else.
+- **Status:** Active
+
+### D-304 (2026-10-25): A public page lists the 20 quick-mode questions, and nothing else of the bank
+
+- **Decision:** `/questions` (`/ar/questions`, `/en/questions`) is a public page that shows the
+  wording of the 20 quick-mode (★) questions, grouped by the eight axes and numbered in the order the
+  diagnostic asks them, with a note before the list: these are 20 of 64, the other 44 and the
+  follow-up rules are asked inside the diagnostic and are not published, so the list alone cannot
+  rebuild a report. It shows the question text only: never an id, a help text, an answer option, a
+  follow-up rule, a completeness weight or a question outside the quick set. The page reads the
+  questions from the question bank package, so it cannot drift from the diagnostic, and
+  `quick-questions.test.ts` fails if anything else appears. It is in the footer, the sitemap and
+  `llms.txt`, and has its own share images. The wording is still the draft of OQ #86: a change to a
+  quick question changes this page.
+- **Reason:** AI answer engines recommend what they can read and quote. A list of the questions a
+  founder is actually asked answers the searches «how do I test my idea», and it shows the depth of
+  the diagnostic without giving away the part that makes it different (the other questions, the
+  follow-up logic, the weights and thresholds, the country data). The owner chose this split on
+  2026-10-25 (phase 2 of the plan after D-303).
 - **Status:** Active

@@ -34,6 +34,12 @@ export const PAGE_META: Localized<Record<PublicPageId, PageMeta>> = {
         'اطّلع على تقرير كامل لمشروع افتراضي: الحكم، والأرقام المحسوبة، والإسقاط المالي، والسيناريوهات، وخطة التحقق، قبل أن تبدأ تشخيص مشروعك.',
       card: 'شاهد تقريرًا كاملًا قبل أن تبدأ',
     },
+    questions: {
+      title: 'أسئلة التشخيص السريع',
+      description:
+        'الأسئلة العشرون التي يبدأ بها التشخيص السريع، مرتّبة في المحاور الثمانية، وما يبقى داخل التشخيص نفسه.',
+      card: 'عشرون سؤالًا يبدأ بها تشخيص فكرتك',
+    },
     glossary: {
       title: 'مسرد مصطلحات نموذج العمل',
       description:
@@ -83,6 +89,12 @@ export const PAGE_META: Localized<Record<PublicPageId, PageMeta>> = {
       description:
         'See a full report for a fictional project: the verdict, calculated numbers, projection, scenarios and validation plan, before you start your own diagnostic.',
       card: 'See a full report before you start',
+    },
+    questions: {
+      title: 'Quick diagnostic questions',
+      description:
+        'The 20 questions that open the quick diagnostic, grouped by the eight axes, and what stays inside the diagnostic itself.',
+      card: 'Twenty questions to start diagnosing your idea',
     },
     glossary: {
       title: 'Business model glossary',
