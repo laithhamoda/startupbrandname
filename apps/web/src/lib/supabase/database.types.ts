@@ -77,6 +77,7 @@ export type Database = {
           created_at: string;
           expires_at: string;
           plan_id: string;
+          project_id: string | null;
           ref: string;
           user_id: string;
         };
@@ -85,6 +86,7 @@ export type Database = {
           created_at?: string;
           expires_at?: string;
           plan_id: string;
+          project_id?: string | null;
           ref?: string;
           user_id: string;
         };
@@ -93,10 +95,19 @@ export type Database = {
           created_at?: string;
           expires_at?: string;
           plan_id?: string;
+          project_id?: string | null;
           ref?: string;
           user_id?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'checkout_refs_project_id_fkey';
+            columns: ['project_id'];
+            isOneToOne: false;
+            referencedRelation: 'projects';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       consent_events: {
         Row: {
@@ -378,6 +389,7 @@ export type Database = {
           ends_at: string | null;
           id: string;
           plan_id: string;
+          project_id: string | null;
           provider_customer_id: string | null;
           provider_event_at: string | null;
           provider_ref: string | null;
@@ -392,6 +404,7 @@ export type Database = {
           ends_at?: string | null;
           id?: string;
           plan_id: string;
+          project_id?: string | null;
           provider_customer_id?: string | null;
           provider_event_at?: string | null;
           provider_ref?: string | null;
@@ -406,6 +419,7 @@ export type Database = {
           ends_at?: string | null;
           id?: string;
           plan_id?: string;
+          project_id?: string | null;
           provider_customer_id?: string | null;
           provider_event_at?: string | null;
           provider_ref?: string | null;
@@ -415,7 +429,15 @@ export type Database = {
           updated_at?: string;
           user_id?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'subscriptions_project_id_fkey';
+            columns: ['project_id'];
+            isOneToOne: false;
+            referencedRelation: 'projects';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       tax_rules: {
         Row: {

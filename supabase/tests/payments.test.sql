@@ -11,9 +11,9 @@ insert into auth.users (id, email, created_at) values
   ('b7000000-0000-4000-8000-000000000002', 'm7-stranger@example.test', now()),
   ('c7000000-0000-4000-8000-000000000003', 'm7-no-profile@example.test', now());
 
-insert into public.profiles (user_id, country_code, locale, secondary_declared_at, adult_declared_at) values
-  ('a7000000-0000-4000-8000-000000000001', 'JO', 'ar', now(), now()),
-  ('b7000000-0000-4000-8000-000000000002', 'DZ', 'ar', now(), now());
+insert into public.profiles (user_id, country_code, locale, has_project) values
+  ('a7000000-0000-4000-8000-000000000001', 'JO', 'ar', true),
+  ('b7000000-0000-4000-8000-000000000002', 'DZ', 'ar', true);
 
 insert into public.projects (id, user_id, title, country_code, currency) values
   ('a7100000-0000-4000-8000-000000000001', 'a7000000-0000-4000-8000-000000000001', 'paid', 'JO', 'JOD'),
