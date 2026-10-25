@@ -1,7 +1,8 @@
 {
   "meta": {
     "descriptor": "Business Model Studio",
-    "description": "Turn your idea into a business model with calculated numbers: a structured diagnostic, a report with a clear verdict, and an AI mentor."
+    "category": "Business idea diagnostic with calculated numbers",
+    "description": "A business idea diagnostic with calculated numbers: structured questions, a report with a clear verdict, and an AI mentor."
   },
   "common": {
     "skipToContent": "Skip to content",
@@ -27,6 +28,8 @@
     "methodology": "Methodology",
     "pricing": "Pricing",
     "sampleReport": "Sample report",
+    "questions": "Quick questions",
+    "ideaGuide": "Idea test guide",
     "faq": "FAQ",
     "glossary": "Glossary",
     "about": "About",

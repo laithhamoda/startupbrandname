@@ -7,7 +7,7 @@ export const PAGE_META: Localized<Record<PublicPageId, PageMeta>> = {
     home: {
       title: 'استوديو نموذج العمل',
       description:
-        'حوّل فكرتك إلى نموذج عمل بأرقام محسوبة: تشخيص منظّم، وتقرير عربي بحكم واضح، ومرشد ذكي قريبًا.',
+        'تشخيص جدوى فكرة مشروعك بالأرقام: أسئلة منظّمة، وتقرير عربي بحكم واضح (امضِ أو عدّل أو توقّف)، ومرشد ذكي قريبًا.',
       card: 'حوّل فكرتك إلى نموذج عمل بأرقام محسوبة، لا مكتوبة',
     },
     howItWorks: {
@@ -34,6 +34,18 @@ export const PAGE_META: Localized<Record<PublicPageId, PageMeta>> = {
         'اطّلع على تقرير كامل لمشروع افتراضي: الحكم، والأرقام المحسوبة، والإسقاط المالي، والسيناريوهات، وخطة التحقق، قبل أن تبدأ تشخيص مشروعك.',
       card: 'شاهد تقريرًا كاملًا قبل أن تبدأ',
     },
+    questions: {
+      title: 'أسئلة التشخيص السريع',
+      description:
+        'الأسئلة العشرون التي يبدأ بها التشخيص السريع، مرتّبة في المحاور الثمانية، وما يبقى داخل التشخيص نفسه.',
+      card: 'عشرون سؤالًا يبدأ بها تشخيص فكرتك',
+    },
+    ideaGuide: {
+      title: 'كيف تختبر فكرة مشروعك الإلكتروني قبل أن تنفق عليه',
+      description:
+        'دليل عملي من سبع خطوات لاختبار فكرة متجر إلكتروني أو منتج رقمي أو اشتراك: المشكلة، والاستعداد للدفع، والأرقام، وتكلفة الوصول، ثم قرار امضِ أو عدّل أو توقّف.',
+      card: 'سبع خطوات لاختبار مشروعك الإلكتروني قبل أن تنفق',
+    },
     glossary: {
       title: 'مسرد مصطلحات نموذج العمل',
       description:
@@ -57,7 +69,7 @@ export const PAGE_META: Localized<Record<PublicPageId, PageMeta>> = {
     home: {
       title: 'Business Model Studio',
       description:
-        'Turn your idea into a business model with calculated numbers: a structured diagnostic, an Arabic report with a clear verdict, and an AI mentor soon.',
+        'A business idea diagnostic with calculated numbers: structured questions, an Arabic report with a clear verdict (go, revise or stop), and an AI mentor soon.',
       card: 'Turn your idea into a business model with numbers that are calculated, not written',
     },
     howItWorks: {
@@ -83,6 +95,18 @@ export const PAGE_META: Localized<Record<PublicPageId, PageMeta>> = {
       description:
         'See a full report for a fictional project: the verdict, calculated numbers, projection, scenarios and validation plan, before you start your own diagnostic.',
       card: 'See a full report before you start',
+    },
+    questions: {
+      title: 'Quick diagnostic questions',
+      description:
+        'The 20 questions that open the quick diagnostic, grouped by the eight axes, and what stays inside the diagnostic itself.',
+      card: 'Twenty questions to start diagnosing your idea',
+    },
+    ideaGuide: {
+      title: 'How to test an online business idea before you spend on it',
+      description:
+        'Seven steps to test an online store, digital product or subscription idea: the problem, willingness to pay, the numbers, customer cost, then go, revise or stop.',
+      card: 'Seven steps to test your online business before you spend',
     },
     glossary: {
       title: 'Business model glossary',

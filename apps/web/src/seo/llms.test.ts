@@ -9,6 +9,11 @@ describe('llms.txt', () => {
     expect(text).toMatch(/^# Startup Brand Name\n\n> /);
   });
 
+  it('states its category and what it is not, so the name is not misread (D-303)', () => {
+    expect(text).toContain('Category: business idea diagnostic and feasibility report.');
+    expect(text).toContain('not a business name generator or a domain marketplace');
+  });
+
   it('links every public page in both languages', () => {
     for (const { path } of PUBLIC_PAGES) {
       expect(text).toContain(`(https://startupbrandname.com/en${path})`);

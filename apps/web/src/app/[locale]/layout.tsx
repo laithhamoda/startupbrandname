@@ -10,12 +10,18 @@ import { getServerEnv } from '@/env/server';
 import { ROOT_NAMESPACES, pickMessages } from '@/i18n/client-messages';
 import { currentLocale } from '@/i18n/locale';
 import { DIRECTION, routing } from '@/i18n/routing';
-import { isIndexable } from '@/seo/indexing';
+import { crawlerPolicy, type CrawlerPolicy } from '@/seo/indexing';
 import { JsonLd, organizationJsonLd, websiteJsonLd } from '@/seo/json-ld';
 import { openGraphBase } from '@/seo/page-metadata';
 import { countVisits } from '@/lib/analytics';
 import { FONT_VARIABLES } from '../fonts';
 import '../globals.css';
+
+const ROBOTS_META: Record<CrawlerPolicy, Metadata['robots']> = {
+  closed: { index: false, follow: false },
+  'ai-only': undefined,
+  open: { index: true, follow: true },
+};
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -23,7 +29,9 @@ export function generateStaticParams() {
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await currentLocale();
   const t = await getTranslations('meta');
-  const title = `${site.name} | ${t('descriptor')}`;
+  // The category, not the tagline, follows the name in the home title: the name alone reads as a
+  // name generator (D-305). The tagline stays in the header.
+  const title = `${site.name} | ${t('category')}`;
   return {
     metadataBase: new URL(site.origin),
     title: { default: title, template: `%s | ${site.name}` },
@@ -40,7 +48,9 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     manifest: '/manifest.webmanifest',
     openGraph: { ...openGraphBase(locale), title, description: t('description') },
-    robots: isIndexable() ? { index: true, follow: true } : { index: false, follow: false },
+    // In `ai-only` no robots tag is written: a noindex tag would tell the AI crawlers to skip the
+    // pages too, and robots.txt already keeps the search engines out (D-303).
+    robots: ROBOTS_META[crawlerPolicy()],
   };
 }
 
@@ -74,7 +84,7 @@ export default async function LocaleLayout({ children }: Readonly<{ children: Re
             {children}
           </Providers>
         </NextIntlClientProvider>
-        <JsonLd data={organizationJsonLd(meta('descriptor'))} />
+        <JsonLd data={organizationJsonLd(meta('descriptor'), meta('description'))} />
         <JsonLd data={websiteJsonLd(meta('descriptor'))} />
         {countVisits(getServerEnv()) ? <SiteAnalytics /> : null}
       </body>

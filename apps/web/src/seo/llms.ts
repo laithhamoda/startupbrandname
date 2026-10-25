@@ -25,6 +25,8 @@ export function llmsTxt(): string {
 
 > An Arabic-first business model studio. Founders answer a structured diagnostic about their business idea; a deterministic formula engine calculates pricing, break-even and a three-year projection; and an exportable Arabic report ends with a clear verdict: go, revise or stop. An AI mentor asks critical questions. Arabic name: استوديو نموذج العمل.
 
+Category: business idea diagnostic and feasibility report. It is not a business name generator or a domain marketplace, whatever the name suggests.
+
 Key facts:
 
 - Interface in Arabic (default, right to left) and English. Reports are in Modern Standard Arabic; answers are understood in any Arabic dialect, including Algerian Darja mixed with French.
