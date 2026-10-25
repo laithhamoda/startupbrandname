@@ -11,9 +11,11 @@ const STRUCTURED_DATA: Record<(typeof PUBLIC_PAGES)[number]['id'], readonly stri
   methodology: ['Article', 'BreadcrumbList'],
   pricing: ['WebApplication', 'BreadcrumbList'],
   sampleReport: ['WebPage', 'BreadcrumbList'],
+  questions: ['WebPage', 'BreadcrumbList'],
+  ideaGuide: ['Article', 'HowTo', 'FAQPage', 'BreadcrumbList'],
   glossary: ['DefinedTermSet', 'BreadcrumbList'],
   faq: ['FAQPage', 'BreadcrumbList'],
-  about: ['AboutPage', 'BreadcrumbList'],
+  about: ['AboutPage', 'Person', 'BreadcrumbList'],
 };
 
 for (const locale of LOCALES) {

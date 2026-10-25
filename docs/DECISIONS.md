@@ -53,7 +53,7 @@ A decision may sit under several topics. A new decision joins its topics in the 
 - **Design and accessibility:** D-007, D-008, D-049 to D-053, D-055 to D-058, D-099, D-118, D-128,
   D-131, D-158, D-159, D-161, D-162, D-170, D-231, D-249, D-250, D-289.
 - **Public site and SEO:** D-027, D-054, D-076, D-090 to D-098, D-100, D-101, D-153, D-291, D-293 to
-  D-295, D-303.
+  D-295, D-303 to D-308.
 - **Performance:** D-054, D-150, D-151, D-167 to D-171, D-250, D-254.
 - **CI and repository:** D-001 to D-007, D-012 to D-016, D-020, D-023 to D-025, D-028, D-030 to
   D-033, D-039 to D-041, D-048, D-055, D-083, D-097, D-125, D-127, D-134, D-136, D-139 to D-142,
@@ -2790,4 +2790,100 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   the real protection of the private questions is that they are never sent to a browser before
   sign-in. D-090 (open to everyone at launch) and D-027 (nothing open before launch) stay in force for
   everyone else.
+- **Status:** Active
+
+### D-304 (2026-10-25): A public page lists the 20 quick-mode questions, and nothing else of the bank
+
+- **Decision:** `/questions` (`/ar/questions`, `/en/questions`) is a public page that shows the
+  wording of the 20 quick-mode (★) questions, grouped by the eight axes and numbered in the order the
+  diagnostic asks them, with a note before the list: these are 20 of 64, the other 44 and the
+  follow-up rules are asked inside the diagnostic and are not published, so the list alone cannot
+  rebuild a report. It shows the question text only: never an id, a help text, an answer option, a
+  follow-up rule, a completeness weight or a question outside the quick set. The page reads the
+  questions from the question bank package, so it cannot drift from the diagnostic, and
+  `quick-questions.test.ts` fails if anything else appears. It is in the footer, the sitemap and
+  `llms.txt`, and has its own share images. The wording is still the draft of OQ #86: a change to a
+  quick question changes this page.
+- **Reason:** AI answer engines recommend what they can read and quote. A list of the questions a
+  founder is actually asked answers the searches «how do I test my idea», and it shows the depth of
+  the diagnostic without giving away the part that makes it different (the other questions, the
+  follow-up logic, the weights and thresholds, the country data). The owner chose this split on
+  2026-10-25 (phase 2 of the plan after D-303).
+- **Status:** Active
+
+### D-305 (2026-10-25): The home title and the organisation data name the category, in wide words
+
+- **Decision:** The owner chose the wide category wording, not one limited to online businesses:
+  «تشخيص جدوى فكرة مشروعك بالأرقام» / "Business idea diagnostic with calculated numbers". It
+  replaces the tagline in the home `<title>` ("Startup Brand Name | Business idea diagnostic with
+  calculated numbers"), opens the site description and the home description (both languages), and
+  is the `description` of the Organization structured data. The tagline («استوديو نموذج العمل» /
+  "Business Model Studio") stays where it was: the header, `alternateName`, the share images and the
+  page headings, so no screenshot and no visible text changes. The hero heading is unchanged.
+- **Reason:** The name alone reads as a business-name generator, and AI engines and search results
+  describe a site from its title and description. A wide category fits what the product does for any
+  founder (the 64 questions cover the whole business, not only online sales) and keeps the page's
+  honest claims: no superlative, no «AI-powered» (the numbers come from formulas, not from AI).
+- **Status:** Active
+
+### D-306 (2026-10-25): A public guide «how to test a business idea before you spend on it»
+
+- **Decision:** `/guides/validate-business-idea` (Arabic and English) is a public, answer-first
+  guide: a lead that gives the answer in two sentences, seven steps (one-sentence idea, real problem,
+  willingness to pay, unit economics, cost of reaching a customer, constraints, a decision by
+  criteria written beforehand), the two basic formulas (contribution margin, break-even) with a
+  worked example whose numbers are made up and labelled so, with an explicit currency (USD), common
+  mistakes, a plain statement of where the platform helps and where it does not replace talking to
+  customers or professional advice, and four questions with answers. It is dated («last updated»),
+  carries Article, HowTo, FAQPage and breadcrumb structured data, and sits in the footer, the
+  sitemap and `llms.txt`. It is general knowledge: no wording of a diagnostic question, no rule,
+  weight or threshold, no statistic and no competitor claim; `idea-guide.test.ts` fails if a
+  question's wording or an id appears, if the example arithmetic is wrong, or if a ranking or
+  «AI-powered» claim is added. Competitor comparisons are not in it: their facts are verified first.
+- **Reason:** AI answer engines quote pages that answer the question people actually ask. This one
+  targets «how do I test my idea before launching», shows the product's honest method, and sends the
+  reader to the free diagnostic, without giving away the part that makes the platform different
+  (D-303, D-304).
+- **Status:** Active (its scope is narrowed by D-307)
+
+### D-307 (2026-10-25): The guide is about online projects only
+
+- **Decision:** The owner asked that the guide's subject be any online project, not an offline one.
+  The guide (title, lead, steps, formulas, the worked example, mistakes, questions, share image and
+  description) is rewritten for an online store, a digital product or app, a subscription or an
+  online service: the economics of one order include payment-gateway fees, platform commissions,
+  shipping for physical goods and returns; the channel step measures the cost of a visit, the share
+  of visitors who buy and the customer acquisition cost; the constraints step names online-sales
+  rules, data protection and whether a payment provider works in the country; the mistakes name
+  visits mistaken for customers and subscribers' retention. The worked example is an online store
+  with made-up numbers in USD, its arithmetic checked by a test. A plain question says the guide
+  does not cover a project that depends on a physical place. This changes the guide only: the home
+  title and description keep the wide wording of D-305 until the owner says otherwise, and the
+  diagnostic itself is unchanged.
+- **Reason:** A narrow subject is easier for a reader and for an AI answer engine to match with a
+  question («how do I test my online store idea») and lets the guide give concrete numbers instead of
+  general advice. It makes no claim about what the platform can or cannot analyse.
+- **Status:** Active
+
+### D-308 (2026-10-25): The founder is published on the About page, as the owner stated it
+
+- **Decision:** The owner gave his name (ليث حموده, "Laith Hamoda"), his role (founder of the
+  platform), his own photograph, and agreed to publish his LinkedIn profile
+  (`https://www.linkedin.com/in/laithhamoda`). The About page gains a «Founder» section: the photo
+  (cropped to 4:5, 640 by 800, a WebP of about 40 KB, from `public/team/`), the name, the role and
+  the city (Amman, Jordan), a short bio and the LinkedIn link. The bio is the lead's draft from facts
+  already in the project documents (he is in Amman, he trains entrepreneurs in using AI in
+  entrepreneurship, he built the platform); the owner may change it before the merge. The page also
+  publishes a `Person` structured data node (name in both languages, role, photo, LinkedIn as
+  `sameAs`, Amman, works for the organisation) and an `Organization` node naming him as founder.
+  Nothing else about him is published: no email, phone, birth date, degree, employer or award,
+  because none was stated. The English text uses no pronoun for him, because none was given.
+  `config/founder.ts` holds the facts; `founder-json-ld.test.ts` fails if more is added to the
+  structured data. The English spelling comes from his LinkedIn address and may be changed. His
+  contact method is LinkedIn only (his choice, 2026-10-25): the link on the page reads «contact the
+  founder on LinkedIn», and no email or phone is published.
+- **Reason:** Trust: a platform that asks founders for their numbers should say who stands behind
+  it, and a named, linkable person is the strongest entity signal for search and AI answer engines
+  (D-303 to D-307). The operator's legal name, country and contact for the privacy and terms pages
+  (OQ #78) are still open and are not published here.
 - **Status:** Active
