@@ -2879,7 +2879,9 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   Nothing else about him is published: no email, phone, birth date, degree, employer or award,
   because none was stated. The English text uses no pronoun for him, because none was given.
   `config/founder.ts` holds the facts; `founder-json-ld.test.ts` fails if more is added to the
-  structured data. The English spelling comes from his LinkedIn address and may be changed.
+  structured data. The English spelling comes from his LinkedIn address and may be changed. His
+  contact method is LinkedIn only (his choice, 2026-10-25): the link on the page reads «contact the
+  founder on LinkedIn», and no email or phone is published.
 - **Reason:** Trust: a platform that asks founders for their numbers should say who stands behind
   it, and a named, linkable person is the strongest entity signal for search and AI answer engines
   (D-303 to D-307). The operator's legal name, country and contact for the privacy and terms pages

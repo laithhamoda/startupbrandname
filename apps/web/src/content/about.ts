@@ -60,7 +60,7 @@ export const ABOUT: Localized<AboutContent> = {
     founderBio:
       'يدرّب رواد الأعمال على استخدام الذكاء الاصطناعي في ريادة الأعمال، وبنى هذه المنصة ليحوّل المؤسس فكرته إلى أرقام محسوبة وقرار واضح قبل أن ينفق.',
     founderPlace: 'عمّان، الأردن',
-    founderLinkedin: 'الملف الشخصي على',
+    founderLinkedin: 'للتواصل مع المؤسس عبر',
     founderPhotoAlt: 'صورة ليث حموده، مؤسس المنصة',
   },
   en: {
@@ -102,7 +102,7 @@ export const ABOUT: Localized<AboutContent> = {
     founderBio:
       'Trains entrepreneurs in using AI in entrepreneurship, and built this platform so that a founder can turn an idea into calculated numbers and a clear decision before spending.',
     founderPlace: 'Amman, Jordan',
-    founderLinkedin: 'Profile on',
+    founderLinkedin: 'Contact the founder on',
     founderPhotoAlt: 'Portrait of Laith Hamoda, founder of the platform',
   },
 };
