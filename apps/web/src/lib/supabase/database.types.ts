@@ -669,7 +669,7 @@ export type Database = {
         Returns: undefined;
       };
       start_checkout: {
-        Args: { p_adult_confirmed: boolean; p_plan_id: string };
+        Args: { p_adult_confirmed: boolean; p_plan_id: string; p_project_id: string };
         Returns: string;
       };
     };
