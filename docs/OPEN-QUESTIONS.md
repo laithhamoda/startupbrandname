@@ -33,10 +33,10 @@ Mixed currencies stay uncompared until #21 is answered (D-113).
 
 ## C. Payments
 
-15. `M7` **Open since 2026-09-24; needed before the M7 plan.** Confirm the Jordan-registered PayPal business account can receive payments and run Subscriptions (PayPal has restricted receiving in several MENA countries).
+15. `M7` **Replaced by D-309: Paddle, not direct PayPal. Still open (M7 step 0): does Paddle accept a Jordan-registered seller, and how are payouts made?** Original note: **Open since 2026-09-24; needed before the M7 plan.** Confirm the Jordan-registered PayPal business account can receive payments and run Subscriptions (PayPal has restricted receiving in several MENA countries).
 16. `M7` Source and refresh schedule of the JOD display rate.
-17. `M7` Are cards required at launch? The MVP takes PayPal only while the card gateway is undecided.
-18. `M7` No tables for orders/payments, PayPal webhook events (idempotency), commissions or refunds.
+17. `M7` **Resolved (D-309): Paddle's checkout takes cards and PayPal from launch.** Original note: Are cards required at launch? The MVP takes PayPal only while the card gateway is undecided.
+18. `M7` **Planned (D-309, docs/M7-PLAN.md step 1): `payments`, `payment_events` (idempotency), `subscriptions`; commissions in step 7; refunds arrive as Paddle adjustments.** Original note: No tables for orders/payments, PayPal webhook events (idempotency), commissions or refunds.
 
 ## D. Language and currency
 

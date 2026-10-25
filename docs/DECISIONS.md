@@ -2887,3 +2887,22 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   (D-303 to D-307). The operator's legal name, country and contact for the privacy and terms pages
   (OQ #78) are still open and are not published here.
 - **Status:** Active
+
+### D-309 (2026-10-25): Paddle takes the payments, as merchant of record
+
+- **Decision:** The owner approved Paddle (paddle.com, Paddle Billing) as the payment provider,
+  replacing the locked plan of direct PayPal first and an undecided card gateway (CLAUDE.md §3).
+  Paddle is the merchant of record: it sells to the buyer, takes cards and PayPal in one hosted
+  checkout, and collects and pays sales tax and VAT. Charges stay in USD. The code keeps the
+  `PaymentProvider` interface, so the provider can be replaced. Access changes only from a verified
+  Paddle webhook. CLAUDE.md §3, §7, §9 and §10 are updated to match. The build plan is
+  `docs/M7-PLAN.md`.
+- **Reason:** No card gateway was found for a Jordan-registered merchant with recurring billing
+  (OQ #15, #17), and Paddle also removes the global tax burden that the legal review listed (VAT
+  for EU buyers). Costs: about 5% + $0.50 per transaction (secondary sources; to confirm), Paddle
+  named as the seller on the buyer's receipt, and Paddle's buyer refund rules, which D-299 must
+  follow.
+- **Open:** M7 step 0 confirms that Paddle accepts a Jordan-registered seller, its payout method,
+  its fee on items under $10, and the countries it sells to. If Jordan is refused, the owner
+  decides again.
+- **Status:** Open
