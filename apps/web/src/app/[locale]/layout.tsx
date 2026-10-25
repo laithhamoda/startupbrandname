@@ -29,7 +29,9 @@ export function generateStaticParams() {
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await currentLocale();
   const t = await getTranslations('meta');
-  const title = `${site.name} | ${t('descriptor')}`;
+  // The category, not the tagline, follows the name in the home title: the name alone reads as a
+  // name generator (D-305). The tagline stays in the header.
+  const title = `${site.name} | ${t('category')}`;
   return {
     metadataBase: new URL(site.origin),
     title: { default: title, template: `%s | ${site.name}` },
@@ -82,7 +84,7 @@ export default async function LocaleLayout({ children }: Readonly<{ children: Re
             {children}
           </Providers>
         </NextIntlClientProvider>
-        <JsonLd data={organizationJsonLd(meta('descriptor'))} />
+        <JsonLd data={organizationJsonLd(meta('descriptor'), meta('description'))} />
         <JsonLd data={websiteJsonLd(meta('descriptor'))} />
         {countVisits(getServerEnv()) ? <SiteAnalytics /> : null}
       </body>
