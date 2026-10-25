@@ -68,6 +68,9 @@ importers:
       '@sbn/engine':
         specifier: workspace:*
         version: link:../../packages/engine
+      '@sbn/payments':
+        specifier: workspace:*
+        version: link:../../packages/payments
       '@sbn/question-bank':
         specifier: workspace:*
         version: link:../../packages/question-bank
@@ -161,7 +164,11 @@ importers:
         specifier: 4.10.2
         version: 4.10.2
 
-  packages/payments: {}
+  packages/payments:
+    dependencies:
+      zod:
+        specifier: 4.6.6
+        version: 4.6.6
 
   packages/question-bank:
     dependencies:
@@ -3515,8 +3522,8 @@ packages:
     resolution: {integrity: sha512-U69YGDNsZ7R+umeSzdLzORNCHQFz/w4LKyNTjJQcGrQRQCr8hlCJfJwwm9sqq9Uc5N6dImS58ywURA0FkqoHlg==}
     hasBin: true
 
-  legacy-javascript@0.0.4:
-    resolution: {integrity: sha512-UTmeKBVxnfJcpmpOvzzNnLsQT99BXHpPlc/ZKddIRmWmrR0fw6335I3lq4+sJoP60UTbBNaYsGYVPc65YB1x3A==}
+  legacy-javascript@0.0.3:
+    resolution: {integrity: sha512-1r6MT4dVaJyXt4G07Cm2cQ0AUaLJdefiEp4SmIAylA++gnEQ82YvmzE58RkM5EP0fk5hROLCslUPGnwIYdZQVA==}
 
   levn@0.4.1:
     resolution: {integrity: sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ==}
@@ -5366,7 +5373,7 @@ snapshots:
 
   '@paulirish/trace_engine@0.0.65':
     dependencies:
-      legacy-javascript: 0.0.4
+      legacy-javascript: 0.0.3
       third-party-web: 0.30.0
 
   '@playwright/test@1.63.0':
@@ -7878,7 +7885,7 @@ snapshots:
       lefthook-windows-arm64: 2.1.16
       lefthook-windows-x64: 2.1.16
 
-  legacy-javascript@0.0.4: {}
+  legacy-javascript@0.0.3: {}
 
   levn@0.4.1:
     dependencies:

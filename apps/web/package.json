@@ -21,6 +21,7 @@
     "@fontsource/tajawal": "5.3.0",
     "@sbn/ai": "workspace:*",
     "@sbn/engine": "workspace:*",
+    "@sbn/payments": "workspace:*",
     "@sbn/question-bank": "workspace:*",
     "@sbn/report": "workspace:*",
     "@sparticuz/chromium": "153.0.0",
