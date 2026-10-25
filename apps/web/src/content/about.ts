@@ -10,10 +10,16 @@ export interface AboutContent {
   principles: readonly TitledText[];
   audienceHeading: string;
   audience: string;
+  founderHeading: string;
+  /** The founder's own words about himself, as approved by the owner (D-308); name and role come from config/founder.ts. */
+  founderBio: string;
+  founderPlace: string;
+  founderLinkedin: string;
+  founderPhotoAlt: string;
 }
 
-// Nothing about the founder or the operating entity is published until the owner provides it
-// (docs/OPEN-QUESTIONS.md). The page describes the platform only.
+// The founder is published as the owner stated it (config/founder.ts, D-308). The operating entity
+// (its legal name, country and contact) is still open in docs/OPEN-QUESTIONS.md #78 and is not here.
 export const ABOUT: Localized<AboutContent> = {
   ar: {
     heading: 'عن المنصة',
@@ -50,6 +56,12 @@ export const ABOUT: Localized<AboutContent> = {
     audienceHeading: 'لمن',
     audience:
       'للمؤسسين الناطقين بالعربية في أي مرحلة: فكرة أولى، أو مشروع قائم يحتاج إلى مراجعة أرقامه، أو متدرّب يعدّ نموذج عمل لدورة تدريبية.',
+    founderHeading: 'المؤسس',
+    founderBio:
+      'يدرّب رواد الأعمال على استخدام الذكاء الاصطناعي في ريادة الأعمال، وبنى هذه المنصة ليحوّل المؤسس فكرته إلى أرقام محسوبة وقرار واضح قبل أن ينفق.',
+    founderPlace: 'عمّان، الأردن',
+    founderLinkedin: 'للتواصل مع المؤسس عبر',
+    founderPhotoAlt: 'صورة ليث حموده، مؤسس المنصة',
   },
   en: {
     heading: 'About',
@@ -86,5 +98,11 @@ export const ABOUT: Localized<AboutContent> = {
     audienceHeading: 'Who it is for',
     audience:
       'Arabic-speaking founders at any stage: a first idea, an existing business that needs its numbers checked, or a trainee preparing a business model for a course.',
+    founderHeading: 'The founder',
+    founderBio:
+      'Trains entrepreneurs in using AI in entrepreneurship, and built this platform so that a founder can turn an idea into calculated numbers and a clear decision before spending.',
+    founderPlace: 'Amman, Jordan',
+    founderLinkedin: 'Contact the founder on',
+    founderPhotoAlt: 'Portrait of Laith Hamoda, founder of the platform',
   },
 };

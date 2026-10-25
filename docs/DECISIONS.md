@@ -53,7 +53,7 @@ A decision may sit under several topics. A new decision joins its topics in the 
 - **Design and accessibility:** D-007, D-008, D-049 to D-053, D-055 to D-058, D-099, D-118, D-128,
   D-131, D-158, D-159, D-161, D-162, D-170, D-231, D-249, D-250, D-289.
 - **Public site and SEO:** D-027, D-054, D-076, D-090 to D-098, D-100, D-101, D-153, D-291, D-293 to
-  D-295, D-303 to D-307.
+  D-295, D-303 to D-308.
 - **Performance:** D-054, D-150, D-151, D-167 to D-171, D-250, D-254.
 - **CI and repository:** D-001 to D-007, D-012 to D-016, D-020, D-023 to D-025, D-028, D-030 to
   D-033, D-039 to D-041, D-048, D-055, D-083, D-097, D-125, D-127, D-134, D-136, D-139 to D-142,
@@ -2863,4 +2863,27 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
 - **Reason:** A narrow subject is easier for a reader and for an AI answer engine to match with a
   question («how do I test my online store idea») and lets the guide give concrete numbers instead of
   general advice. It makes no claim about what the platform can or cannot analyse.
+- **Status:** Active
+
+### D-308 (2026-10-25): The founder is published on the About page, as the owner stated it
+
+- **Decision:** The owner gave his name (ليث حموده, "Laith Hamoda"), his role (founder of the
+  platform), his own photograph, and agreed to publish his LinkedIn profile
+  (`https://www.linkedin.com/in/laithhamoda`). The About page gains a «Founder» section: the photo
+  (cropped to 4:5, 640 by 800, a WebP of about 40 KB, from `public/team/`), the name, the role and
+  the city (Amman, Jordan), a short bio and the LinkedIn link. The bio is the lead's draft from facts
+  already in the project documents (he is in Amman, he trains entrepreneurs in using AI in
+  entrepreneurship, he built the platform); the owner may change it before the merge. The page also
+  publishes a `Person` structured data node (name in both languages, role, photo, LinkedIn as
+  `sameAs`, Amman, works for the organisation) and an `Organization` node naming him as founder.
+  Nothing else about him is published: no email, phone, birth date, degree, employer or award,
+  because none was stated. The English text uses no pronoun for him, because none was given.
+  `config/founder.ts` holds the facts; `founder-json-ld.test.ts` fails if more is added to the
+  structured data. The English spelling comes from his LinkedIn address and may be changed. His
+  contact method is LinkedIn only (his choice, 2026-10-25): the link on the page reads «contact the
+  founder on LinkedIn», and no email or phone is published.
+- **Reason:** Trust: a platform that asks founders for their numbers should say who stands behind
+  it, and a named, linkable person is the strongest entity signal for search and AI answer engines
+  (D-303 to D-307). The operator's legal name, country and contact for the privacy and terms pages
+  (OQ #78) are still open and are not published here.
 - **Status:** Active
