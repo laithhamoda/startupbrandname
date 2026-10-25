@@ -61,8 +61,8 @@ You write code a senior reviewer would approve without rework. You do not guess;
 - Affiliate commission is recorded on **activation**, not issue.
 
 ### Payments
-- **Visa/international cards and PayPal only.** All charges in USD. Show an approximate local-currency equivalent as display only, when a dated exchange rate exists.
-- Implement a `PaymentProvider` interface. Implement PayPal (Subscriptions + one-time orders) first. Card gateway is **TBD**: it must support a Jordan-registered merchant, recurring billing and tokenization. Stub it behind the interface.
+- **Paddle as merchant of record** (D-309, 2026-10-25): Paddle sells to the buyer and takes cards and PayPal in one hosted checkout, and handles sales tax and VAT. All charges in USD. Show an approximate local-currency equivalent as display only, when a dated exchange rate exists.
+- Implement a `PaymentProvider` interface with the Paddle implementation (subscriptions + one-time purchases). Access changes only from a verified webhook, never from the browser. Plan: `docs/M7-PLAN.md`.
 - **Never store card data.** Hosted checkout / provider tokens only.
 
 ### Language
@@ -161,7 +161,7 @@ packages/engine/           Deterministic calculations (T5, T7, T8, T9, T10, tax)
 packages/question-bank/    Question definitions, rules R1–R8, follow-up logic, completeness scoring
 packages/ai/               Anthropic client, prompts, de-identification, cost logging, model routing
 packages/report/           Report assembly, HTML templates, PDF rendering
-packages/payments/         PaymentProvider interface, PayPal implementation, card stub
+packages/payments/         PaymentProvider interface, Paddle implementation, fake provider
 supabase/migrations/       SQL migrations incl. RLS policies
 docs/SPEC.md               Functional specification
 docs/DECISIONS.md          Log every decision you make that is not in this file (date, decision, reason)
@@ -194,7 +194,7 @@ docs/DECISIONS.md          Log every decision you make that is not in this file 
 | M4 | Engine: T8, T7, T9, T10, tax engine | ≥ 95% coverage; golden-file tests for 3 sample projects (JO service, JO home e-commerce, DZ auto-entrepreneur) |
 | M5 | T1, T2 canvases (two-way binding), T17 (JO, DZ), T18, MVP report + PDF, one-page summary | Arabic PDF shaping verified; summary locks full sections for free tier |
 | M6 | AI mentor (Socratic, critical, no invented numbers), quotas, fair-use controls | Quota and fair-use tests; de-identification tests |
-| M7 | Entitlements, PayPal, vouchers, affiliates dashboard, admin (2FA), age check (18+) at payment (D-086) | E2E purchase (PayPal sandbox), voucher activation, commission on activation |
+| M7 | Entitlements, Paddle payments (D-309), vouchers, affiliates dashboard, admin (2FA), age check (18+) at payment (D-086) | E2E purchase (Paddle sandbox), voucher activation, commission on activation |
 | M8 | Country-pack review agent + weekly admin digest | Agent never updates from non-allowlisted domains (test) |
 | M9 | Hardening: security review, rate limits, account-sharing detection, performance, backup/restore drill | Checklist signed off |
 
@@ -204,7 +204,7 @@ Post-MVP (v2): T3, T4, T5, T6 enrichment, T11 (cached PESTEL), T12, T13, T14, T1
 
 ## 10. OPEN ITEMS (do not invent answers)
 
-- Card gateway provider (Jordan merchant, recurring, tokenization) — TBD.
+- Paddle's acceptance of a Jordan-registered seller, its payout method and its fee on items under $10 — to confirm in M7 step 0 (D-309).
 - Legal review, now global (D-066): privacy policy and terms in Arabic and English, refund policy (payment is for analysis, not a positive outcome), GDPR for EU users, cross-border rules (Jordan, Algeria Law 18-07, Saudi Arabia, Egypt, Morocco and others), and the age of majority per country.
 - Fair-use thresholds: set after measuring real cost on first 100 users. Make them admin-configurable.
 - Go-to-market, KPIs and final roadmap (product phases 6–8) are not yet specified.
