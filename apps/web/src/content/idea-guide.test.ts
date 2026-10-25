@@ -30,9 +30,11 @@ describe('idea guide', () => {
     const numbers = (locale: 'ar' | 'en') =>
       IDEA_GUIDE[locale].example.flatMap((line) => line.match(/\d+/g) ?? []).map(Number);
     expect(numbers('ar')).toEqual(numbers('en'));
-    const [price = 0, cost = 0, margin = 0, fixed = 0, units = 0] = numbers('en');
-    expect(price - cost).toBe(margin);
-    expect(fixed / margin).toBe(units);
+    const [price = 0, product = 0, shipping = 0, fee = 0, returns = 0, paid = 0] = numbers('en');
+    const [margin = 0, fixed = 0, orders = 0] = numbers('en').slice(6);
+    expect(product + shipping + fee + returns).toBe(paid);
+    expect(price - paid).toBe(margin);
+    expect(fixed / margin).toBe(orders);
   });
 
   it('names a currency in every line of the example (CLAUDE.md §3)', () => {

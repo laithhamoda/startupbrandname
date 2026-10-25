@@ -35,51 +35,54 @@ export interface IdeaGuideContent {
   method: string;
 }
 
-/** Date of the last edit of the guide's text; change it whenever the text changes (D-306). */
+/** Date of the last edit of the guide's text; change it whenever the text changes (D-306, D-307). */
 export const IDEA_GUIDE_UPDATED = '2026-10-25';
 
 /**
- * The public guide «how to test a business idea». General knowledge that any founder can use, with
- * no question wording, rule, weight or threshold of the diagnostic. The example numbers are made
- * up for the explanation and say so, with an explicit currency (CLAUDE.md §3). Arabic is the
- * reference; the English version has the same shape (idea-guide.test.ts).
+ * The public guide «how to test an online business idea». It is written for online projects
+ * (a store, a digital product or app, a subscription, an online service, a marketplace) and says
+ * plainly that it does not cover a project that depends on a physical place (D-307). General
+ * knowledge that any founder can use, with no question wording, rule, weight or threshold of the
+ * diagnostic. The example numbers are made up for the explanation and say so, with an explicit
+ * currency (CLAUDE.md §3). Arabic is the reference; the English version has the same shape
+ * (idea-guide.test.ts).
  */
 export const IDEA_GUIDE: Localized<IdeaGuideContent> = {
   ar: {
-    heading: 'كيف تختبر فكرة مشروعك قبل أن تنفق عليها',
-    lead: 'اختبر ثلاثة أشياء بالترتيب: هل المشكلة حقيقية ويدفع الناس لحلّها، وهل يغطّي السعر تكاليفك، وهل تصل إلى العملاء بتكلفة تتحمّلها. ثم اتخذ قرارًا واضحًا: امضِ أو عدّل أو توقّف. الخطوات السبع أدناه تقودك إلى ذلك دون أن تبني شيئًا بعد.',
+    heading: 'كيف تختبر فكرة مشروعك الإلكتروني قبل أن تنفق عليه',
+    lead: 'اختبر ثلاثة أشياء بالترتيب: هل المشكلة حقيقية ويدفع الناس لحلّها، وهل يغطّي السعر تكاليفك بعد رسوم الدفع والمنصات، وهل تصل إلى العملاء عبر الإنترنت بتكلفة تتحمّلها. ثم اتخذ قرارًا واضحًا: امضِ أو عدّل أو توقّف. الخطوات السبع أدناه لمتجر إلكتروني أو منتج رقمي أو تطبيق أو اشتراك أو خدمة عبر الإنترنت، وتقودك إلى القرار قبل أن تبني شيئًا.',
     updatedLabel: 'آخر تحديث',
     stepsHeading: 'سبع خطوات من الفكرة إلى القرار',
     steps: [
       {
         id: 'sentence',
         title: 'اكتب الفكرة في جملة واحدة',
-        body: 'من هو عميلك؟ ما المشكلة التي يعيشها؟ ما الذي ستقدّمه له؟ وبكم؟ إن لم تستطع قول ذلك في جملة واحدة فالفكرة لم تتحدد بعد، وأي اختبار بعدها سيقيس شيئًا غامضًا.',
+        body: 'من هو عميلك؟ ما المشكلة التي يعيشها؟ ما الذي ستبيعه له عبر الإنترنت؟ وبكم؟ إن لم تستطع قول ذلك في جملة واحدة فالفكرة لم تتحدد بعد، وأي اختبار بعدها سيقيس شيئًا غامضًا.',
       },
       {
         id: 'problem',
         title: 'تحقّق من أن المشكلة حقيقية',
-        body: 'تحدّث مع عملاء محتملين عمّا فعلوه فعلًا في آخر مرة واجهوا فيها المشكلة: كيف حلّوها، وكم دفعوا، وما الذي أزعجهم. سلوكهم السابق أصدق من رأيهم في فكرتك، ومن مجاملة الأصدقاء والأقارب.',
+        body: 'تحدّث مع عملاء محتملين عمّا فعلوه فعلًا في آخر مرة واجهوا فيها المشكلة: كيف بحثوا عن حل، وماذا اشتروا، وكم دفعوا، وما الذي أزعجهم. سلوكهم السابق أصدق من رأيهم في فكرتك، ومن مجاملة الأصدقاء والأقارب.',
       },
       {
         id: 'pay',
         title: 'اختبر الاستعداد للدفع',
-        body: 'قبل أن تبني، اعرض السعر على أشخاص حقيقيين واطلب التزامًا صغيرًا: حجزًا، أو دفعة مقدّمة، أو تسجيلًا بالاسم في قائمة انتظار. عبارة «أعجبتني الفكرة» ليست التزامًا.',
+        body: 'قبل أن تبني المتجر أو المنتج، اعرض الوصف والسعر في صفحة بسيطة واطلب التزامًا صغيرًا: حجزًا، أو دفعة مقدّمة، أو تسجيلًا بالاسم في قائمة انتظار. عدد الزيارات لا يدل على شيء ما لم يتحول جزء منها إلى التزام. وعبارة «أعجبتني الفكرة» ليست التزامًا.',
       },
       {
         id: 'numbers',
         title: 'احسب الاقتصاد على وحدة واحدة',
-        body: 'ابدأ بسعر البيع والتكلفة المتغيرة لكل وحدة، ثم أضف التكاليف الثابتة الشهرية. الفرق بين السعر والتكلفة المتغيرة هو هامش المساهمة (Contribution margin)، وهو ما يغطّي التكاليف الثابتة أولًا ثم يصير ربحًا.',
+        body: 'ابدأ بسعر البيع، ثم اطرح كل ما يُدفع عن كل طلب: تكلفة المنتج أو الخدمة، والشحن إن كان ماديًا، ورسوم بوابة الدفع، وعمولة المنصة التي تبيع عبرها، وتقدير المرتجعات. الباقي هو هامش المساهمة (Contribution margin)، وهو ما يغطّي التكاليف الثابتة الشهرية أولًا، كالاشتراكات والاستضافة والأدوات، ثم يصير ربحًا.',
       },
       {
         id: 'channel',
         title: 'قدّر تكلفة الوصول إلى العميل',
-        body: 'جرّب قناة واحدة بميزانية صغيرة، وقِس تكلفة اكتساب العميل (Customer acquisition cost). إن كان العميل يكلّفك للوصول إليه أكثر مما يتركه لك من هامش على مدى تعامله معك، فالنموذج لا يعمل بهذه القناة ولو نمت المبيعات.',
+        body: 'جرّب قناة واحدة بميزانية صغيرة، كإعلان مدفوع أو محتوى أو بريد، وسجّل ثلاثة أرقام: تكلفة الزيارة، ونسبة الزوار الذين يشترون، وتكلفة اكتساب العميل (Customer acquisition cost) الناتجة عنهما. إن كان العميل يكلّفك للوصول إليه أكثر مما يتركه لك من هامش على مدى تعامله معك، فالنموذج لا يعمل بهذه القناة ولو ازدادت الزيارات.',
       },
       {
         id: 'limits',
         title: 'افحص القيود',
-        body: 'الترخيص والضرائب والمتطلبات القانونية في بلدك، ومواردك الفعلية: كم تملك من مال ووقت قبل أن تحتاج إلى أول دخل؟ تحقّق من المتطلبات عند الجهة الرسمية في بلدك، ولا تعتمد على ما تسمعه.',
+        body: 'التسجيل والترخيص والضرائب على المبيعات عبر الإنترنت في بلدك، وحماية بيانات العملاء، وهل يعمل مزوّد الدفع الذي تريده في بلدك، وشروط المنصة التي تبيع عبرها. وافحص مواردك الفعلية: كم تملك من مال ووقت قبل أن تحتاج إلى أول دخل؟ تحقّق من المتطلبات عند الجهة الرسمية في بلدك، ولا تعتمد على ما تسمعه.',
       },
       {
         id: 'decide',
@@ -88,48 +91,49 @@ export const IDEA_GUIDE: Localized<IdeaGuideContent> = {
       },
     ],
     formulasHeading: 'المعادلتان الأساسيتان',
-    formulasLead: 'يكفي بهما أن تعرف، قبل أي إنفاق، كم وحدة تحتاج أن تبيع كي لا تخسر.',
+    formulasLead: 'يكفي بهما أن تعرف، قبل أي إنفاق، كم طلبًا تحتاج أن تبيع كي لا تخسر.',
     formulas: [
       {
         id: 'margin',
-        name: 'هامش المساهمة للوحدة',
-        formula: 'سعر البيع − التكلفة المتغيرة للوحدة',
+        name: 'هامش المساهمة للطلب',
+        formula: 'سعر البيع − كل ما يُدفع عن الطلب (المنتج، الشحن، رسوم الدفع، المرتجعات)',
       },
       {
         id: 'break-even',
-        name: 'نقطة التعادل (Break-even) بالوحدات',
-        formula: 'التكاليف الثابتة الشهرية ÷ هامش المساهمة للوحدة',
+        name: 'نقطة التعادل (Break-even) بالطلبات',
+        formula: 'التكاليف الثابتة الشهرية ÷ هامش المساهمة للطلب',
       },
     ],
-    exampleHeading: 'مثال توضيحي',
+    exampleHeading: 'مثال توضيحي لمتجر إلكتروني',
     example: [
-      'سعر البيع: 50 دولارًا أمريكيًا (USD) للوحدة.',
-      'التكلفة المتغيرة: 30 دولارًا أمريكيًا (USD) للوحدة، فهامش المساهمة 20 دولارًا أمريكيًا (USD).',
-      'التكاليف الثابتة: 2000 دولار أمريكي (USD) شهريًا، فنقطة التعادل 100 وحدة شهريًا.',
+      'سعر البيع: 50 دولارًا أمريكيًا (USD) للطلب.',
+      'ما يُدفع عن كل طلب: المنتج 20 والشحن 6 ورسوم الدفع 2 والمرتجعات 2، فالمجموع 30 دولارًا أمريكيًا (USD).',
+      'هامش المساهمة: 20 دولارًا أمريكيًا (USD) للطلب.',
+      'التكاليف الثابتة: 2000 دولار أمريكي (USD) شهريًا، فنقطة التعادل 100 طلب شهريًا.',
     ],
     exampleNote:
       'الأرقام مختلقة لشرح المعادلة فقط، وليست بيانات عن سوق حقيقي. وهذه نقطة تعادل قبل تكلفة الوصول إلى العملاء وقبل الضرائب، فهي حدٌّ أدنى لا يكفي وحده للحكم.',
-    mistakesHeading: 'أخطاء شائعة في اختبار الأفكار',
+    mistakesHeading: 'أخطاء شائعة في اختبار المشاريع الإلكترونية',
     mistakes: [
       {
-        title: 'الاكتفاء برأي الأصدقاء والعائلة',
-        body: 'يجاملونك غالبًا، ولا يدفعون. اسأل من يملك المشكلة فعلًا.',
+        title: 'الخلط بين الزيارات والعملاء',
+        body: 'آلاف الزيارات بلا شراء لا تعني طلبًا. قِس نسبة من يشتري، لا عدد من يزور.',
       },
       {
-        title: 'خلط الإيراد بالربح',
-        body: 'المبيعات الكبيرة لا تعني ربحًا إن كانت التكلفة المتغيرة وتكلفة الوصول إلى العملاء تأكل الهامش.',
+        title: 'تجاهل رسوم الدفع والمنصات والمرتجعات',
+        body: 'تبدو صغيرة في كل طلب، لكنها تأكل جزءًا من الهامش الذي بنيت عليه حساباتك.',
       },
       {
         title: 'نسيان التكاليف الثابتة',
-        body: 'الإيجار والرواتب والاشتراكات تُدفع ولو لم تبع شيئًا. احسبها قبل أن تعد بالربح.',
+        body: 'اشتراكات المنصات والاستضافة والأدوات تُدفع ولو لم تبع شيئًا. احسبها قبل أن تعد بالربح.',
       },
       {
-        title: 'التسعير بلا معرفة تكلفة الوحدة',
-        body: 'سعر يبدو منافسًا قد يكون أقل من تكلفتك الفعلية.',
+        title: 'افتراض أن العميل سيجدك وحده',
+        body: 'قل أين سيجدك العميل الأول وكم سيكلّفك ذلك، لا أن المشروع «سينتشر».',
       },
       {
-        title: 'افتراض النمو بلا قناة',
-        body: 'قل أين سيجدك العميل الأول وكم سيكلّفك، لا أنه «سينتشر».',
+        title: 'إهمال بقاء العميل في الاشتراكات',
+        body: 'في الاشتراك لا يكفي أن يشترك العميل مرة. احسب كم شهرًا سيبقى، فبه يتحدد ما تكسبه منه.',
       },
     ],
     toolHeading: 'أين تساعدك المنصة، وأين لا',
@@ -144,8 +148,14 @@ export const IDEA_GUIDE: Localized<IdeaGuideContent> = {
       'الحديث مع عملاء حقيقيين (الخطوتان 2 و3): المنصة تحسب من إجاباتك ولا تختبر السوق نيابةً عنك.',
       'الاستشارة القانونية أو المالية أو الضريبية؛ هي أداة تخطيط.',
     ],
-    faqHeading: 'أسئلة شائعة عن اختبار الأفكار',
+    faqHeading: 'أسئلة شائعة عن اختبار المشاريع الإلكترونية',
     faq: [
+      {
+        id: 'offline',
+        question: 'هل ينطبق الدليل على مشروع يعتمد على مكان فعلي؟',
+        answer:
+          'الدليل مكتوب للمشاريع الإلكترونية. أفكاره العامة، كالتحقق من المشكلة والاستعداد للدفع ونقطة التعادل، تصلح لأي مشروع، لكن حسابات المحل والإيجار وموقع الزبائن تختلف ولا يغطيها هذا الدليل.',
+      },
       {
         id: 'plan',
         question: 'ما الفرق بين اختبار فكرة وكتابة خطة عمل؟',
@@ -176,40 +186,40 @@ export const IDEA_GUIDE: Localized<IdeaGuideContent> = {
     method: 'كيف نصل إلى الحكم',
   },
   en: {
-    heading: 'How to test a business idea before you spend on it',
-    lead: 'Test three things in order: is the problem real and do people pay to solve it, does the price cover your costs, and can you reach customers at a cost you can bear. Then make a clear decision: go, revise or stop. The seven steps below get you there before you build anything.',
+    heading: 'How to test an online business idea before you spend on it',
+    lead: 'Test three things in order: is the problem real and do people pay to solve it, does the price cover your costs after payment and platform fees, and can you reach customers online at a cost you can bear. Then make a clear decision: go, revise or stop. The seven steps below are for an online store, a digital product or app, a subscription or an online service, and get you to the decision before you build anything.',
     updatedLabel: 'Last updated',
     stepsHeading: 'Seven steps from idea to decision',
     steps: [
       {
         id: 'sentence',
         title: 'Write the idea in one sentence',
-        body: 'Who is your customer? What problem do they have? What will you offer them? At what price? If you cannot say it in one sentence the idea is not defined yet, and any test after this measures something vague.',
+        body: 'Who is your customer? What problem do they have? What will you sell them online? At what price? If you cannot say it in one sentence the idea is not defined yet, and any test after this measures something vague.',
       },
       {
         id: 'problem',
         title: 'Check that the problem is real',
-        body: 'Talk to likely customers about what they actually did the last time they met the problem: how they solved it, what they paid, what annoyed them. Their past behaviour is more honest than their opinion of your idea, or the politeness of friends and family.',
+        body: 'Talk to likely customers about what they actually did the last time they met the problem: how they looked for a solution, what they bought, what they paid, what annoyed them. Their past behaviour is more honest than their opinion of your idea, or the politeness of friends and family.',
       },
       {
         id: 'pay',
         title: 'Test the willingness to pay',
-        body: 'Before you build, show the price to real people and ask for a small commitment: a booking, a deposit, or a named place on a waiting list. “I like the idea” is not a commitment.',
+        body: 'Before you build the store or the product, show the description and the price on a simple page and ask for a small commitment: a booking, a deposit, or a named place on a waiting list. A count of visits tells you nothing until some of them turn into a commitment. And “I like the idea” is not a commitment.',
       },
       {
         id: 'numbers',
-        title: 'Work out the economics of one unit',
-        body: 'Start with the selling price and the variable cost of one unit, then add the monthly fixed costs. The gap between the price and the variable cost is the contribution margin: it covers the fixed costs first and only then becomes profit.',
+        title: 'Work out the economics of one order',
+        body: 'Start with the selling price, then subtract everything paid for each order: the cost of the product or service, shipping if it is physical, the payment gateway fee, the commission of the platform you sell through, and an allowance for returns. What is left is the contribution margin: it covers the monthly fixed costs first, such as subscriptions, hosting and tools, and only then becomes profit.',
       },
       {
         id: 'channel',
         title: 'Estimate the cost of reaching a customer',
-        body: 'Try one channel with a small budget and measure the customer acquisition cost. If reaching a customer costs more than the margin that customer leaves you over the time they stay, the model does not work through that channel, even if sales grow.',
+        body: 'Try one channel with a small budget, such as a paid ad, content or email, and record three numbers: the cost of a visit, the share of visitors who buy, and the customer acquisition cost that follows from them. If reaching a customer costs more than the margin that customer leaves you over the time they stay, the model does not work through that channel, even if visits grow.',
       },
       {
         id: 'limits',
         title: 'Check the constraints',
-        body: 'Licences, taxes and legal requirements in your country, and your real resources: how much money and time do you have before you need the first income? Confirm the requirements with the official authority in your country; do not rely on what you hear.',
+        body: 'Registration, licences and taxes on online sales in your country, the protection of customer data, whether the payment provider you want works in your country, and the rules of the platform you sell through. Then check your real resources: how much money and time do you have before you need the first income? Confirm the requirements with the official authority in your country; do not rely on what you hear.',
       },
       {
         id: 'decide',
@@ -219,48 +229,50 @@ export const IDEA_GUIDE: Localized<IdeaGuideContent> = {
     ],
     formulasHeading: 'The two basic formulas',
     formulasLead:
-      'With them you know, before spending anything, how many units you must sell not to lose money.',
+      'With them you know, before spending anything, how many orders you must sell not to lose money.',
     formulas: [
       {
         id: 'margin',
-        name: 'Contribution margin per unit',
-        formula: 'Selling price − variable cost per unit',
+        name: 'Contribution margin per order',
+        formula:
+          'Selling price − everything paid for the order (product, shipping, payment fee, returns)',
       },
       {
         id: 'break-even',
-        name: 'Break-even point in units',
-        formula: 'Monthly fixed costs ÷ contribution margin per unit',
+        name: 'Break-even point in orders',
+        formula: 'Monthly fixed costs ÷ contribution margin per order',
       },
     ],
-    exampleHeading: 'A worked example',
+    exampleHeading: 'A worked example for an online store',
     example: [
-      'Selling price: 50 US dollars (USD) per unit.',
-      'Variable cost: 30 US dollars (USD) per unit, so the contribution margin is 20 US dollars (USD).',
-      'Fixed costs: 2000 US dollars (USD) a month, so the break-even point is 100 units a month.',
+      'Selling price: 50 US dollars (USD) per order.',
+      'Paid for each order: product 20, shipping 6, payment fee 2 and returns 2, so the total is 30 US dollars (USD).',
+      'Contribution margin: 20 US dollars (USD) per order.',
+      'Fixed costs: 2000 US dollars (USD) a month, so the break-even point is 100 orders a month.',
     ],
     exampleNote:
       'The numbers are made up to explain the formula; they are not data about a real market. This break-even is before the cost of reaching customers and before tax, so it is a floor that is not enough on its own to decide.',
-    mistakesHeading: 'Common mistakes when testing an idea',
+    mistakesHeading: 'Common mistakes when testing an online business',
     mistakes: [
       {
-        title: 'Relying on friends and family',
-        body: 'They are usually polite, and they do not pay. Ask the people who really have the problem.',
+        title: 'Mixing visits with customers',
+        body: 'Thousands of visits with no purchase are not demand. Measure the share who buy, not the number who visit.',
       },
       {
-        title: 'Mixing revenue with profit',
-        body: 'Large sales do not mean profit if variable cost and the cost of reaching customers eat the margin.',
+        title: 'Ignoring payment, platform and return costs',
+        body: 'They look small on each order, but they eat into the margin your calculations rest on.',
       },
       {
         title: 'Forgetting fixed costs',
-        body: 'Rent, salaries and subscriptions are paid even if you sell nothing. Count them before you promise a profit.',
+        body: 'Platform subscriptions, hosting and tools are paid even if you sell nothing. Count them before you promise a profit.',
       },
       {
-        title: 'Pricing without knowing the unit cost',
-        body: 'A price that looks competitive can be below your real cost.',
+        title: 'Assuming customers will find you on their own',
+        body: 'Say where the first customer will find you and what it will cost, not that the project will “go viral”.',
       },
       {
-        title: 'Assuming growth without a channel',
-        body: 'Say where the first customer will find you and what it will cost, not that it will “go viral”.',
+        title: 'Neglecting how long subscribers stay',
+        body: 'With a subscription it is not enough that a customer signs up once. Work out how many months they stay: that decides what you earn from them.',
       },
     ],
     toolHeading: 'Where the platform helps, and where it does not',
@@ -275,8 +287,14 @@ export const IDEA_GUIDE: Localized<IdeaGuideContent> = {
       'Talking to real customers (steps 2 and 3): the platform calculates from your answers and does not test the market for you.',
       'Legal, financial or tax advice; it is a planning tool.',
     ],
-    faqHeading: 'Common questions about testing ideas',
+    faqHeading: 'Common questions about testing online businesses',
     faq: [
+      {
+        id: 'offline',
+        question: 'Does the guide apply to a project that depends on a physical place?',
+        answer:
+          'The guide is written for online projects. Its general ideas, such as checking the problem, the willingness to pay and the break-even point, suit any project, but the sums for a shop, its rent and where its customers are differ and are not covered here.',
+      },
       {
         id: 'plan',
         question: 'What is the difference between testing an idea and writing a business plan?',
