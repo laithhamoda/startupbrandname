@@ -1,92 +1,71 @@
 # Refund policy: draft for legal review
 
-**Status:** draft, not on the site. The terms page still shows its bracketed placeholder (D-299). It
-goes on the site only after legal review, and before the first payment (M7).
+**Status:** draft, not on the site. It replaces the «no refunds» draft of D-299 once the owner approves
+it as D-302. It goes on the site only after legal review, and before the first payment (M7).
 
-**The owner's choice (2026-10-24):** no refunds. The two exceptions in clause 5 are the lead's
-additions, not the owner's: a lawyer is likely to require both (mandatory consumer law, and our own
-billing or technical error), and card and PayPal disputes are decided on them. The owner may remove
-them, at the risk the questions at the end describe.
+**The owner's rule (2026-10-24):** a full refund within 3 days of payment, when the mentor is used
+below 20% of the plan's messages. **No other exceptions** from the owner. The lead added two
+points, both flagged for the lawyer: a PDF download counts as full use (the file is the service), and
+clause 5 keeps the rights of mandatory consumer law, which a contract cannot waive in the EU and the
+UK for digital services.
 
-Open placeholders: the contact email (#78) and the reply time in clause 6.
+Open placeholders: the number of working days for a refund (clause 4), the number of working days
+for a reply (clause 6) and the contact email (#78).
 
 ## Arabic
 
 ### سياسة الاسترداد (مسودة للمراجعة القانونية)
 
-1. **ما تدفع مقابله.** تدفع مقابل تحليل مشروعك وتقريره الذي يُحسب بمعادلات ثابتة، لا مقابل نتيجة
-   معيّنة. لا نضمن أن يكون حكم التقرير «امضِ»، ولا نجاح مشروعك.
-2. **لا استرداد.** كل المدفوعات نهائية وغير قابلة للاسترداد، في الخطة الأسبوعية والشهرية والسنوية
-   وخطة خريجي الدورة، ولا يُردّ جزء من المبلغ عن مدة لم تُستخدم.
-3. **جرّب قبل أن تدفع.** التشخيص والملخص ذو الصفحة الواحدة والتقرير النموذجي مجانية، لتتأكد أن
-   الخدمة تناسبك قبل الدفع.
-4. **التجديد والإلغاء.** الخطة الأسبوعية والسنوية دفعة واحدة ولا تتجدد. الخطة الشهرية وخطة خريجي
-   الدورة تتجدد كل شهر حتى تلغيها: تلغيها في أي وقت من صفحة حسابك فلا يُخصم منك التجديد التالي،
-   ويستمر وصولك حتى نهاية المدة التي دفعتها.
-5. **ما لا يغيّره هذا النص.**
-   - لا يقيّد هذا النص حقوقك التي يمنحها لك القانون الإلزامي في بلد إقامتك، ومنها حقوق المستهلك.
-     إن منحك القانون حق استرداد أو انسحاب لا يجوز التنازل عنه فهو الذي يسري.
-   - إن خصمنا منك بالخطأ، أو خصمنا مرتين، أو دفعتَ ولم تُفعَّل الخدمة بسبب عطل من جانبنا، فإننا
-     نصحح ذلك: نردّ المبلغ الزائد أو نفعّل الخدمة أو نمدّ مدتها.
-6. **الاعتراض على خصم.** تواصل معنا أولًا على [بريد التواصل] وسنرد خلال [عدد] أيام عمل، قبل أن
-   تقدّم نزاعًا لدى مزوّد الدفع.
-
-### نص الموافقة عند الدفع
-
-«أوافق على أن المدفوعات غير قابلة للاسترداد (سياسة الاسترداد)، وعلى أن الخدمة الرقمية تبدأ فور
-الدفع.»
+1. **شروط الاسترداد.** يُسترد المبلغ كاملًا إذا طلبت ذلك خلال **3 أيام** من وقت الدفع، وكان
+   استهلاكك من رسائل المرشد الذكي **أقل من 20%** من رسائل الخطة التي اشتريتها، ولم تُنزّل تقرير PDF.
+2. **طريقة الحساب.**
+   - تُحسب الأيام من لحظة الدفع المؤكدة.
+   - تُحسب النسبة بقسمة الرسائل المستهلكة على إجمالي رسائل الخطة.
+   - يُعدّ تنزيل ملف PDF استهلاكًا كاملًا للخدمة.
+3. **ما لا يُسترد.** بعد أي من الشرطين أو تنزيل الملف، لا يُسترد المبلغ، ولا يُسترد جزء منه عن
+   مدة لم تُستخدم.
+4. **تنفيذ الاسترداد.** يُعاد المبلغ إلى وسيلة الدفع الأصلية خلال [عدد] أيام عمل من الموافقة على
+   الطلب.
+5. **القانون الإلزامي.** لا يقيّد هذا النص الحقوق التي يمنحها لك القانون الإلزامي في بلد إقامتك،
+   ومنها حقوق المستهلك في الخدمات الرقمية.
+6. **طلب الاسترداد.** أرسل طلبك إلى [بريد التواصل] مع بريد حسابك، وسنرد خلال [عدد] أيام عمل.
 
 ## English
 
 ### Refund policy (draft for legal review)
 
-1. **What you pay for.** You pay for the analysis of your project and its report, which is
-   calculated with fixed formulas, not for any particular outcome. We do not promise that your
-   report's verdict will be "Go", or that your project will succeed.
-2. **No refunds.** Every payment is final and non-refundable, on the weekly, monthly and annual
-   plans and the course alumni plan, and no part of a payment is returned for time you did not use.
-3. **Try before you pay.** The diagnostic, the one-page summary and the sample report are free, so
-   you can check that the service suits you before you pay.
-4. **Renewal and cancellation.** The weekly and annual plans are one payment and do not renew. The
-   monthly plan and the course alumni plan renew every month until you cancel: you can cancel at any
-   time from your account page, the next renewal is then not charged, and your access continues to
-   the end of the period you paid for.
-5. **What this text does not change.**
-   - It does not limit the rights that mandatory law gives you in the country where you live,
-     including consumer rights. If the law gives you a right to a refund or to withdraw that cannot
-     be waived, that right applies.
-   - If we charge you by mistake, charge you twice, or you pay and the service is not activated
-     because of a fault on our side, we put it right: we return the excess amount, activate the
-     service or extend its period.
-6. **Disputing a charge.** Contact us first at [contact email] and we will reply within [number]
-   working days, before you open a dispute with your payment provider.
-
-### Consent text at checkout
-
-"I agree that payments are non-refundable (refund policy), and that the digital service starts as
-soon as I pay."
+1. **Conditions for a refund.** A full refund is given if you ask within **3 days** of payment, your
+   use of the AI mentor is **below 20%** of the messages in the plan you bought, and you have not
+   downloaded the PDF report.
+2. **How it is calculated.**
+   - Days are counted from the moment the payment is confirmed.
+   - The percentage is the messages you used divided by the total messages in your plan.
+   - Downloading the PDF counts as full use of the service.
+3. **What is not refunded.** After either condition is passed, or after a PDF download, no refund is
+   given, and no part of the payment is returned for time not used.
+4. **How a refund is paid.** The amount is returned to the original payment method within [number]
+   working days of approving the request.
+5. **Mandatory law.** This text does not limit the rights that mandatory law gives you in the country
+   where you live, including consumer rights for digital services.
+6. **Requesting a refund.** Send your request to [contact email] with the email of your account, and
+   we will reply within [number] working days.
 
 ## Where it will appear
 
-- A "Payments and refunds" section of the terms page, replacing the bracketed placeholder (both
-  languages).
-- One line on the pricing page, beside the prices: "All payments are final (see the refund policy)".
-- The checkbox above on the purchase step, which the buyer must tick before paying, and a line in
-  the payment confirmation email.
-- Course buyers (12 months by voucher) pay nothing, so none of this applies to them.
+- A "Payments and refunds" section of the terms page, in both languages, replacing the bracketed
+  placeholder.
+- One line on the pricing page, beside the prices, linking to this policy.
+- The checkbox on the purchase step, which the buyer must tick before paying: the policy is read, and
+  the digital service starts at once.
+- The payment confirmation email, with the last date for a refund.
 
 ## Questions for the lawyer
 
-1. Is an absolute no-refund clause valid toward consumers in Jordan, Algeria, Saudi Arabia, Egypt
-   and Morocco (the first markets) and in the EU, the United Kingdom and the United States? In the
-   EU and the UK a consumer has 14 days to withdraw from a digital service, which is lost only when
-   the buyer expressly agrees that it starts at once and acknowledges the loss: does the checkbox
+1. Is the 3-day window with the 20% test enough for consumers in Jordan, Algeria, Saudi Arabia, Egypt,
+   Morocco, the EU and the UK, given the 14-day right to withdraw from digital services in the EU and
+   the UK, which is lost only when the buyer agrees that the service starts at once? Does the checkbox
    do that?
-2. What do PayPal and the card networks require a seller to disclose about refunds, and how do they
-   rule on disputes when the policy says "no refunds"? (Chargebacks decide in practice.)
-3. Rules on automatic renewal (the monthly and alumni plans): the disclosure before the first
-   charge, a reminder before renewals, and how easy cancelling must be (several US states and the
-   EU have specific rules).
+2. Is the PDF rule fair, or does a court read it as a way to avoid a refund the law grants?
+3. What do PayPal and the card networks need to see in a refund policy, and how do they rule on
+   disputes when the policy gives a refund on conditions?
 4. Governing law and venue, and the age of the buyer (adults only, D-086).
-5. Is the wording of clause 1 enough to exclude a promise of results, given that the report ends in
-   a verdict?

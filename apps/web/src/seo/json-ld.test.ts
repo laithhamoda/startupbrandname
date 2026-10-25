@@ -34,10 +34,13 @@ describe('serializeJsonLd', () => {
 
 describe('structured data', () => {
   it('describes the organisation with the descriptor in the page language', () => {
-    expect(organizationJsonLd('استوديو نموذج العمل')).toMatchObject({
+    expect(
+      organizationJsonLd('استوديو نموذج العمل', 'تشخيص جدوى فكرة مشروعك بالأرقام'),
+    ).toMatchObject({
       '@type': 'Organization',
       name: 'Startup Brand Name',
       alternateName: 'استوديو نموذج العمل',
+      description: 'تشخيص جدوى فكرة مشروعك بالأرقام',
       url: 'https://startupbrandname.com',
       logo: 'https://startupbrandname.com/brand/logo-512.png',
     });

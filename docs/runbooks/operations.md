@@ -297,20 +297,21 @@ ran again (Supabase → Integrations → Cron), and re-run any `DB deploy` that 
 Vercel applies a variable change to the next deployment only: redeploy after changing one.
 `NEXT_PUBLIC_` values are also built into the browser code.
 
-| Variable                                | Local (`apps/web/.env.local`)         | Preview (Vercel)                           | Production (Vercel)                              |
-| --------------------------------------- | ------------------------------------- | ------------------------------------------ | ------------------------------------------------ |
-| `NEXT_PUBLIC_SUPABASE_URL`              | `http://127.0.0.1:54321`              | `https://mllysinjzlkhpcgbckil.supabase.co` | `https://blexotsepkuslrnawbbq.supabase.co`       |
-| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`  | Printed by `pnpm db:start`            | Staging publishable key                    | Production publishable key                       |
-| `LOG_LEVEL`                             | `info`                                | Unset (`info`)                             | Unset (`info`)                                   |
-| `MARKET_DZ_ENABLED`                     | `true`                                | Unset (`true`, D-068)                      | Unset (`true`, D-068); the Algeria switch        |
-| `SITE_INDEXABLE`                        | `false`                               | Ignored outside production                 | `false` until public launch                      |
-| `AUTH_GOOGLE_ENABLED`                   | `false` (`test:e2e:auth` sets `true`) | `true` once Google is set up for staging   | `true` once Google is set up for production      |
-| `AUTH_GOOGLE_VERIFY_PROVIDER`           | Unset; tests only                     | Never set                                  | Never set                                        |
-| `AI_PROVIDER`                           | `fake`                                | Unset (`anthropic`)                        | Unset (`anthropic`); `fake` turns AI off         |
-| `ANTHROPIC_API_KEY`                     | Unset                                 | Sensitive                                  | Sensitive                                        |
-| `FULL_REPORT_PREVIEW_EMAILS`            | Unset (nobody)                        | The owner's address, if needed             | The owner's address; removed with M7             |
-| `EARLY_ACCESS_FULL_REPORT`              | Unset (off)                           | Unset (off)                                | `true` while early access lasts; removed with M7 |
-| `VERCEL`, `VERCEL_ENV`, `VERCEL_REGION` | Unset                                 | Set by Vercel                              | Set by Vercel                                    |
+| Variable                                | Local (`apps/web/.env.local`)         | Preview (Vercel)                           | Production (Vercel)                               |
+| --------------------------------------- | ------------------------------------- | ------------------------------------------ | ------------------------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`              | `http://127.0.0.1:54321`              | `https://mllysinjzlkhpcgbckil.supabase.co` | `https://blexotsepkuslrnawbbq.supabase.co`        |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`  | Printed by `pnpm db:start`            | Staging publishable key                    | Production publishable key                        |
+| `LOG_LEVEL`                             | `info`                                | Unset (`info`)                             | Unset (`info`)                                    |
+| `MARKET_DZ_ENABLED`                     | `true`                                | Unset (`true`, D-068)                      | Unset (`true`, D-068); the Algeria switch         |
+| `SITE_INDEXABLE`                        | `false`                               | Ignored outside production                 | `false` until public launch                       |
+| `AI_CRAWLERS_ALLOWED`                   | `false`                               | Ignored outside production                 | `true` lets only the named AI crawlers in (D-303) |
+| `AUTH_GOOGLE_ENABLED`                   | `false` (`test:e2e:auth` sets `true`) | `true` once Google is set up for staging   | `true` once Google is set up for production       |
+| `AUTH_GOOGLE_VERIFY_PROVIDER`           | Unset; tests only                     | Never set                                  | Never set                                         |
+| `AI_PROVIDER`                           | `fake`                                | Unset (`anthropic`)                        | Unset (`anthropic`); `fake` turns AI off          |
+| `ANTHROPIC_API_KEY`                     | Unset                                 | Sensitive                                  | Sensitive                                         |
+| `FULL_REPORT_PREVIEW_EMAILS`            | Unset (nobody)                        | The owner's address, if needed             | The owner's address; removed with M7              |
+| `EARLY_ACCESS_FULL_REPORT`              | Unset (off)                           | Unset (off)                                | `true` while early access lasts; removed with M7  |
+| `VERCEL`, `VERCEL_ENV`, `VERCEL_REGION` | Unset                                 | Set by Vercel                              | Set by Vercel                                     |
 
 `FULL_REPORT_PREVIEW_EMAILS` (D-245) is a comma-separated list of addresses that see the full report
 before paid plans exist. The owner sets it on Vercel and changes it there; it is read on the next

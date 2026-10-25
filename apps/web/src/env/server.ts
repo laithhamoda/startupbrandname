@@ -46,6 +46,9 @@ export const serverEnvSchema = z.object({
   AI_PROVIDER: z.enum(['anthropic', 'fake', 'off']).default('anthropic'),
   // Search indexing stays off until public launch, and always off outside production (D-027, D-054).
   SITE_INDEXABLE: booleanFlag.default(false),
+  // Before public launch, lets only the listed AI crawlers read the public pages (D-303). Ignored
+  // outside production and once SITE_INDEXABLE is on.
+  AI_CRAWLERS_ALLOWED: booleanFlag.default(false),
   // Set by Vercel at build and run time. VERCEL is "1" on Vercel only; tests that imitate
   // production set VERCEL_ENV alone, so they never load Vercel-only scripts.
   VERCEL: z.literal('1').optional(),

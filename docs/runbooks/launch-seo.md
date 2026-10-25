@@ -3,6 +3,16 @@
 Search indexing stays off until the owner decides to launch (D-027, D-054). Do these steps in order
 on launch day. None of them needs a code change.
 
+## 0. Before launch: only the AI crawlers (D-303)
+
+To let AI answer engines read the public pages while search engines stay out, set
+`AI_CRAWLERS_ALLOWED` = `true` for **Production** only (type: Config) and redeploy. Check
+https://startupbrandname.com/robots.txt: it lists the AI crawlers with `Allow: /` and the private
+paths under `Disallow`, and ends with `User-Agent: *` and `Disallow: /`; a page's response must not
+carry `X-Robots-Tag: noindex`. To undo, set it back to `false` and redeploy. Search engines are kept
+out by robots.txt alone in this state: a page that other sites link to may still be listed by its
+address without text. Step 2 below replaces this state at launch.
+
 ## 1. Visitor statistics (can be done before launch)
 
 1. Vercel → project `startupbrandname` → **Analytics** → **Enable** (Web Analytics).
