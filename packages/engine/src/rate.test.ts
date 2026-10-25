@@ -114,6 +114,12 @@ describe('arithmetic', () => {
     expect(compareRates(r(-1n, 2n), r(1n, 3n))).toBe(-1);
   });
 
+  it('never returns -0, so equal rates compare as +0 whatever their sign', () => {
+    expect(compareRates(ZERO_RATE, negateRate(ZERO_RATE))).toBe(0);
+    expect(compareRates(negateRate(ZERO_RATE), ZERO_RATE)).toBe(0);
+    expect(compareRates(r(-2n, 3n), r(-4n, 6n))).toBe(0);
+  });
+
   it('raises to integer powers, exactly', () => {
     expect(powRate(parseRate('1.02'), 0)).toEqual(ONE_RATE);
     expect(powRate(parseRate('1.1'), 2)).toEqual(parseRate('1.21'));
