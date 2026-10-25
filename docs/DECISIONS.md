@@ -53,7 +53,7 @@ A decision may sit under several topics. A new decision joins its topics in the 
 - **Design and accessibility:** D-007, D-008, D-049 to D-053, D-055 to D-058, D-099, D-118, D-128,
   D-131, D-158, D-159, D-161, D-162, D-170, D-231, D-249, D-250, D-289.
 - **Public site and SEO:** D-027, D-054, D-076, D-090 to D-098, D-100, D-101, D-153, D-291, D-293 to
-  D-295, D-303, D-304.
+  D-295, D-303 to D-305.
 - **Performance:** D-054, D-150, D-151, D-167 to D-171, D-250, D-254.
 - **CI and repository:** D-001 to D-007, D-012 to D-016, D-020, D-023 to D-025, D-028, D-030 to
   D-033, D-039 to D-041, D-048, D-055, D-083, D-097, D-125, D-127, D-134, D-136, D-139 to D-142,
@@ -2809,4 +2809,19 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   the diagnostic without giving away the part that makes it different (the other questions, the
   follow-up logic, the weights and thresholds, the country data). The owner chose this split on
   2026-10-25 (phase 2 of the plan after D-303).
+- **Status:** Active
+
+### D-305 (2026-10-25): The home title and the organisation data name the category, in wide words
+
+- **Decision:** The owner chose the wide category wording, not one limited to online businesses:
+  «تشخيص جدوى فكرة مشروعك بالأرقام» / "Business idea diagnostic with calculated numbers". It
+  replaces the tagline in the home `<title>` ("Startup Brand Name | Business idea diagnostic with
+  calculated numbers"), opens the site description and the home description (both languages), and
+  is the `description` of the Organization structured data. The tagline («استوديو نموذج العمل» /
+  "Business Model Studio") stays where it was: the header, `alternateName`, the share images and the
+  page headings, so no screenshot and no visible text changes. The hero heading is unchanged.
+- **Reason:** The name alone reads as a business-name generator, and AI engines and search results
+  describe a site from its title and description. A wide category fits what the product does for any
+  founder (the 64 questions cover the whole business, not only online sales) and keeps the page's
+  honest claims: no superlative, no «AI-powered» (the numbers come from formulas, not from AI).
 - **Status:** Active

@@ -7,7 +7,7 @@ export const PAGE_META: Localized<Record<PublicPageId, PageMeta>> = {
     home: {
       title: 'استوديو نموذج العمل',
       description:
-        'حوّل فكرتك إلى نموذج عمل بأرقام محسوبة: تشخيص منظّم، وتقرير عربي بحكم واضح، ومرشد ذكي قريبًا.',
+        'تشخيص جدوى فكرة مشروعك بالأرقام: أسئلة منظّمة، وتقرير عربي بحكم واضح (امضِ أو عدّل أو توقّف)، ومرشد ذكي قريبًا.',
       card: 'حوّل فكرتك إلى نموذج عمل بأرقام محسوبة، لا مكتوبة',
     },
     howItWorks: {
@@ -63,7 +63,7 @@ export const PAGE_META: Localized<Record<PublicPageId, PageMeta>> = {
     home: {
       title: 'Business Model Studio',
       description:
-        'Turn your idea into a business model with calculated numbers: a structured diagnostic, an Arabic report with a clear verdict, and an AI mentor soon.',
+        'A business idea diagnostic with calculated numbers: structured questions, an Arabic report with a clear verdict (go, revise or stop), and an AI mentor soon.',
       card: 'Turn your idea into a business model with numbers that are calculated, not written',
     },
     howItWorks: {

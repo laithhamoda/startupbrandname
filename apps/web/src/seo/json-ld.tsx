@@ -44,13 +44,17 @@ export function pageUrl(locale: Locale, path: string): string {
  * `descriptor` is the translated "Business Model Studio" for the page's language. The logo is the
  * square 512 pixel image of the brand kit (D-289); Google asks for at least 112 pixels.
  */
-export function organizationJsonLd(descriptor: string): WithContext<Organization> {
+export function organizationJsonLd(
+  descriptor: string,
+  description: string,
+): WithContext<Organization> {
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     '@id': ORGANIZATION_ID,
     name: site.name,
     alternateName: descriptor,
+    description,
     url: site.origin,
     logo: LOGO_URL,
   };
