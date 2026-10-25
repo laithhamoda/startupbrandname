@@ -1,8 +1,13 @@
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
 
-// Same rule as isIndexable() in src/seo/indexing.ts (that module is server-only, so not importable here).
-const indexable = process.env.VERCEL_ENV === 'production' && process.env.SITE_INDEXABLE === 'true';
+// Same rule as crawlerPolicy() in src/seo/indexing.ts (that module is server-only, so not importable
+// here): the noindex header goes out only while the site is closed. In `ai-only` (D-303) it would
+// tell the AI crawlers to skip the pages, and robots.txt already keeps the search engines out.
+const production = process.env.VERCEL_ENV === 'production';
+const indexable =
+  production &&
+  (process.env.SITE_INDEXABLE === 'true' || process.env.AI_CRAWLERS_ALLOWED === 'true');
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 

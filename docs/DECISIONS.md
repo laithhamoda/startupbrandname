@@ -53,7 +53,7 @@ A decision may sit under several topics. A new decision joins its topics in the 
 - **Design and accessibility:** D-007, D-008, D-049 to D-053, D-055 to D-058, D-099, D-118, D-128,
   D-131, D-158, D-159, D-161, D-162, D-170, D-231, D-249, D-250, D-289.
 - **Public site and SEO:** D-027, D-054, D-076, D-090 to D-098, D-100, D-101, D-153, D-291, D-293 to
-  D-295.
+  D-295, D-303.
 - **Performance:** D-054, D-150, D-151, D-167 to D-171, D-250, D-254.
 - **CI and repository:** D-001 to D-007, D-012 to D-016, D-020, D-023 to D-025, D-028, D-030 to
   D-033, D-039 to D-041, D-048, D-055, D-083, D-097, D-125, D-127, D-134, D-136, D-139 to D-142,
@@ -2766,3 +2766,28 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   messages and the payment time). A contract cannot remove the consumer rights of the EU and the UK for
   digital services, so the clause stays, and card and PayPal disputes are decided on that law.
 - **Status:** Active (the text awaits legal review)
+
+### D-303 (2026-10-25): Before launch, only the named AI crawlers may read the public pages
+
+- **Decision:** The owner chose to open the public pages to AI answer engines before public launch,
+  while search engines stay out. A new switch, `AI_CRAWLERS_ALLOWED` (production only, ignored once
+  `SITE_INDEXABLE` is on), makes `robots.txt` allow `GPTBot`, `OAI-SearchBot`, `ChatGPT-User`,
+  `ClaudeBot`, `Claude-SearchBot`, `Claude-User`, `PerplexityBot`, `Perplexity-User` and
+  `Google-Extended` on the public pages, keep the private areas closed to them, and close everything
+  to every other crawler. In this state no noindex header or tag is sent, because it would tell the AI
+  crawlers to skip the pages; the search engines are kept out by `robots.txt` alone, so a page that
+  other sites link to may still be listed by its address, without text. `llms.txt` now states its
+  category («business idea diagnostic and feasibility report») and that it is not a name generator or
+  a domain marketplace. The switch ships off; the owner turns it on in Vercel (steps in
+  `docs/runbooks/launch-seo.md`, step 0). Not decided here, and kept private: the wording of the
+  44 questions that are not in the quick set, the follow-up rules, the completeness weights, the
+  verdict thresholds and the country data. The quick set of 20 questions, a public guide, the
+  use-case pages, comparisons and the founder page are later steps.
+- **Reason:** AI answers can only recommend a site they can read, and the owner wants the platform
+  recommended without publishing what makes it different. Public pages hold no personal data
+  (D-090). Several AI answer engines also retrieve from search indexes, so this opens only part of
+  the way; the monthly test with 20 prompts shows the effect. `robots.txt` is a request, not a lock:
+  the real protection of the private questions is that they are never sent to a browser before
+  sign-in. D-090 (open to everyone at launch) and D-027 (nothing open before launch) stay in force for
+  everyone else.
+- **Status:** Active
