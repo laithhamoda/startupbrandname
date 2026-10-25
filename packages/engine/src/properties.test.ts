@@ -150,9 +150,20 @@ describe('rate arithmetic is exact', () => {
       fc.property(rate, rate, (a, b) => {
         const difference = subtractRates(a, b);
         expect(compareRates(a, b)).toBe(compareRates(difference, ZERO_RATE));
-        expect(compareRates(a, b)).toBe(-compareRates(b, a));
+        // 0 - x, not -x: negating the number 0 gives -0, which toBe tells apart from +0.
+        expect(compareRates(a, b)).toBe(0 - compareRates(b, a));
       }),
     );
+  });
+
+  // fast-check seed 288271449, path "5" (CI run 40175193073): equal rates made the old
+  // `-compareRates(b, a)` evaluate to -0 while compareRates itself returned +0.
+  it('orders equal rates as +0 in both directions', () => {
+    const negativeTwoThirds = makeRate(-2n, 3n);
+    expect(compareRates(negativeTwoThirds, negativeTwoThirds)).toBe(0);
+    expect(compareRates(negativeTwoThirds, makeRate(-4n, 6n))).toBe(0);
+    expect(0 - compareRates(negativeTwoThirds, negativeTwoThirds)).toBe(0);
+    expect(compareRates(subtractRates(negativeTwoThirds, negativeTwoThirds), ZERO_RATE)).toBe(0);
   });
 
   it('powers agree with repeated multiplication', () => {
