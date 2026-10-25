@@ -53,7 +53,7 @@ A decision may sit under several topics. A new decision joins its topics in the 
 - **Design and accessibility:** D-007, D-008, D-049 to D-053, D-055 to D-058, D-099, D-118, D-128,
   D-131, D-158, D-159, D-161, D-162, D-170, D-231, D-249, D-250, D-289.
 - **Public site and SEO:** D-027, D-054, D-076, D-090 to D-098, D-100, D-101, D-153, D-291, D-293 to
-  D-295, D-303 to D-305.
+  D-295, D-303 to D-306.
 - **Performance:** D-054, D-150, D-151, D-167 to D-171, D-250, D-254.
 - **CI and repository:** D-001 to D-007, D-012 to D-016, D-020, D-023 to D-025, D-028, D-030 to
   D-033, D-039 to D-041, D-048, D-055, D-083, D-097, D-125, D-127, D-134, D-136, D-139 to D-142,
@@ -2824,4 +2824,24 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   describe a site from its title and description. A wide category fits what the product does for any
   founder (the 64 questions cover the whole business, not only online sales) and keeps the page's
   honest claims: no superlative, no «AI-powered» (the numbers come from formulas, not from AI).
+- **Status:** Active
+
+### D-306 (2026-10-25): A public guide «how to test a business idea before you spend on it»
+
+- **Decision:** `/guides/validate-business-idea` (Arabic and English) is a public, answer-first
+  guide: a lead that gives the answer in two sentences, seven steps (one-sentence idea, real problem,
+  willingness to pay, unit economics, cost of reaching a customer, constraints, a decision by
+  criteria written beforehand), the two basic formulas (contribution margin, break-even) with a
+  worked example whose numbers are made up and labelled so, with an explicit currency (USD), common
+  mistakes, a plain statement of where the platform helps and where it does not replace talking to
+  customers or professional advice, and four questions with answers. It is dated («last updated»),
+  carries Article, HowTo, FAQPage and breadcrumb structured data, and sits in the footer, the
+  sitemap and `llms.txt`. It is general knowledge: no wording of a diagnostic question, no rule,
+  weight or threshold, no statistic and no competitor claim; `idea-guide.test.ts` fails if a
+  question's wording or an id appears, if the example arithmetic is wrong, or if a ranking or
+  «AI-powered» claim is added. Competitor comparisons are not in it: their facts are verified first.
+- **Reason:** AI answer engines quote pages that answer the question people actually ask. This one
+  targets «how do I test my idea before launching», shows the product's honest method, and sends the
+  reader to the free diagnostic, without giving away the part that makes the platform different
+  (D-303, D-304).
 - **Status:** Active

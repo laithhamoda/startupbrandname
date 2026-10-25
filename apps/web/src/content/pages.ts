@@ -40,6 +40,12 @@ export const PAGE_META: Localized<Record<PublicPageId, PageMeta>> = {
         'الأسئلة العشرون التي يبدأ بها التشخيص السريع، مرتّبة في المحاور الثمانية، وما يبقى داخل التشخيص نفسه.',
       card: 'عشرون سؤالًا يبدأ بها تشخيص فكرتك',
     },
+    ideaGuide: {
+      title: 'كيف تختبر فكرة مشروعك قبل أن تنفق عليها',
+      description:
+        'دليل عملي من سبع خطوات لاختبار الفكرة: المشكلة، والاستعداد للدفع، والأرقام، وتكلفة الوصول إلى العميل، ثم قرار امضِ أو عدّل أو توقّف.',
+      card: 'سبع خطوات لاختبار فكرتك قبل أن تنفق',
+    },
     glossary: {
       title: 'مسرد مصطلحات نموذج العمل',
       description:
@@ -95,6 +101,12 @@ export const PAGE_META: Localized<Record<PublicPageId, PageMeta>> = {
       description:
         'The 20 questions that open the quick diagnostic, grouped by the eight axes, and what stays inside the diagnostic itself.',
       card: 'Twenty questions to start diagnosing your idea',
+    },
+    ideaGuide: {
+      title: 'How to test a business idea before you spend on it',
+      description:
+        'A seven-step guide to testing a business idea: the problem, willingness to pay, the numbers, the cost of reaching customers, then a go, revise or stop decision.',
+      card: 'Seven steps to test your idea before you spend',
     },
     glossary: {
       title: 'Business model glossary',
