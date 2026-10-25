@@ -7,12 +7,14 @@ import type {
   HowTo,
   Offer,
   Organization,
+  Person,
   Thing,
   WebApplication,
   WebPage,
   WebSite,
   WithContext,
 } from 'schema-dts';
+import { FOUNDER } from '@/config/founder';
 import { site } from '@/config/site';
 import { routing, type Locale } from '@/i18n/routing';
 
@@ -33,6 +35,7 @@ export function JsonLd({ data }: { data: WithContext<Thing> }) {
 export const LOGO_URL = `${site.origin}/brand/logo-512.png`;
 const ORGANIZATION_ID = `${site.origin}/#organization`;
 const WEBSITE_ID = `${site.origin}/#website`;
+export const FOUNDER_ID = `${site.origin}/#founder`;
 
 /** Absolute URL of a page in a language: '' is the home page. */
 export function pageUrl(locale: Locale, path: string): string {
@@ -57,6 +60,44 @@ export function organizationJsonLd(
     description,
     url: site.origin,
     logo: LOGO_URL,
+  };
+}
+
+/**
+ * The founder as a person, in the page's language, with the other language as `alternateName`.
+ * Published on the About page only, with what the owner stated (config/founder.ts, D-308).
+ */
+export function founderJsonLd(locale: Locale): WithContext<Person> {
+  const other: Locale = locale === 'ar' ? 'en' : 'ar';
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    '@id': FOUNDER_ID,
+    name: FOUNDER.name[locale],
+    alternateName: FOUNDER.name[other],
+    jobTitle: FOUNDER.jobTitle[locale],
+    image: `${site.origin}${FOUNDER.photo.path}`,
+    url: pageUrl(locale, '/about'),
+    sameAs: [FOUNDER.linkedin],
+    homeLocation: {
+      '@type': 'Place',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: FOUNDER.city,
+        addressCountry: FOUNDER.country,
+      },
+    },
+    worksFor: { '@id': ORGANIZATION_ID },
+  };
+}
+
+/** Says who founded the organisation; only where the Person above is published too. */
+export function organizationFounderJsonLd(): WithContext<Organization> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': ORGANIZATION_ID,
+    founder: { '@id': FOUNDER_ID },
   };
 }
 
