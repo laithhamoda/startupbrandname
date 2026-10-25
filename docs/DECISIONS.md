@@ -2944,3 +2944,30 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   recurring billing and auto-renewal rules, cap the mentor's cost per project, and suit the no-refund
   position (D-299), which Paddle's buyer terms still bound (D-309).
 - **Status:** Open
+
+### D-313 (2026-10-25): Three packages: «بفكّر», «متردد», «المغامر»
+
+- **Decision:** The owner set the paid offer that D-312 left open. Prices in USD, one-time, no
+  renewal:
+
+  | Package              | Questions                        | AI mentor messages | Price |
+  | -------------------- | -------------------------------- | ------------------ | ----- |
+  | بفكّر (thinking)     | the 20 quick-mode questions      | 2                  | free  |
+  | متردد (hesitant)     | 40: the 20 free ones and 20 more | 10 per project     | $10   |
+  | المغامر (adventurer) | all 64                           | 64 per project     | $30   |
+
+  A paid package covers up to 3 projects of the account and keeps them open for edits for 12 months
+  from the purchase. Moving from «متردد» to «المغامر» costs the difference ($20). The mentor quotas
+  are per project (the lead's reading; the owner may change it): the worst case, 3 projects of 64
+  messages, stays well below the $30 paid. Course vouchers are unchanged (everything, 12 months).
+  The weekly, monthly, annual and alumni plans are withdrawn from sale.
+
+- **Consequences:** The question bank has two modes (quick 20, full 64), so «متردد» needs a new
+  40-question mode: the lead chooses the 20 added questions from the completeness weights and the
+  engine's inputs, says what that report shows and does not, and shows the owner the list before it
+  is built. A purchase covers the account (`subscriptions.project_id` null) with a project limit of
+  3 in the plan table, so D-312's binding to one project is not used by these packages.
+  CLAUDE.md §3, `config/plans.ts` and the pricing page change with the step that builds them.
+- **Reason:** A free taste of the method and of the mentor, a low first price above Paddle's
+  under-$10 threshold, and the full diagnosis at a price that covers the mentor's cost.
+- **Status:** Active
