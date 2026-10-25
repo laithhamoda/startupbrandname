@@ -15,6 +15,7 @@ export function SiteFooter() {
     { href: '/pricing', label: nav('pricing') },
     { href: '/sample-report', label: nav('sampleReport') },
     { href: '/questions', label: nav('questions') },
+    { href: '/guides/validate-business-idea', label: nav('ideaGuide') },
     { href: '/glossary', label: nav('glossary') },
     { href: '/faq', label: nav('faq') },
     { href: '/about', label: nav('about') },
