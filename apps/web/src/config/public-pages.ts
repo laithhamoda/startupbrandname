@@ -9,6 +9,7 @@ export const PUBLIC_PAGES = [
   { id: 'methodology', path: '/methodology', priority: 0.8 },
   { id: 'pricing', path: '/pricing', priority: 0.9 },
   { id: 'sampleReport', path: '/sample-report', priority: 0.8 },
+  { id: 'questions', path: '/questions', priority: 0.8 },
   { id: 'glossary', path: '/glossary', priority: 0.7 },
   { id: 'faq', path: '/faq', priority: 0.7 },
   { id: 'about', path: '/about', priority: 0.6 },
