@@ -47,6 +47,68 @@ export type Database = {
           },
         ];
       };
+      billing_products: {
+        Row: {
+          active: boolean;
+          created_at: string;
+          plan_id: string;
+          provider: string;
+          provider_price_id: string;
+        };
+        Insert: {
+          active?: boolean;
+          created_at?: string;
+          plan_id: string;
+          provider: string;
+          provider_price_id: string;
+        };
+        Update: {
+          active?: boolean;
+          created_at?: string;
+          plan_id?: string;
+          provider?: string;
+          provider_price_id?: string;
+        };
+        Relationships: [];
+      };
+      checkout_refs: {
+        Row: {
+          adult_confirmed_at: string;
+          created_at: string;
+          expires_at: string;
+          plan_id: string;
+          project_id: string | null;
+          ref: string;
+          user_id: string;
+        };
+        Insert: {
+          adult_confirmed_at: string;
+          created_at?: string;
+          expires_at?: string;
+          plan_id: string;
+          project_id?: string | null;
+          ref?: string;
+          user_id: string;
+        };
+        Update: {
+          adult_confirmed_at?: string;
+          created_at?: string;
+          expires_at?: string;
+          plan_id?: string;
+          project_id?: string | null;
+          ref?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'checkout_refs_project_id_fkey';
+            columns: ['project_id'];
+            isOneToOne: false;
+            referencedRelation: 'projects';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       consent_events: {
         Row: {
           action: string;
@@ -115,6 +177,86 @@ export type Database = {
           value?: NonNullable<Json>;
         };
         Relationships: [];
+      };
+      payment_events: {
+        Row: {
+          event_id: string;
+          event_type: string;
+          occurred_at: string;
+          outcome: string;
+          provider: string;
+          received_at: string;
+        };
+        Insert: {
+          event_id: string;
+          event_type: string;
+          occurred_at: string;
+          outcome: string;
+          provider: string;
+          received_at?: string;
+        };
+        Update: {
+          event_id?: string;
+          event_type?: string;
+          occurred_at?: string;
+          outcome?: string;
+          provider?: string;
+          received_at?: string;
+        };
+        Relationships: [];
+      };
+      payments: {
+        Row: {
+          amount_minor: number;
+          created_at: string;
+          currency: string;
+          id: string;
+          occurred_at: string;
+          provider: string;
+          provider_ref: string | null;
+          provider_transaction_id: string;
+          status: string;
+          subscription_id: string | null;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          amount_minor: number;
+          created_at?: string;
+          currency: string;
+          id?: string;
+          occurred_at: string;
+          provider: string;
+          provider_ref?: string | null;
+          provider_transaction_id: string;
+          status: string;
+          subscription_id?: string | null;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          amount_minor?: number;
+          created_at?: string;
+          currency?: string;
+          id?: string;
+          occurred_at?: string;
+          provider?: string;
+          provider_ref?: string | null;
+          provider_transaction_id?: string;
+          status?: string;
+          subscription_id?: string | null;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'payments_subscription_id_fkey';
+            columns: ['subscription_id'];
+            isOneToOne: false;
+            referencedRelation: 'subscriptions';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       profiles: {
         Row: {
@@ -240,6 +382,62 @@ export type Database = {
           value?: NonNullable<Json>;
         };
         Relationships: [];
+      };
+      subscriptions: {
+        Row: {
+          created_at: string;
+          ends_at: string | null;
+          id: string;
+          plan_id: string;
+          project_id: string | null;
+          provider_customer_id: string | null;
+          provider_event_at: string | null;
+          provider_ref: string | null;
+          source: string;
+          starts_at: string;
+          status: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          ends_at?: string | null;
+          id?: string;
+          plan_id: string;
+          project_id?: string | null;
+          provider_customer_id?: string | null;
+          provider_event_at?: string | null;
+          provider_ref?: string | null;
+          source: string;
+          starts_at: string;
+          status: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          ends_at?: string | null;
+          id?: string;
+          plan_id?: string;
+          project_id?: string | null;
+          provider_customer_id?: string | null;
+          provider_event_at?: string | null;
+          provider_ref?: string | null;
+          source?: string;
+          starts_at?: string;
+          status?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'subscriptions_project_id_fkey';
+            columns: ['project_id'];
+            isOneToOne: false;
+            referencedRelation: 'projects';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       tax_rules: {
         Row: {
@@ -398,6 +596,16 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      apply_payment_event: {
+        Args: {
+          p_change: Json;
+          p_event_id: string;
+          p_event_type: string;
+          p_occurred_at: string;
+          p_provider: string;
+        };
+        Returns: string;
+      };
       complete_onboarding: {
         Args: {
           p_country_code: string;
@@ -459,6 +667,10 @@ export type Database = {
       set_crossborder_consent: {
         Args: { p_given: boolean; p_text_version: string };
         Returns: undefined;
+      };
+      start_checkout: {
+        Args: { p_adult_confirmed: boolean; p_plan_id: string; p_project_id: string };
+        Returns: string;
       };
     };
     Enums: {

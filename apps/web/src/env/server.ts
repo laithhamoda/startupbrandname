@@ -90,3 +90,27 @@ export function getEarlyAccess(
   const parsed = booleanFlag.safeParse(raw);
   return parsed.success && parsed.data;
 }
+
+export interface PaymentsEnv {
+  readonly paddleWebhookSecret: string;
+  readonly supabaseSecretKey: string;
+}
+
+const paymentsEnvSchema = z.object({
+  PADDLE_WEBHOOK_SECRET: z.string().trim().min(1),
+  SUPABASE_SECRET_KEY: z.string().trim().min(1),
+});
+
+/**
+ * The payment webhook's secrets (D-309, D-310), or null while either is missing. Read apart from
+ * `serverEnvSchema`, so an environment without payments keeps every other page working; the
+ * webhook then answers 503.
+ */
+export function getPaymentsEnv(env: NodeJS.ProcessEnv = process.env): PaymentsEnv | null {
+  const parsed = paymentsEnvSchema.safeParse(env);
+  if (!parsed.success) return null;
+  return {
+    paddleWebhookSecret: parsed.data.PADDLE_WEBHOOK_SECRET,
+    supabaseSecretKey: parsed.data.SUPABASE_SECRET_KEY,
+  };
+}
