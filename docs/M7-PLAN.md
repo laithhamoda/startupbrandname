@@ -158,3 +158,54 @@ occurred_at)`: kept for accounting after an account deletion, de-linked from the
 2. Age check wording, and whether Algeria (19) and Egypt (21) need a higher age (OQ #72, #80).
 3. Refund policy: accept Paddle's buyer refund rules and amend D-299.
 4. The weekly $5 plan given Paddle's fee (tied to Q1).
+
+## 7. Changes of 2026-10-26 (D-318 to D-322)
+
+Steps 1 to 5 shipped (PRs #77, #78, #84, #85, #86). The owner then renamed the packages, gave
+course vouchers «استراتيجي», bound each purchase to one project, added report versions and a mentor
+pack. Each step below is one pull request, merged after the checks and the owner's «ادمج».
+
+### Step 6a: names and plan ids
+
+- `plans.ts`: `standard` → `strategist`, `adventurer` → `commander`; `course` gives the
+  Strategist entitlements. Messages (ar, en), pricing page, FAQ, `llms.txt`, checkout pages.
+- Migration: `start_checkout()` and `private.account_plan()` accept the new ids; the
+  `entitlement.<package>.projects` settings renamed. No subscription row exists outside tests.
+- Environment: `PADDLE_PRICE_STRATEGIST`, `PADDLE_PRICE_COMMANDER` replace the old names.
+
+### Step 6b: one purchase, one project
+
+- Checkout requires a project for a package and checks it is the buyer's own; the upgrade is priced
+  from that project's package.
+- `planOf(project)`: the best running purchase for the project, else the account's course
+  voucher, else free; `account_plan()` gains a project-level twin used by the report, the
+  diagnostic's mode and the mentor quota.
+- `create_project()`: one project without a package at a time; any number with a package; any
+  number with a running course voucher.
+- Tests: two projects with different packages, an upgrade, a refund that returns a project to free.
+
+### Step 6c: report versions and the final version
+
+- Migration: `report_versions(project_id, number, verdict, input_hash, created_at)` and
+  `projects.final_version`; a function that records a version only when the input hash differs
+  from the last, enforces the 10 and the 5-after-«امضِ» limits under a lock, and one that sets the
+  final version once. pgTAP tests for each limit, the hand-over to the choice, and a second choice.
+- The core answers (country, sector, product or service, target customer: question ids fixed in
+  the step) become read-only after the purchase; the diagnostic shows why.
+- Report page: the version counter, the version list, the choice screen at the limit, and a
+  closed project with the final report and the mentor still open.
+
+### Step 6d: the mentor pack
+
+- `mentor_credits(project_id, messages, source, payment_id)`, written by `apply_payment_event()`
+  for a `mentor_pack` purchase; checkout for a pack on any project, free ones included.
+- The mentor (M6) reads the quota as the package's messages plus the credits; until M6 ships, the
+  pack is on sale only when `MENTOR_PACK_ENABLED` is true.
+
+### Risks
+
+- Paddle's fee on the $7 pack (items under $10) is not confirmed.
+- Locking the core answers needs the exact question ids; a founder who mistyped the sector before
+  paying cannot fix it. Support can unlock through the admin (step 8).
+- Step 6c changes what "edit the project" means: the report must explain the counter before the
+  first paid version, in both languages.

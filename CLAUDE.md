@@ -31,28 +31,29 @@ You write code a senior reviewer would approve without rework. You do not guess;
 
 ## 3. LOCKED DECISIONS (do not change without explicit approval)
 
-### Access & pricing (USD) — packages, one payment, no renewal (D-312, D-313, D-314; updated 2026-10-26)
+### Access & pricing (USD) — one payment per project, no renewal (D-312, D-318 to D-322; updated 2026-10-26)
 | Package | Price | Billing |
 |---|---|---|
-| بفكّر (Thinking) | 0 | — |
-| متردد (Hesitant) | $10 | one-time, 365 days |
-| المغامر (Adventurer) | $30 | one-time, 365 days |
-| Course buyer | 0 | 12 months **from activation**, via voucher code |
+| مستكشف (Explorer) | 0 | — |
+| استراتيجي (Strategist) | $10 | one-time, one project, 365 days |
+| قائد (Commander) | $30 | one-time, one project, 365 days |
+| Course buyer | 0 | Strategist on every project, 12 months **from activation**, via voucher code |
+| Mentor pack | $7 | one-time: 10 more mentor messages for one project, any package |
 
-Moving from متردد to المغامر costs the difference ($20). The weekly, monthly, annual and alumni plans are withdrawn.
+Moving a project from Strategist to Commander costs the difference ($20). The weekly, monthly, annual and alumni plans are withdrawn.
 
 ### Entitlements (table-driven — never hard-code plan names in logic; `apps/web/src/config/plans.ts`)
-| Entitlement | بفكّر | متردد | المغامر | Course buyer |
+| Entitlement | مستكشف | استراتيجي | قائد | Course buyer |
 |---|---|---|---|---|
-| Diagnostic questions | 20 (quick) | 40 (standard, D-314) | 64 (full) | 64 |
-| Report | one-page summary | the numbers report (D-314) | full report | full report |
-| AI mentor messages | 2 | 10 per project | 64 per project | unlimited (fair use) |
-| Projects | 1 | up to 3 | up to 3 | unlimited |
+| Diagnostic questions | 20 (quick) | 40 (standard, D-314) | 64 (full) | 40 |
+| Report | one-page summary | the numbers report (D-314) | full report | the numbers report |
+| AI mentor messages per project | 2 | 10 | 64 | 10 |
+| Report versions per project (D-321) | — | up to 10; under «امضِ» 5 edits, then one version is chosen as final | same | same |
 | Project retention | 30 days | 12 months + 90 days read-only | same | same |
 
 ### Vouchers
 - Format: `VIVA` + 8 uppercase hexadecimal chars. Example: `VIVAD908AEEB`.
-- The code carries **no embedded meaning**. Type (`course_12m`, `weekly`, `monthly`, `annual`), affiliate, batch and expiry live in the database only.
+- The code carries **no embedded meaning**. Type (`course_12m`), affiliate, batch and expiry live in the database only.
 - Input is case-insensitive; strip spaces and dashes. 5 failed attempts → temporary lock (per account and per IP).
 - Default activation window: 60 days from issue. Course codes (`course_12m`): activation window 12 months from issue, so trainees who are not yet 18 can activate once they are (D-060).
 - Affiliate commission is recorded on **activation**, not issue.
