@@ -3095,3 +3095,20 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   message stays paid for. Paddle prices items under $10 separately (D-309): its fee on $7 must be
   confirmed before launch.
 - **Status:** Active
+
+### D-323 (2026-10-26): How report versions are kept, and which answers are the core
+
+- **Decision:** M7 step 6c, the lead's reading of D-321. A version keeps the verdict, the input
+  hash and a copy of the project's answers (`report_versions`); the same answers give back the same
+  version. A paid report is shown only for answers that match a recorded version: after a change the
+  report page offers the next version while one is left, and otherwise asks the founder to choose
+  the final version. Choosing restores that version's answers and closes the project
+  (`projects.final_version`); a trigger on `answers` then refuses every change (SB003). The core
+  answers locked after the purchase are B1 (the idea: what, for whom, why), C1 (who pays) and D2
+  (the sector), listed in `versions.core_questions`; the country is fixed at creation. A first
+  answer to a core question is still accepted; changing or removing one is refused (SB004). The
+  limits are settings (`versions.max` 10, `versions.after_go` 5). The verdict a version records is
+  the one the app computed; a founder calling the function directly can only lose versions by it.
+- **Reason:** A live report from changed answers would make the limit meaningless, and the final
+  version must be the report the founder chose, so the answers it was made from must be kept.
+- **Status:** Active
