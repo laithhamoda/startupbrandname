@@ -3,9 +3,12 @@ import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { ButtonLink } from '@/components/ui/button';
 import { LinkPending } from '@/components/ui/link-pending';
+import { TextLink } from '@/components/ui/text-link';
 import { PLANS } from '@/config/plans';
 import { PRICING } from '@/content/pricing';
-import { accountPlanOf } from '@/lib/payments/account-plan';
+import { subscriptionsOf } from '@/lib/payments/account-plan';
+import { nextPurchasable } from '@/lib/payments/offer';
+import { bestPlan, projectPlan } from '@/lib/payments/plan-of';
 import { Link } from '@/i18n/navigation';
 import { currentLocale } from '@/i18n/locale';
 import { requireAccount } from '@/lib/auth/session';
@@ -24,34 +27,29 @@ export default async function ProjectsPage() {
   const { supabase } = await requireAccount(locale);
   const t = await getTranslations('projects');
   const projects = await listProjects(supabase);
-  // The account's package sets the limit (D-315); the database enforces the same one.
-  const planId = await accountPlanOf(supabase);
-  const quota = PLANS[planId].entitlements.projects;
-  const limit = quota.kind === 'count' ? quota.value : Infinity;
+  const now = new Date();
+  // Each project has its own package (D-320); a course voucher covers them all (D-319).
+  const subscriptions = await subscriptionsOf(supabase);
+  const planOf = (projectId: string) => projectPlan(subscriptions, projectId, now);
+  // One project without a package at a time; the database enforces the same rule.
+  const unlimited = PLANS[bestPlan(subscriptions, now)].entitlements.projects.kind === 'unlimited';
+  const freeQuota = PLANS.free.entitlements.projects;
+  const freeLimit = freeQuota.kind === 'count' ? freeQuota.value : 1;
+  const unpaid = projects.filter(({ project }) => planOf(project.id) === 'free').length;
+  const canCreate = unlimited || unpaid < freeLimit;
+  const names = PRICING[locale].planNames;
   const countries = countryOptions(locale);
   // Western digits in both languages (CLAUDE.md §6).
   const date = new Intl.DateTimeFormat(locale === 'ar' ? 'ar-u-nu-latn' : 'en', {
     dateStyle: 'medium',
   });
-  const canCreate = projects.length < limit;
 
   return (
     <div className="mx-auto grid max-w-[75rem] gap-8 px-4 py-10 sm:px-6">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div className="grid gap-2">
           <h1 className="text-h1 font-extrabold">{t('title')}</h1>
-          <p className="text-small text-muted">
-            {Number.isFinite(limit)
-              ? t('plan', {
-                  plan: PRICING[locale].planNames[planId],
-                  count: projects.length,
-                  limit,
-                })
-              : t('planUnlimited', {
-                  plan: PRICING[locale].planNames[planId],
-                  count: projects.length,
-                })}
-          </p>
+          <p className="text-small text-muted">{t('rule')}</p>
         </div>
         {canCreate ? (
           <ButtonLink href="/projects/new" variant="primary">
@@ -64,31 +62,47 @@ export default async function ProjectsPage() {
         <p className="reading text-body-lg text-ink-2">{t('empty')}</p>
       ) : (
         <ul className="grid border-t border-hairline">
-          {projects.map(({ project, answers }) => (
-            <li
-              key={project.id}
-              className="grid gap-1 border-b border-hairline py-4 md:grid-cols-[minmax(0,2fr)_1fr_1fr_1fr] md:items-baseline md:gap-6"
-            >
-              <Link
-                href={projectPath(project.id)}
-                className="relative justify-self-start font-display text-body font-bold text-ink underline-offset-4 hover:underline"
+          {projects.map(({ project, answers }) => {
+            const planId = planOf(project.id);
+            // The next package up for this project, if there is one to buy.
+            const next = nextPurchasable(planId);
+            return (
+              <li
+                key={project.id}
+                className="grid gap-1 border-b border-hairline py-4 md:grid-cols-[minmax(0,2fr)_1fr_1fr_1fr_minmax(0,1.5fr)] md:items-baseline md:gap-6"
               >
-                {/* Typed by the founder, in any script: its own direction (UX-12). */}
-                <span dir="auto">{project.title}</span>
-                <LinkPending />
-              </Link>
-              <span className="text-small text-ink-2">
-                {countries.find((option) => option.value === project.countryCode)?.label}
-              </span>
-              <span className="text-small text-ink-2">
-                {t('completeness')}{' '}
-                <bdi className="num">{displayPercent(completeness(answers).score)}%</bdi>
-              </span>
-              <span className="text-small text-muted">
-                {t('updated')} {date.format(new Date(project.updatedAt))}
-              </span>
-            </li>
-          ))}
+                <Link
+                  href={projectPath(project.id)}
+                  className="relative justify-self-start font-display text-body font-bold text-ink underline-offset-4 hover:underline"
+                >
+                  {/* Typed by the founder, in any script: its own direction (UX-12). */}
+                  <span dir="auto">{project.title}</span>
+                  <LinkPending />
+                </Link>
+                <span className="text-small text-ink-2">
+                  {countries.find((option) => option.value === project.countryCode)?.label}
+                </span>
+                <span className="text-small text-ink-2">
+                  {t('completeness')}{' '}
+                  <bdi className="num">{displayPercent(completeness(answers).score)}%</bdi>
+                </span>
+                <span className="text-small text-muted">
+                  {t('updated')} {date.format(new Date(project.updatedAt))}
+                </span>
+                <span className="text-small">
+                  <span className="text-ink-2">{t('package', { plan: names[planId] })}</span>
+                  {next ? (
+                    <>
+                      {' · '}
+                      <TextLink href={`/checkout/${next}?project=${project.id}`}>
+                        {planId === 'free' ? t('buy') : t('upgrade', { plan: names[next] })}
+                      </TextLink>
+                    </>
+                  ) : null}
+                </span>
+              </li>
+            );
+          })}
         </ul>
       )}
 

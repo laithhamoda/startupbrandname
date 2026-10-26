@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isPurchasable, offerFor, priceRowsOf } from './offer';
+import { isPurchasable, nextPurchasable, offerFor, priceRowsOf } from './offer';
 import { priceResolver } from './webhook';
 
 const PRICES = { strategist: 'pri_std', commander: 'pri_adv', upgrade: 'pri_up' };
@@ -60,5 +60,14 @@ describe('offerFor (D-313)', () => {
     expect(resolve('pri_std')).toEqual({ planId: 'strategist', oneTimeDays: 365 });
     expect(resolve('pri_adv')).toEqual({ planId: 'commander', oneTimeDays: 365 });
     expect(resolve('pri_up')).toEqual({ planId: 'commander', oneTimeDays: 365 });
+  });
+});
+
+describe('nextPurchasable (D-320)', () => {
+  it('offers the next package up, and nothing above the top', () => {
+    expect(nextPurchasable('free')).toBe('strategist');
+    expect(nextPurchasable('strategist')).toBe('commander');
+    expect(nextPurchasable('course')).toBe('commander');
+    expect(nextPurchasable('commander')).toBeNull();
   });
 });

@@ -4,7 +4,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(44);
+select plan(45);
 
 insert into auth.users (id, email, created_at) values
   ('a7000000-0000-4000-8000-000000000001', 'm7-buyer@example.test', now()),
@@ -74,6 +74,10 @@ select throws_ok(
   '22023', null, 'a plan without a price cannot be bought'
 );
 select throws_ok(
+  $$select public.start_checkout('strategist', null, true)$$,
+  '22023', null, 'a package is bought for a project (D-320)'
+);
+select throws_ok(
   $$select public.start_checkout('commander', 'b7100000-0000-4000-8000-000000000002', true)$$,
   '42501', null, 'a buyer cannot pay for another user''s project'
 );
@@ -112,7 +116,7 @@ update public.settings set value = '1' where key = 'payments.checkouts_per_day';
 set local role authenticated;
 select pg_temp.act_as('a7000000-0000-4000-8000-000000000001');
 select throws_ok(
-  $$select public.start_checkout('strategist', null, true)$$,
+  $$select public.start_checkout('strategist', 'a7100000-0000-4000-8000-000000000001', true)$$,
   '54000', null, 'the daily checkout limit holds'
 );
 reset role;

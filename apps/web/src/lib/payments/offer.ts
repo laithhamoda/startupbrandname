@@ -9,6 +9,11 @@ export function isPurchasable(value: string): value is Purchasable {
   return (PURCHASABLE as readonly string[]).includes(value);
 }
 
+/** The cheapest package above `current` that can be bought, or null at the top (D-320). */
+export function nextPurchasable(current: PlanId): Purchasable | null {
+  return PURCHASABLE.find((id) => PLAN_ORDER.indexOf(id) > PLAN_ORDER.indexOf(current)) ?? null;
+}
+
 /** The provider's price of each offer, per environment (D-317). */
 export interface OfferPrices {
   readonly strategist: string;

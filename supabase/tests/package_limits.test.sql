@@ -1,9 +1,9 @@
--- M7 step 4: the project limit follows the account's package (D-313).
+-- M7 steps 4 and 6b: the project limit (D-313), one project per purchase (D-320).
 begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(9);
+select plan(13);
 
 insert into auth.users (id, email, created_at) values
   ('a9000000-0000-4000-8000-000000000001', 'limits-free@example.test', now()),
@@ -52,14 +52,45 @@ select throws_ok(
 
 select pg_temp.act_as('a9000000-0000-4000-8000-000000000002');
 select lives_ok(
-  $$select public.create_project('one', 'JO', 'JOD', 'standard'),
-           public.create_project('two', 'JO', 'JOD', 'standard'),
-           public.create_project('three', 'JO', 'JOD', 'standard')$$,
-  'a paid package creates three projects'
+  $$select public.create_project('one', 'JO', 'JOD', 'standard')$$,
+  'an account creates a project without a package'
 );
 select throws_ok(
-  $$select public.create_project('four', 'JO', 'JOD', 'standard')$$,
-  'SB001', null, 'and stops at three'
+  $$select public.create_project('two', 'JO', 'JOD', 'standard')$$,
+  'SB001', null, 'and no second one while the first has no package (D-320)'
+);
+reset role;
+
+-- The first project gets its own package; then a second unpaid project is allowed, not a third.
+insert into public.subscriptions (user_id, project_id, plan_id, source, status, starts_at, ends_at)
+select user_id, id, 'strategist', 'admin', 'active', now() - interval '1 day', now() + interval '364 days'
+from public.projects where user_id = 'a9000000-0000-4000-8000-000000000002' and title = 'one';
+
+set local role authenticated;
+select pg_temp.act_as('a9000000-0000-4000-8000-000000000002');
+select lives_ok(
+  $$select public.create_project('two', 'JO', 'JOD', 'standard')$$,
+  'a paid project does not count, so a new unpaid one is allowed'
+);
+select throws_ok(
+  $$select public.create_project('three', 'JO', 'JOD', 'standard')$$,
+  'SB001', null, 'but only one unpaid project at a time'
+);
+reset role;
+
+-- A refunded package no longer covers its project.
+update public.subscriptions set status = 'ended'
+where project_id = (select id from public.projects where title = 'one' and user_id = 'a9000000-0000-4000-8000-000000000002');
+set local role authenticated;
+select pg_temp.act_as('a9000000-0000-4000-8000-000000000002');
+select is(
+  (select count(*)::int from public.projects),
+  2,
+  'the account keeps both projects after a refund'
+);
+select throws_ok(
+  $$select public.create_project('three', 'JO', 'JOD', 'standard')$$,
+  'SB001', null, 'and creates no other while both are unpaid'
 );
 
 select pg_temp.act_as('a9000000-0000-4000-8000-000000000003');

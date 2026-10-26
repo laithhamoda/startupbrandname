@@ -27,12 +27,32 @@ export function isRunning(row: SubscriptionRow, now: Date): boolean {
   return !Number.isNaN(end) && end > now.getTime();
 }
 
+function best(
+  rows: readonly SubscriptionRow[],
+  now: Date,
+  counts: (row: SubscriptionRow) => boolean,
+) {
+  let plan: PlanId = 'free';
+  for (const row of rows) {
+    if (!counts(row) || !isPlanId(row.plan_id) || !isRunning(row, now)) continue;
+    if (PLAN_ORDER.indexOf(row.plan_id) > PLAN_ORDER.indexOf(plan)) plan = row.plan_id;
+  }
+  return plan;
+}
+
 /** The best package among the running subscriptions that cover the account; free without one. */
 export function bestPlan(rows: readonly SubscriptionRow[], now: Date): PlanId {
-  let best: PlanId = 'free';
-  for (const row of rows) {
-    if (row.project_id !== null || !isPlanId(row.plan_id) || !isRunning(row, now)) continue;
-    if (PLAN_ORDER.indexOf(row.plan_id) > PLAN_ORDER.indexOf(best)) best = row.plan_id;
-  }
-  return best;
+  return best(rows, now, (row) => row.project_id === null);
+}
+
+/**
+ * The package of one project (D-320): the best running purchase for that project, or a running
+ * package that covers the account, such as a course voucher (D-319); free without one.
+ */
+export function projectPlan(
+  rows: readonly SubscriptionRow[],
+  projectId: string,
+  now: Date,
+): PlanId {
+  return best(rows, now, (row) => row.project_id === null || row.project_id === projectId);
 }

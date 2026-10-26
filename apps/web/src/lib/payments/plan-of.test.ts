@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { bestPlan, isRunning, type SubscriptionRow } from './plan-of';
+import { bestPlan, projectPlan, isRunning, type SubscriptionRow } from './plan-of';
 
 const NOW = new Date('2026-10-26T12:00:00Z');
 
@@ -54,5 +54,30 @@ describe('bestPlan', () => {
       'free',
     );
     expect(bestPlan([row({ plan_id: 'weekly' })], NOW)).toBe('free');
+  });
+});
+
+describe('projectPlan (D-320)', () => {
+  const A = 'a7100000-0000-4000-8000-000000000001';
+  const B = 'b7100000-0000-4000-8000-000000000002';
+
+  it("takes the project's own purchase and ignores another project's", () => {
+    expect(projectPlan([row({ project_id: A })], A, NOW)).toBe('strategist');
+    expect(projectPlan([row({ project_id: B, plan_id: 'commander' })], A, NOW)).toBe('free');
+  });
+
+  it('counts a package that covers the account, such as a course voucher (D-319)', () => {
+    expect(projectPlan([row({ plan_id: 'course', ends_at: null })], A, NOW)).toBe('course');
+    expect(
+      projectPlan(
+        [row({ plan_id: 'course', ends_at: null }), row({ project_id: A, plan_id: 'commander' })],
+        A,
+        NOW,
+      ),
+    ).toBe('commander');
+  });
+
+  it('stops counting a refunded purchase', () => {
+    expect(projectPlan([row({ project_id: A, status: 'ended' })], A, NOW)).toBe('free');
   });
 });

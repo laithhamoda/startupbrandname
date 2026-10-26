@@ -44,10 +44,10 @@ describe('plans', () => {
     expect(PLANS.commander.entitlements.mentorMessages).toEqual({ kind: 'perProject', value: 64 });
   });
 
-  it('covers 1 project free and up to 3 with a paid package', () => {
+  it('covers 1 project free and the project each package is bought for (D-320)', () => {
     expect(PLANS.free.entitlements.projects).toEqual({ kind: 'count', value: 1 });
-    expect(PLANS.strategist.entitlements.projects).toEqual({ kind: 'count', value: 3 });
-    expect(PLANS.commander.entitlements.projects).toEqual({ kind: 'count', value: 3 });
+    expect(PLANS.strategist.entitlements.projects).toEqual({ kind: 'perPurchase', value: 1 });
+    expect(PLANS.commander.entitlements.projects).toEqual({ kind: 'perPurchase', value: 1 });
     expect(PLANS.course.entitlements.projects.kind).toBe('unlimited');
   });
 
@@ -94,11 +94,10 @@ describe('the database seed', () => {
     expect(PLANS.free.entitlements.projects).toEqual({ kind: 'count', value: Number(seeded) });
   });
 
-  it('gives each package the same project limit as this table (D-313, D-318)', () => {
-    const sql =
-      migration('20261026120000_package_project_limits.sql') +
-      migration('20261026171000_package_names.sql');
-    for (const id of ['strategist', 'commander', 'course'] as const) {
+  it('gives the course voucher the same project limit as this table (D-313, D-320)', () => {
+    // A bought package covers its own project (D-320): only the course voucher still reads a limit.
+    const sql = migration('20261026120000_package_project_limits.sql');
+    for (const id of ['course'] as const) {
       const seeded = new RegExp(`\\('entitlement\\.${id}\\.projects', '([^']+)'\\)`).exec(sql)?.[1];
       const quota = PLANS[id].entitlements.projects;
       expect(seeded, id).toBe(quota.kind === 'count' ? String(quota.value) : '"unlimited"');

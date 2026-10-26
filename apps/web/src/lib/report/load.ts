@@ -60,7 +60,7 @@ export async function loadReportPage(
   const { source, outcome } = analysis;
   const score = completeness(source.answers);
 
-  const { access, previewListValid } = await accountAccess(supabase, options.email, now);
+  const { access, previewListValid } = await accountAccess(supabase, options.email, projectId, now);
   if (!previewListValid) await log.warn('report.preview_list_invalid', { projectId });
   const mode = reportModeOf(score.gate, access);
   const run = outcome.status === 'ok' ? outcome.run : null;

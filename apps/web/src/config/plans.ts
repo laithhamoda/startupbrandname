@@ -14,11 +14,15 @@ export type Billing =
   | { kind: 'recurring'; interval: 'month' }
   | { kind: 'voucher'; months: number };
 
-/** A limit: a count for the account, a count for each project, or unlimited. */
+/**
+ * A limit: a count for the account, a count for each project, the projects one purchase covers
+ * (D-320), or unlimited.
+ */
 export type Quota =
   | { kind: 'none' }
   | { kind: 'count'; value: number }
   | { kind: 'perProject'; value: number }
+  | { kind: 'perPurchase'; value: number }
   | { kind: 'unlimited'; fairUse: boolean };
 
 export type Retention =
@@ -68,7 +72,7 @@ export const PLANS: Readonly<Record<PlanId, Plan>> = {
     priceUsd: 10,
     billing: { kind: 'once', days: PAID_DAYS },
     entitlements: {
-      projects: { kind: 'count', value: 3 },
+      projects: { kind: 'perPurchase', value: 1 },
       questions: 'standard',
       report: 'standard',
       mentorMessages: { kind: 'perProject', value: 10 },
@@ -80,7 +84,7 @@ export const PLANS: Readonly<Record<PlanId, Plan>> = {
     priceUsd: 30,
     billing: { kind: 'once', days: PAID_DAYS },
     entitlements: {
-      projects: { kind: 'count', value: 3 },
+      projects: { kind: 'perPurchase', value: 1 },
       questions: 'full',
       report: 'full',
       mentorMessages: { kind: 'perProject', value: 64 },
