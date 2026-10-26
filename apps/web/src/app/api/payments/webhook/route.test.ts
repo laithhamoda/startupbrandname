@@ -26,8 +26,8 @@ beforeEach(() => {
   vi.stubEnv('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY', 'sb_publishable_test123');
   vi.stubEnv('SUPABASE_SECRET_KEY', 'sb_secret_test123');
   vi.stubEnv('PADDLE_WEBHOOK_SECRET', FAKE_WEBHOOK_SECRET);
-  vi.stubEnv('PADDLE_PRICE_STANDARD', 'pri_standard');
-  vi.stubEnv('PADDLE_PRICE_ADVENTURER', 'pri_adventurer');
+  vi.stubEnv('PADDLE_PRICE_STRATEGIST', 'pri_standard');
+  vi.stubEnv('PADDLE_PRICE_COMMANDER', 'pri_commander');
   vi.stubEnv('PADDLE_PRICE_UPGRADE', 'pri_upgrade');
   fetchMock = vi.fn<typeof fetch>((input) => {
     const url = input instanceof Request ? input.url : input.toString();

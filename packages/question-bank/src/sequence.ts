@@ -18,7 +18,7 @@ export const AXIS_NAMES: Readonly<Record<Axis, Text>> = {
 
 /**
  * The three diagnostic versions: the 20 ★ questions (quick), those and 20 more (standard, the
- * «متردد» package, D-314), or all 64 (full).
+ * «استراتيجي» package, D-314), or all 64 (full).
  */
 export const MODES = ['quick', 'standard', 'full'] as const;
 export type Mode = (typeof MODES)[number];

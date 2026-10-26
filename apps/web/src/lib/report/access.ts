@@ -14,7 +14,7 @@ export type ReportMode =
       readonly kind: 'summary';
       readonly lockReason: 'plan';
     }
-  /** The «متردد» numbers report: three sections locked by the plan (D-314, D-316). */
+  /** The «استراتيجي» numbers report: three sections locked by the plan (D-314, D-316). */
   | { readonly access: 'numbers'; readonly kind: 'standard'; readonly lockReason: 'plan' }
   | { readonly access: 'full'; readonly kind: 'full'; readonly lockReason: null };
 

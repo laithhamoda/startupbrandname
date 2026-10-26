@@ -122,8 +122,8 @@ type EnvSource = Readonly<Record<string, string | undefined>>;
 const priceId = z.string().regex(/^pri_[a-z0-9]{1,60}$/);
 
 const pricesSchema = z.object({
-  PADDLE_PRICE_STANDARD: priceId,
-  PADDLE_PRICE_ADVENTURER: priceId,
+  PADDLE_PRICE_STRATEGIST: priceId,
+  PADDLE_PRICE_COMMANDER: priceId,
   PADDLE_PRICE_UPGRADE: priceId,
 });
 
@@ -133,11 +133,16 @@ const pricesSchema = z.object({
  * webhook answers 500 so the provider sends the event again once they are set.
  */
 export function getPaddlePrices(env: EnvSource = process.env): OfferPrices | null {
-  const parsed = pricesSchema.safeParse(env);
+  // The names before D-318 are still read, so an environment set before the rename keeps working.
+  const parsed = pricesSchema.safeParse({
+    ...env,
+    PADDLE_PRICE_STRATEGIST: env.PADDLE_PRICE_STRATEGIST ?? env.PADDLE_PRICE_STANDARD,
+    PADDLE_PRICE_COMMANDER: env.PADDLE_PRICE_COMMANDER ?? env.PADDLE_PRICE_ADVENTURER,
+  });
   if (!parsed.success) return null;
   return {
-    standard: parsed.data.PADDLE_PRICE_STANDARD,
-    adventurer: parsed.data.PADDLE_PRICE_ADVENTURER,
+    strategist: parsed.data.PADDLE_PRICE_STRATEGIST,
+    commander: parsed.data.PADDLE_PRICE_COMMANDER,
     upgrade: parsed.data.PADDLE_PRICE_UPGRADE,
   };
 }

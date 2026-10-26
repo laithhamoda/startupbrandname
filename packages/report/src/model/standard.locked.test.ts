@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
 /*
- * The «متردد» report (D-314, D-316): the builders of the three sections it keeps locked must never
+ * The «استراتيجي» report (D-314, D-316): the builders of the three sections it keeps locked must never
  * run, so their values are never computed into the model (D-232). They throw here; the others run.
  */
 const ran = vi.hoisted(() => vi.fn());
@@ -21,7 +21,7 @@ const { buildReportModel } = await import('./build');
 const { goldenReportInput } = await import('../testing/report-inputs');
 const { FULL_SECTION_IDS, ReportModelError, STANDARD_LOCKED_SECTION_IDS } = await import('./types');
 
-describe('the «متردد» report', () => {
+describe('the «استراتيجي» report', () => {
   const model = buildReportModel(
     goldenReportInput('jo-service-subscription', {
       locale: 'ar',

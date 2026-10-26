@@ -64,14 +64,14 @@ describe('accountAccess (D-245, D-290, D-313)', () => {
 
   it('opens what the account’s running package includes', async () => {
     const running = {
-      plan_id: 'adventurer',
+      plan_id: 'commander',
       status: 'active',
       starts_at: '2026-10-01T00:00:00Z',
       ends_at: '2027-10-01T00:00:00Z',
       project_id: null,
     };
     const { access } = await accountAccess(client([running]), 'buyer@example.test', NOW);
-    expect(access.planId).toBe('adventurer');
+    expect(access.planId).toBe('commander');
     expect(access.entitlements.report).toBe('full');
   });
 
