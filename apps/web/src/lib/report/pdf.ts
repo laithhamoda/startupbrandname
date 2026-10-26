@@ -127,7 +127,7 @@ export async function producePdf(
   };
 
   if (page === null) return refuse('not_found');
-  if (page.status === 'none') return refuse('not_allowed');
+  if (page.status === 'none' || page.status === 'version_needed') return refuse('not_allowed');
   if (page.status === 'failed') return fail('render_failed', 'model');
 
   const { model } = page;

@@ -247,6 +247,8 @@ export function AnswerEditor(props: AnswerEditorProps) {
     failed ? ['feedback-error'] : [],
     lost === 'stale' ? ['feedback-stale'] : [],
     lost === 'gone' ? ['feedback-gone'] : [],
+    lost === 'closed' ? ['feedback-closed'] : [],
+    lost === 'core' ? ['feedback-core'] : [],
     numbered('feedback-note', notes.length),
   ].flat();
 
@@ -418,6 +420,16 @@ export function AnswerEditor(props: AnswerEditorProps) {
         {lost === 'gone' ? (
           <RuleAlert id="feedback-gone" live={false} message={t('gone')}>
             <TextLink href="/projects">{t('goneProjects')}</TextLink>
+          </RuleAlert>
+        ) : null}
+        {lost === 'closed' ? (
+          <RuleAlert id="feedback-closed" live={false} message={t('closed')}>
+            <TextLink href={props.overviewHref}>{t('staleOverview')}</TextLink>
+          </RuleAlert>
+        ) : null}
+        {lost === 'core' ? (
+          <RuleAlert id="feedback-core" live={false} message={t('core')}>
+            <TextLink href={props.overviewHref}>{t('staleOverview')}</TextLink>
           </RuleAlert>
         ) : null}
         {notes.length > 0 ? (

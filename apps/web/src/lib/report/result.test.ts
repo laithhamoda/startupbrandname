@@ -69,7 +69,7 @@ describe('loadProjectResult (D-286)', () => {
   });
 
   it('gives the verdict section of the summary when the numbers were calculated', async () => {
-    given({ status: 'ready', model: summaryModel(), notice: null });
+    given({ status: 'ready', model: summaryModel(), notice: null, version: null });
     const result = await loadProjectResult(supabase, 'p', options);
     if (result.status !== 'verdict') throw new Error(`expected a verdict, got ${result.status}`);
     expect(result.section.id).toBe('verdict');
@@ -83,6 +83,7 @@ describe('loadProjectResult (D-286)', () => {
       status: 'ready',
       model: summaryModel(true),
       notice: { kind: 'not_calculable', reasons },
+      version: null,
     });
     expect(await loadProjectResult(supabase, 'p', options)).toEqual({
       status: 'needs_answers',
@@ -91,7 +92,12 @@ describe('loadProjectResult (D-286)', () => {
   });
 
   it('fails softly when the engine failed, with no verdict to show', async () => {
-    given({ status: 'ready', model: summaryModel(true), notice: { kind: 'failed' } });
+    given({
+      status: 'ready',
+      model: summaryModel(true),
+      notice: { kind: 'failed' },
+      version: null,
+    });
     expect(await loadProjectResult(supabase, 'p', options)).toEqual({ status: 'failed' });
   });
 

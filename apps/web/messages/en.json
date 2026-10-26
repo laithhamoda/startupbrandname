@@ -300,7 +300,9 @@
         "open": "Your project’s check result"
       }
     },
-    "backToCanvas": "Back to the canvases"
+    "backToCanvas": "Back to the canvases",
+    "closed": "You chose the final version of your report, so this project’s answers are closed and this answer was not saved. The mentor is still open for your project.",
+    "core": "This answer defines your paid project, so it stays as it was after the purchase and the project cannot become another one. Change the numbers and details as you like."
   },
   "canvas": {
     "pageTitle": "Canvases",
@@ -488,6 +490,29 @@
       "title": "The numbers are not calculated yet",
       "lead": "The report's numbers appear once these questions are answered:",
       "failed": "We could not calculate the numbers right now. Your answers are safe; try again in a moment."
+    },
+    "versions": {
+      "current": "Version <number></number> of your report · <left></left> left",
+      "final": "Final version of your report: <number></number>",
+      "closedNote": "This project’s answers are closed on this version. The AI mentor is still open for your project.",
+      "firstTitle": "Make the first version of your report",
+      "changedTitle": "Your answers changed since the last version",
+      "makeLead": "The report keeps a copy of your current answers. This will be version <number></number>, one of the <left></left> you have left.",
+      "make": "Make version <number></number>",
+      "noneLeft": "You have used every version this project has. Choose your final version: your answers go back to it and the project closes to edits, with the mentor still open.",
+      "chooseOpen": "Choose the final version",
+      "chooseTitle": "Choose your final version",
+      "chooseLead": "Your project’s answers go back to the version you choose, then it closes to edits. This choice cannot be undone.",
+      "row": "Version <number></number>",
+      "confirm": "I understand that this choice is final and the project will close to edits.",
+      "choose": "Keep this version as final",
+      "backToProject": "Back to the project",
+      "errors": {
+        "none_left": "This project has no version left. Choose your final version.",
+        "closed": "You already chose the final version, so the project is closed to edits.",
+        "confirm": "Choose a version, and confirm that you understand the choice is final.",
+        "failed": "That did not work just now. Try again in a moment."
+      }
     }
   },
   "account": {

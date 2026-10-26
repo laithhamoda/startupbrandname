@@ -9,6 +9,7 @@ import {
   lowestPaidPrice,
   PLAN_ORDER,
   PLANS,
+  REPORT_VERSIONS,
   upgradePrice,
 } from './plans';
 
@@ -112,5 +113,23 @@ describe('hasFairUse', () => {
         .filter((plan) => hasFairUse(plan.entitlements))
         .map((plan) => plan.id),
     ).toEqual([]);
+  });
+});
+
+describe('REPORT_VERSIONS', () => {
+  it('matches the limits the database seeds (D-321)', () => {
+    const sql = readFileSync(
+      fileURLToPath(
+        new URL(
+          '../../../../supabase/migrations/20261026203000_report_versions.sql',
+          import.meta.url,
+        ),
+      ),
+      'utf8',
+    );
+    expect(/\('versions\.max', '(\d+)'\)/.exec(sql)?.[1]).toBe(String(REPORT_VERSIONS.max));
+    expect(/\('versions\.after_go', '(\d+)'\)/.exec(sql)?.[1]).toBe(
+      String(REPORT_VERSIONS.afterGo),
+    );
   });
 });

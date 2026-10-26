@@ -328,3 +328,91 @@ describe('loadReportPage (D-273)', () => {
     });
   });
 });
+
+describe('loadReportPage: report versions of a paid project (D-321, D-323)', () => {
+  const PROJECT = 'p';
+  const HASH = 'a'.repeat(64);
+  const commander = {
+    plan_id: 'commander',
+    status: 'active',
+    starts_at: '2026-10-01T00:00:00Z',
+    ends_at: '2027-10-01T00:00:00Z',
+    project_id: PROJECT,
+  };
+  const version = (number: number, inputHash: string, verdict = 'revise') => ({
+    number,
+    verdict,
+    input_hash: inputHash,
+    created_at: '2026-10-11T10:00:00Z',
+  });
+
+  /** A client with a paid project, its versions and its final version. */
+  function paid(versions: readonly object[], final: number | null = null) {
+    return {
+      from: (table: string) => ({
+        select: () => {
+          if (table === 'subscriptions') return Promise.resolve({ data: [commander], error: null });
+          if (table === 'report_versions') {
+            return { eq: () => Promise.resolve({ data: versions, error: null }) };
+          }
+          if (table === 'projects') {
+            return {
+              eq: () => ({
+                maybeSingle: () => Promise.resolve({ data: { final_version: final }, error: null }),
+              }),
+            };
+          }
+          return { eq: () => Promise.resolve({ data: [], error: null }) };
+        },
+      }),
+    } as unknown as SupabaseServerClient;
+  }
+
+  it('asks for the first version before a paid report is shown', async () => {
+    setup('jo-service-subscription', 'full', { inputHash: HASH });
+    const page = await loadReportPage(paid([]), PROJECT, options(OWNER));
+    expect(page).toEqual({ status: 'version_needed', next: 1, left: 10, versions: [] });
+  });
+
+  it('shows the report of answers that match a version, with the versions left', async () => {
+    setup('jo-service-subscription', 'full', { inputHash: HASH });
+    const page = await loadReportPage(
+      paid([version(1, 'b'.repeat(64)), version(2, HASH, 'go')]),
+      PROJECT,
+      options(OWNER),
+    );
+    expect(page?.status).toBe('ready');
+    if (page?.status !== 'ready') return;
+    expect(page.model.kind).toBe('full');
+    expect(page.version).toMatchObject({ number: 2, left: 5, final: false });
+    expect(page.version?.versions.map((item) => item.number)).toEqual([1, 2]);
+  });
+
+  it('asks for the next version after the answers changed, and says none is left at the limit', async () => {
+    setup('jo-service-subscription', 'full', { inputHash: HASH });
+    const ten = Array.from({ length: 10 }, (_, index) =>
+      version(index + 1, String(index).repeat(64)),
+    );
+    const page = await loadReportPage(paid(ten), PROJECT, options(OWNER));
+    expect(page).toMatchObject({ status: 'version_needed', next: 11, left: 0 });
+  });
+
+  it('shows the final version of a closed project', async () => {
+    setup('jo-service-subscription', 'full', { inputHash: HASH });
+    const page = await loadReportPage(paid([version(1, HASH)], 1), PROJECT, options(OWNER));
+    expect(page?.status === 'ready' ? page.version : null).toMatchObject({
+      number: 1,
+      left: 0,
+      final: true,
+    });
+  });
+
+  it('keeps the project page on its summary, whatever the versions', async () => {
+    setup('jo-service-subscription', 'full', { inputHash: HASH });
+    const page = await loadReportPage(paid([]), PROJECT, { ...options(OWNER), summaryOnly: true });
+    expect(page?.status === 'ready' ? [page.model.kind, page.version] : null).toEqual([
+      'summary',
+      null,
+    ]);
+  });
+});

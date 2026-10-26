@@ -50,6 +50,12 @@ export interface Plan {
   entitlements: Entitlements;
 }
 
+/**
+ * Report versions of a paid project (D-321): at most `max`, and at most `afterGo` after the first
+ * «امضِ». The database reads the same numbers from versions.max and versions.after_go.
+ */
+export const REPORT_VERSIONS = { max: 10, afterGo: 5 } as const;
+
 /** A paid package keeps its projects open for edits for 12 months (D-313). */
 const PAID_DAYS = 365;
 const PAID_RETENTION: Retention = { kind: 'subscriptionPlusReadOnly', days: 90 };

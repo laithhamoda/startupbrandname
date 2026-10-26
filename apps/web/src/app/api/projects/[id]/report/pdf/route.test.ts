@@ -40,7 +40,7 @@ const route = await import('./route');
 const model: ReportModel = buildReportModel(
   goldenReportInput('jo-service-subscription', { locale: 'ar' }),
 );
-const ready: ReportPage = { status: 'ready', model, notice: null };
+const ready: ReportPage = { status: 'ready', model, notice: null, version: null };
 
 function store(over: Partial<PdfStore> = {}): PdfStore {
   return {
