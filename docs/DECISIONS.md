@@ -3037,3 +3037,61 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
 - **Reason:** One code path for both accounts, configured per Vercel environment, so sandbox
   payments can never reach the production database.
 - **Status:** Active
+
+### D-318 (2026-10-26): The packages are «مستكشف», «استراتيجي», «قائد»
+
+- **Decision:** The owner renamed the three packages of D-313: «بفكّر» becomes «مستكشف»
+  (Explorer), «متردد» becomes «استراتيجي» (Strategist) and «المغامر» becomes «قائد» (Commander).
+  The Arabic interface shows the Arabic names and the English one the English names. Prices,
+  questions and mentor messages are unchanged: free, 20 questions, 2 messages; $10, 40 questions,
+  10 messages; $30, 64 questions, 64 messages. The plan ids become `free`, `strategist` and
+  `commander` while no real purchase exists, so the code reads like the offer; the question-bank
+  mode and the report level keep the name `standard` for the 40 questions.
+- **Reason:** The owner's naming.
+- **Status:** Active
+
+### D-319 (2026-10-26): Course vouchers give «استراتيجي»
+
+- **Decision:** A course voucher (`course_12m`) gives «استراتيجي» on every project of the account
+  for 12 months from activation: 40 questions, 10 mentor messages per project and the numbers
+  report. It no longer gives everything. Moving one project to «قائد» costs $20, as for a buyer.
+  Amends D-313 and CLAUDE.md §3.
+- **Reason:** The owner's choice.
+- **Status:** Active
+
+### D-320 (2026-10-26): One purchase covers one project
+
+- **Decision:** A package is bought for one project, as D-312 first set; D-313's coverage of up to 3
+  projects per purchase is withdrawn. The checkout names the project, the access it gives carries
+  it (`subscriptions.project_id`), and a project's package is the best running purchase for that
+  project, or the account's course voucher. Moving a project to «قائد» costs the difference ($20)
+  for that project. An account may hold one project without a package (the free one) and any number
+  of paid ones; a course voucher allows any number while it runs (the lead's reading).
+- **Reason:** The owner's choice: one founder, one idea, one payment.
+- **Status:** Active
+
+### D-321 (2026-10-26): Report versions per project, and a final version under «امضِ»
+
+- **Decision:** For a paid project (either package, or a course voucher), the founder may change
+  answers and make the report again to improve the project, without changing its core. After the
+  purchase, the answers that define the project are locked: the country, the sector, the
+  description of the product or service and the target customer; the numbers, prices and costs stay
+  editable. Each report made from different answers is a version. At most 10 versions per project.
+  While the verdict is «عدّل» or «توقّف», a new version may be made up to that limit. Once the
+  verdict is «امضِ», the founder may make up to 5 more versions, still within the 10. At the next
+  attempt, or when the 10 are used, the founder chooses one version, from the first to the last,
+  as the project's final report. After that the answers are closed to edits; the AI mentor stays
+  open for the project within its quota.
+- **Reason:** The owner's rule: room to improve a weak project, a clear end for a strong one, and no
+  turning one purchase into several projects.
+- **Status:** Active
+
+### D-322 (2026-10-26): A mentor pack of 10 messages for $7
+
+- **Decision:** Every project, free or paid, may buy 10 more AI mentor messages for $7, one-time,
+  as often as needed. The pack adds to that project's quota and never expires while the project is
+  kept. It is sold through the same checkout as the packages, with the 18+ confirmation (D-086).
+- **Reason:** The owner's choice: a founder who wants more of the mentor pays for it, and each
+  message stays paid for. Paddle prices items under $10 separately (D-309): its fee on $7 must be
+  confirmed before launch.
+- **Status:** Active
