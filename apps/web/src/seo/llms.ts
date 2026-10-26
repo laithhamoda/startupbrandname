@@ -33,7 +33,7 @@ Key facts:
 - No number in a report is produced by AI. Numbers come from tested formulas; AI only explains them.
 - Every fact is tagged with its source: the user's answer, an assumption, or an external source with its link and the date it was read. Nothing is invented: without a reliable source a field stays empty, with the reason.
 - The diagnostic has 64 questions across eight axes (quick version: 20 questions).
-- One-time packages in US dollars, no subscription: Explorer (free, 20 questions); Strategist $${price('strategist')} (40 questions and the numbers report); Commander $${price('commander')} (all 64 questions and the full report). Each paid package covers up to 3 projects for 12 months. Paid packages are not open yet.
+- One-time packages in US dollars, no subscription: Explorer (free, 20 questions); Strategist $${price('strategist')} (40 questions and the numbers report); Commander $${price('commander')} (all 64 questions and the full report). Each paid package is for one project, for 12 months. Paid packages are not open yet.
 - Status: under construction. Free accounts are open; the diagnostic and the report are being released in stages.
 - A planning tool, not legal, financial or tax advice.
 

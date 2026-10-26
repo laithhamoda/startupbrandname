@@ -30,7 +30,7 @@ export const OFFERS = [
     amountCents: 1000,
     productName: 'استراتيجي · Strategist',
     productDescription:
-      'Startup Brand Name: a 40-question business diagnostic and the numbers report (pricing, break-even, 12-month projection, cash, legal path), with 10 AI mentor messages per project, for up to 3 projects over 12 months. / تشخيص من 40 سؤالًا وتقرير الأرقام: التسعير والتعادل وتوقعات 12 شهرًا والنقد والمسار القانوني، مع 10 رسائل للمرشد الذكي لكل مشروع، حتى 3 مشاريع لمدة 12 شهرًا.',
+      'Startup Brand Name: a 40-question business diagnostic and the numbers report (pricing, break-even, 12-month projection, cash, legal path), with 10 AI mentor messages per project, for one project over 12 months. / تشخيص من 40 سؤالًا وتقرير الأرقام: التسعير والتعادل وتوقعات 12 شهرًا والنقد والمسار القانوني، مع 10 رسائل للمرشد الذكي لكل مشروع، لمشروع واحد لمدة 12 شهرًا.',
     priceName: 'One payment · 12 months · دفعة واحدة لمدة 12 شهرًا',
   },
   {
@@ -41,7 +41,7 @@ export const OFFERS = [
     amountCents: 3000,
     productName: 'قائد · Commander',
     productDescription:
-      'Startup Brand Name: the full 64-question business diagnostic and the full report (business model canvases, scenarios, validation plan), with 64 AI mentor messages per project, for up to 3 projects over 12 months. / التشخيص الكامل من 64 سؤالًا والتقرير الكامل: لوحات نموذج العمل والسيناريوهات وخطة التحقق، مع 64 رسالة للمرشد الذكي لكل مشروع، حتى 3 مشاريع لمدة 12 شهرًا.',
+      'Startup Brand Name: the full 64-question business diagnostic and the full report (business model canvases, scenarios, validation plan), with 64 AI mentor messages per project, for one project over 12 months. / التشخيص الكامل من 64 سؤالًا والتقرير الكامل: لوحات نموذج العمل والسيناريوهات وخطة التحقق، مع 64 رسالة للمرشد الذكي لكل مشروع، لمشروع واحد لمدة 12 شهرًا.',
     priceName: 'One payment · 12 months · دفعة واحدة لمدة 12 شهرًا',
   },
   {
@@ -51,7 +51,7 @@ export const OFFERS = [
     amountCents: 2000,
     productName: 'ترقية إلى قائد · Upgrade to Commander',
     productDescription:
-      'Startup Brand Name: moves an account with the Strategist package to the Commander package for the difference in price. / ترقية حساب لديه باقة «استراتيجي» إلى باقة «قائد» بدفع فرق السعر فقط.',
+      'Startup Brand Name: moves a project with the Strategist package to the Commander package for the difference in price. / ترقية مشروع لديه باقة «استراتيجي» إلى باقة «قائد» بدفع فرق السعر فقط.',
     priceName: 'Upgrade · one payment · ترقية بدفعة واحدة',
   },
 ];

@@ -31,6 +31,8 @@ export interface PricingContent {
   unlimited: string;
   /** "{count}" is replaced by the number. */
   perProject: string;
+  /** The projects one purchase covers (D-320). */
+  perPurchase: string;
   days: string;
   readOnlyAfter: string;
   startFree: string;
@@ -52,7 +54,7 @@ export interface PricingContent {
 export const PRICING: Localized<PricingContent> = {
   ar: {
     heading: 'الأسعار',
-    lead: 'ادفع مرة واحدة حسب عمق التحليل الذي تحتاجه، دون اشتراك يتجدّد. كل باقة تغطّي حتى 3 مشاريع لمدة 12 شهرًا.',
+    lead: 'ادفع مرة واحدة حسب عمق التحليل الذي تحتاجه، دون اشتراك يتجدّد. كل باقة لمشروع واحد لمدة 12 شهرًا، والترقية من «استراتيجي» إلى «قائد» بدفع الفرق.',
     notice: 'الباقات المدفوعة غير متاحة للشراء بعد، وتُفتح قريبًا. إنشاء الحساب المجاني متاح الآن.',
     earlyAccess:
       'وصول مبكر: يُتاح التقرير الكامل الآن مجانًا لكل حساب تبلغ إجاباته 80% مع السعر والتكاليف والمبيعات، إلى أن تُفتح الباقات المدفوعة.',
@@ -93,6 +95,7 @@ export const PRICING: Localized<PricingContent> = {
     locked: 'مقفل',
     unlimited: 'غير محدود',
     perProject: '{count} لكل مشروع',
+    perPurchase: '{count} لكل شراء',
     days: '{count} يومًا',
     readOnlyAfter: 'مدة الباقة، ثم {count} يومًا للقراءة فقط',
     startFree: 'ابدأ مجانًا',
@@ -111,7 +114,7 @@ export const PRICING: Localized<PricingContent> = {
   },
   en: {
     heading: 'Pricing',
-    lead: 'Pay once for the depth of analysis you need, with no renewing subscription. Each package covers up to 3 projects for 12 months.',
+    lead: 'Pay once for the depth of analysis you need, with no renewing subscription. Each package is for one project, for 12 months, and moving from Strategist to Commander costs the difference.',
     notice: 'Paid packages cannot be bought yet and open soon. You can create a free account now.',
     earlyAccess:
       'Early access: the full report is free for now for every account whose answers reach 80%, with the price, costs and sales, until paid packages open.',
@@ -152,6 +155,7 @@ export const PRICING: Localized<PricingContent> = {
     locked: 'Locked',
     unlimited: 'Unlimited',
     perProject: '{count} per project',
+    perPurchase: '{count} per purchase',
     days: '{count} days',
     readOnlyAfter: 'The package’s term, then {count} days read-only',
     startFree: 'Start for free',

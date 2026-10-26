@@ -54,6 +54,8 @@ function quotaValue(quota: Quota, text: PricingContent): ReactNode {
       return <bdi className="num">{quota.value}</bdi>;
     case 'perProject':
       return withCount(text.perProject, quota.value);
+    case 'perPurchase':
+      return withCount(text.perPurchase, quota.value);
     case 'unlimited':
       return quota.fairUse ? `${text.unlimited}*` : text.unlimited;
   }

@@ -32,11 +32,11 @@ const words = messagesFor('en');
 function client(result: { data: unknown[]; error: unknown } = { data: [], error: null }) {
   return {
     from: () => ({
-      select: () => ({
-        eq: () => Promise.resolve(result),
-        // The account's subscriptions (D-313): none, so the free package.
-        is: () => Promise.resolve({ data: [], error: null }),
-      }),
+      // Awaited as is, the read of the account's subscriptions (D-320): none, so the free package.
+      select: () =>
+        Object.assign(Promise.resolve({ data: [], error: null }), {
+          eq: () => Promise.resolve(result),
+        }),
     }),
   } as unknown as SupabaseServerClient;
 }
@@ -257,9 +257,9 @@ describe('loadReportPage (D-273)', () => {
     it('gives an account that may open the full report the summary, and reads no pack', async () => {
       vi.stubEnv('FULL_REPORT_PREVIEW_EMAILS', OWNER);
       setup('jo-service-subscription', 'full');
-      // Only the account's subscriptions are read (D-313), never the country pack.
+      // Only the account's subscriptions are read (D-313, D-320), never the country pack.
       const from = vi.fn(() => ({
-        select: () => ({ is: () => Promise.resolve({ data: [], error: null }) }),
+        select: () => Promise.resolve({ data: [], error: null }),
       }));
       const page = await loadReportPage(
         { from } as unknown as SupabaseServerClient,

@@ -53,7 +53,10 @@ export default async function ProjectPage({ params }: PageProps<'/[locale]/proje
 
   const score = completeness(answers);
   // What the report page will show this account: the entry names it (D-277). The page decides again.
-  const reportEntry = reportAccess(score.gate, (await accountAccess(supabase, user.email)).access);
+  const reportEntry = reportAccess(
+    score.gate,
+    (await accountAccess(supabase, user.email, project.id)).access,
+  );
 
   // The check result, drawn on this page so the founder meets it where the diagnostic ends (D-286).
   const money = await getTranslations('money');
