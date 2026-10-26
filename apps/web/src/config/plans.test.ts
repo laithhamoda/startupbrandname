@@ -5,6 +5,7 @@ import {
   COMPARED_PLANS,
   COURSE_PLANS,
   HIGHLIGHTED_PLAN,
+  hasFairUse,
   lowestPaidPrice,
   PLAN_ORDER,
   PLANS,
@@ -98,5 +99,15 @@ describe('the database seed', () => {
       const quota = PLANS[id].entitlements.projects;
       expect(seeded, id).toBe(quota.kind === 'count' ? String(quota.value) : '"unlimited"');
     }
+  });
+});
+
+describe('hasFairUse', () => {
+  it('marks only the course voucher, so the compared packages need no fair-use note', () => {
+    expect(
+      Object.values(PLANS)
+        .filter((plan) => hasFairUse(plan.entitlements))
+        .map((plan) => plan.id),
+    ).toEqual(['course']);
   });
 });

@@ -117,6 +117,13 @@ export const COURSE_PLANS: readonly PlanId[] = ['course'];
 /** The column drawn with the gold rule: a business choice, changeable here (D-094). */
 export const HIGHLIGHTED_PLAN: PlanId = 'adventurer';
 
+/** Whether a package has a quota marked "unlimited*", which the fair-use note explains. */
+export function hasFairUse(entitlements: Entitlements): boolean {
+  return [entitlements.projects, entitlements.mentorMessages].some(
+    (quota) => quota.kind === 'unlimited' && quota.fairUse,
+  );
+}
+
 /** Lowest paid price, quoted on the home page. */
 export function lowestPaidPrice(): number {
   return Math.min(

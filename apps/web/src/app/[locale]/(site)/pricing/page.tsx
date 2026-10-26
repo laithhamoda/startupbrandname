@@ -3,7 +3,7 @@ import { BidiText } from '@/components/marketing/bidi-text';
 import { PageBody, PageIntro, PageSection } from '@/components/marketing/page-intro';
 import { PlanPrice, PricingTable } from '@/components/marketing/pricing-table';
 import { RelatedPages } from '@/components/marketing/related-pages';
-import { COURSE_PLANS } from '@/config/plans';
+import { COMPARED_PLANS, COURSE_PLANS, hasFairUse, PLANS } from '@/config/plans';
 import { PRICING } from '@/content/pricing';
 import { getEarlyAccess } from '@/env/server';
 import { currentLocale } from '@/i18n/locale';
@@ -37,7 +37,9 @@ export default async function PricingPage() {
       <PricingTable text={text} />
 
       <div className="grid gap-1 py-6 text-small text-muted">
-        <p>{text.fairUse}</p>
+        {COMPARED_PLANS.some((id) => hasFairUse(PLANS[id].entitlements)) ? (
+          <p>{text.fairUse}</p>
+        ) : null}
         <p>{text.currency}</p>
         <p>{text.payment}</p>
       </div>
