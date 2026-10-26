@@ -24,7 +24,7 @@
     "@sbn/engine": "workspace:*",
     "@sbn/question-bank": "workspace:*",
     "@sparticuz/chromium": "153.0.0",
-    "puppeteer-core": "25.11.0",
+    "puppeteer-core": "25.16.0",
     "zod": "4.6.6"
   },
   "devDependencies": {
