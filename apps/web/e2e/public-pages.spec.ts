@@ -116,7 +116,7 @@ test.describe('on a phone', () => {
       'true',
     );
 
-    await tabs.getByRole('tab', { name: 'Hesitant' }).click();
+    await tabs.getByRole('tab', { name: 'Strategist' }).click();
     await expect(page.getByRole('tabpanel').getByText('40 questions')).toBeVisible();
   });
 
