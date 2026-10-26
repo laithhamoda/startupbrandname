@@ -31,7 +31,13 @@ const words = messagesFor('en');
 /** A supabase stand-in that answers the pack query with the given result. */
 function client(result: { data: unknown[]; error: unknown } = { data: [], error: null }) {
   return {
-    from: () => ({ select: () => ({ eq: () => Promise.resolve(result) }) }),
+    from: () => ({
+      select: () => ({
+        eq: () => Promise.resolve(result),
+        // The account's subscriptions (D-313): none, so the free package.
+        is: () => Promise.resolve({ data: [], error: null }),
+      }),
+    }),
   } as unknown as SupabaseServerClient;
 }
 
@@ -251,7 +257,10 @@ describe('loadReportPage (D-273)', () => {
     it('gives an account that may open the full report the summary, and reads no pack', async () => {
       vi.stubEnv('FULL_REPORT_PREVIEW_EMAILS', OWNER);
       setup('jo-service-subscription', 'full');
-      const from = vi.fn();
+      // Only the account's subscriptions are read (D-313), never the country pack.
+      const from = vi.fn(() => ({
+        select: () => ({ is: () => Promise.resolve({ data: [], error: null }) }),
+      }));
       const page = await loadReportPage(
         { from } as unknown as SupabaseServerClient,
         'p',
@@ -260,7 +269,7 @@ describe('loadReportPage (D-273)', () => {
       if (page?.status !== 'ready') throw new Error('expected a page');
       expect(page.model.kind).toBe('summary');
       expect(page.model.sections[0]?.id).toBe('verdict');
-      expect(from).not.toHaveBeenCalled();
+      expect(from.mock.calls).toEqual([['subscriptions']]);
     });
 
     it('searches for changes for a stop only, as the free summary does', async () => {

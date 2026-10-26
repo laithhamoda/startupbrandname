@@ -6,9 +6,8 @@ const NOW = new Date('2026-10-25T10:00:00Z');
 const REF = '0f8e3a52-6c1d-4b8a-9e2f-3d4c5b6a7980';
 
 const PRICES: readonly PriceRow[] = [
-  { plan_id: 'monthly', provider_price_id: 'pri_monthly' },
-  { plan_id: 'weekly', provider_price_id: 'pri_weekly' },
-  { plan_id: 'annual', provider_price_id: 'pri_annual' },
+  { plan_id: 'standard', provider_price_id: 'pri_standard' },
+  { plan_id: 'adventurer', provider_price_id: 'pri_adventurer' },
   { plan_id: 'course', provider_price_id: 'pri_course' },
   { plan_id: 'retired_plan', provider_price_id: 'pri_retired' },
 ];
@@ -50,10 +49,9 @@ function signed(rawBody: string) {
 describe('priceResolver', () => {
   const resolve = priceResolver(PRICES);
 
-  it('gives a one-time price the days of its plan, and a recurring price none', () => {
-    expect(resolve('pri_weekly')).toEqual({ planId: 'weekly', oneTimeDays: 7 });
-    expect(resolve('pri_annual')).toEqual({ planId: 'annual', oneTimeDays: 365 });
-    expect(resolve('pri_monthly')).toEqual({ planId: 'monthly', oneTimeDays: null });
+  it('gives each one-time price the days of its package', () => {
+    expect(resolve('pri_standard')).toEqual({ planId: 'standard', oneTimeDays: 365 });
+    expect(resolve('pri_adventurer')).toEqual({ planId: 'adventurer', oneTimeDays: 365 });
   });
 
   it('knows no price for a voucher plan, a plan the table does not have, or an unknown price', () => {
@@ -66,21 +64,21 @@ describe('priceResolver', () => {
 describe('handlePaymentWebhook', () => {
   it('applies a verified event and answers 200', async () => {
     const d = deps();
-    const result = await handlePaymentWebhook(signed(transactionBody('pri_weekly')), d);
+    const result = await handlePaymentWebhook(signed(transactionBody('pri_standard')), d);
     expect(result).toEqual({ status: 200, outcome: 'applied', eventType: 'transaction.completed' });
     expect(d.apply).toHaveBeenCalledOnce();
     expect(d.apply.mock.calls[0]?.[0]).toMatchObject({
       eventId: 'evt_01',
       change: {
         kind: 'payment',
-        grant: { plan_id: 'weekly', ends_at: '2026-11-01T10:00:00.000Z' },
+        grant: { plan_id: 'standard', ends_at: '2027-10-25T10:00:00.000Z' },
       },
     });
   });
 
   it('answers 200 for a duplicate, so Paddle stops sending it', async () => {
     const d = deps({ apply: () => Promise.resolve('duplicate') });
-    expect(await handlePaymentWebhook(signed(transactionBody('pri_weekly')), d)).toMatchObject({
+    expect(await handlePaymentWebhook(signed(transactionBody('pri_standard')), d)).toMatchObject({
       status: 200,
       outcome: 'duplicate',
     });
@@ -88,7 +86,7 @@ describe('handlePaymentWebhook', () => {
 
   it('refuses a forged request with 401 before reading anything', async () => {
     const d = deps();
-    const body = transactionBody('pri_weekly');
+    const body = transactionBody('pri_standard');
     const result = await handlePaymentWebhook(
       { rawBody: body, signature: 'ts=1;h1=00', now: NOW },
       d,
@@ -117,15 +115,19 @@ describe('handlePaymentWebhook', () => {
 
   it('answers 500 when the database cannot be read or written', async () => {
     const unreadable = deps({ loadPrices: () => Promise.reject(new Error('down')) });
-    expect(await handlePaymentWebhook(signed(transactionBody('pri_weekly')), unreadable)).toEqual({
-      status: 500,
-      reason: 'database',
-    });
+    expect(await handlePaymentWebhook(signed(transactionBody('pri_standard')), unreadable)).toEqual(
+      {
+        status: 500,
+        reason: 'database',
+      },
+    );
     const unwritable = deps({ apply: () => Promise.reject(new Error('down')) });
-    expect(await handlePaymentWebhook(signed(transactionBody('pri_weekly')), unwritable)).toEqual({
-      status: 500,
-      reason: 'database',
-    });
+    expect(await handlePaymentWebhook(signed(transactionBody('pri_standard')), unwritable)).toEqual(
+      {
+        status: 500,
+        reason: 'database',
+      },
+    );
   });
 
   it('lets an unexpected error through', async () => {
@@ -138,7 +140,7 @@ describe('handlePaymentWebhook', () => {
       },
     };
     await expect(
-      handlePaymentWebhook(signed(transactionBody('pri_weekly')), { ...d, provider: broken }),
+      handlePaymentWebhook(signed(transactionBody('pri_standard')), { ...d, provider: broken }),
     ).rejects.toThrow(TypeError);
   });
 });

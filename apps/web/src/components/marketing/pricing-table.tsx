@@ -1,4 +1,5 @@
-import { Check, Minus } from 'lucide-react';
+import { questionsFor } from '@sbn/question-bank';
+import { Minus } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { ButtonLink } from '@/components/ui/button';
 import { Money } from '@/components/ui/money';
@@ -17,13 +18,10 @@ import { cn } from '@/lib/cn';
 import { BidiText } from './bidi-text';
 
 const FEATURES: readonly FeatureKey[] = [
-  'projects',
-  'onePageSummary',
-  'fullReport',
+  'questions',
+  'report',
   'mentorMessages',
-  'competitorEnrichment',
-  'pitchDeck',
-  'quarterlyRefresh',
+  'projects',
   'retention',
 ];
 
@@ -39,12 +37,11 @@ function withCount(template: string, count: number): ReactNode {
   );
 }
 
-function Availability({ available, text }: { available: boolean; text: PricingContent }) {
-  const Icon = available ? Check : Minus;
+function NotIncluded({ text }: { text: PricingContent }) {
   return (
     <>
-      <Icon aria-hidden className={cn('inline size-5', available ? 'text-ink' : 'text-muted')} />
-      <span className="sr-only">{available ? text.included : text.notIncluded}</span>
+      <Minus aria-hidden className="inline size-5 text-muted" />
+      <span className="sr-only">{text.notIncluded}</span>
     </>
   );
 }
@@ -55,8 +52,8 @@ function quotaValue(quota: Quota, text: PricingContent): ReactNode {
       return text.locked;
     case 'count':
       return <bdi className="num">{quota.value}</bdi>;
-    case 'perDay':
-      return withCount(text.perDay, quota.value);
+    case 'perProject':
+      return withCount(text.perProject, quota.value);
     case 'unlimited':
       return quota.fairUse ? `${text.unlimited}*` : text.unlimited;
   }
@@ -72,21 +69,19 @@ function featureValue(plan: Plan, feature: FeatureKey, text: PricingContent): Re
   const { entitlements } = plan;
   switch (feature) {
     case 'projects':
-    case 'fullReport':
-      return quotaValue(entitlements[feature], text);
+      return quotaValue(entitlements.projects, text);
+    case 'questions':
+      return withCount(text.questionsCount, questionsFor(entitlements.questions).length);
+    case 'report':
+      return <BidiText text={text.reportLevels[entitlements.report]} />;
     case 'mentorMessages':
       return entitlements.mentorMessages.kind === 'none' ? (
-        <Availability available={false} text={text} />
+        <NotIncluded text={text} />
       ) : (
         quotaValue(entitlements.mentorMessages, text)
       );
     case 'retention':
       return retentionValue(entitlements.retention, text);
-    case 'onePageSummary':
-    case 'competitorEnrichment':
-    case 'pitchDeck':
-    case 'quarterlyRefresh':
-      return <Availability available={entitlements[feature]} text={text} />;
   }
 }
 
@@ -118,7 +113,7 @@ function FeatureName({ feature, text }: { feature: FeatureKey; text: PricingCont
 }
 
 function PlanAction({ planId, text }: { planId: PlanId; text: PricingContent }) {
-  // The free plan is the one action available today; paid plans open with payments (M7).
+  // The free package is the one action available today; paid packages open with checkout (M7).
   return planId === 'free' ? (
     <ButtonLink href="/signup" variant="primary">
       {text.startFree}
@@ -131,7 +126,7 @@ function PlanAction({ planId, text }: { planId: PlanId; text: PricingContent }) 
 const cell = 'border-b border-hairline px-3 py-3 text-start align-top';
 
 /**
- * A comparison table, not four identical cards (M1 design plan). From tablet width up it is one
+ * A comparison table, not identical cards (M1 design plan). From tablet width up it is one
  * table; on phones it becomes one plan at a time behind tabs.
  */
 export function PricingTable({ text }: { text: PricingContent }) {

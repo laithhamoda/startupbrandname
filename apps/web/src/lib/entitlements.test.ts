@@ -129,12 +129,12 @@ describe('reportAccess', () => {
 
   it.each(PLAN_IDS)('follows the entitlement of %s, not its name', (planId) => {
     const access = accessFor({ email: 'a@example.com', planId }, NO_PREVIEW);
-    const included = PLANS[planId].entitlements.fullReport.kind !== 'none';
+    const included = PLANS[planId].entitlements.report === 'full';
     expect(reportAccess('full', access)).toBe(included ? 'full' : 'summary_locked');
   });
 
-  it('opens the full report for the paid plans and the course plans', () => {
-    for (const planId of ['weekly', 'monthly', 'annual', 'course', 'alumni'] as const) {
+  it('opens the full report for «المغامر» and the course plan only', () => {
+    for (const planId of ['adventurer', 'course'] as const) {
       const access = accessFor({ email: 'a@example.com', planId }, NO_PREVIEW);
       expect(reportAccess('full', access)).toBe('full');
     }
@@ -151,15 +151,6 @@ describe('reportAccess', () => {
         expect(['none', 'summary', 'summary_locked', 'full']).toContain(reportAccess(gate, access));
       }
     }
-  });
-
-  it('shows nothing when the plan has no summary', () => {
-    const noSummary = {
-      ...free,
-      entitlements: { ...free.entitlements, onePageSummary: false },
-    };
-    expect(reportAccess('summary', noSummary)).toBe('none');
-    expect(reportAccess('full', { ...noSummary, fullReportPreview: true })).toBe('none');
   });
 });
 

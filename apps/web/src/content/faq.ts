@@ -46,7 +46,7 @@ export const FAQ: Localized<FaqContent> = {
         id: 'free',
         question: 'ماذا أحصل عليه مجانًا؟',
         answer:
-          'مشروع واحد، وملخّص في صفحة واحدة حين تبلغ إجاباتك 40% من الاكتمال، و3 رسائل يوميًا مع المرشد الذكي عند إطلاقه قريبًا. ويُحفظ المشروع المجاني 30 يومًا.',
+          'باقة «بفكّر»: مشروع واحد بـ20 سؤالًا، وملخّص في صفحة واحدة حين تبلغ إجاباتك 40% من الاكتمال، ورسالتان مع المرشد الذكي عند إطلاقه قريبًا. ويُحفظ المشروع المجاني 30 يومًا.',
       },
       {
         id: 'verdict',
@@ -76,13 +76,13 @@ export const FAQ: Localized<FaqContent> = {
         id: 'payment',
         question: 'كيف أدفع؟',
         answer:
-          'الأسعار بالدولار الأمريكي، والدفع ببطاقات Visa والبطاقات الدولية الأخرى أو عبر PayPal، ولا نحفظ بيانات بطاقتك. الاشتراكات المدفوعة غير متاحة بعد.',
+          'الأسعار بالدولار الأمريكي، بدفعة واحدة دون اشتراك يتجدّد. الدفع ببطاقات Visa والبطاقات الدولية الأخرى أو عبر PayPal، من خلال Paddle، ولا نحفظ بيانات بطاقتك. الباقات المدفوعة غير متاحة للشراء بعد.',
       },
       {
         id: 'viva',
         question: 'ما كود VIVA؟',
         answer:
-          'كود يحصل عليه متدرّبو دورة «الذكاء الاصطناعي في ريادة الأعمال»، ويمنح مزايا الخطة السنوية مجانًا لمدة 12 شهرًا من تاريخ تفعيله. يبدأ الكود بـ VIVA تليه 8 رموز، ويُتاح تفعيله مع فتح الاشتراكات.',
+          'كود يحصل عليه متدرّبو دورة «الذكاء الاصطناعي في ريادة الأعمال»، ويمنح كل المزايا مجانًا لمدة 12 شهرًا من تاريخ تفعيله. يبدأ الكود بـ VIVA تليه 8 رموز، ويُتاح تفعيله مع فتح الباقات المدفوعة.',
       },
       {
         id: 'delete',
@@ -129,7 +129,7 @@ export const FAQ: Localized<FaqContent> = {
         id: 'free',
         question: 'What do I get for free?',
         answer:
-          'One project, a one-page summary once your answers reach 40% completeness, and 3 messages a day with the AI mentor once it opens, soon. A free project is kept for 30 days.',
+          'The Thinking package: one project with 20 questions, a one-page summary once your answers reach 40% completeness, and 2 messages with the AI mentor once it opens, soon. A free project is kept for 30 days.',
       },
       {
         id: 'verdict',
@@ -159,13 +159,13 @@ export const FAQ: Localized<FaqContent> = {
         id: 'payment',
         question: 'How do I pay?',
         answer:
-          'Prices are in US dollars. You can pay by Visa or another international card, or with PayPal, and we never store your card details. Paid plans are not available yet.',
+          'Prices are in US dollars, paid once with no renewing subscription. You can pay by Visa or another international card, or with PayPal, through Paddle, and we never store your card details. Paid packages cannot be bought yet.',
       },
       {
         id: 'viva',
         question: 'What is a VIVA code?',
         answer:
-          'A code given to trainees of the “AI in Entrepreneurship” course. It unlocks the annual plan free for 12 months from the day it is activated. Codes start with VIVA followed by 8 characters, and can be activated once paid plans open.',
+          'A code given to trainees of the “AI in Entrepreneurship” course. It unlocks everything free for 12 months from the day it is activated. Codes start with VIVA followed by 8 characters, and can be activated once paid packages open.',
       },
       {
         id: 'delete',
