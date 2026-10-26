@@ -26,9 +26,11 @@ beforeEach(() => {
   vi.stubEnv('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY', 'sb_publishable_test123');
   vi.stubEnv('SUPABASE_SECRET_KEY', 'sb_secret_test123');
   vi.stubEnv('PADDLE_WEBHOOK_SECRET', FAKE_WEBHOOK_SECRET);
+  vi.stubEnv('PADDLE_PRICE_STANDARD', 'pri_standard');
+  vi.stubEnv('PADDLE_PRICE_ADVENTURER', 'pri_adventurer');
+  vi.stubEnv('PADDLE_PRICE_UPGRADE', 'pri_upgrade');
   fetchMock = vi.fn<typeof fetch>((input) => {
     const url = input instanceof Request ? input.url : input.toString();
-    if (url.includes('/rest/v1/billing_products')) return Promise.resolve(Response.json([]));
     if (url.includes('/rest/v1/rpc/apply_payment_event'))
       return Promise.resolve(Response.json('ignored'));
     return Promise.resolve(new Response(null, { status: 404 }));
@@ -86,9 +88,16 @@ describe('POST /api/payments/webhook', () => {
   it('answers 500 when the database returns something that is not an outcome', async () => {
     fetchMock.mockImplementation((input) => {
       const url = input instanceof Request ? input.url : input.toString();
-      return Promise.resolve(Response.json(url.includes('billing_products') ? [] : 'granted'));
+      return Promise.resolve(Response.json(url.includes('apply_payment_event') ? 'granted' : []));
     });
     const response = await POST(request(signFakeEvent(BODY)));
     expect(response.status).toBe(500);
+  });
+
+  it('answers 500 while the package prices are not configured, so Paddle sends it again', async () => {
+    vi.stubEnv('PADDLE_PRICE_UPGRADE', '');
+    const response = await POST(request(signFakeEvent(BODY)));
+    expect(response.status).toBe(500);
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 });

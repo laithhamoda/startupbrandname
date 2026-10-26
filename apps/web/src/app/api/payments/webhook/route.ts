@@ -1,6 +1,7 @@
 import { createPaddleProvider, type ProviderEvent } from '@sbn/payments';
-import { getPaymentsEnv } from '@/env/server';
+import { getPaddlePrices, getPaymentsEnv } from '@/env/server';
 import { log } from '@/lib/log';
+import { priceRowsOf } from '@/lib/payments/offer';
 import { handlePaymentWebhook, type ApplyOutcome, type PriceRow } from '@/lib/payments/webhook';
 import { createSupabaseAdminClient } from '@/lib/supabase/admin';
 
@@ -31,13 +32,12 @@ export async function POST(request: Request): Promise<Response> {
   const db = createSupabaseAdminClient(env.supabaseSecretKey);
   const provider = createPaddleProvider({ webhookSecret: env.paddleWebhookSecret });
 
-  const loadPrices = async (): Promise<readonly PriceRow[]> => {
-    const { data, error } = await db
-      .from('billing_products')
-      .select('plan_id, provider_price_id')
-      .eq('provider', provider.id);
-    if (error) throw error;
-    return data;
+  // The prices of this environment (D-317); missing ones answer 500, so Paddle retries later.
+  const loadPrices = (): Promise<readonly PriceRow[]> => {
+    const prices = getPaddlePrices();
+    return prices === null
+      ? Promise.reject(new Error('the package prices are not configured'))
+      : Promise.resolve(priceRowsOf(prices));
   };
 
   const apply = async (event: ProviderEvent): Promise<ApplyOutcome> => {
