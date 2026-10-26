@@ -3014,7 +3014,7 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   full report's 80, so the completeness gains a `standard` gate at 60 points with the five numbers
   of `FULL_REPORT_QUESTIONS`. An account opens it with «متردد» or better at that gate or above; the
   preview list and early access count as the full package. `reports.kind` accepts `standard` so its
-  PDF can be stored. The locked-section note now names «المغامر».
+  PDF can be stored. The locked-section note says a paid package opens the section.
 - **Reason:** «متردد» answers "do the numbers work?" (D-314) and must open on the answers its own
   diagnostic collects.
 - **Status:** Active

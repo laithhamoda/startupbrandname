@@ -419,7 +419,7 @@
     "lock": {
       "label": "Locked section",
       "completeness": "This section opens once your core answers are complete: the price, the costs, the expected sales and the capital.",
-      "plan": "This section is part of the full report in the Adventurer package. Paid packages open soon.",
+      "plan": "This section opens with a paid package. Paid packages open soon.",
       "continue": "Keep answering the questions",
       "pricing": "See packages and prices"
     },
