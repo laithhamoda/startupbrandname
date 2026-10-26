@@ -106,18 +106,18 @@ test.describe('on a phone', () => {
     await expect(button).toHaveAttribute('aria-expanded', 'false');
   });
 
-  test('the pricing table becomes one plan at a time', async ({ page }) => {
+  test('the pricing table becomes one package at a time', async ({ page }) => {
     await page.goto('/en/pricing');
 
-    await expect(page.getByRole('table', { name: 'Plan comparison' })).toBeHidden();
-    const tabs = page.getByRole('tablist', { name: 'Choose a plan to see its details' });
-    await expect(tabs.getByRole('tab', { name: 'Annual' })).toHaveAttribute(
+    await expect(page.getByRole('table', { name: 'Package comparison' })).toBeHidden();
+    const tabs = page.getByRole('tablist', { name: 'Choose a package to see its details' });
+    await expect(tabs.getByRole('tab', { name: 'Adventurer' })).toHaveAttribute(
       'aria-selected',
       'true',
     );
 
-    await tabs.getByRole('tab', { name: 'Free' }).click();
-    await expect(page.getByRole('tabpanel').getByText('3 a day')).toBeVisible();
+    await tabs.getByRole('tab', { name: 'Hesitant' }).click();
+    await expect(page.getByRole('tabpanel').getByText('40 questions')).toBeVisible();
   });
 
   test('pages never scroll sideways', async ({ page }) => {
