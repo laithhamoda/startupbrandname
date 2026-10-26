@@ -323,7 +323,7 @@ export type Database = {
       };
       report_versions: {
         Row: {
-          answers: Json;
+          answers: NonNullable<Json>;
           created_at: string;
           input_hash: string;
           number: number;
@@ -331,7 +331,7 @@ export type Database = {
           verdict: string;
         };
         Insert: {
-          answers: Json;
+          answers: NonNullable<Json>;
           created_at?: string;
           input_hash: string;
           number: number;
@@ -339,7 +339,7 @@ export type Database = {
           verdict: string;
         };
         Update: {
-          answers?: Json;
+          answers?: NonNullable<Json>;
           created_at?: string;
           input_hash?: string;
           number?: number;
