@@ -290,6 +290,7 @@ export type Database = {
           country_code: string;
           created_at: string;
           currency: string;
+          final_version: number | null;
           id: string;
           mode: string;
           title: string;
@@ -300,6 +301,7 @@ export type Database = {
           country_code: string;
           created_at?: string;
           currency: string;
+          final_version?: number | null;
           id?: string;
           mode?: string;
           title: string;
@@ -310,6 +312,7 @@ export type Database = {
           country_code?: string;
           created_at?: string;
           currency?: string;
+          final_version?: number | null;
           id?: string;
           mode?: string;
           title?: string;
@@ -317,6 +320,41 @@ export type Database = {
           user_id?: string;
         };
         Relationships: [];
+      };
+      report_versions: {
+        Row: {
+          answers: NonNullable<Json>;
+          created_at: string;
+          input_hash: string;
+          number: number;
+          project_id: string;
+          verdict: string;
+        };
+        Insert: {
+          answers: NonNullable<Json>;
+          created_at?: string;
+          input_hash: string;
+          number: number;
+          project_id: string;
+          verdict: string;
+        };
+        Update: {
+          answers?: NonNullable<Json>;
+          created_at?: string;
+          input_hash?: string;
+          number?: number;
+          project_id?: string;
+          verdict?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'report_versions_project_id_fkey';
+            columns: ['project_id'];
+            isOneToOne: false;
+            referencedRelation: 'projects';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       reports: {
         Row: {
@@ -606,6 +644,10 @@ export type Database = {
         };
         Returns: string;
       };
+      choose_final_version: {
+        Args: { p_number: number; p_project_id: string };
+        Returns: undefined;
+      };
       complete_onboarding: {
         Args: {
           p_country_code: string;
@@ -662,6 +704,10 @@ export type Database = {
           p_report_id: string;
         };
         Returns: string;
+      };
+      record_report_version: {
+        Args: { p_input_hash: string; p_project_id: string; p_verdict: string };
+        Returns: number;
       };
       reserve_ai_run: { Args: Record<PropertyKey, never>; Returns: Json };
       set_crossborder_consent: {
