@@ -29,7 +29,7 @@ export const FOLLOW_UPS: readonly FollowUpDefinition[] = [
     id: 'C7.1',
     parent: 'C7',
     field: { kind: 'short_text' },
-    modes: ['full'],
+    modes: ['standard', 'full'],
     allowUnknown: true,
     label: t(
       'ما نوع العلاقة التي ستبنيها مع عملائك بعد أول عملية شراء؟',
@@ -64,7 +64,7 @@ export const FOLLOW_UPS: readonly FollowUpDefinition[] = [
     id: 'F2.1',
     parent: 'F2',
     field: { kind: 'number', min: 0, max: 100, integer: false, ranges: [] },
-    modes: ['full'],
+    modes: ['standard', 'full'],
     allowUnknown: true,
     label: t(
       'من كل 100 مشترك، كم يلغون اشتراكهم كل شهر؟',
@@ -80,7 +80,7 @@ export const FOLLOW_UPS: readonly FollowUpDefinition[] = [
     id: 'F4.1',
     parent: 'F4',
     field: { kind: 'money' },
-    modes: ['full'],
+    modes: ['standard', 'full'],
     allowUnknown: true,
     label: t(
       'كم تنوي أن تنفق على التسويق كل شهر؟',
@@ -113,7 +113,7 @@ export const FOLLOW_UPS: readonly FollowUpDefinition[] = [
     id: 'F6.2',
     parent: 'F6',
     field: { kind: 'number', min: 0, max: 1000, integer: false, ranges: [] },
-    modes: ['full'],
+    modes: ['standard', 'full'],
     allowUnknown: true,
     label: t(
       'بكم تتوقع أن تنمو مبيعاتك كل سنة بعد السنة الأولى؟',

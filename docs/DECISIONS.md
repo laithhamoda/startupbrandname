@@ -2971,3 +2971,19 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
 - **Reason:** A free taste of the method and of the mentor, a low first price above Paddle's
   under-$10 threshold, and the full diagnosis at a price that covers the mentor's cost.
 - **Status:** Active
+
+### D-314 (2026-10-26): The 40 questions of «متردد», and what its report shows
+
+- **Decision:** The owner approved the lead's list. The standard mode (`projects.mode =
+'standard'`) asks the 20 ★ questions and these 20, in the bank's order: A4, A5, A7, B3, B5, B7,
+  C4, C6, C7, D2, D5, D6, D7, E6, E7, E8, F2, F7, G1, H3 (`STANDARD_EXTRA_QUESTIONS`). The
+  follow-ups D-198 kept out of the quick mode (C7.1, F2.1, F4.1, F6.2) are asked in it too, as their
+  parents are part of it. The «متردد» report shows the verdict and top risks, pricing and unit
+  economics, the break-even point, the 12-month projection with cash and the funding gap, the
+  effect of seasonality and foreign currency, and a short legal path from G1. The full business
+  model canvas, scenarios and sensitivity, the detailed validation plan and the full appendices stay
+  in «المغامر». Which report a project opens follows its package (M7 step 4), not its mode.
+- **Reason:** Numbers first: the added questions are those that make the engine's figures more
+  exact, then capacity, the customer's evidence and the legal form. «متردد» answers "do the numbers
+  work?", «المغامر» "how do I build the whole project?", which gives a clear reason to upgrade.
+- **Status:** Active

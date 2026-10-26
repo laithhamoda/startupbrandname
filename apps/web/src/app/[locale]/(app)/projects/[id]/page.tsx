@@ -203,7 +203,7 @@ export default async function ProjectPage({ params }: PageProps<'/[locale]/proje
             null,
             locale,
             project.id,
-            project.mode === 'quick' ? 'full' : 'quick',
+            project.mode === 'full' ? 'quick' : 'full',
           )}
           deleteProject={deleteProject.bind(null, locale, project.id)}
         />

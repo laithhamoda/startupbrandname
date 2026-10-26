@@ -43,7 +43,44 @@ export function ideaQuestion(): Question {
   return idea;
 }
 
-/** The questions of a diagnostic mode: the 20 ★ questions for quick, all 64 for full. */
+/**
+ * The 20 questions the standard mode adds to the ★ ones (D-314): those that make the numbers more
+ * exact (pricing model, how customers pay, capital, runway, financing, imports, seasonality),
+ * then capacity and team, the customer's evidence, and the legal form.
+ */
+export const STANDARD_EXTRA_QUESTIONS = [
+  'A4',
+  'A5',
+  'A7',
+  'B3',
+  'B5',
+  'B7',
+  'C4',
+  'C6',
+  'C7',
+  'D2',
+  'D5',
+  'D6',
+  'D7',
+  'E6',
+  'E7',
+  'E8',
+  'F2',
+  'F7',
+  'G1',
+  'H3',
+] as const satisfies readonly QuestionId[];
+
+const STANDARD = new Set<QuestionId>(STANDARD_EXTRA_QUESTIONS);
+
+/**
+ * The questions of a diagnostic mode, in the bank's order: the 20 ★ questions for quick, those and
+ * the 20 of STANDARD_EXTRA_QUESTIONS for standard, all 64 for full.
+ */
 export function questionsFor(mode: Mode): readonly Question[] {
-  return mode === 'quick' ? QUESTIONS.filter((question) => question.star) : QUESTIONS;
+  if (mode === 'quick') return QUESTIONS.filter((question) => question.star);
+  if (mode === 'standard') {
+    return QUESTIONS.filter((question) => question.star || STANDARD.has(question.id));
+  }
+  return QUESTIONS;
 }

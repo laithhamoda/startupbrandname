@@ -16,8 +16,11 @@ export const AXIS_NAMES: Readonly<Record<Axis, Text>> = {
   H: { ar: 'الأهداف والقيود', en: 'Goals and limits' },
 };
 
-/** The two diagnostic versions: the 20 ★ questions, or all 64 (SPEC §1). */
-export const MODES = ['quick', 'full'] as const;
+/**
+ * The three diagnostic versions: the 20 ★ questions (quick), those and 20 more (standard, the
+ * «متردد» package, D-314), or all 64 (full).
+ */
+export const MODES = ['quick', 'standard', 'full'] as const;
 export type Mode = (typeof MODES)[number];
 /** A mode as stored with a project or sent by a form; any other value is refused. */
 export const modeSchema = z.enum(MODES);

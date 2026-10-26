@@ -13,7 +13,8 @@ const IDLE: SettingsResult = { status: 'idle' };
 const FAILED: SettingsResult = { status: 'error' };
 
 /**
- * Switch between the quick and full diagnostic (answers are kept), or delete the project. Each
+ * Switch to the full diagnostic, or from it back to the quick one (answers are kept), or delete the
+ * project. Each
  * button says what it is doing while its action runs, and a failure is shown next to it; the
  * delete dialog stays open, so trying again is one click.
  */
@@ -43,11 +44,11 @@ export function ProjectSettings({
       </h2>
       <form noValidate onSubmit={submitTo(switchAction)} className="grid justify-items-start gap-2">
         <p className="reading text-small text-ink-2">
-          {mode === 'quick' ? t('toFullLead') : t('toQuickLead')}
+          {mode === 'full' ? t('toQuickLead') : t('toFullLead')}
         </p>
         {switchState.status === 'error' ? <FormError>{errors('failed')}</FormError> : null}
         <Button type="submit" disabled={switching}>
-          {switching ? t('switching') : mode === 'quick' ? t('toFull') : t('toQuick')}
+          {switching ? t('switching') : mode === 'full' ? t('toQuick') : t('toFull')}
         </Button>
       </form>
       <div className="grid justify-items-start gap-2">
