@@ -111,9 +111,10 @@ describe('one answer to "what is this step?" (ARCH-6)', () => {
     expect(sequenceModeFor('quick', { A2: answered(0) }, 'A2.1')).toBe('full');
   });
 
-  it('accepts the two modes only', () => {
-    expect(MODES).toEqual(['quick', 'full']);
+  it('accepts the three modes only (D-314)', () => {
+    expect(MODES).toEqual(['quick', 'standard', 'full']);
     expect(modeSchema.safeParse('quick').success).toBe(true);
+    expect(modeSchema.safeParse('standard').success).toBe(true);
     expect(modeSchema.safeParse('slow').success).toBe(false);
   });
 });
