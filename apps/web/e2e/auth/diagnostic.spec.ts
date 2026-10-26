@@ -399,7 +399,7 @@ test('the free plan allows one project, and deleting it frees the place', async 
   await page.getByLabel('اسم المشروع').fill('مشروع ثانٍ');
   await page.getByLabel('عملة المشروع').selectOption('USD');
   await page.getByRole('button', { name: 'أنشئ المشروع وابدأ' }).click();
-  await expect(page.getByRole('alert').filter({ hasText: /بمشروع واحد/ })).toBeVisible();
+  await expect(page.getByRole('alert').filter({ hasText: /حدّ المشاريع في باقتك/ })).toBeVisible();
 
   await page.goto('/ar/projects');
   await page.getByRole('link', { name: 'صيانة مكيّفات المطاعم' }).click();
