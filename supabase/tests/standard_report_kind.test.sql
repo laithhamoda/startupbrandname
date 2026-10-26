@@ -1,4 +1,4 @@
--- The «متردد» numbers report kind (D-316): reports.kind accepts summary, standard and full only.
+-- The «استراتيجي» numbers report kind (D-316): reports.kind accepts summary, standard and full only.
 begin;
 
 create extension if not exists pgtap with schema extensions;

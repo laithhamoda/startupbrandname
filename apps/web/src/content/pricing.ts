@@ -60,15 +60,15 @@ export const PRICING: Localized<PricingContent> = {
     featureColumn: 'الميزة',
     choosePlan: 'اختر باقة لعرض تفاصيلها',
     planNames: {
-      free: 'بفكّر',
-      standard: 'متردد',
-      adventurer: 'المغامر',
+      free: 'مستكشف',
+      strategist: 'استراتيجي',
+      commander: 'قائد',
       course: 'متدرّبو الدورة',
     },
     billing: {
       free: 'مجانًا، دون بطاقة دفع',
-      standard: 'دفعة واحدة لمدة 365 يومًا',
-      adventurer: 'دفعة واحدة لمدة 365 يومًا',
+      strategist: 'دفعة واحدة لمدة 365 يومًا',
+      commander: 'دفعة واحدة لمدة 365 يومًا',
       course: 'مجانًا لمدة 12 شهرًا من التفعيل',
     },
     priceRow: 'السعر',
@@ -103,9 +103,10 @@ export const PRICING: Localized<PricingContent> = {
     fairUse: '* غير محدود ضمن سياسة استخدام عادل تحمي الخدمة من الإساءة.',
     currency: 'الأسعار بالدولار الأمريكي.',
     payment:
-      'الدفع ببطاقات Visa والبطاقات الدولية الأخرى، أو عبر PayPal، من خلال Paddle. لا نحفظ بيانات بطاقتك. الترقية من «متردد» إلى «المغامر» بدفع الفرق فقط.',
+      'الدفع ببطاقات Visa والبطاقات الدولية الأخرى، أو عبر PayPal، من خلال Paddle. لا نحفظ بيانات بطاقتك. الترقية من «استراتيجي» إلى «قائد» بدفع الفرق فقط.',
     courseHeading: 'لمتدرّبي دورة «الذكاء الاصطناعي في ريادة الأعمال»',
-    courseLead: 'يحصل متدرّبو الدورة على كل المزايا لمدة 12 شهرًا بكود يبدأ بـ VIVA.',
+    courseLead:
+      'يحصل متدرّبو الدورة على باقة «استراتيجي» لكل مشاريعهم لمدة 12 شهرًا بكود يبدأ بـ VIVA.',
     voucherNote: 'يُتاح تفعيل أكواد VIVA مع فتح الباقات المدفوعة.',
   },
   en: {
@@ -118,15 +119,15 @@ export const PRICING: Localized<PricingContent> = {
     featureColumn: 'Feature',
     choosePlan: 'Choose a package to see its details',
     planNames: {
-      free: 'Thinking',
-      standard: 'Hesitant',
-      adventurer: 'Adventurer',
+      free: 'Explorer',
+      strategist: 'Strategist',
+      commander: 'Commander',
       course: 'Course trainees',
     },
     billing: {
       free: 'Free, no payment card',
-      standard: 'One payment for 365 days',
-      adventurer: 'One payment for 365 days',
+      strategist: 'One payment for 365 days',
+      commander: 'One payment for 365 days',
       course: 'Free for 12 months from activation',
     },
     priceRow: 'Price',
@@ -162,9 +163,10 @@ export const PRICING: Localized<PricingContent> = {
     fairUse: '* Unlimited under a fair-use policy that protects the service from abuse.',
     currency: 'Prices are in US dollars.',
     payment:
-      'Pay by Visa or another international card, or with PayPal, through Paddle. We never store your card details. Moving from Hesitant to Adventurer costs only the difference.',
+      'Pay by Visa or another international card, or with PayPal, through Paddle. We never store your card details. Moving from Strategist to Commander costs only the difference.',
     courseHeading: 'For trainees of the “AI in Entrepreneurship” course',
-    courseLead: 'Course trainees get everything for 12 months with a code that starts with VIVA.',
+    courseLead:
+      'Course trainees get the Strategist package on all their projects for 12 months with a code that starts with VIVA.',
     voucherNote: 'VIVA codes can be activated once paid packages open.',
   },
 };

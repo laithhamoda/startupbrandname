@@ -19,7 +19,7 @@ export const STAR_WEIGHT = 2;
 
 export const SUMMARY_THRESHOLD = 40;
 /**
- * The «متردد» report (D-314, D-316): its 40 questions reach about 76 points at most, so it opens
+ * The «استراتيجي» report (D-314, D-316): its 40 questions reach about 76 points at most, so it opens
  * at 60 with the five numbers of FULL_REPORT_QUESTIONS, below the full report's 80.
  */
 export const STANDARD_THRESHOLD = 60;
@@ -40,7 +40,7 @@ export const FULL_REPORT_QUESTIONS = [
 /**
  * - none: below 40%; list the most important missing questions.
  * - summary: the free one-page summary.
- * - standard: the «متردد» numbers report (a paid entitlement, D-316).
+ * - standard: the «استراتيجي» numbers report (a paid entitlement, D-316).
  * - full: the full report (a paid entitlement).
  */
 export type Gate = 'none' | 'summary' | 'standard' | 'full';

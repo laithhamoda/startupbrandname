@@ -22,8 +22,8 @@ describe('llms.txt', () => {
   });
 
   it('quotes the plan prices from the plan table', () => {
-    expect(text).toContain('Hesitant $10 (40 questions');
-    expect(text).toContain('Adventurer $30 (all 64 questions');
+    expect(text).toContain('Strategist $10 (40 questions');
+    expect(text).toContain('Commander $30 (all 64 questions');
   });
 
   it('never links a private page', () => {

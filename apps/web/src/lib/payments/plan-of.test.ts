@@ -5,7 +5,7 @@ const NOW = new Date('2026-10-26T12:00:00Z');
 
 function row(overrides: Partial<SubscriptionRow> = {}): SubscriptionRow {
   return {
-    plan_id: 'standard',
+    plan_id: 'strategist',
     status: 'active',
     starts_at: '2026-10-01T00:00:00Z',
     ends_at: '2027-10-01T00:00:00Z',
@@ -44,8 +44,8 @@ describe('bestPlan', () => {
   });
 
   it('takes the best running package', () => {
-    expect(bestPlan([row(), row({ plan_id: 'adventurer' })], NOW)).toBe('adventurer');
-    expect(bestPlan([row({ plan_id: 'adventurer' }), row()], NOW)).toBe('adventurer');
+    expect(bestPlan([row(), row({ plan_id: 'commander' })], NOW)).toBe('commander');
+    expect(bestPlan([row({ plan_id: 'commander' }), row()], NOW)).toBe('commander');
     expect(bestPlan([row({ plan_id: 'course', ends_at: null }), row()], NOW)).toBe('course');
   });
 

@@ -15,12 +15,12 @@ insert into public.profiles (user_id, country_code, locale, has_project) values
   ('a9000000-0000-4000-8000-000000000002', 'JO', 'ar', true),
   ('a9000000-0000-4000-8000-000000000003', 'DZ', 'ar', true);
 
--- A refunded package, an expired one and a running «متردد» for the paid account; the course
+-- A refunded package, an expired one and a running «استراتيجي» for the paid account; the course
 -- account has a running voucher without an end date.
 insert into public.subscriptions (user_id, plan_id, source, status, starts_at, ends_at) values
-  ('a9000000-0000-4000-8000-000000000002', 'adventurer', 'admin', 'ended', now() - interval '2 days', now() + interval '300 days'),
-  ('a9000000-0000-4000-8000-000000000002', 'adventurer', 'admin', 'active', now() - interval '400 days', now() - interval '35 days'),
-  ('a9000000-0000-4000-8000-000000000002', 'standard', 'admin', 'active', now() - interval '1 day', now() + interval '364 days'),
+  ('a9000000-0000-4000-8000-000000000002', 'commander', 'admin', 'ended', now() - interval '2 days', now() + interval '300 days'),
+  ('a9000000-0000-4000-8000-000000000002', 'commander', 'admin', 'active', now() - interval '400 days', now() - interval '35 days'),
+  ('a9000000-0000-4000-8000-000000000002', 'strategist', 'admin', 'active', now() - interval '1 day', now() + interval '364 days'),
   ('a9000000-0000-4000-8000-000000000003', 'course', 'voucher', 'active', now() - interval '1 day', null);
 
 create function pg_temp.act_as(p_user uuid) returns void
@@ -36,7 +36,7 @@ $$;
 select is(private.account_plan('a9000000-0000-4000-8000-000000000001'), 'free', 'no package means free');
 select is(
   private.account_plan('a9000000-0000-4000-8000-000000000002'),
-  'standard',
+  'strategist',
   'a refunded or expired package does not count; the running one does'
 );
 select is(private.account_plan('a9000000-0000-4000-8000-000000000003'), 'course', 'a voucher without an end runs');

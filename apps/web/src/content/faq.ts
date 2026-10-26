@@ -46,7 +46,7 @@ export const FAQ: Localized<FaqContent> = {
         id: 'free',
         question: 'ماذا أحصل عليه مجانًا؟',
         answer:
-          'باقة «بفكّر»: مشروع واحد بـ20 سؤالًا، وملخّص في صفحة واحدة حين تبلغ إجاباتك 40% من الاكتمال، ورسالتان مع المرشد الذكي عند إطلاقه قريبًا. ويُحفظ المشروع المجاني 30 يومًا.',
+          'باقة «مستكشف»: مشروع واحد بـ20 سؤالًا، وملخّص في صفحة واحدة حين تبلغ إجاباتك 40% من الاكتمال، ورسالتان مع المرشد الذكي عند إطلاقه قريبًا. ويُحفظ المشروع المجاني 30 يومًا.',
       },
       {
         id: 'verdict',
@@ -82,7 +82,7 @@ export const FAQ: Localized<FaqContent> = {
         id: 'viva',
         question: 'ما كود VIVA؟',
         answer:
-          'كود يحصل عليه متدرّبو دورة «الذكاء الاصطناعي في ريادة الأعمال»، ويمنح كل المزايا مجانًا لمدة 12 شهرًا من تاريخ تفعيله. يبدأ الكود بـ VIVA تليه 8 رموز، ويُتاح تفعيله مع فتح الباقات المدفوعة.',
+          'كود يحصل عليه متدرّبو دورة «الذكاء الاصطناعي في ريادة الأعمال»، ويمنح باقة «استراتيجي» لكل مشاريعك مجانًا لمدة 12 شهرًا من تاريخ تفعيله. يبدأ الكود بـ VIVA تليه 8 رموز، ويُتاح تفعيله مع فتح الباقات المدفوعة.',
       },
       {
         id: 'delete',
@@ -129,7 +129,7 @@ export const FAQ: Localized<FaqContent> = {
         id: 'free',
         question: 'What do I get for free?',
         answer:
-          'The Thinking package: one project with 20 questions, a one-page summary once your answers reach 40% completeness, and 2 messages with the AI mentor once it opens, soon. A free project is kept for 30 days.',
+          'The Explorer package: one project with 20 questions, a one-page summary once your answers reach 40% completeness, and 2 messages with the AI mentor once it opens, soon. A free project is kept for 30 days.',
       },
       {
         id: 'verdict',
@@ -165,7 +165,7 @@ export const FAQ: Localized<FaqContent> = {
         id: 'viva',
         question: 'What is a VIVA code?',
         answer:
-          'A code given to trainees of the “AI in Entrepreneurship” course. It unlocks everything free for 12 months from the day it is activated. Codes start with VIVA followed by 8 characters, and can be activated once paid packages open.',
+          'A code given to trainees of the “AI in Entrepreneurship” course. It gives the Strategist package on all your projects, free for 12 months from the day it is activated. Codes start with VIVA followed by 8 characters, and can be activated once paid packages open.',
       },
       {
         id: 'delete',

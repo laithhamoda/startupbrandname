@@ -1,12 +1,12 @@
 import type { Mode } from '@sbn/question-bank';
 
 /**
- * The packages and what each includes (D-313, D-314): one payment, no renewal. Entitlement checks
+ * The packages and what each includes (D-313, D-314, D-318, D-319): one payment, no renewal. Entitlement checks
  * read this table, so no code ever branches on a package name. Prices are USD; a local-currency
  * equivalent needs a dated exchange rate and is not shown yet.
  */
 
-export type PlanId = 'free' | 'standard' | 'adventurer' | 'course';
+export type PlanId = 'free' | 'strategist' | 'commander' | 'course';
 
 export type Billing =
   | { kind: 'free' }
@@ -25,7 +25,7 @@ export type Retention =
   { kind: 'days'; value: number } | { kind: 'subscriptionPlusReadOnly'; days: number };
 
 /**
- * The report a package opens: the one-page summary, the «متردد» report (the numbers: pricing,
+ * The report a package opens: the one-page summary, the «استراتيجي» report (the numbers: pricing,
  * break-even, projection, cash, legal path; D-314), or the full report.
  */
 export type ReportLevel = 'summary' | 'standard' | 'full';
@@ -63,8 +63,8 @@ export const PLANS: Readonly<Record<PlanId, Plan>> = {
       retention: { kind: 'days', value: 30 },
     },
   },
-  standard: {
-    id: 'standard',
+  strategist: {
+    id: 'strategist',
     priceUsd: 10,
     billing: { kind: 'once', days: PAID_DAYS },
     entitlements: {
@@ -75,8 +75,8 @@ export const PLANS: Readonly<Record<PlanId, Plan>> = {
       retention: PAID_RETENTION,
     },
   },
-  adventurer: {
-    id: 'adventurer',
+  commander: {
+    id: 'commander',
     priceUsd: 30,
     billing: { kind: 'once', days: PAID_DAYS },
     entitlements: {
@@ -87,35 +87,35 @@ export const PLANS: Readonly<Record<PlanId, Plan>> = {
       retention: PAID_RETENTION,
     },
   },
-  // Course vouchers are unchanged by D-313: everything, for 12 months from activation.
+  // A course voucher gives «استراتيجي» on every project, for 12 months from activation (D-319).
   course: {
     id: 'course',
     priceUsd: 0,
     billing: { kind: 'voucher', months: 12 },
     entitlements: {
       projects: { kind: 'unlimited', fairUse: false },
-      questions: 'full',
-      report: 'full',
-      mentorMessages: { kind: 'unlimited', fairUse: true },
+      questions: 'standard',
+      report: 'standard',
+      mentorMessages: { kind: 'perProject', value: 10 },
       retention: PAID_RETENTION,
     },
   },
 };
 
 /** From the least to the most: an account with several packages gets the best one. */
-export const PLAN_ORDER: readonly PlanId[] = ['free', 'standard', 'adventurer', 'course'];
+export const PLAN_ORDER: readonly PlanId[] = ['free', 'strategist', 'course', 'commander'];
 
-/** Moving up from one package to another costs the difference (D-313). */
+/** Moving up from one package to another costs the difference (D-313, D-318). */
 export function upgradePrice(from: PlanId, to: PlanId): number {
   return Math.max(0, PLANS[to].priceUsd - PLANS[from].priceUsd);
 }
 
 /** Columns of the public comparison table; the course plan is shown beneath it. */
-export const COMPARED_PLANS: readonly PlanId[] = ['free', 'standard', 'adventurer'];
+export const COMPARED_PLANS: readonly PlanId[] = ['free', 'strategist', 'commander'];
 export const COURSE_PLANS: readonly PlanId[] = ['course'];
 
 /** The column drawn with the gold rule: a business choice, changeable here (D-094). */
-export const HIGHLIGHTED_PLAN: PlanId = 'adventurer';
+export const HIGHLIGHTED_PLAN: PlanId = 'commander';
 
 /** Whether a package has a quota marked "unlimited*", which the fair-use note explains. */
 export function hasFairUse(entitlements: Entitlements): boolean {

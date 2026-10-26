@@ -133,7 +133,7 @@ describe('reportAccess', () => {
     expect(reportAccess('full', access)).toBe(expected[PLANS[planId].entitlements.report]);
   });
 
-  it('opens the numbers report at its own gate to «متردد», «المغامر» and the preview (D-316)', () => {
+  it('opens the numbers report at its own gate to «استراتيجي», «قائد» and the preview (D-316)', () => {
     const at = (planId: (typeof PLAN_IDS)[number]) =>
       reportAccess('standard', accessFor({ email: null, planId }, NO_PREVIEW));
     expect(PLAN_IDS.map((planId) => [planId, at(planId)])).toEqual(
@@ -142,11 +142,11 @@ describe('reportAccess', () => {
     expect(reportAccess('standard', preview)).toBe('numbers');
   });
 
-  it('opens the full report for «المغامر» and the course plan only', () => {
-    for (const planId of ['adventurer', 'course'] as const) {
-      const access = accessFor({ email: 'a@example.com', planId }, NO_PREVIEW);
-      expect(reportAccess('full', access)).toBe('full');
-    }
+  it('opens the full report for «قائد» only; the course voucher opens the numbers report (D-319)', () => {
+    const access = (planId: 'commander' | 'course') =>
+      accessFor({ email: 'a@example.com', planId }, NO_PREVIEW);
+    expect(reportAccess('full', access('commander'))).toBe('full');
+    expect(reportAccess('full', access('course'))).toBe('numbers');
   });
 
   it('returns one of five values for every gate and account', () => {

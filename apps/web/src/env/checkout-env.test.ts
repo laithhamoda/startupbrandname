@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { getCheckoutEnv, getPaddlePrices } from './server';
 
 const PRICES = {
-  PADDLE_PRICE_STANDARD: 'pri_01standard',
-  PADDLE_PRICE_ADVENTURER: 'pri_01adventurer',
+  PADDLE_PRICE_STRATEGIST: 'pri_01standard',
+  PADDLE_PRICE_COMMANDER: 'pri_01commander',
   PADDLE_PRICE_UPGRADE: 'pri_01upgrade',
 };
 
@@ -19,8 +19,8 @@ describe('getCheckoutEnv (D-317)', () => {
       clientToken: 'test_abc',
       environment: 'sandbox',
       prices: {
-        standard: 'pri_01standard',
-        adventurer: 'pri_01adventurer',
+        strategist: 'pri_01standard',
+        commander: 'pri_01commander',
         upgrade: 'pri_01upgrade',
       },
     });

@@ -6,8 +6,8 @@ const NOW = new Date('2026-10-25T10:00:00Z');
 const REF = '0f8e3a52-6c1d-4b8a-9e2f-3d4c5b6a7980';
 
 const PRICES: readonly PriceRow[] = [
-  { plan_id: 'standard', provider_price_id: 'pri_standard' },
-  { plan_id: 'adventurer', provider_price_id: 'pri_adventurer' },
+  { plan_id: 'strategist', provider_price_id: 'pri_standard' },
+  { plan_id: 'commander', provider_price_id: 'pri_commander' },
   { plan_id: 'course', provider_price_id: 'pri_course' },
   { plan_id: 'retired_plan', provider_price_id: 'pri_retired' },
 ];
@@ -50,8 +50,8 @@ describe('priceResolver', () => {
   const resolve = priceResolver(PRICES);
 
   it('gives each one-time price the days of its package', () => {
-    expect(resolve('pri_standard')).toEqual({ planId: 'standard', oneTimeDays: 365 });
-    expect(resolve('pri_adventurer')).toEqual({ planId: 'adventurer', oneTimeDays: 365 });
+    expect(resolve('pri_standard')).toEqual({ planId: 'strategist', oneTimeDays: 365 });
+    expect(resolve('pri_commander')).toEqual({ planId: 'commander', oneTimeDays: 365 });
   });
 
   it('knows no price for a voucher plan, a plan the table does not have, or an unknown price', () => {
@@ -71,7 +71,7 @@ describe('handlePaymentWebhook', () => {
       eventId: 'evt_01',
       change: {
         kind: 'payment',
-        grant: { plan_id: 'standard', ends_at: '2027-10-25T10:00:00.000Z' },
+        grant: { plan_id: 'strategist', ends_at: '2027-10-25T10:00:00.000Z' },
       },
     });
   });

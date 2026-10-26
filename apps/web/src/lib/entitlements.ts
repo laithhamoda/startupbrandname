@@ -55,7 +55,7 @@ export function includesFullReport(access: Access): boolean {
   return access.entitlements.report === 'full';
 }
 
-/** Whether the package opens at least the «متردد» numbers report (D-314). */
+/** Whether the package opens at least the «استراتيجي» numbers report (D-314). */
 export function includesStandardReport(access: Access): boolean {
   return access.entitlements.report !== 'summary';
 }
@@ -63,7 +63,7 @@ export function includesStandardReport(access: Access): boolean {
 /**
  * How much of the report the account may see (D-232, D-316). The gate comes from the completeness
  * of the answers (`@sbn/question-bank`): `none` shows nothing, `summary` the one-page summary,
- * `numbers` the «متردد» numbers report (gate `standard`), `full` the whole report. Each paid report needs both its
+ * `numbers` the «استراتيجي» numbers report (gate `standard`), `full` the whole report. Each paid report needs both its
  * gate and the package: at a higher gate a package gets the most it includes, and an account with
  * neither the package nor the preview list gets the summary with its locked sections,
  * `summary_locked`. The preview list and early access stand for the full package. The server

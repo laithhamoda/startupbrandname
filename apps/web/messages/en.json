@@ -412,7 +412,7 @@
       "summary": "One-page summary"
     },
     "summaryLead": "This is the one-page summary. The other sections of the report show their titles only until they open.",
-    "standardLead": "This is the numbers report of the Hesitant package: pricing, break-even, projection, cash and the legal path. The canvases, scenarios and validation plan are in the Adventurer package.",
+    "standardLead": "This is the numbers report of the Strategist package: pricing, break-even, projection, cash and the legal path. The canvases, scenarios and validation plan are in the Commander package.",
     "contents": {
       "title": "Contents",
       "locked": "Locked"
@@ -569,7 +569,7 @@
       "once": "One payment, no renewing subscription"
     },
     "onceNote": "One payment in US dollars, tax included where it applies.",
-    "upgradeNote": "You pay only the difference, as you have the Hesitant package.",
+    "upgradeNote": "You pay only the difference, as you have the Strategist package.",
     "adult": "I confirm that I am 18 or older.",
     "pay": "Continue to payment",
     "opening": "Opening the payment page…",

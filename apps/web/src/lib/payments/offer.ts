@@ -2,7 +2,7 @@ import { PLAN_ORDER, PLANS, upgradePrice, type PlanId } from '@/config/plans';
 import type { PriceRow } from './webhook';
 
 /** The packages a founder can buy (D-313); the course plan comes by voucher only. */
-export const PURCHASABLE = ['standard', 'adventurer'] as const;
+export const PURCHASABLE = ['strategist', 'commander'] as const;
 export type Purchasable = (typeof PURCHASABLE)[number];
 
 export function isPurchasable(value: string): value is Purchasable {
@@ -11,9 +11,9 @@ export function isPurchasable(value: string): value is Purchasable {
 
 /** The provider's price of each offer, per environment (D-317). */
 export interface OfferPrices {
-  readonly standard: string;
-  readonly adventurer: string;
-  /** «متردد» to «المغامر», at the difference (D-313). */
+  readonly strategist: string;
+  readonly commander: string;
+  /** «استراتيجي» to «قائد», at the difference (D-313). */
   readonly upgrade: string;
 }
 
@@ -30,26 +30,29 @@ export type Offer =
 
 /**
  * What an account with `current` pays for `target`: the full price, or the difference when it
- * moves up from «متردد» to «المغامر» (D-313). Nothing to pay for a package it already has or
+ * moves up from «استراتيجي» to «قائد» (D-313). Nothing to pay for a package it already has or
  * exceeds.
  */
 export function offerFor(current: PlanId, target: Purchasable, prices: OfferPrices): Offer {
   if (PLAN_ORDER.indexOf(current) >= PLAN_ORDER.indexOf(target)) return { status: 'owned' };
-  const upgrade = current === 'standard' && target === 'adventurer';
+  // A Strategist-level account (the package or a course voucher, D-319) moves up at the difference.
+  const upgrade =
+    target === 'commander' &&
+    PLANS[current].entitlements.questions === PLANS.strategist.entitlements.questions;
   return {
     status: 'offer',
     planId: target,
     priceId: upgrade ? prices.upgrade : prices[target],
-    priceUsd: upgrade ? upgradePrice(current, target) : PLANS[target].priceUsd,
+    priceUsd: upgrade ? upgradePrice('strategist', target) : PLANS[target].priceUsd,
     upgrade,
   };
 }
 
-/** The price rows the webhook resolves a paid price with: the upgrade sells «المغامر». */
+/** The price rows the webhook resolves a paid price with: the upgrade sells «قائد». */
 export function priceRowsOf(prices: OfferPrices): PriceRow[] {
   return [
-    { plan_id: 'standard', provider_price_id: prices.standard },
-    { plan_id: 'adventurer', provider_price_id: prices.adventurer },
-    { plan_id: 'adventurer', provider_price_id: prices.upgrade },
+    { plan_id: 'strategist', provider_price_id: prices.strategist },
+    { plan_id: 'commander', provider_price_id: prices.commander },
+    { plan_id: 'commander', provider_price_id: prices.upgrade },
   ];
 }

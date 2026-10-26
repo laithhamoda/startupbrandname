@@ -111,12 +111,12 @@ test.describe('on a phone', () => {
 
     await expect(page.getByRole('table', { name: 'Package comparison' })).toBeHidden();
     const tabs = page.getByRole('tablist', { name: 'Choose a package to see its details' });
-    await expect(tabs.getByRole('tab', { name: 'Adventurer' })).toHaveAttribute(
+    await expect(tabs.getByRole('tab', { name: 'Commander' })).toHaveAttribute(
       'aria-selected',
       'true',
     );
 
-    await tabs.getByRole('tab', { name: 'Hesitant' }).click();
+    await tabs.getByRole('tab', { name: 'Strategist' }).click();
     await expect(page.getByRole('tabpanel').getByText('40 questions')).toBeVisible();
   });
 

@@ -17,50 +17,52 @@ describe('plans', () => {
   it('charges the decided prices in USD', () => {
     expect(
       Object.fromEntries(Object.values(PLANS).map((plan) => [plan.id, plan.priceUsd])),
-    ).toEqual({ free: 0, standard: 10, adventurer: 30, course: 0 });
+    ).toEqual({ free: 0, strategist: 10, commander: 30, course: 0 });
   });
 
   it('bills the paid packages once, for 12 months, and the course by voucher', () => {
-    expect(PLANS.standard.billing).toEqual({ kind: 'once', days: 365 });
-    expect(PLANS.adventurer.billing).toEqual({ kind: 'once', days: 365 });
+    expect(PLANS.strategist.billing).toEqual({ kind: 'once', days: 365 });
+    expect(PLANS.commander.billing).toEqual({ kind: 'once', days: 365 });
     expect(PLANS.course.billing).toEqual({ kind: 'voucher', months: 12 });
   });
 
   it('asks 20, 40 and 64 questions and opens the summary, the numbers report and the full one', () => {
     expect(PLANS.free.entitlements).toMatchObject({ questions: 'quick', report: 'summary' });
-    expect(PLANS.standard.entitlements).toMatchObject({
+    expect(PLANS.strategist.entitlements).toMatchObject({
       questions: 'standard',
       report: 'standard',
     });
-    expect(PLANS.adventurer.entitlements).toMatchObject({ questions: 'full', report: 'full' });
-    expect(PLANS.course.entitlements).toMatchObject({ questions: 'full', report: 'full' });
+    expect(PLANS.commander.entitlements).toMatchObject({ questions: 'full', report: 'full' });
+    // A course voucher gives «استراتيجي» (D-319).
+    expect(PLANS.course.entitlements).toMatchObject({ questions: 'standard', report: 'standard' });
+    expect(PLANS.course.entitlements.mentorMessages).toEqual({ kind: 'perProject', value: 10 });
   });
 
   it('gives the mentor 2 messages free, then 10 and 64 per project', () => {
     expect(PLANS.free.entitlements.mentorMessages).toEqual({ kind: 'count', value: 2 });
-    expect(PLANS.standard.entitlements.mentorMessages).toEqual({ kind: 'perProject', value: 10 });
-    expect(PLANS.adventurer.entitlements.mentorMessages).toEqual({ kind: 'perProject', value: 64 });
+    expect(PLANS.strategist.entitlements.mentorMessages).toEqual({ kind: 'perProject', value: 10 });
+    expect(PLANS.commander.entitlements.mentorMessages).toEqual({ kind: 'perProject', value: 64 });
   });
 
   it('covers 1 project free and up to 3 with a paid package', () => {
     expect(PLANS.free.entitlements.projects).toEqual({ kind: 'count', value: 1 });
-    expect(PLANS.standard.entitlements.projects).toEqual({ kind: 'count', value: 3 });
-    expect(PLANS.adventurer.entitlements.projects).toEqual({ kind: 'count', value: 3 });
+    expect(PLANS.strategist.entitlements.projects).toEqual({ kind: 'count', value: 3 });
+    expect(PLANS.commander.entitlements.projects).toEqual({ kind: 'count', value: 3 });
     expect(PLANS.course.entitlements.projects.kind).toBe('unlimited');
   });
 
   it('keeps free projects for 30 days and paid ones 90 days read-only after the package ends', () => {
     expect(PLANS.free.entitlements.retention).toEqual({ kind: 'days', value: 30 });
-    expect(PLANS.adventurer.entitlements.retention).toEqual({
+    expect(PLANS.commander.entitlements.retention).toEqual({
       kind: 'subscriptionPlusReadOnly',
       days: 90,
     });
   });
 
   it('charges the difference to move up, and nothing to move down', () => {
-    expect(upgradePrice('standard', 'adventurer')).toBe(20);
-    expect(upgradePrice('free', 'standard')).toBe(10);
-    expect(upgradePrice('adventurer', 'standard')).toBe(0);
+    expect(upgradePrice('strategist', 'commander')).toBe(20);
+    expect(upgradePrice('free', 'strategist')).toBe(10);
+    expect(upgradePrice('commander', 'strategist')).toBe(0);
   });
 
   it('orders every package once, from the least to the most', () => {
@@ -73,7 +75,7 @@ describe('plans', () => {
     expect(COMPARED_PLANS).toContain(HIGHLIGHTED_PLAN);
   });
 
-  it('quotes «متردد» as the lowest paid price', () => {
+  it('quotes «استراتيجي» as the lowest paid price', () => {
     expect(lowestPaidPrice()).toBe(10);
   });
 });
@@ -92,9 +94,11 @@ describe('the database seed', () => {
     expect(PLANS.free.entitlements.projects).toEqual({ kind: 'count', value: Number(seeded) });
   });
 
-  it('gives each package the same project limit as this table (D-313)', () => {
-    const sql = migration('20261026120000_package_project_limits.sql');
-    for (const id of ['standard', 'adventurer', 'course'] as const) {
+  it('gives each package the same project limit as this table (D-313, D-318)', () => {
+    const sql =
+      migration('20261026120000_package_project_limits.sql') +
+      migration('20261026171000_package_names.sql');
+    for (const id of ['strategist', 'commander', 'course'] as const) {
       const seeded = new RegExp(`\\('entitlement\\.${id}\\.projects', '([^']+)'\\)`).exec(sql)?.[1];
       const quota = PLANS[id].entitlements.projects;
       expect(seeded, id).toBe(quota.kind === 'count' ? String(quota.value) : '"unlimited"');
@@ -103,11 +107,11 @@ describe('the database seed', () => {
 });
 
 describe('hasFairUse', () => {
-  it('marks only the course voucher, so the compared packages need no fair-use note', () => {
+  it('marks no package since the course voucher gives «استراتيجي» (D-319)', () => {
     expect(
       Object.values(PLANS)
         .filter((plan) => hasFairUse(plan.entitlements))
         .map((plan) => plan.id),
-    ).toEqual(['course']);
+    ).toEqual([]);
   });
 });

@@ -175,8 +175,8 @@ export type Block =
   | { readonly type: 'note'; readonly text: Inline };
 
 /**
- * The sections the «متردد» report keeps locked (D-314): the canvases, the scenarios and the
- * validation plan stay in «المغامر». The assumptions and sources appendices stay open, as every
+ * The sections the «استراتيجي» report keeps locked (D-314): the canvases, the scenarios and the
+ * validation plan stay in «قائد». The assumptions and sources appendices stay open, as every
  * figure shown needs its provenance (CLAUDE.md rule 2, D-316).
  */
 export const STANDARD_LOCKED_SECTION_IDS = [
@@ -216,7 +216,7 @@ export interface Section {
   readonly blocks: readonly Block[];
 }
 
-/** The one-page summary, the «متردد» numbers report (D-314, D-316), or the full report. */
+/** The one-page summary, the «استراتيجي» numbers report (D-314, D-316), or the full report. */
 export type ReportKind = 'summary' | 'standard' | 'full';
 
 /** Why a summary has locked sections: the answers are not complete enough, or there is no plan. */

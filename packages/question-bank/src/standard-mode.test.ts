@@ -5,7 +5,7 @@ import { QUESTIONS, STANDARD_EXTRA_QUESTIONS, questionsFor } from './questions';
 import { diagnosticSequence, positionInMode } from './sequence';
 import { sampleAnswers } from './testing';
 
-// The standard mode of the «متردد» package (D-314): the 20 ★ questions and 20 more.
+// The standard mode of the «استراتيجي» package (D-314): the 20 ★ questions and 20 more.
 describe('the standard mode', () => {
   const standard = questionsFor('standard');
 
