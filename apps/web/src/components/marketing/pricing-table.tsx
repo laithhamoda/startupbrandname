@@ -112,11 +112,29 @@ function FeatureName({ feature, text }: { feature: FeatureKey; text: PricingCont
   );
 }
 
-function PlanAction({ planId, text }: { planId: PlanId; text: PricingContent }) {
-  // The free package is the one action available today; paid packages open with checkout (M7).
-  return planId === 'free' ? (
-    <ButtonLink href="/signup" variant="primary">
-      {text.startFree}
+function PlanAction({
+  planId,
+  text,
+  checkoutOpen,
+}: {
+  planId: PlanId;
+  text: PricingContent;
+  checkoutOpen: boolean;
+}) {
+  if (planId === 'free') {
+    return (
+      <ButtonLink href="/signup" variant="primary">
+        {text.startFree}
+      </ButtonLink>
+    );
+  }
+  // Paid packages open with checkout (M7 step 5); a visitor signs in on the way.
+  return checkoutOpen ? (
+    <ButtonLink
+      href={`/checkout/${planId}`}
+      variant={planId === HIGHLIGHTED_PLAN ? 'primary' : 'secondary'}
+    >
+      {text.buy}
     </ButtonLink>
   ) : (
     <span className="text-small text-muted">{text.paidSoon}</span>
@@ -129,7 +147,13 @@ const cell = 'border-b border-hairline px-3 py-3 text-start align-top';
  * A comparison table, not identical cards (M1 design plan). From tablet width up it is one
  * table; on phones it becomes one plan at a time behind tabs.
  */
-export function PricingTable({ text }: { text: PricingContent }) {
+export function PricingTable({
+  text,
+  checkoutOpen = false,
+}: {
+  text: PricingContent;
+  checkoutOpen?: boolean;
+}) {
   return (
     <>
       <div className="hidden md:block">
@@ -173,13 +197,25 @@ export function PricingTable({ text }: { text: PricingContent }) {
             ))}
           </tbody>
         </table>
-        {/* One action under the table while only the free plan can be started (M7 opens the rest). */}
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-3 pt-6">
-          <ButtonLink href="/signup" variant="primary">
-            {text.startFree}
-          </ButtonLink>
-          <span className="text-small text-muted">{text.paidPlansSoon}</span>
-        </div>
+        {checkoutOpen ? (
+          // One action per package, under its own column.
+          <div className="flex pt-6">
+            <div className="w-[28%]" />
+            {COMPARED_PLANS.map((planId) => (
+              <div key={planId} className="flex-1 px-3">
+                <PlanAction planId={planId} text={text} checkoutOpen />
+              </div>
+            ))}
+          </div>
+        ) : (
+          // One action under the table while only the free package can be started.
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-3 pt-6">
+            <ButtonLink href="/signup" variant="primary">
+              {text.startFree}
+            </ButtonLink>
+            <span className="text-small text-muted">{text.paidPlansSoon}</span>
+          </div>
+        )}
       </div>
 
       <div className="md:hidden">
@@ -206,7 +242,7 @@ export function PricingTable({ text }: { text: PricingContent }) {
                   ))}
                 </dl>
                 <div>
-                  <PlanAction planId={planId} text={text} />
+                  <PlanAction planId={planId} text={text} checkoutOpen={checkoutOpen} />
                 </div>
               </div>
             ),

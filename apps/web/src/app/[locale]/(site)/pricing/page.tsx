@@ -5,7 +5,7 @@ import { PlanPrice, PricingTable } from '@/components/marketing/pricing-table';
 import { RelatedPages } from '@/components/marketing/related-pages';
 import { COMPARED_PLANS, COURSE_PLANS, hasFairUse, PLANS } from '@/config/plans';
 import { PRICING } from '@/content/pricing';
-import { getEarlyAccess } from '@/env/server';
+import { getCheckoutEnv, getEarlyAccess } from '@/env/server';
 import { currentLocale } from '@/i18n/locale';
 import { JsonLd } from '@/seo/json-ld';
 import { applicationJsonLd, innerPageMetadata, pageBreadcrumbJsonLd } from '@/seo/public-page';
@@ -18,11 +18,12 @@ export default async function PricingPage() {
   const locale = await currentLocale();
   const text = PRICING[locale];
 
+  const checkoutOpen = getCheckoutEnv() !== null;
   return (
     <PageBody>
       <PageIntro title={text.heading} lead={text.lead}>
         <p role="note" className="reading border-s-[3px] border-ink bg-sunken px-4 py-3 text-small">
-          {text.notice}
+          {checkoutOpen ? text.noticeOpen : text.notice}
         </p>
         {getEarlyAccess() ? (
           <p
@@ -34,7 +35,7 @@ export default async function PricingPage() {
         ) : null}
       </PageIntro>
 
-      <PricingTable text={text} />
+      <PricingTable text={text} checkoutOpen={checkoutOpen} />
 
       <div className="grid gap-1 py-6 text-small text-muted">
         {COMPARED_PLANS.some((id) => hasFairUse(PLANS[id].entitlements)) ? (

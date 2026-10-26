@@ -58,27 +58,27 @@ set local role authenticated;
 select pg_temp.act_as('a7000000-0000-4000-8000-000000000001');
 
 select throws_ok(
-  $$select public.start_checkout('monthly', null, false)$$,
+  $$select public.start_checkout('standard', null, false)$$,
   '22023', null, 'a checkout needs the 18+ confirmation'
 );
 select throws_ok(
-  $$select public.start_checkout('monthly', null, null)$$,
+  $$select public.start_checkout('standard', null, null)$$,
   '22023', null, 'a missing 18+ answer is not a confirmation'
 );
 select throws_ok(
-  $$select public.start_checkout('alumni', null, true)$$,
-  '22023', null, 'a plan that is not on sale cannot be bought'
+  $$select public.start_checkout('course', null, true)$$,
+  '22023', null, 'the course voucher cannot be bought'
 );
 select throws_ok(
   $$select public.start_checkout('free', null, true)$$,
   '22023', null, 'a plan without a price cannot be bought'
 );
 select throws_ok(
-  $$select public.start_checkout('annual', 'b7100000-0000-4000-8000-000000000002', true)$$,
+  $$select public.start_checkout('adventurer', 'b7100000-0000-4000-8000-000000000002', true)$$,
   '42501', null, 'a buyer cannot pay for another user''s project'
 );
 select lives_ok(
-  $$select public.start_checkout('annual', 'a7100000-0000-4000-8000-000000000001', true)$$,
+  $$select public.start_checkout('adventurer', 'a7100000-0000-4000-8000-000000000001', true)$$,
   'an adult buyer starts a checkout for their project'
 );
 select throws_ok(
@@ -88,14 +88,14 @@ select throws_ok(
 
 select pg_temp.act_as('c7000000-0000-4000-8000-000000000003');
 select throws_ok(
-  $$select public.start_checkout('monthly', null, true)$$,
+  $$select public.start_checkout('standard', null, true)$$,
   '42501', null, 'an account that has not finished onboarding cannot buy'
 );
 reset role;
 
 set local role anon;
 select throws_ok(
-  $$select public.start_checkout('monthly', null, true)$$,
+  $$select public.start_checkout('standard', null, true)$$,
   '42501', null, 'a visitor cannot start a checkout'
 );
 reset role;
@@ -112,7 +112,7 @@ update public.settings set value = '1' where key = 'payments.checkouts_per_day';
 set local role authenticated;
 select pg_temp.act_as('a7000000-0000-4000-8000-000000000001');
 select throws_ok(
-  $$select public.start_checkout('monthly', null, true)$$,
+  $$select public.start_checkout('standard', null, true)$$,
   '54000', null, 'the daily checkout limit holds'
 );
 reset role;

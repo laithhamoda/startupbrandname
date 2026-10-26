@@ -4,6 +4,8 @@ import { getTranslations } from 'next-intl/server';
 import { ButtonLink } from '@/components/ui/button';
 import { LinkPending } from '@/components/ui/link-pending';
 import { PLANS } from '@/config/plans';
+import { PRICING } from '@/content/pricing';
+import { accountPlanOf } from '@/lib/payments/account-plan';
 import { Link } from '@/i18n/navigation';
 import { currentLocale } from '@/i18n/locale';
 import { requireAccount } from '@/lib/auth/session';
@@ -16,24 +18,22 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t('title'), robots: { index: false, follow: false } };
 }
 
-/** The free package's limit, shown to every account until the projects page reads the package (M7 step 5). */
-const PROJECT_LIMIT =
-  PLANS.free.entitlements.projects.kind === 'count'
-    ? PLANS.free.entitlements.projects.value
-    : Infinity;
-
 /** The signed-in home: the account's projects as rows, not cards (M1 design plan). */
 export default async function ProjectsPage() {
   const locale = await currentLocale();
   const { supabase } = await requireAccount(locale);
   const t = await getTranslations('projects');
   const projects = await listProjects(supabase);
+  // The account's package sets the limit (D-315); the database enforces the same one.
+  const planId = await accountPlanOf(supabase);
+  const quota = PLANS[planId].entitlements.projects;
+  const limit = quota.kind === 'count' ? quota.value : Infinity;
   const countries = countryOptions(locale);
   // Western digits in both languages (CLAUDE.md §6).
   const date = new Intl.DateTimeFormat(locale === 'ar' ? 'ar-u-nu-latn' : 'en', {
     dateStyle: 'medium',
   });
-  const canCreate = projects.length < PROJECT_LIMIT;
+  const canCreate = projects.length < limit;
 
   return (
     <div className="mx-auto grid max-w-[75rem] gap-8 px-4 py-10 sm:px-6">
@@ -41,7 +41,16 @@ export default async function ProjectsPage() {
         <div className="grid gap-2">
           <h1 className="text-h1 font-extrabold">{t('title')}</h1>
           <p className="text-small text-muted">
-            {t('plan', { count: projects.length, limit: PROJECT_LIMIT })}
+            {Number.isFinite(limit)
+              ? t('plan', {
+                  plan: PRICING[locale].planNames[planId],
+                  count: projects.length,
+                  limit,
+                })
+              : t('planUnlimited', {
+                  plan: PRICING[locale].planNames[planId],
+                  count: projects.length,
+                })}
           </p>
         </div>
         {canCreate ? (

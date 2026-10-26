@@ -34,6 +34,10 @@ export interface PricingContent {
   days: string;
   readOnlyAfter: string;
   startFree: string;
+  /** The buy button of a paid package, once checkout is open. */
+  buy: string;
+  /** Replaces `notice` once checkout is open. */
+  noticeOpen: string;
   paidSoon: string;
   /** Beside the one start button under the desktop table. */
   paidPlansSoon: string;
@@ -92,6 +96,8 @@ export const PRICING: Localized<PricingContent> = {
     days: '{count} يومًا',
     readOnlyAfter: 'مدة الباقة، ثم {count} يومًا للقراءة فقط',
     startFree: 'ابدأ مجانًا',
+    buy: 'اشترِ الباقة',
+    noticeOpen: 'ادفع مرة واحدة ببطاقتك أو عبر PayPal، وتُفتح باقتك فور تأكيد الدفع.',
     paidSoon: 'قريبًا',
     paidPlansSoon: 'الباقات المدفوعة قريبًا.',
     fairUse: '* غير محدود ضمن سياسة استخدام عادل تحمي الخدمة من الإساءة.',
@@ -148,6 +154,9 @@ export const PRICING: Localized<PricingContent> = {
     days: '{count} days',
     readOnlyAfter: 'The package’s term, then {count} days read-only',
     startFree: 'Start for free',
+    buy: 'Buy this package',
+    noticeOpen:
+      'Pay once by card or PayPal; your package opens as soon as the payment is confirmed.',
     paidSoon: 'Coming soon',
     paidPlansSoon: 'Paid packages are coming soon.',
     fairUse: '* Unlimited under a fair-use policy that protects the service from abuse.',

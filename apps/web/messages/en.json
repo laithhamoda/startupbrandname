@@ -122,12 +122,13 @@
   },
   "projects": {
     "title": "My projects",
-    "plan": "Free plan · projects: {count} of {limit}",
+    "plan": "{plan} package · projects: {count} of {limit}",
+    "planUnlimited": "{plan} package · projects: {count}",
     "new": "New project",
     "empty": "No projects yet. Start your first one, then answer the diagnostic questions in order.",
     "completeness": "Completeness",
     "updated": "Last changed",
-    "limit": "The free plan allows one project. To start another, delete the current one from its page, or wait for paid plans to open.",
+    "limit": "You have reached your package’s project limit. To start another, delete a project from its page, or choose a bigger package on the pricing page.",
     "newTitle": "New project",
     "newLead": "A working name is enough. The country and currency set the data for the analysis and cannot change once you start.",
     "name": "Project name",
@@ -556,6 +557,40 @@
       "JOD": "Jordanian dinar",
       "DZD": "Algerian dinar",
       "USD": "US dollar"
+    }
+  },
+  "checkout": {
+    "title": "Buy a package",
+    "eyebrow": "Buy a package",
+    "includes": {
+      "questions": "{count} diagnostic questions",
+      "mentor": "{count} AI mentor messages per project",
+      "projects": "Up to {count} projects, open for edits for 12 months",
+      "once": "One payment, no renewing subscription"
+    },
+    "onceNote": "One payment in US dollars, tax included where it applies.",
+    "upgradeNote": "You pay only the difference, as you have the Hesitant package.",
+    "adult": "I confirm that I am 18 or older.",
+    "pay": "Continue to payment",
+    "opening": "Opening the payment page…",
+    "secure": "The payment window comes from Paddle, the merchant of record. We never see or store your card details.",
+    "closed": "Payment is not open yet. It opens soon.",
+    "owned": "You already have this package or a better one.",
+    "toProjects": "Go to my projects",
+    "backToPricing": "Back to pricing",
+    "errors": {
+      "adult": "Paid packages are for people aged 18 or older. Tick the box to continue.",
+      "failed": "The payment page could not open. Try again in a moment.",
+      "limit": "Many payments were started today. Try again tomorrow.",
+      "closed": "Payment is not available for this package right now.",
+      "owned": "You already have this package or a better one."
+    },
+    "done": {
+      "title": "Your package is active",
+      "waitingTitle": "Checking your payment",
+      "active": "Your “{plan}” package is active now. Thank you.",
+      "waiting": "You are back from the payment page, and we are waiting for Paddle to confirm it. This page refreshes on its own every few seconds.",
+      "receipt": "Paddle emails you the receipt."
     }
   }
 }

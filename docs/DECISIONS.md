@@ -3018,3 +3018,22 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
 - **Reason:** «متردد» answers "do the numbers work?" (D-314) and must open on the answers its own
   diagnostic collects.
 - **Status:** Active
+
+### D-317 (2026-10-26): Checkout reads its prices from the environment
+
+- **Decision:** M7 step 5. The Paddle prices differ between the sandbox (Preview, staging) and the
+  live account (Production), so they are environment variables, not rows of a migration:
+  `PADDLE_PRICE_STANDARD`, `PADDLE_PRICE_ADVENTURER`, `PADDLE_PRICE_UPGRADE` (the $20 move from
+  «متردد» to «المغامر», D-313) and `PADDLE_CLIENT_TOKEN`, whose `test_` or `live_` prefix sets
+  Paddle.js to the sandbox or the live account. `billing_products` stays empty and is dropped in a
+  later contract step; `start_checkout()` accepts the two packages a founder can buy. The page
+  `/[locale]/checkout/[plan]` shows what the package includes and its price (the difference for an
+  upgrade), asks the 18+ confirmation (D-086; the wording «أؤكد أن عمري 18 عامًا أو أكثر» is the
+  lead's, the owner may change it, OQ #80), records the checkout reference, and opens Paddle's
+  overlay with that reference and the account's email; nothing is bought for an account that
+  already has the package or a better one. `/[locale]/checkout/done` waits for the webhook and
+  refreshes itself until the package is active. Until the four variables are set the buy buttons
+  say "soon". The projects page shows the account's package and its project limit.
+- **Reason:** One code path for both accounts, configured per Vercel environment, so sandbox
+  payments can never reach the production database.
+- **Status:** Active

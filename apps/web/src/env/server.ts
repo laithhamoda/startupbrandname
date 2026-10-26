@@ -1,5 +1,6 @@
 import 'server-only';
 import { z } from 'zod';
+import type { OfferPrices } from '@/lib/payments/offer';
 
 /** Accepts exactly "true" or "false". `z.coerce.boolean()` would turn "false" into true. */
 export const booleanFlag = z.enum(['true', 'false']).transform((value) => value === 'true');
@@ -112,5 +113,50 @@ export function getPaymentsEnv(env: NodeJS.ProcessEnv = process.env): PaymentsEn
   return {
     paddleWebhookSecret: parsed.data.PADDLE_WEBHOOK_SECRET,
     supabaseSecretKey: parsed.data.SUPABASE_SECRET_KEY,
+  };
+}
+
+const priceId = z.string().regex(/^pri_[a-z0-9]{1,60}$/);
+
+const pricesSchema = z.object({
+  PADDLE_PRICE_STANDARD: priceId,
+  PADDLE_PRICE_ADVENTURER: priceId,
+  PADDLE_PRICE_UPGRADE: priceId,
+});
+
+/**
+ * The provider's prices of the packages in this environment (D-317): sandbox prices on Preview,
+ * live prices on Production. Null while one is missing or malformed: checkout stays closed, and the
+ * webhook answers 500 so the provider sends the event again once they are set.
+ */
+export function getPaddlePrices(env: NodeJS.ProcessEnv = process.env): OfferPrices | null {
+  const parsed = pricesSchema.safeParse(env);
+  if (!parsed.success) return null;
+  return {
+    standard: parsed.data.PADDLE_PRICE_STANDARD,
+    adventurer: parsed.data.PADDLE_PRICE_ADVENTURER,
+    upgrade: parsed.data.PADDLE_PRICE_UPGRADE,
+  };
+}
+
+export interface CheckoutEnv {
+  /** Paddle's client-side token: public by design, it only opens checkouts. */
+  readonly clientToken: string;
+  /** From the token's prefix: test_ is the sandbox, live_ the live account. */
+  readonly environment: 'sandbox' | 'production';
+  readonly prices: OfferPrices;
+}
+
+const clientTokenSchema = z.string().regex(/^(test|live)_[A-Za-z0-9]{1,100}$/);
+
+/** What the checkout needs, or null while it is not configured: the buy buttons then say "soon". */
+export function getCheckoutEnv(env: NodeJS.ProcessEnv = process.env): CheckoutEnv | null {
+  const token = clientTokenSchema.safeParse(env.PADDLE_CLIENT_TOKEN);
+  const prices = getPaddlePrices(env);
+  if (!token.success || prices === null) return null;
+  return {
+    clientToken: token.data,
+    environment: token.data.startsWith('test_') ? 'sandbox' : 'production',
+    prices,
   };
 }
