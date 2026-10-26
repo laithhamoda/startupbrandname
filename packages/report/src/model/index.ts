@@ -8,6 +8,7 @@ export { inlineText } from './inline';
 export {
   FULL_SECTION_IDS,
   ReportModelError,
+  STANDARD_LOCKED_SECTION_IDS,
   SUMMARY_SECTION_IDS,
   type Audience,
   type Block,

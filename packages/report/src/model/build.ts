@@ -18,6 +18,7 @@ import { plain } from './inline';
 import {
   FULL_SECTION_IDS,
   ReportModelError,
+  STANDARD_LOCKED_SECTION_IDS,
   type Audience,
   type Block,
   type ConfidenceMeta,
@@ -60,6 +61,16 @@ function validate(input: ReportInput): void {
       throw new ReportModelError(
         'lock_reason_unexpected',
         'The full report has no locked section.',
+      );
+    }
+  } else if (input.kind === 'standard') {
+    if (input.run === null) {
+      throw new ReportModelError('run_required', 'The numbers report needs a calculable run.');
+    }
+    if (input.lockReason !== 'plan') {
+      throw new ReportModelError(
+        'lock_reason_required',
+        'The numbers report locks its other sections by the plan.',
       );
     }
   } else if (input.lockReason === null) {
@@ -117,8 +128,11 @@ function locked(ctx: Ctx, id: SectionId): Section {
   return { id, title: ctx.m.sections[id], locked: true, blocks: [] };
 }
 
-/** Builds each section in reading order, so the term tracker sees the report as a reader does. */
-function fullSections(ctx: Ctx, run: EngineRun): Section[] {
+/**
+ * Builds each section in reading order, so the term tracker sees the report as a reader does. The
+ * sections in `lockedIds` are locked titles whose builders never run (D-232).
+ */
+function fullSections(ctx: Ctx, run: EngineRun, lockedIds: readonly SectionId[] = []): Section[] {
   const builders: Readonly<Record<FullSectionId, () => Block[]>> = {
     cover: () => buildCover(ctx, run),
     executive_summary: () => buildExecutiveSummary(ctx, run, ctx.input.changes),
@@ -133,7 +147,9 @@ function fullSections(ctx: Ctx, run: EngineRun): Section[] {
     appendix_sources: () => buildSources(ctx),
     appendix_disclaimer: () => buildDisclaimer(ctx),
   };
-  return FULL_SECTION_IDS.map((id) => open(ctx, id, builders[id]()));
+  return FULL_SECTION_IDS.map((id) =>
+    lockedIds.includes(id) ? locked(ctx, id) : open(ctx, id, builders[id]()),
+  );
 }
 
 /**
@@ -165,7 +181,9 @@ export function buildReportModel(input: ReportInput): ReportModel {
   const ctx = new Ctx(input);
   const { run } = input;
   const sections =
-    input.kind === 'full' && run !== null ? fullSections(ctx, run) : summarySections(ctx);
+    run === null || input.kind === 'summary'
+      ? summarySections(ctx)
+      : fullSections(ctx, run, input.kind === 'standard' ? STANDARD_LOCKED_SECTION_IDS : []);
   return {
     version: 1,
     locale: input.locale,

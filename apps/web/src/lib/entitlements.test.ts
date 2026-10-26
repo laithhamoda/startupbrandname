@@ -7,7 +7,7 @@ import { accessFor, includesFullReport, reportAccess } from './entitlements';
 
 const NO_PREVIEW = { previewEmails: [] };
 const PLAN_IDS = Object.keys(PLANS) as PlanId[];
-const GATES: Gate[] = ['none', 'summary', 'full'];
+const GATES: Gate[] = ['none', 'summary', 'standard', 'full'];
 
 describe('accessFor', () => {
   it('gives every account the free plan until M7', () => {
@@ -129,8 +129,17 @@ describe('reportAccess', () => {
 
   it.each(PLAN_IDS)('follows the entitlement of %s, not its name', (planId) => {
     const access = accessFor({ email: 'a@example.com', planId }, NO_PREVIEW);
-    const included = PLANS[planId].entitlements.report === 'full';
-    expect(reportAccess('full', access)).toBe(included ? 'full' : 'summary_locked');
+    const expected = { summary: 'summary_locked', standard: 'numbers', full: 'full' } as const;
+    expect(reportAccess('full', access)).toBe(expected[PLANS[planId].entitlements.report]);
+  });
+
+  it('opens the numbers report at its own gate to «متردد», «المغامر» and the preview (D-316)', () => {
+    const at = (planId: (typeof PLAN_IDS)[number]) =>
+      reportAccess('standard', accessFor({ email: null, planId }, NO_PREVIEW));
+    expect(PLAN_IDS.map((planId) => [planId, at(planId)])).toEqual(
+      PLAN_IDS.map((planId) => [planId, planId === 'free' ? 'summary_locked' : 'numbers']),
+    );
+    expect(reportAccess('standard', preview)).toBe('numbers');
   });
 
   it('opens the full report for «المغامر» and the course plan only', () => {
@@ -140,7 +149,7 @@ describe('reportAccess', () => {
     }
   });
 
-  it('returns one of four values for every gate and account', () => {
+  it('returns one of five values for every gate and account', () => {
     const accounts = [
       free,
       preview,
@@ -148,7 +157,9 @@ describe('reportAccess', () => {
     ];
     for (const gate of GATES) {
       for (const access of accounts) {
-        expect(['none', 'summary', 'summary_locked', 'full']).toContain(reportAccess(gate, access));
+        expect(['none', 'summary', 'summary_locked', 'numbers', 'full']).toContain(
+          reportAccess(gate, access),
+        );
       }
     }
   });

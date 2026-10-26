@@ -18,6 +18,11 @@ export const AXIS_WEIGHTS: Readonly<Record<Axis, number>> = {
 export const STAR_WEIGHT = 2;
 
 export const SUMMARY_THRESHOLD = 40;
+/**
+ * The «متردد» report (D-314, D-316): its 40 questions reach about 76 points at most, so it opens
+ * at 60 with the five numbers of FULL_REPORT_QUESTIONS, below the full report's 80.
+ */
+export const STANDARD_THRESHOLD = 60;
 export const FULL_THRESHOLD = 80;
 
 /**
@@ -35,9 +40,10 @@ export const FULL_REPORT_QUESTIONS = [
 /**
  * - none: below 40%; list the most important missing questions.
  * - summary: the free one-page summary.
+ * - standard: the «متردد» numbers report (a paid entitlement, D-316).
  * - full: the full report (a paid entitlement).
  */
-export type Gate = 'none' | 'summary' | 'full';
+export type Gate = 'none' | 'summary' | 'standard' | 'full';
 
 export interface Completeness {
   /** 0 to 100, unrounded; the gates compare this value. */
@@ -96,6 +102,7 @@ export function completeness(answers: Answers): Completeness {
 
   let gate: Gate = 'none';
   if (score >= FULL_THRESHOLD && missingForFull.length === 0) gate = 'full';
+  else if (score >= STANDARD_THRESHOLD && missingForFull.length === 0) gate = 'standard';
   else if (score >= SUMMARY_THRESHOLD) gate = 'summary';
 
   const next = QUESTIONS.filter((question) => !isAnswered(answers, question.id))

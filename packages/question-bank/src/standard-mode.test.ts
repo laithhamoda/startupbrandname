@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
+import { completeness, STANDARD_THRESHOLD } from './completeness';
 import { FOLLOW_UPS } from './follow-ups';
 import { QUESTIONS, STANDARD_EXTRA_QUESTIONS, questionsFor } from './questions';
 import { diagnosticSequence, positionInMode } from './sequence';
+import { sampleAnswers } from './testing';
 
 // The standard mode of the «متردد» package (D-314): the 20 ★ questions and 20 more.
 describe('the standard mode', () => {
@@ -48,5 +50,19 @@ describe('the standard mode', () => {
   it('starts with the same questions as quick mode', () => {
     expect(diagnosticSequence('standard', {}).slice(0, 3)).toEqual(['A1', 'A4', 'A5']);
     expect(diagnosticSequence('standard', {})).toHaveLength(40);
+  });
+
+  it('cannot reach the full report gate, so it opens its own report at 60 (D-316)', () => {
+    const result = completeness(sampleAnswers(standard.map((question) => question.id)));
+    expect(result.score).toBeGreaterThan(STANDARD_THRESHOLD);
+    expect(result.score).toBeLessThan(80);
+    expect(result.gate).toBe('standard');
+  });
+
+  it('keeps the summary gate while a number of the report is missing', () => {
+    const answers = sampleAnswers(
+      standard.map((question) => question.id).filter((id) => id !== 'F3'),
+    );
+    expect(completeness(answers)).toMatchObject({ gate: 'summary', missingForFull: ['F3'] });
   });
 });

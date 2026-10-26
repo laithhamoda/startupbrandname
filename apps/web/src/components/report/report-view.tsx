@@ -118,6 +118,8 @@ export function ReportView({
           )}
           {model.kind === 'summary' ? (
             <p className="reading text-muted">{labels.summaryLead}</p>
+          ) : model.kind === 'standard' ? (
+            <p className="reading text-muted">{labels.standardLead}</p>
           ) : null}
           {actions}
         </header>

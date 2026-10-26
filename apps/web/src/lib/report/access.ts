@@ -14,6 +14,8 @@ export type ReportMode =
       readonly kind: 'summary';
       readonly lockReason: 'plan';
     }
+  /** The «متردد» numbers report: three sections locked by the plan (D-314, D-316). */
+  | { readonly access: 'numbers'; readonly kind: 'standard'; readonly lockReason: 'plan' }
   | { readonly access: 'full'; readonly kind: 'full'; readonly lockReason: null };
 
 /**
@@ -29,13 +31,15 @@ export function reportModeOf(gate: Gate, access: Access): ReportMode {
       return { access: 'summary', kind: 'summary', lockReason: 'completeness' };
     case 'summary_locked':
       return { access: 'summary_locked', kind: 'summary', lockReason: 'plan' };
+    case 'numbers':
+      return { access: 'numbers', kind: 'standard', lockReason: 'plan' };
     case 'full':
       return { access: 'full', kind: 'full', lockReason: null };
   }
 }
 
 /**
- * A full report needs a calculated run. When the run is missing (the answers cannot be calculated,
+ * A full or numbers report needs a calculated run. When the run is missing (the answers cannot be calculated,
  * or the engine failed) the page falls back to the summary, and its locked sections point back to
  * the questions (D-273).
  */
@@ -44,6 +48,6 @@ export function degradeWithoutRun(
   hasRun: boolean,
 ): { readonly kind: ReportKind; readonly lockReason: LockReason | null } | null {
   if (mode.kind === null) return null;
-  if (mode.kind === 'full' && !hasRun) return { kind: 'summary', lockReason: 'completeness' };
+  if (mode.kind !== 'summary' && !hasRun) return { kind: 'summary', lockReason: 'completeness' };
   return { kind: mode.kind, lockReason: mode.lockReason };
 }
