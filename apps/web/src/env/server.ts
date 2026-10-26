@@ -116,6 +116,9 @@ export function getPaymentsEnv(env: NodeJS.ProcessEnv = process.env): PaymentsEn
   };
 }
 
+/** The variables a reader takes: process.env, or a plain object in tests. */
+type EnvSource = Readonly<Record<string, string | undefined>>;
+
 const priceId = z.string().regex(/^pri_[a-z0-9]{1,60}$/);
 
 const pricesSchema = z.object({
@@ -129,7 +132,7 @@ const pricesSchema = z.object({
  * live prices on Production. Null while one is missing or malformed: checkout stays closed, and the
  * webhook answers 500 so the provider sends the event again once they are set.
  */
-export function getPaddlePrices(env: NodeJS.ProcessEnv = process.env): OfferPrices | null {
+export function getPaddlePrices(env: EnvSource = process.env): OfferPrices | null {
   const parsed = pricesSchema.safeParse(env);
   if (!parsed.success) return null;
   return {
@@ -150,7 +153,7 @@ export interface CheckoutEnv {
 const clientTokenSchema = z.string().regex(/^(test|live)_[A-Za-z0-9]{1,100}$/);
 
 /** What the checkout needs, or null while it is not configured: the buy buttons then say "soon". */
-export function getCheckoutEnv(env: NodeJS.ProcessEnv = process.env): CheckoutEnv | null {
+export function getCheckoutEnv(env: EnvSource = process.env): CheckoutEnv | null {
   const token = clientTokenSchema.safeParse(env.PADDLE_CLIENT_TOKEN);
   const prices = getPaddlePrices(env);
   if (!token.success || prices === null) return null;
