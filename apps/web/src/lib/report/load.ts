@@ -27,12 +27,12 @@ export type ReportPage =
     }
   /**
    * A paid report whose answers match no recorded version: the founder makes the next version
-   * while one is left, or chooses the final one (D-321, D-323).
+   * while one is remaining, or chooses the final one (D-321, D-323).
    */
   | {
       readonly status: 'version_needed';
       readonly next: number;
-      readonly left: number;
+      readonly remaining: number;
       readonly versions: readonly VersionSummary[];
     }
   /** The model could not be built at all (logged). */
@@ -40,7 +40,7 @@ export type ReportPage =
 
 export interface ReportVersion {
   readonly number: number;
-  readonly left: number;
+  readonly remaining: number;
   readonly final: boolean;
   readonly versions: readonly VersionSummary[];
 }
@@ -124,14 +124,19 @@ export async function loadReportPage(
     const match = rows.data.find((row) => row.input_hash === analysis.inputHash);
     if (final !== null) {
       // A closed project shows its final version; its answers are that version's.
-      version = { number: final, left: 0, final: true, versions };
+      version = { number: final, remaining: 0, final: true, versions };
     } else if (match) {
-      version = { number: match.number, left: versionsLeft(rows.data), final: false, versions };
+      version = {
+        number: match.number,
+        remaining: versionsLeft(rows.data),
+        final: false,
+        versions,
+      };
     } else {
       return {
         status: 'version_needed',
         next: nextVersion(rows.data),
-        left: versionsLeft(rows.data),
+        remaining: versionsLeft(rows.data),
         versions,
       };
     }

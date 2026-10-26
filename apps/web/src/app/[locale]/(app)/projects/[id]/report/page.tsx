@@ -76,7 +76,7 @@ export default async function ReportPage({
         locale={locale}
         projectId={id}
         next={page.next}
-        left={page.left}
+        remaining={page.remaining}
         versions={page.versions}
         error={versionError}
       />
@@ -104,7 +104,7 @@ export default async function ReportPage({
           locale={locale}
           projectId={id}
           number={page.version.number}
-          left={page.version.left}
+          remaining={page.version.remaining}
           final={page.version.final}
           versions={page.version.versions}
           error={versionError}

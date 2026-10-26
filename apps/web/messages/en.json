@@ -492,12 +492,12 @@
       "failed": "We could not calculate the numbers right now. Your answers are safe; try again in a moment."
     },
     "versions": {
-      "current": "Version <number></number> of your report · <left></left> left",
+      "current": "Version <number></number> of your report · <remaining></remaining> left",
       "final": "Final version of your report: <number></number>",
       "closedNote": "This project’s answers are closed on this version. The AI mentor is still open for your project.",
       "firstTitle": "Make the first version of your report",
       "changedTitle": "Your answers changed since the last version",
-      "makeLead": "The report keeps a copy of your current answers. This will be version <number></number>, one of the <left></left> you have left.",
+      "makeLead": "The report keeps a copy of your current answers. This will be version <number></number>, one of the <remaining></remaining> you have left.",
       "make": "Make version <number></number>",
       "noneLeft": "You have used every version this project has. Choose your final version: your answers go back to it and the project closes to edits, with the mentor still open.",
       "chooseOpen": "Choose the final version",

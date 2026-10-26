@@ -34,20 +34,20 @@ async function VersionError({ code }: { code: VersionErrorCode | null }) {
 }
 
 /**
- * The bar above a paid report (D-321): which version it is and how many are left, or that it is
+ * The bar above a paid report (D-321): which version it is and how many are remaining, or that it is
  * the final one, with the form that chooses the final version while the project is open.
  */
 export async function VersionBar({
   locale,
   projectId,
   number,
-  left,
+  remaining,
   final,
   versions,
   error,
 }: Props & {
   number: number;
-  left: number;
+  remaining: number;
   final: boolean;
   versions: readonly VersionSummary[];
   error: VersionErrorCode | null;
@@ -63,7 +63,7 @@ export async function VersionBar({
           ? t.rich('final', { number: () => <Num value={number} /> })
           : t.rich('current', {
               number: () => <Num value={number} />,
-              left: () => <Num value={left} />,
+              remaining: () => <Num value={remaining} />,
             })}
       </h2>
       <VersionError code={error} />
@@ -83,18 +83,18 @@ export async function VersionBar({
 
 /**
  * Shown instead of a paid report when the answers changed since the last version: make the next
- * version while one is left, or choose the final one (D-321).
+ * version while one is remaining, or choose the final one (D-321).
  */
 export async function VersionNeeded({
   locale,
   projectId,
   next,
-  left,
+  remaining,
   versions,
   error,
 }: Props & {
   next: number;
-  left: number;
+  remaining: number;
   versions: readonly VersionSummary[];
   error: VersionErrorCode | null;
 }) {
@@ -105,12 +105,12 @@ export async function VersionNeeded({
         {versions.length === 0 ? t('firstTitle') : t('changedTitle')}
       </h1>
       <VersionError code={error} />
-      {left > 0 ? (
+      {remaining > 0 ? (
         <form action={makeReportVersion.bind(null, locale, projectId)} className="grid gap-4">
           <p className="reading">
             {t.rich('makeLead', {
               number: () => <Num value={next} />,
-              left: () => <Num value={left} />,
+              remaining: () => <Num value={remaining} />,
             })}
           </p>
           <Button type="submit" variant="primary" className="justify-self-start">

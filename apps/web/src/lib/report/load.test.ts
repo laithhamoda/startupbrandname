@@ -371,10 +371,10 @@ describe('loadReportPage: report versions of a paid project (D-321, D-323)', () 
   it('asks for the first version before a paid report is shown', async () => {
     setup('jo-service-subscription', 'full', { inputHash: HASH });
     const page = await loadReportPage(paid([]), PROJECT, options(OWNER));
-    expect(page).toEqual({ status: 'version_needed', next: 1, left: 10, versions: [] });
+    expect(page).toEqual({ status: 'version_needed', next: 1, remaining: 10, versions: [] });
   });
 
-  it('shows the report of answers that match a version, with the versions left', async () => {
+  it('shows the report of answers that match a version, with the versions remaining', async () => {
     setup('jo-service-subscription', 'full', { inputHash: HASH });
     const page = await loadReportPage(
       paid([version(1, 'b'.repeat(64)), version(2, HASH, 'go')]),
@@ -384,17 +384,17 @@ describe('loadReportPage: report versions of a paid project (D-321, D-323)', () 
     expect(page?.status).toBe('ready');
     if (page?.status !== 'ready') return;
     expect(page.model.kind).toBe('full');
-    expect(page.version).toMatchObject({ number: 2, left: 5, final: false });
+    expect(page.version).toMatchObject({ number: 2, remaining: 5, final: false });
     expect(page.version?.versions.map((item) => item.number)).toEqual([1, 2]);
   });
 
-  it('asks for the next version after the answers changed, and says none is left at the limit', async () => {
+  it('asks for the next version after the answers changed, and says none is remaining at the limit', async () => {
     setup('jo-service-subscription', 'full', { inputHash: HASH });
     const ten = Array.from({ length: 10 }, (_, index) =>
       version(index + 1, String(index).repeat(64)),
     );
     const page = await loadReportPage(paid(ten), PROJECT, options(OWNER));
-    expect(page).toMatchObject({ status: 'version_needed', next: 11, left: 0 });
+    expect(page).toMatchObject({ status: 'version_needed', next: 11, remaining: 0 });
   });
 
   it('shows the final version of a closed project', async () => {
@@ -402,7 +402,7 @@ describe('loadReportPage: report versions of a paid project (D-321, D-323)', () 
     const page = await loadReportPage(paid([version(1, HASH)], 1), PROJECT, options(OWNER));
     expect(page?.status === 'ready' ? page.version : null).toMatchObject({
       number: 1,
-      left: 0,
+      remaining: 0,
       final: true,
     });
   });
