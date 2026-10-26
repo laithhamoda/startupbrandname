@@ -705,11 +705,11 @@ export type Database = {
         };
         Returns: string;
       };
-      reserve_ai_run: { Args: Record<PropertyKey, never>; Returns: Json };
       record_report_version: {
         Args: { p_input_hash: string; p_project_id: string; p_verdict: string };
         Returns: number;
       };
+      reserve_ai_run: { Args: Record<PropertyKey, never>; Returns: Json };
       set_crossborder_consent: {
         Args: { p_given: boolean; p_text_version: string };
         Returns: undefined;
