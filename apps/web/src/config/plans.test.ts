@@ -97,7 +97,7 @@ describe('the database seed', () => {
   it('gives each package the same project limit as this table (D-313, D-318)', () => {
     const sql =
       migration('20261026120000_package_project_limits.sql') +
-      migration('20261026155500_package_names.sql');
+      migration('20261026171000_package_names.sql');
     for (const id of ['strategist', 'commander', 'course'] as const) {
       const seeded = new RegExp(`\\('entitlement\\.${id}\\.projects', '([^']+)'\\)`).exec(sql)?.[1];
       const quota = PLANS[id].entitlements.projects;
