@@ -12,7 +12,7 @@ import {
 import type { Answers } from '@sbn/question-bank';
 import type { PackItem } from '../legal-path';
 import { audienceOfAnswers } from '../model/build';
-import type { ReportInput } from '../model/types';
+import type { ReportInput, ReportKind } from '../model/types';
 
 /*
  * Report inputs for the tests (M5 step 5a, D-272): the three golden projects of the engine, each
@@ -174,7 +174,7 @@ export function testPackItems(): readonly PackItem[] {
 
 export interface GoldenReportOptions {
   readonly locale: 'ar' | 'en';
-  readonly kind?: 'full' | 'summary';
+  readonly kind?: ReportKind;
   readonly lockReason?: 'completeness' | 'plan' | null;
   readonly today?: string;
   /** Changes the answers (and their provenance) before the engine runs again. */

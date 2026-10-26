@@ -3003,3 +3003,18 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
 - **Reason:** One table and one reading of the subscriptions for the app and the database, so a
   package cannot open more in one place than in another.
 - **Status:** Active
+
+### D-316 (2026-10-26): The «متردد» numbers report and its gate
+
+- **Decision:** M7 step 4b. The report gains a third kind, `standard`: every section of the full
+  report, with the canvases, the scenarios and sensitivity and the validation plan locked by the plan
+  (`STANDARD_LOCKED_SECTION_IDS`); their builders never run (D-232). The assumptions and sources
+  appendices stay open, although D-314 put the full appendices in «المغامر»: every figure the report
+  shows needs its provenance (CLAUDE.md rule 2). Its 40 questions reach about 76 points, below the
+  full report's 80, so the completeness gains a `standard` gate at 60 points with the five numbers
+  of `FULL_REPORT_QUESTIONS`. An account opens it with «متردد» or better at that gate or above; the
+  preview list and early access count as the full package. `reports.kind` accepts `standard` so its
+  PDF can be stored. The locked-section note says a paid package opens the section.
+- **Reason:** «متردد» answers "do the numbers work?" (D-314) and must open on the answers its own
+  diagnostic collects.
+- **Status:** Active

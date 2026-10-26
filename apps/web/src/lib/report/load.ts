@@ -76,7 +76,7 @@ export async function loadReportPage(
   // The project page asks for the summary alone: an account that may open the full report gets the
   // summary there, and the verdict is the same word in both kinds (D-287).
   const shown: typeof decided =
-    options.summaryOnly === true && decided.kind === 'full'
+    options.summaryOnly === true && decided.kind !== 'summary'
       ? { kind: 'summary', lockReason: 'completeness' }
       : decided;
 
@@ -85,7 +85,7 @@ export async function loadReportPage(
   // always comes with its three changes (D-273, D-278).
   let changes: SuggestedChanges | null = null;
   const verdict = run?.verdict.verdict.value ?? 'go';
-  if (run !== null && (shown.kind === 'full' ? verdict !== 'go' : verdict === 'stop')) {
+  if (run !== null && (shown.kind !== 'summary' ? verdict !== 'go' : verdict === 'stop')) {
     try {
       changes = suggestChanges(run, { rules: source.taxRules }, {}, pricingOptionsOf(source));
     } catch (error) {
@@ -93,7 +93,7 @@ export async function loadReportPage(
     }
   }
   const packItems =
-    shown.kind === 'full'
+    shown.kind !== 'summary'
       ? await loadPackItems(supabase, source.project.countryCode, projectId)
       : [];
 

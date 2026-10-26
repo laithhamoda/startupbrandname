@@ -35,7 +35,7 @@ export interface Access {
 }
 
 /** What a report page shows, from the completeness gate and the account's access. */
-export type ReportAccess = 'none' | 'summary' | 'summary_locked' | 'full';
+export type ReportAccess = 'none' | 'summary' | 'summary_locked' | 'numbers' | 'full';
 
 /**
  * The plan of the account and its entitlements, and whether the account is on the preview list.
@@ -50,23 +50,30 @@ export function accessFor(subject: AccessSubject, options: AccessOptions): Acces
   return { planId, entitlements: PLANS[planId].entitlements, fullReportPreview };
 }
 
-/**
- * Whether the package opens the full report. The «متردد» report (D-314) is not built yet, so its
- * package opens the summary until it is (M7 step 4b).
- */
+/** Whether the package opens the full report. */
 export function includesFullReport(access: Access): boolean {
   return access.entitlements.report === 'full';
 }
 
+/** Whether the package opens at least the «متردد» numbers report (D-314). */
+export function includesStandardReport(access: Access): boolean {
+  return access.entitlements.report !== 'summary';
+}
+
 /**
- * How much of the report the account may see (D-232). The gate comes from the completeness of the
- * answers (`@sbn/question-bank`): `none` shows nothing, `summary` the one-page summary, `full` the
- * whole report. At the `full` gate an account without the entitlement and not on the preview list
- * gets the summary with the locked sections, `summary_locked`. The server decides this: a locked
- * section's values must never reach the page (D-232).
+ * How much of the report the account may see (D-232, D-316). The gate comes from the completeness
+ * of the answers (`@sbn/question-bank`): `none` shows nothing, `summary` the one-page summary,
+ * `numbers` the «متردد» numbers report (gate `standard`), `full` the whole report. Each paid report needs both its
+ * gate and the package: at a higher gate a package gets the most it includes, and an account with
+ * neither the package nor the preview list gets the summary with its locked sections,
+ * `summary_locked`. The preview list and early access stand for the full package. The server
+ * decides this: a locked section's values must never reach the page (D-232).
  */
 export function reportAccess(gate: Gate, access: Access): ReportAccess {
   if (gate === 'none') return 'none';
   if (gate === 'summary') return 'summary';
-  return includesFullReport(access) || access.fullReportPreview ? 'full' : 'summary_locked';
+  const full = includesFullReport(access) || access.fullReportPreview;
+  if (gate === 'full' && full) return 'full';
+  if (full || includesStandardReport(access)) return 'numbers';
+  return 'summary_locked';
 }

@@ -100,8 +100,8 @@ test('a summary locked by the plan shows the verdict word, titles and the way on
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
   await expect(page.locator('[data-report-reveal] .verdict-word')).toHaveText('Revise');
   await expect(page.locator('[data-report-reveal] [role="meter"]')).toHaveCount(0);
-  await expect(page.getByText('Paid plans open later', { exact: false }).first()).toBeVisible();
-  await expect(page.getByRole('link', { name: 'See plans and prices' }).first()).toBeVisible();
+  await expect(page.getByText('opens with a paid package', { exact: false }).first()).toBeVisible();
+  await expect(page.getByRole('link', { name: 'See packages and prices' }).first()).toBeVisible();
 });
 
 test('a summary with no calculation has no verdict at all', async ({ page }) => {

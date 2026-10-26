@@ -407,9 +407,11 @@
     "back": "Back to the project",
     "kind": {
       "full": "Full report",
+      "standard": "Numbers report",
       "summary": "One-page summary"
     },
     "summaryLead": "This is the one-page summary. The other sections of the report show their titles only until they open.",
+    "standardLead": "This is the numbers report of the Hesitant package: pricing, break-even, projection, cash and the legal path. The canvases, scenarios and validation plan are in the Adventurer package.",
     "contents": {
       "title": "Contents",
       "locked": "Locked"
@@ -417,9 +419,9 @@
     "lock": {
       "label": "Locked section",
       "completeness": "This section opens once your core answers are complete: the price, the costs, the expected sales and the capital.",
-      "plan": "This section is part of the full report. Paid plans open later, and we will tell you when they are available.",
+      "plan": "This section opens with a paid package. Paid packages open soon.",
       "continue": "Keep answering the questions",
-      "pricing": "See plans and prices"
+      "pricing": "See packages and prices"
     },
     "verdict": {
       "label": "Verdict"
