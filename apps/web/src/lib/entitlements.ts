@@ -51,11 +51,11 @@ export function accessFor(subject: AccessSubject, options: AccessOptions): Acces
 }
 
 /**
- * Whether the plan includes the full report at all. A count (the weekly plan's one report) is
- * enforced by M7 together with payments; until then it counts as included.
+ * Whether the package opens the full report. The «متردد» report (D-314) is not built yet, so its
+ * package opens the summary until it is (M7 step 4b).
  */
 export function includesFullReport(access: Access): boolean {
-  return access.entitlements.fullReport.kind !== 'none';
+  return access.entitlements.report === 'full';
 }
 
 /**
@@ -66,7 +66,7 @@ export function includesFullReport(access: Access): boolean {
  * section's values must never reach the page (D-232).
  */
 export function reportAccess(gate: Gate, access: Access): ReportAccess {
-  if (gate === 'none' || !access.entitlements.onePageSummary) return 'none';
+  if (gate === 'none') return 'none';
   if (gate === 'summary') return 'summary';
   return includesFullReport(access) || access.fullReportPreview ? 'full' : 'summary_locked';
 }

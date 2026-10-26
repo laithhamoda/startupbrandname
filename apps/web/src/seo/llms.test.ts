@@ -22,7 +22,8 @@ describe('llms.txt', () => {
   });
 
   it('quotes the plan prices from the plan table', () => {
-    expect(text).toContain('Weekly $5 (7 days); Monthly $17; Annual $150 (365 days)');
+    expect(text).toContain('Hesitant $10 (40 questions');
+    expect(text).toContain('Adventurer $30 (all 64 questions');
   });
 
   it('never links a private page', () => {

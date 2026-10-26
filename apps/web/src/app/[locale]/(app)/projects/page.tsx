@@ -16,7 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t('title'), robots: { index: false, follow: false } };
 }
 
-/** Everyone is on the free plan until payments exist (D-109). */
+/** The free package's limit, shown to every account until the projects page reads the package (M7 step 5). */
 const PROJECT_LIMIT =
   PLANS.free.entitlements.projects.kind === 'count'
     ? PLANS.free.entitlements.projects.value

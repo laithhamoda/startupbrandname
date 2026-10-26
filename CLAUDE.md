@@ -31,29 +31,24 @@ You write code a senior reviewer would approve without rework. You do not guess;
 
 ## 3. LOCKED DECISIONS (do not change without explicit approval)
 
-### Access & pricing (USD)
-> Being replaced by payment per project (D-312, 2026-10-25); the levels and prices below stay until the owner confirms the new ones.
-
-| Tier | Price | Billing |
+### Access & pricing (USD) — packages, one payment, no renewal (D-312, D-313, D-314; updated 2026-10-26)
+| Package | Price | Billing |
 |---|---|---|
-| Free preview | 0 | — |
-| Weekly | $5 | one-time, 7 days |
-| Monthly | $17 | recurring |
-| Annual | $150 | one-time upfront, 365 days |
+| بفكّر (Thinking) | 0 | — |
+| متردد (Hesitant) | $10 | one-time, 365 days |
+| المغامر (Adventurer) | $30 | one-time, 365 days |
 | Course buyer | 0 | 12 months **from activation**, via voucher code |
-| Course alumni | $15/month | recurring, no commitment |
 
-### Entitlements (table-driven — never hard-code plan names in logic)
-| Entitlement | Free | Weekly | Monthly | Annual / Course buyer / Alumni |
+Moving from متردد to المغامر costs the difference ($20). The weekly, monthly, annual and alumni plans are withdrawn.
+
+### Entitlements (table-driven — never hard-code plan names in logic; `apps/web/src/config/plans.ts`)
+| Entitlement | بفكّر | متردد | المغامر | Course buyer |
 |---|---|---|---|---|
-| Projects | 1 | 1 | 3 | unlimited |
-| One-page summary | yes | yes | yes | yes |
-| Full report | locked | 1 | unlimited | unlimited |
-| AI mentor messages | 3 per day | 10 per day | unlimited (fair use) | unlimited (fair use) |
-| Competitor enrichment via web search (T6) | no | no | yes | yes |
-| Pitch deck export (T15) | no | yes | yes | yes |
-| Quarterly market refresh | no | no | no | yes |
-| Project retention | 30 days | subscription + 90 days read-only | same | same |
+| Diagnostic questions | 20 (quick) | 40 (standard, D-314) | 64 (full) | 64 |
+| Report | one-page summary | the numbers report (D-314) | full report | full report |
+| AI mentor messages | 2 | 10 per project | 64 per project | unlimited (fair use) |
+| Projects | 1 | up to 3 | up to 3 | unlimited |
+| Project retention | 30 days | 12 months + 90 days read-only | same | same |
 
 ### Vouchers
 - Format: `VIVA` + 8 uppercase hexadecimal chars. Example: `VIVAD908AEEB`.

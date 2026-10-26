@@ -84,17 +84,17 @@ describe('pricing text', () => {
     }
   });
 
-  it('marks only features that some plan includes as coming soon', () => {
-    for (const feature of PRICING.ar.soonFeatures) {
-      expect(Object.values(PLANS).some((plan) => plan.entitlements[feature])).toBe(true);
-    }
+  it('marks as coming soon only the mentor, the one feature not built yet', () => {
+    expect(PRICING.ar.soonFeatures).toEqual(['mentorMessages']);
+    expect(PRICING.en.soonFeatures).toEqual(['mentorMessages']);
   });
 
   it('matches the free plan in the FAQ answer', () => {
     const free = PLANS.free.entitlements;
     const answer = FAQ.en.items.find((item) => item.id === 'free')?.answer ?? '';
-    expect(free.mentorMessages).toEqual({ kind: 'perDay', value: 3 });
-    expect(answer).toContain('3 messages a day');
+    expect(free.mentorMessages).toEqual({ kind: 'count', value: 2 });
+    expect(answer).toContain('2 messages');
+    expect(answer).toContain('20 questions');
     expect(answer).toContain('30 days');
   });
 });

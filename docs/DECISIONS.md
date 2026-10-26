@@ -2987,3 +2987,19 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   exact, then capacity, the customer's evidence and the legal form. «متردد» answers "do the numbers
   work?", «المغامر» "how do I build the whole project?", which gives a clear reason to upgrade.
 - **Status:** Active
+
+### D-315 (2026-10-26): The package of an account comes from its subscriptions
+
+- **Decision:** M7 step 4. `config/plans.ts` holds the four packages of D-313 (`free`, `standard`,
+  `adventurer`, `course`) with their questions, report level, mentor quota, project limit and
+  retention; the old plans are gone, and the pricing page, FAQ and `llms.txt` show the packages.
+  An account's package is the best running subscription that covers the account
+  (`lib/payments/plan-of.ts`; in SQL `private.account_plan()`): started, before its end, not ended
+  by a refund or chargeback; a cancelled one runs to its end date, a past-due renewal stays open.
+  A read that fails counts as free and is logged. `create_project()` takes its limit from
+  `entitlement.<package>.projects` (3 for a paid package, "unlimited" for the course voucher).
+  Until the «متردد» report exists (step 4b), that package opens the summary; the mentor quotas are
+  enforced with the mentor (M6); the projects page still shows the free limit until step 5.
+- **Reason:** One table and one reading of the subscriptions for the app and the database, so a
+  package cannot open more in one place than in another.
+- **Status:** Active

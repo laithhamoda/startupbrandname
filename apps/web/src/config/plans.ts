@@ -1,11 +1,12 @@
+import type { Mode } from '@sbn/question-bank';
+
 /**
- * Plans and what each includes, as locked in CLAUDE.md §3 (with D-071 for the mentor quota).
- * Display only until payments exist (M7); entitlement checks will read the same table, so no code
- * ever branches on a plan name. Prices are USD; a local-currency equivalent needs a dated
- * exchange rate and is not shown yet.
+ * The packages and what each includes (D-313, D-314): one payment, no renewal. Entitlement checks
+ * read this table, so no code ever branches on a package name. Prices are USD; a local-currency
+ * equivalent needs a dated exchange rate and is not shown yet.
  */
 
-export type PlanId = 'free' | 'weekly' | 'monthly' | 'annual' | 'course' | 'alumni';
+export type PlanId = 'free' | 'standard' | 'adventurer' | 'course';
 
 export type Billing =
   | { kind: 'free' }
@@ -13,25 +14,28 @@ export type Billing =
   | { kind: 'recurring'; interval: 'month' }
   | { kind: 'voucher'; months: number };
 
-/** A limit: a count, a count per period, or unlimited (fair use applies where marked). */
+/** A limit: a count for the account, a count for each project, or unlimited. */
 export type Quota =
   | { kind: 'none' }
   | { kind: 'count'; value: number }
-  | { kind: 'perDay'; value: number }
+  | { kind: 'perProject'; value: number }
   | { kind: 'unlimited'; fairUse: boolean };
 
 export type Retention =
   { kind: 'days'; value: number } | { kind: 'subscriptionPlusReadOnly'; days: number };
 
+/**
+ * The report a package opens: the one-page summary, the «متردد» report (the numbers: pricing,
+ * break-even, projection, cash, legal path; D-314), or the full report.
+ */
+export type ReportLevel = 'summary' | 'standard' | 'full';
+
 export interface Entitlements {
   projects: Quota;
-  onePageSummary: boolean;
-  fullReport: Quota;
+  /** The deepest diagnostic the package asks: 20, 40 or 64 questions. */
+  questions: Mode;
+  report: ReportLevel;
   mentorMessages: Quota;
-  /** v2 features: shown as "coming soon" until they ship. */
-  competitorEnrichment: boolean;
-  pitchDeck: boolean;
-  quarterlyRefresh: boolean;
   retention: Retention;
 }
 
@@ -42,20 +46,9 @@ export interface Plan {
   entitlements: Entitlements;
 }
 
-const UNLIMITED: Quota = { kind: 'unlimited', fairUse: false };
-const FAIR_USE: Quota = { kind: 'unlimited', fairUse: true };
+/** A paid package keeps its projects open for edits for 12 months (D-313). */
+const PAID_DAYS = 365;
 const PAID_RETENTION: Retention = { kind: 'subscriptionPlusReadOnly', days: 90 };
-
-const FULL_ACCESS: Entitlements = {
-  projects: UNLIMITED,
-  onePageSummary: true,
-  fullReport: UNLIMITED,
-  mentorMessages: FAIR_USE,
-  competitorEnrichment: true,
-  pitchDeck: true,
-  quarterlyRefresh: true,
-  retention: PAID_RETENTION,
-};
 
 export const PLANS: Readonly<Record<PlanId, Plan>> = {
   free: {
@@ -64,71 +57,72 @@ export const PLANS: Readonly<Record<PlanId, Plan>> = {
     billing: { kind: 'free' },
     entitlements: {
       projects: { kind: 'count', value: 1 },
-      onePageSummary: true,
-      fullReport: { kind: 'none' },
-      mentorMessages: { kind: 'perDay', value: 3 },
-      competitorEnrichment: false,
-      pitchDeck: false,
-      quarterlyRefresh: false,
+      questions: 'quick',
+      report: 'summary',
+      mentorMessages: { kind: 'count', value: 2 },
       retention: { kind: 'days', value: 30 },
     },
   },
-  weekly: {
-    id: 'weekly',
-    priceUsd: 5,
-    billing: { kind: 'once', days: 7 },
-    entitlements: {
-      projects: { kind: 'count', value: 1 },
-      onePageSummary: true,
-      fullReport: { kind: 'count', value: 1 },
-      mentorMessages: { kind: 'perDay', value: 10 },
-      competitorEnrichment: false,
-      pitchDeck: true,
-      quarterlyRefresh: false,
-      retention: PAID_RETENTION,
-    },
-  },
-  monthly: {
-    id: 'monthly',
-    priceUsd: 17,
-    billing: { kind: 'recurring', interval: 'month' },
+  standard: {
+    id: 'standard',
+    priceUsd: 10,
+    billing: { kind: 'once', days: PAID_DAYS },
     entitlements: {
       projects: { kind: 'count', value: 3 },
-      onePageSummary: true,
-      fullReport: UNLIMITED,
-      mentorMessages: FAIR_USE,
-      competitorEnrichment: true,
-      pitchDeck: true,
-      quarterlyRefresh: false,
+      questions: 'standard',
+      report: 'standard',
+      mentorMessages: { kind: 'perProject', value: 10 },
       retention: PAID_RETENTION,
     },
   },
-  annual: {
-    id: 'annual',
-    priceUsd: 150,
-    billing: { kind: 'once', days: 365 },
-    entitlements: FULL_ACCESS,
+  adventurer: {
+    id: 'adventurer',
+    priceUsd: 30,
+    billing: { kind: 'once', days: PAID_DAYS },
+    entitlements: {
+      projects: { kind: 'count', value: 3 },
+      questions: 'full',
+      report: 'full',
+      mentorMessages: { kind: 'perProject', value: 64 },
+      retention: PAID_RETENTION,
+    },
   },
+  // Course vouchers are unchanged by D-313: everything, for 12 months from activation.
   course: {
     id: 'course',
     priceUsd: 0,
     billing: { kind: 'voucher', months: 12 },
-    entitlements: FULL_ACCESS,
-  },
-  alumni: {
-    id: 'alumni',
-    priceUsd: 15,
-    billing: { kind: 'recurring', interval: 'month' },
-    entitlements: FULL_ACCESS,
+    entitlements: {
+      projects: { kind: 'unlimited', fairUse: false },
+      questions: 'full',
+      report: 'full',
+      mentorMessages: { kind: 'unlimited', fairUse: true },
+      retention: PAID_RETENTION,
+    },
   },
 };
 
-/** Columns of the public comparison table; the course plans are shown beneath it. */
-export const COMPARED_PLANS: readonly PlanId[] = ['free', 'weekly', 'monthly', 'annual'];
-export const COURSE_PLANS: readonly PlanId[] = ['course', 'alumni'];
+/** From the least to the most: an account with several packages gets the best one. */
+export const PLAN_ORDER: readonly PlanId[] = ['free', 'standard', 'adventurer', 'course'];
+
+/** Moving up from one package to another costs the difference (D-313). */
+export function upgradePrice(from: PlanId, to: PlanId): number {
+  return Math.max(0, PLANS[to].priceUsd - PLANS[from].priceUsd);
+}
+
+/** Columns of the public comparison table; the course plan is shown beneath it. */
+export const COMPARED_PLANS: readonly PlanId[] = ['free', 'standard', 'adventurer'];
+export const COURSE_PLANS: readonly PlanId[] = ['course'];
 
 /** The column drawn with the gold rule: a business choice, changeable here (D-094). */
-export const HIGHLIGHTED_PLAN: PlanId = 'annual';
+export const HIGHLIGHTED_PLAN: PlanId = 'adventurer';
+
+/** Whether a package has a quota marked "unlimited*", which the fair-use note explains. */
+export function hasFairUse(entitlements: Entitlements): boolean {
+  return [entitlements.projects, entitlements.mentorMessages].some(
+    (quota) => quota.kind === 'unlimited' && quota.fairUse,
+  );
+}
 
 /** Lowest paid price, quoted on the home page. */
 export function lowestPaidPrice(): number {

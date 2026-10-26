@@ -1,5 +1,5 @@
 import 'server-only';
-import type { Entitlements, PlanId } from '@/config/plans';
+import type { Entitlements, PlanId, ReportLevel } from '@/config/plans';
 import type { Localized } from './types';
 
 export type FeatureKey = keyof Entitlements;
@@ -19,15 +19,18 @@ export interface PricingContent {
   priceRow: string;
   free: string;
   features: Readonly<Record<FeatureKey, string>>;
-  /** v2 features, marked until they ship. */
+  /** Features not built yet, marked until they ship. */
   soon: string;
   soonFeatures: readonly FeatureKey[];
+  /** "{count}" is replaced by the number of questions of the package's diagnostic. */
+  questionsCount: string;
+  reportLevels: Readonly<Record<ReportLevel, string>>;
   included: string;
   notIncluded: string;
   locked: string;
   unlimited: string;
   /** "{count}" is replaced by the number. */
-  perDay: string;
+  perProject: string;
   days: string;
   readOnlyAfter: string;
   startFree: string;
@@ -45,119 +48,114 @@ export interface PricingContent {
 export const PRICING: Localized<PricingContent> = {
   ar: {
     heading: 'الأسعار',
-    lead: 'اختر الخطة المناسبة لمرحلتك. لا خطة تخفي عنك الأرقام: الفرق في عدد المشاريع والتقارير والمرشد.',
-    notice:
-      'الاشتراكات المدفوعة غير متاحة بعد، وتُفتح في مرحلة لاحقة. إنشاء الحساب المجاني متاح الآن.',
+    lead: 'ادفع مرة واحدة حسب عمق التحليل الذي تحتاجه، دون اشتراك يتجدّد. كل باقة تغطّي حتى 3 مشاريع لمدة 12 شهرًا.',
+    notice: 'الباقات المدفوعة غير متاحة للشراء بعد، وتُفتح قريبًا. إنشاء الحساب المجاني متاح الآن.',
     earlyAccess:
-      'وصول مبكر: يُتاح التقرير الكامل الآن مجانًا لكل حساب تبلغ إجاباته 80% مع السعر والتكاليف والمبيعات، إلى أن تُفتح الاشتراكات.',
-    tableCaption: 'مقارنة الخطط',
+      'وصول مبكر: يُتاح التقرير الكامل الآن مجانًا لكل حساب تبلغ إجاباته 80% مع السعر والتكاليف والمبيعات، إلى أن تُفتح الباقات المدفوعة.',
+    tableCaption: 'مقارنة الباقات',
     featureColumn: 'الميزة',
-    choosePlan: 'اختر خطة لعرض تفاصيلها',
+    choosePlan: 'اختر باقة لعرض تفاصيلها',
     planNames: {
-      free: 'المجانية',
-      weekly: 'الأسبوعية',
-      monthly: 'الشهرية',
-      annual: 'السنوية',
+      free: 'بفكّر',
+      standard: 'متردد',
+      adventurer: 'المغامر',
       course: 'متدرّبو الدورة',
-      alumni: 'خرّيجو الدورة',
     },
     billing: {
-      free: 'دون بطاقة دفع',
-      weekly: 'دفعة واحدة لمدة 7 أيام',
-      monthly: 'شهريًا، تتجدّد تلقائيًا',
-      annual: 'دفعة واحدة لمدة 365 يومًا',
+      free: 'مجانًا، دون بطاقة دفع',
+      standard: 'دفعة واحدة لمدة 365 يومًا',
+      adventurer: 'دفعة واحدة لمدة 365 يومًا',
       course: 'مجانًا لمدة 12 شهرًا من التفعيل',
-      alumni: 'شهريًا، دون التزام',
     },
     priceRow: 'السعر',
     free: 'مجانًا',
     features: {
       projects: 'المشاريع',
-      onePageSummary: 'الملخّص في صفحة واحدة',
-      fullReport: 'التقرير الكامل',
+      questions: 'أسئلة التشخيص',
+      report: 'التقرير',
       mentorMessages: 'رسائل المرشد الذكي',
-      competitorEnrichment: 'إثراء تحليل المنافسين بالبحث على الإنترنت',
-      pitchDeck: 'تصدير عرض تقديمي للمستثمرين (Pitch deck)',
-      quarterlyRefresh: 'تحديث بيانات السوق كل ثلاثة أشهر',
       retention: 'مدة حفظ المشاريع',
     },
     soon: 'قريبًا',
-    soonFeatures: ['mentorMessages', 'competitorEnrichment', 'pitchDeck', 'quarterlyRefresh'],
+    soonFeatures: ['mentorMessages'],
+    questionsCount: '{count} سؤالًا',
+    reportLevels: {
+      summary: 'الملخّص في صفحة واحدة',
+      standard: 'تقرير الأرقام: التسعير والتعادل والتوقعات والنقد',
+      full: 'التقرير الكامل',
+    },
     included: 'متاح',
     notIncluded: 'غير متاح',
     locked: 'مقفل',
     unlimited: 'غير محدود',
-    perDay: '{count} يوميًا',
+    perProject: '{count} لكل مشروع',
     days: '{count} يومًا',
-    readOnlyAfter: 'مدة الخطة، ثم {count} يومًا للقراءة فقط',
+    readOnlyAfter: 'مدة الباقة، ثم {count} يومًا للقراءة فقط',
     startFree: 'ابدأ مجانًا',
     paidSoon: 'قريبًا',
-    paidPlansSoon: 'الخطط المدفوعة قريبًا.',
+    paidPlansSoon: 'الباقات المدفوعة قريبًا.',
     fairUse: '* غير محدود ضمن سياسة استخدام عادل تحمي الخدمة من الإساءة.',
     currency: 'الأسعار بالدولار الأمريكي.',
-    payment: 'الدفع ببطاقات Visa والبطاقات الدولية الأخرى، أو عبر PayPal. لا نحفظ بيانات بطاقتك.',
+    payment:
+      'الدفع ببطاقات Visa والبطاقات الدولية الأخرى، أو عبر PayPal، من خلال Paddle. لا نحفظ بيانات بطاقتك. الترقية من «متردد» إلى «المغامر» بدفع الفرق فقط.',
     courseHeading: 'لمتدرّبي دورة «الذكاء الاصطناعي في ريادة الأعمال»',
-    courseLead:
-      'يحصل متدرّبو الدورة على مزايا الخطة السنوية كاملة بكود يبدأ بـ VIVA، ويستمرّ الخرّيجون بسعر شهري أقل.',
-    voucherNote: 'يُتاح تفعيل أكواد VIVA مع فتح الاشتراكات.',
+    courseLead: 'يحصل متدرّبو الدورة على كل المزايا لمدة 12 شهرًا بكود يبدأ بـ VIVA.',
+    voucherNote: 'يُتاح تفعيل أكواد VIVA مع فتح الباقات المدفوعة.',
   },
   en: {
     heading: 'Pricing',
-    lead: 'Choose the plan that fits your stage. No plan hides the numbers from you: plans differ in projects, reports and mentor use.',
-    notice:
-      'Paid plans are not available yet and open at a later stage. You can create a free account now.',
+    lead: 'Pay once for the depth of analysis you need, with no renewing subscription. Each package covers up to 3 projects for 12 months.',
+    notice: 'Paid packages cannot be bought yet and open soon. You can create a free account now.',
     earlyAccess:
-      'Early access: the full report is free for now for every account whose answers reach 80%, with the price, costs and sales, until paid plans open.',
-    tableCaption: 'Plan comparison',
+      'Early access: the full report is free for now for every account whose answers reach 80%, with the price, costs and sales, until paid packages open.',
+    tableCaption: 'Package comparison',
     featureColumn: 'Feature',
-    choosePlan: 'Choose a plan to see its details',
+    choosePlan: 'Choose a package to see its details',
     planNames: {
-      free: 'Free',
-      weekly: 'Weekly',
-      monthly: 'Monthly',
-      annual: 'Annual',
+      free: 'Thinking',
+      standard: 'Hesitant',
+      adventurer: 'Adventurer',
       course: 'Course trainees',
-      alumni: 'Course alumni',
     },
     billing: {
-      free: 'No payment card',
-      weekly: 'One payment for 7 days',
-      monthly: 'Monthly, renews automatically',
-      annual: 'One payment for 365 days',
+      free: 'Free, no payment card',
+      standard: 'One payment for 365 days',
+      adventurer: 'One payment for 365 days',
       course: 'Free for 12 months from activation',
-      alumni: 'Monthly, no commitment',
     },
     priceRow: 'Price',
     free: 'Free',
     features: {
       projects: 'Projects',
-      onePageSummary: 'One-page summary',
-      fullReport: 'Full report',
+      questions: 'Diagnostic questions',
+      report: 'Report',
       mentorMessages: 'AI mentor messages',
-      competitorEnrichment: 'Competitor analysis enriched by web search',
-      pitchDeck: 'Pitch deck export',
-      quarterlyRefresh: 'Quarterly market data refresh',
       retention: 'How long projects are kept',
     },
     soon: 'Coming soon',
-    soonFeatures: ['mentorMessages', 'competitorEnrichment', 'pitchDeck', 'quarterlyRefresh'],
+    soonFeatures: ['mentorMessages'],
+    questionsCount: '{count} questions',
+    reportLevels: {
+      summary: 'One-page summary',
+      standard: 'The numbers report: pricing, break-even, projection and cash',
+      full: 'Full report',
+    },
     included: 'Included',
     notIncluded: 'Not included',
     locked: 'Locked',
     unlimited: 'Unlimited',
-    perDay: '{count} a day',
+    perProject: '{count} per project',
     days: '{count} days',
-    readOnlyAfter: 'The plan’s term, then {count} days read-only',
+    readOnlyAfter: 'The package’s term, then {count} days read-only',
     startFree: 'Start for free',
     paidSoon: 'Coming soon',
-    paidPlansSoon: 'Paid plans are coming soon.',
+    paidPlansSoon: 'Paid packages are coming soon.',
     fairUse: '* Unlimited under a fair-use policy that protects the service from abuse.',
     currency: 'Prices are in US dollars.',
     payment:
-      'Pay by Visa or another international card, or with PayPal. We never store your card details.',
+      'Pay by Visa or another international card, or with PayPal, through Paddle. We never store your card details. Moving from Hesitant to Adventurer costs only the difference.',
     courseHeading: 'For trainees of the “AI in Entrepreneurship” course',
-    courseLead:
-      'Course trainees get the full annual plan with a code that starts with VIVA, and alumni can continue at a lower monthly price.',
-    voucherNote: 'VIVA codes can be activated once paid plans open.',
+    courseLead: 'Course trainees get everything for 12 months with a code that starts with VIVA.',
+    voucherNote: 'VIVA codes can be activated once paid packages open.',
   },
 };
