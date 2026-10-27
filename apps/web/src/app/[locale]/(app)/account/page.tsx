@@ -4,12 +4,14 @@ import type { ReactNode } from 'react';
 import { CrossborderConsent } from '@/components/account/crossborder-consent';
 import { DeleteAccount } from '@/components/account/delete-account';
 import { PreferencesForm } from '@/components/account/preferences-form';
+import { VoucherForm } from '@/components/account/voucher-form';
 import { Button } from '@/components/ui/button';
 import { currentLocale } from '@/i18n/locale';
 import { consentStateOrNull } from '@/lib/ai/consent';
 import { deleteAccount, setCrossborderConsent, signOut } from '@/lib/auth/actions';
 import { requireAccount } from '@/lib/auth/session';
 import { countryOptions } from '@/lib/countries';
+import { activateVoucher } from '@/lib/payments/voucher-actions';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('account');
@@ -68,6 +70,11 @@ export default async function AccountPage() {
           consent={crossborder}
           action={setCrossborderConsent.bind(null, locale, crossborder !== 'current')}
         />
+      </Section>
+
+      <Section title={t('voucher.title')}>
+        <p className="reading">{t('voucher.intro')}</p>
+        <VoucherForm action={activateVoucher.bind(null, locale)} />
       </Section>
 
       <Section title={t('session')}>
