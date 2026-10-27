@@ -3186,3 +3186,23 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
 - **Reason:** A second factor stops a stolen email code from reaching payments and codes; an
   append-only log makes an admin's actions answerable.
 - **Status:** Active
+
+### D-328 (2026-10-27): The admin tools, and what is left out
+
+- **Decision:** M7 step 8, part 2, the lead's recommendations accepted by the owner. Every tool is a
+  database function that starts with `private.require_admin()` (an admin at aal2, D-327) and writes
+  its audit row in the same transaction; the tables stay closed to the client. Tools: issue a batch
+  of voucher codes and show them once (the log keeps the type, count and affiliate, never a code);
+  add an affiliate; list affiliates with codes issued and activated and the commission due and paid,
+  and mark an affiliate's due commissions paid after the transfer outside the platform (D-326);
+  list subscriptions and payments with the account email (each read writes a "view" row, so
+  reading personal data is answerable); give an account access by hand (a package for one project
+  of that account, or the course plan for the account; 1 to 730 days; source `admin`); end an
+  access given by hand or by a voucher, now. A `paddle` subscription cannot be ended here: it ends
+  with its refund in the Paddle dashboard. Left out on purpose: unlocking a core answer after
+  purchase (the value's shape depends on the question, and a free-form edit of a founder's answer
+  needs its own design), and a webhook drift view (no reconciliation job exists to show; it comes
+  with that job, not before).
+- **Reason:** The owner is the only admin and the log makes each action answerable; inventing an
+  answer editor or a drift report without the thing behind it would add risk and no value.
+- **Status:** Active

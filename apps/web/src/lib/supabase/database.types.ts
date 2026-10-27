@@ -954,8 +954,66 @@ export type Database = {
         Args: { p_adult_confirmed: boolean; p_code: string; p_ip_hash: string; p_user: string };
         Returns: string;
       };
+      admin_affiliates: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          activated: number;
+          active: boolean;
+          amount_usd_cents: number;
+          due_usd_cents: number;
+          id: string;
+          issued: number;
+          name: string;
+          paid_usd_cents: number;
+        }[];
+      };
+      admin_create_affiliate: {
+        Args: { p_amount_usd_cents: number; p_name: string; p_user?: string };
+        Returns: string;
+      };
+      admin_end_subscription: { Args: { p_id: string }; Returns: undefined };
       admin_enter: { Args: Record<PropertyKey, never>; Returns: undefined };
+      admin_grant_subscription: {
+        Args: { p_days: number; p_email: string; p_plan_id: string; p_project_id?: string };
+        Returns: string;
+      };
+      admin_issue_batch: {
+        Args: { p_affiliate?: string; p_count: number; p_note?: string; p_type: string };
+        Returns: string[];
+      };
+      admin_pay_commissions: { Args: { p_affiliate: string }; Returns: number };
+      admin_payments: {
+        Args: { p_limit?: number };
+        Returns: {
+          amount_minor: number;
+          email: string;
+          id: string;
+          occurred_at: string;
+          provider_transaction_id: string;
+          status: string;
+        }[];
+      };
       admin_status: { Args: Record<PropertyKey, never>; Returns: string };
+      admin_subscriptions: {
+        Args: { p_limit?: number };
+        Returns: {
+          email: string;
+          ends_at: string;
+          id: string;
+          plan_id: string;
+          project_id: string;
+          source: string;
+          starts_at: string;
+          status: string;
+        }[];
+      };
+      admin_voucher_types: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          plan_id: string;
+          type: string;
+        }[];
+      };
       apply_payment_event: {
         Args: {
           p_change: Json;
