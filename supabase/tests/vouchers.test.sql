@@ -17,7 +17,7 @@ insert into public.profiles (user_id, country_code, locale, has_project) values
 -- Issuing ---------------------------------------------------------------------------------------
 
 create temp table issued as
-  select code from public.issue_voucher_batch('course_12m', 5, null, 'pgTAP');
+  select i as code from public.issue_voucher_batch('course_12m', 5, null, 'pgTAP') as i;
 
 select is((select count(*)::int from issued), 5, 'a batch of 5 returns 5 codes');
 select is(

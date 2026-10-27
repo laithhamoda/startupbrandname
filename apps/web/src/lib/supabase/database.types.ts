@@ -690,14 +690,14 @@ export type Database = {
         };
         Insert: {
           at?: string;
-          id?: number;
+          id?: never;
           ip_hash: string;
           ok: boolean;
           user_id: string;
         };
         Update: {
           at?: string;
-          id?: number;
+          id?: never;
           ip_hash?: string;
           ok?: boolean;
           user_id?: string;
@@ -738,22 +738,22 @@ export type Database = {
       };
       voucher_types: {
         Row: {
-          access_interval: unknown;
+          access_interval: string;
           plan_id: string;
           type: string;
-          window_interval: unknown;
+          window_interval: string;
         };
         Insert: {
-          access_interval: unknown;
+          access_interval: string;
           plan_id: string;
           type: string;
-          window_interval: unknown;
+          window_interval: string;
         };
         Update: {
-          access_interval?: unknown;
+          access_interval?: string;
           plan_id?: string;
           type?: string;
-          window_interval?: unknown;
+          window_interval?: string;
         };
         Relationships: [];
       };
