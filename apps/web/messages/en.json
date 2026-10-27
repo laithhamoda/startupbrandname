@@ -653,5 +653,29 @@
         "active": "{count} AI mentor messages are added to this project. Thank you."
       }
     }
+  },
+  "admin": {
+    "title": "Admin",
+    "ready": "You are signed in to the admin area with a verified code. The tools come next.",
+    "mfa": {
+      "title": "Admin verification",
+      "introEnroll": "The admin area needs a second step. Set up an authenticator app on your phone, then confirm it with a code.",
+      "introVerify": "Enter the current six-digit code from your authenticator app.",
+      "start": "Set up the authenticator",
+      "starting": "Preparing…",
+      "scan": "Scan this code with your authenticator app.",
+      "qrAlt": "QR code for your authenticator app",
+      "secretLabel": "Or type this key in the app",
+      "afterScan": "Then enter the six-digit code the app shows.",
+      "codeLabel": "Six-digit code",
+      "codeHint": "The code changes every 30 seconds.",
+      "verify": "Confirm",
+      "verifying": "Checking…",
+      "errors": {
+        "invalid": "This code is not right. Wait for the next one and try again.",
+        "error": "The code could not be checked. Try again in a moment.",
+        "enrolled": "An authenticator is already set up for this account. Reload the page to enter its code."
+      }
+    }
   }
 }

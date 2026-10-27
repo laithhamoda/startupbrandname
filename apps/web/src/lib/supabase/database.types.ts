@@ -6,6 +6,21 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 export type Database = {
   public: {
     Tables: {
+      admins: {
+        Row: {
+          created_at: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       affiliates: {
         Row: {
           active: boolean;
@@ -73,6 +88,36 @@ export type Database = {
             referencedColumns: ['id'];
           },
         ];
+      };
+      audit_log: {
+        Row: {
+          action: string;
+          actor: string | null;
+          at: string;
+          detail: NonNullable<Json>;
+          id: number;
+          target_id: string | null;
+          target_type: string | null;
+        };
+        Insert: {
+          action: string;
+          actor?: string | null;
+          at?: string;
+          detail?: NonNullable<Json>;
+          id?: never;
+          target_id?: string | null;
+          target_type?: string | null;
+        };
+        Update: {
+          action?: string;
+          actor?: string | null;
+          at?: string;
+          detail?: NonNullable<Json>;
+          id?: never;
+          target_id?: string | null;
+          target_type?: string | null;
+        };
+        Relationships: [];
       };
       billing_products: {
         Row: {
@@ -909,6 +954,8 @@ export type Database = {
         Args: { p_adult_confirmed: boolean; p_code: string; p_ip_hash: string; p_user: string };
         Returns: string;
       };
+      admin_enter: { Args: Record<PropertyKey, never>; Returns: undefined };
+      admin_status: { Args: Record<PropertyKey, never>; Returns: string };
       apply_payment_event: {
         Args: {
           p_change: Json;

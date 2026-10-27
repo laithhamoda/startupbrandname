@@ -3166,3 +3166,23 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   share of; a fixed amount per activation is the simplest rule that matches "recorded on
   activation".
 - **Status:** Active
+
+### D-327 (2026-10-27): Admins need a TOTP code; every admin action is logged
+
+- **Decision:** M7 step 8, part 1, the lead's recommendations accepted by the owner. An admin is an
+  account listed in `admins` (written only with the service role, by `scripts/admin-account.mjs`)
+  whose session is at `aal2`, which Supabase gives only after a TOTP code. `private.require_admin()`
+  checks this in every admin function; the pages guard on `admin_status()` as a convenience: a
+  visitor who is not an admin gets the same 404 as a missing page, an admin at `aal1` is sent to
+  `/admin/mfa` to set up an authenticator (QR code and secret) or to type its code. An account
+  that already has a verified factor cannot enroll another from an `aal1` session, so the email
+  code alone never lets anyone pick their own authenticator. There is no recovery code in the app:
+  a lost phone is fixed by `admin-account.mjs reset-mfa`. `audit_log` is append only (a trigger
+  refuses update, delete and truncate), is written by `private.write_audit()` in the action's own
+  transaction, and holds ids, counts and plan names only. The admin starts as the owner alone.
+  Local Supabase has TOTP on for the tests; the hosted project's MFA setting is checked in the
+  dashboard before use. The tools (vouchers, affiliates, subscriptions, unlocking answers) are
+  part 2.
+- **Reason:** A second factor stops a stolen email code from reaching payments and codes; an
+  append-only log makes an admin's actions answerable.
+- **Status:** Active
