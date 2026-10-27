@@ -171,13 +171,19 @@ export type SaveResult =
    * Not saved. `gone`: the project was deleted; `stale`: this follow-up no longer applies. Trying
    * again cannot help either, so the editor says why and links to where the founder can go on.
    * `failed`: anything else, such as the database being unreachable; the editor keeps the draft
-   * so the founder can try again.
+   * so the founder can try again. `closed`: the founder chose the final version, so the answers no
+   * longer change; `core`: this answer defines a paid project and stays as it was (D-321, D-323).
    */
-  | { status: 'error'; reason: 'failed' | 'stale' | 'gone' };
+  | { status: 'error'; reason: 'failed' | 'stale' | 'gone' | 'closed' | 'core' };
 
 const FAILED = { status: 'error', reason: 'failed' } as const satisfies SaveResult;
 const STALE = { status: 'error', reason: 'stale' } as const satisfies SaveResult;
 const GONE = { status: 'error', reason: 'gone' } as const satisfies SaveResult;
+const CLOSED = { status: 'error', reason: 'closed' } as const satisfies SaveResult;
+const CORE = { status: 'error', reason: 'core' } as const satisfies SaveResult;
+
+/** SQLSTATEs of the guard on answers (supabase/migrations/20261026203000_report_versions.sql). */
+const ANSWER_GUARD: Readonly<Record<string, SaveResult>> = { SB003: CLOSED, SB004: CORE };
 
 /** How far a save got, for the log line when it fails. */
 interface SaveTrace {
@@ -411,6 +417,8 @@ async function save(
     ...provenance,
   });
   if (error) {
+    const guarded = ANSWER_GUARD[error.code];
+    if (guarded) return guarded;
     await log.error('diagnostic.save_failed', {
       ...errorFields(error),
       stage: 'upsert',

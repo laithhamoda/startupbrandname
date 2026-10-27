@@ -32,7 +32,12 @@ const PDF = new Uint8Array([37, 80, 68, 70, 45]);
 const modelOf = (locale: 'ar' | 'en' = 'ar', kind: 'full' | 'summary' = 'full'): ReportModel =>
   buildReportModel(goldenReportInput('jo-service-subscription', { locale, kind }));
 
-const ready = (model: ReportModel): ReportPage => ({ status: 'ready', model, notice: null });
+const ready = (model: ReportModel): ReportPage => ({
+  status: 'ready',
+  model,
+  notice: null,
+  version: null,
+});
 
 /** A store whose every call succeeds, with the calls it received. */
 function fakeStore(over: Partial<PdfStore> = {}) {

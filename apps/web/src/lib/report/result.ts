@@ -46,6 +46,8 @@ export async function loadProjectResult(
     }
     if (page.status === 'failed') return { status: 'failed' };
     if (page.status === 'none') return { status: 'none' };
+    // The summary alone never waits for a report version (D-321).
+    if (page.status === 'version_needed') return { status: 'failed' };
     const verdict = page.model.sections.find((section) => section.id === 'verdict');
     if (verdict !== undefined && !verdict.locked) return { status: 'verdict', section: verdict };
     if (page.notice?.kind === 'not_calculable') {

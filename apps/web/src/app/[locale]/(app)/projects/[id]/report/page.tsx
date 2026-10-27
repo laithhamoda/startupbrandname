@@ -6,6 +6,7 @@ import { NotEnoughAnswers } from '@/components/report/not-enough';
 import { PdfDownload } from '@/components/report/pdf-download';
 import { noticeReasonsOf, ReportNotice } from '@/components/report/notice';
 import { ReportView } from '@/components/report/report-view';
+import { isVersionErrorCode, VersionBar, VersionNeeded } from '@/components/report/versions';
 import { currentLocale } from '@/i18n/locale';
 import { requireAccount } from '@/lib/auth/session';
 import { projectPath, stepPath } from '@/lib/diagnostic/steps';
@@ -36,7 +37,9 @@ export default async function ReportPage({
   const money = await getTranslations('money');
   const reasonText = await getTranslations('canvas');
   const { id } = await params;
-  const refused = (await searchParams).pdf;
+  const query = await searchParams;
+  const refused = query.pdf;
+  const versionError = isVersionErrorCode(query.version) ? query.version : null;
 
   const symbols: Record<string, string> = {
     JOD: money('symbol.JOD'),
@@ -67,6 +70,18 @@ export default async function ReportPage({
       />
     );
   }
+  if (page.status === 'version_needed') {
+    return (
+      <VersionNeeded
+        locale={locale}
+        projectId={id}
+        next={page.next}
+        remaining={page.remaining}
+        versions={page.versions}
+        error={versionError}
+      />
+    );
+  }
   if (page.status === 'failed') {
     return (
       <div className="mx-auto grid max-w-[75rem] gap-6 px-4 py-10 sm:px-6">
@@ -84,6 +99,17 @@ export default async function ReportPage({
 
   return (
     <>
+      {page.version ? (
+        <VersionBar
+          locale={locale}
+          projectId={id}
+          number={page.version.number}
+          remaining={page.version.remaining}
+          final={page.version.final}
+          versions={page.version.versions}
+          error={versionError}
+        />
+      ) : null}
       {notice ? (
         <div className="px-4 pt-10 sm:px-6">
           <ReportNotice

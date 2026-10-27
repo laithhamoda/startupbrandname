@@ -8,6 +8,7 @@ import type { SupabaseServerClient } from '@/lib/supabase/server';
 import { degradeWithoutRun, reportModeOf } from './access';
 import { accountAccess } from './account-access';
 import { loadPackItems } from './pack';
+import { nextVersion, summariesOf, versionsLeft, type VersionSummary } from './versions';
 
 /** How many missing questions the "not enough answers" page lists. */
 const MISSING_SHOWN = 5;
@@ -21,9 +22,28 @@ export type ReportPage =
       readonly status: 'ready';
       readonly model: ReportModel;
       readonly notice: ReportNotice | null;
+      /** The version this report is, for a paid project (D-321); null otherwise. */
+      readonly version: ReportVersion | null;
+    }
+  /**
+   * A paid report whose answers match no recorded version: the founder makes the next version
+   * while one is remaining, or chooses the final one (D-321, D-323).
+   */
+  | {
+      readonly status: 'version_needed';
+      readonly next: number;
+      readonly remaining: number;
+      readonly versions: readonly VersionSummary[];
     }
   /** The model could not be built at all (logged). */
   | { readonly status: 'failed' };
+
+export interface ReportVersion {
+  readonly number: number;
+  readonly remaining: number;
+  readonly final: boolean;
+  readonly versions: readonly VersionSummary[];
+}
 
 export type ReportNotice =
   | { readonly kind: 'not_calculable'; readonly reasons: readonly NotCalculableReason[] }
@@ -80,6 +100,48 @@ export async function loadReportPage(
       ? { kind: 'summary', lockReason: 'completeness' }
       : decided;
 
+  // A paid project shows its paid report only for answers that match a recorded version, so the
+  // version limit means something (D-321, D-323). The preview list and early access stand in for a
+  // package without one, and the project page asks for the summary alone.
+  let version: ReportVersion | null = null;
+  if (shown.kind !== 'summary' && access.planId !== 'free') {
+    const [rows, project] = await Promise.all([
+      supabase
+        .from('report_versions')
+        .select('number, verdict, input_hash, created_at')
+        .eq('project_id', projectId),
+      supabase.from('projects').select('final_version').eq('id', projectId).maybeSingle(),
+    ]);
+    if (rows.error || project.error) {
+      await log.error('report.versions_read_failed', {
+        code: rows.error?.code ?? project.error?.code,
+        projectId,
+      });
+      return { status: 'failed' };
+    }
+    const final = project.data?.final_version ?? null;
+    const versions = summariesOf(rows.data);
+    const match = rows.data.find((row) => row.input_hash === analysis.inputHash);
+    if (final !== null) {
+      // A closed project shows its final version; its answers are that version's.
+      version = { number: final, remaining: 0, final: true, versions };
+    } else if (match) {
+      version = {
+        number: match.number,
+        remaining: versionsLeft(rows.data),
+        final: false,
+        versions,
+      };
+    } else {
+      return {
+        status: 'version_needed',
+        next: nextVersion(rows.data),
+        remaining: versionsLeft(rows.data),
+        versions,
+      };
+    }
+  }
+
   // The search for the changes that would change the verdict runs per request, and only when a
   // page shows it: the full report for a revise or a stop, and the free summary for a stop, which
   // always comes with its three changes (D-273, D-278).
@@ -126,7 +188,7 @@ export async function loadReportPage(
         : outcome.status === 'failed'
           ? { kind: 'failed' }
           : null;
-    return { status: 'ready', model, notice };
+    return { status: 'ready', model, notice, version };
   } catch (error) {
     await log.error('report.model_failed', { ...errorFields(error), projectId });
     return { status: 'failed' };
