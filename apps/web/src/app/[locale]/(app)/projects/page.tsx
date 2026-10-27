@@ -6,6 +6,7 @@ import { LinkPending } from '@/components/ui/link-pending';
 import { TextLink } from '@/components/ui/text-link';
 import { PLANS } from '@/config/plans';
 import { PRICING } from '@/content/pricing';
+import { getMentorPackCheckout } from '@/env/server';
 import { subscriptionsOf } from '@/lib/payments/account-plan';
 import { nextPurchasable } from '@/lib/payments/offer';
 import { bestPlan, projectPlan } from '@/lib/payments/plan-of';
@@ -38,6 +39,8 @@ export default async function ProjectsPage() {
   const unpaid = projects.filter(({ project }) => planOf(project.id) === 'free').length;
   const canCreate = unlimited || unpaid < freeLimit;
   const names = PRICING[locale].planNames;
+  // More mentor messages for any project, once the pack is on sale (D-322).
+  const packOnSale = getMentorPackCheckout() !== null;
   const countries = countryOptions(locale);
   // Western digits in both languages (CLAUDE.md §6).
   const date = new Intl.DateTimeFormat(locale === 'ar' ? 'ar-u-nu-latn' : 'en', {
@@ -96,6 +99,14 @@ export default async function ProjectsPage() {
                       {' · '}
                       <TextLink href={`/checkout/${next}?project=${project.id}`}>
                         {planId === 'free' ? t('buy') : t('upgrade', { plan: names[next] })}
+                      </TextLink>
+                    </>
+                  ) : null}
+                  {packOnSale ? (
+                    <>
+                      {' · '}
+                      <TextLink href={`/checkout/mentor?project=${project.id}`}>
+                        {t('mentorPack')}
                       </TextLink>
                     </>
                   ) : null}

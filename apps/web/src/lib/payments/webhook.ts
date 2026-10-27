@@ -6,7 +6,7 @@ import {
   type PriceResolver,
   type ProviderEvent,
 } from '@sbn/payments';
-import { PLANS, type PlanId } from '@/config/plans';
+import { MENTOR_PACK, PLANS, type PlanId } from '@/config/plans';
 
 /**
  * The payment webhook without the framework (M7 step 3, D-309): verify, translate, apply once.
@@ -44,10 +44,21 @@ function isPlanId(value: string): value is PlanId {
   return Object.hasOwn(PLANS, value);
 }
 
-/** The plan each price sells, with the days a one-time price gives, from the plan table. */
+/**
+ * The plan each price sells, with the days a one-time price gives, from the plan table; a mentor
+ * pack's price adds messages instead (D-322).
+ */
 export function priceResolver(rows: readonly PriceRow[]): PriceResolver {
   const byPrice = new Map<string, PricePlan>();
   for (const row of rows) {
+    if (row.plan_id === MENTOR_PACK.id) {
+      byPrice.set(row.provider_price_id, {
+        planId: MENTOR_PACK.id,
+        oneTimeDays: null,
+        mentorMessages: MENTOR_PACK.messages,
+      });
+      continue;
+    }
     if (!isPlanId(row.plan_id)) continue;
     const billing = PLANS[row.plan_id].billing;
     if (billing.kind === 'once') {

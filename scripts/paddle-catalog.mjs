@@ -1,4 +1,4 @@
-// Creates the Paddle catalog of the packages (D-313, D-317): three products, each with one
+// Creates the Paddle catalog of the packages (D-313, D-317, D-322): four products, each with one
 // one-time USD price, in the sandbox or the live account. Safe to run again: a product it made
 // before (found by custom_data.sbn_offer) is reused, never duplicated, and a price whose amount
 // differs from the plan table is reported, never changed.
@@ -8,7 +8,7 @@
 //
 // The key needs the product.read, product.write, price.read and price.write permissions. It is
 // read from the environment only, never printed, and never written to a file. The script prints
-// the four variables to set in Vercel (Preview for the sandbox, Production for live).
+// the variables to set in Vercel (Preview for the sandbox, Production for live).
 
 import { pathToFileURL } from 'node:url';
 
@@ -18,8 +18,8 @@ const SITE = 'https://startupbrandname.com';
 export const PRODUCT_IMAGE = `${SITE}/icon-512.png`;
 
 /**
- * The offers, from config/plans.ts (D-313): the two packages and the move from «استراتيجي» to
- * «قائد» at the difference. Amounts in US cents. `env` names the Vercel variable of the price.
+ * The offers, from config/plans.ts (D-313): the two packages, the move from «استراتيجي» to
+ * «قائد» at the difference, and the mentor pack (D-322). Amounts in US cents. `env` names the Vercel variable of the price.
  */
 export const OFFERS = [
   {
@@ -53,6 +53,16 @@ export const OFFERS = [
     productDescription:
       'Startup Brand Name: moves a project with the Strategist package to the Commander package for the difference in price. / ترقية مشروع لديه باقة «استراتيجي» إلى باقة «قائد» بدفع فرق السعر فقط.',
     priceName: 'Upgrade · one payment · ترقية بدفعة واحدة',
+  },
+  {
+    offer: 'mentor_pack',
+    plan: 'mentor_pack',
+    env: 'PADDLE_PRICE_MENTOR_PACK',
+    amountCents: 700,
+    productName: 'باقة المرشد الذكي · Mentor pack',
+    productDescription:
+      'Startup Brand Name: 10 more AI mentor messages for one project, free or paid. / 10 رسائل إضافية مع المرشد الذكي لمشروع واحد، مجاني أو مدفوع.',
+    priceName: 'One payment · دفعة واحدة',
   },
 ];
 

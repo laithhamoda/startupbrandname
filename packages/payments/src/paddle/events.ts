@@ -169,6 +169,11 @@ function transactionChange(data: unknown, occurredAt: string, resolvePrice: Pric
   };
   if (txn.subscription_id) return { ...base, provider_ref: txn.subscription_id };
 
+  // A mentor pack adds messages to the checkout's project, not a period of access.
+  if (plan.mentorMessages !== undefined) {
+    return { ...base, provider_ref: txn.id, credit: { messages: plan.mentorMessages } };
+  }
+
   if (plan.oneTimeDays === null) {
     throw new WebhookError(
       'price',

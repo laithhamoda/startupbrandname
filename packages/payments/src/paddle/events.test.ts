@@ -9,6 +9,7 @@ const resolvePrice: PriceResolver = (priceId) =>
     pri_monthly: { planId: 'monthly', oneTimeDays: null },
     pri_annual: { planId: 'annual', oneTimeDays: 365 },
     pri_weekly: { planId: 'weekly', oneTimeDays: 7 },
+    pri_pack: { planId: 'mentor_pack', oneTimeDays: null, mentorMessages: 10 },
   })[priceId] ?? null;
 
 function body(
@@ -256,6 +257,26 @@ describe('parsePaddleEvent: transactions', () => {
     const { change } = parsePaddleEvent(body('transaction.completed', data), resolvePrice);
     expect(change).toMatchObject({
       grant: { starts_at: '2026-10-25T10:00:00.123Z', ends_at: '2027-10-25T10:00:00.123Z' },
+    });
+  });
+
+  it('credits a mentor pack to the checkout instead of a period (D-322)', () => {
+    const data = transaction({
+      id: 'txn_03',
+      subscription_id: null,
+      items: [{ price: { id: 'pri_pack' } }],
+      details: { totals: { grand_total: '700' } },
+    });
+    const { change } = parsePaddleEvent(body('transaction.completed', data), resolvePrice);
+    expect(change).toEqual({
+      kind: 'payment',
+      transaction_id: 'txn_03',
+      provider_ref: 'txn_03',
+      customer_id: 'ctm_01',
+      checkout_ref: REF,
+      amount_minor: 700,
+      currency: 'USD',
+      credit: { messages: 10 },
     });
   });
 

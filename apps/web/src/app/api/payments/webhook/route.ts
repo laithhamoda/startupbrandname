@@ -1,5 +1,6 @@
 import { createPaddleProvider, type ProviderEvent } from '@sbn/payments';
-import { getPaddlePrices, getPaymentsEnv } from '@/env/server';
+import { MENTOR_PACK } from '@/config/plans';
+import { getMentorPackPrice, getPaddlePrices, getPaymentsEnv } from '@/env/server';
 import { log } from '@/lib/log';
 import { priceRowsOf } from '@/lib/payments/offer';
 import { handlePaymentWebhook, type ApplyOutcome, type PriceRow } from '@/lib/payments/webhook';
@@ -35,9 +36,13 @@ export async function POST(request: Request): Promise<Response> {
   // The prices of this environment (D-317); missing ones answer 500, so Paddle retries later.
   const loadPrices = (): Promise<readonly PriceRow[]> => {
     const prices = getPaddlePrices();
-    return prices === null
-      ? Promise.reject(new Error('the package prices are not configured'))
-      : Promise.resolve(priceRowsOf(prices));
+    if (prices === null) return Promise.reject(new Error('the package prices are not configured'));
+    // The mentor pack's price, when set, even while the pack is off sale (D-322).
+    const pack = getMentorPackPrice();
+    return Promise.resolve([
+      ...priceRowsOf(prices),
+      ...(pack === null ? [] : [{ plan_id: MENTOR_PACK.id, provider_price_id: pack }]),
+    ]);
   };
 
   const apply = async (event: ProviderEvent): Promise<ApplyOutcome> => {

@@ -19,6 +19,12 @@ export type Grant = {
   readonly ends_at: string;
 };
 
+/** The mentor messages a mentor pack adds to one project (D-322). */
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+export type Credit = {
+  readonly messages: number;
+};
+
 export type Change =
   | { readonly kind: 'ignore' }
   | {
@@ -43,6 +49,7 @@ export type Change =
       readonly amount_minor: number;
       readonly currency: 'USD';
       readonly grant?: Grant;
+      readonly credit?: Credit;
     }
   | {
       readonly kind: 'payment_status';
@@ -64,6 +71,8 @@ export interface PricePlan {
   readonly planId: string;
   /** Days of access a one-time price gives; null for a recurring price. */
   readonly oneTimeDays: number | null;
+  /** For a mentor pack: the messages one purchase adds instead of a period (D-322). */
+  readonly mentorMessages?: number;
 }
 
 /** Finds the plan a price sells; null when the price is not ours or not configured. */

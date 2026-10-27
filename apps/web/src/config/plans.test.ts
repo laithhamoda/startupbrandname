@@ -7,6 +7,8 @@ import {
   HIGHLIGHTED_PLAN,
   hasFairUse,
   lowestPaidPrice,
+  MENTOR_PACK,
+  mentorAllowance,
   PLAN_ORDER,
   PLANS,
   REPORT_VERSIONS,
@@ -131,5 +133,26 @@ describe('REPORT_VERSIONS', () => {
     expect(/\('versions\.after_go', '(\d+)'\)/.exec(sql)?.[1]).toBe(
       String(REPORT_VERSIONS.afterGo),
     );
+  });
+});
+
+describe('the mentor pack (D-322)', () => {
+  it('sells 10 messages for $7', () => {
+    expect(MENTOR_PACK).toEqual({ id: 'mentor_pack', priceUsd: 7, messages: 10 });
+  });
+
+  it('adds its credits to the messages of the project package', () => {
+    expect(mentorAllowance(PLANS.free.entitlements, 0)).toBe(2);
+    expect(mentorAllowance(PLANS.strategist.entitlements, 20)).toBe(30);
+    expect(mentorAllowance(PLANS.commander.entitlements, 10)).toBe(74);
+    expect(
+      mentorAllowance({ ...PLANS.free.entitlements, mentorMessages: { kind: 'none' } }, 10),
+    ).toBe(10);
+    expect(
+      mentorAllowance(
+        { ...PLANS.free.entitlements, mentorMessages: { kind: 'unlimited', fairUse: true } },
+        10,
+      ),
+    ).toBeNull();
   });
 });
