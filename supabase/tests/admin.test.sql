@@ -3,7 +3,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(21);
+select plan(24);
 
 insert into auth.users (id, email, created_at) values
   ('ad000000-0000-4000-8000-000000000001', 'adm-admin@example.test', now()),
@@ -99,6 +99,20 @@ select throws_ok($$select public.admin_enter()$$, '42501', null, 'nor enter');
 reset role;
 select is(
   (select count(*)::int from public.audit_log), 1, 'no attempt left a row'
+);
+
+-- Deleting the admin's account keeps the row and clears only who did it.
+select lives_ok(
+  $$delete from auth.users where id = 'ad000000-0000-4000-8000-000000000001'$$,
+  'the account of an admin with a row in the log can be deleted'
+);
+select is(
+  (select count(*)::int from public.audit_log where action = 'admin.enter' and actor is null),
+  1, 'and the row stays, with no actor'
+);
+select throws_ok(
+  $$update public.audit_log set actor = 'ad000000-0000-4000-8000-000000000002'$$,
+  '42501', null, 'the actor cannot be set again'
 );
 
 select * from finish();
