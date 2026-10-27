@@ -676,6 +676,89 @@
         "error": "The code could not be checked. Try again in a moment.",
         "enrolled": "An authenticator is already set up for this account. Reload the page to enter its code."
       }
+    },
+    "tools": {
+      "done": "Done.",
+      "doneCount": "Done ({count}).",
+      "outputLabel": "Result",
+      "outputHint": "Copy it now: the codes are not shown again, and the audit log does not keep them.",
+      "errors": {
+        "denied": "Not allowed. Sign in to the admin area again.",
+        "invalid": "Check the values: something is not accepted (an unknown plan, account or project, or a number out of range).",
+        "failed": "It did not work. Try again in a moment."
+      }
+    },
+    "vouchers": {
+      "title": "Voucher codes",
+      "intro": "Issue a batch of VIVA codes. They are shown once; give an affiliate to record a commission when each code is activated.",
+      "type": "Type",
+      "count": "How many (1 to 1000)",
+      "affiliate": "Affiliate",
+      "noAffiliate": "No affiliate",
+      "note": "Note",
+      "noteHint": "For you only, up to 200 characters.",
+      "issue": "Issue the batch",
+      "issuing": "Issuing…"
+    },
+    "affiliates": {
+      "title": "Affiliates and commissions",
+      "listCaption": "Affiliates, their codes and their commissions",
+      "none": "There is no affiliate yet.",
+      "name": "Name",
+      "perCode": "Per activated code",
+      "issued": "Codes issued",
+      "activated": "Activated",
+      "due": "Due",
+      "paid": "Paid",
+      "settle": "Settle",
+      "markPaid": "Mark as paid",
+      "marking": "Saving…",
+      "usd": "USD",
+      "settleHint": "Pay the amount due outside the platform first, then mark it as paid. The platform never pays anyone.",
+      "createTitle": "Add an affiliate",
+      "create": "Add",
+      "creating": "Adding…",
+      "amountLabel": "Commission for each activated code (USD)",
+      "amountHint": "For example 2.50."
+    },
+    "subscriptions": {
+      "title": "Subscriptions",
+      "listCaption": "The latest subscriptions",
+      "none": "There is no subscription yet.",
+      "grantTitle": "Give access by hand",
+      "grantIntro": "For support, or a payment that did not arrive. A package is for one project of the account; the course plan covers the account.",
+      "grant": "Give access",
+      "granting": "Saving…",
+      "email": "Account email",
+      "plan": "Plan",
+      "plans": {
+        "strategist": "Strategist",
+        "commander": "Commander",
+        "course": "Course"
+      },
+      "project": "Project id",
+      "projectHint": "Required for a package, empty for the course plan.",
+      "days": "Days (1 to 730)",
+      "source": "Source",
+      "status": "Status",
+      "starts": "Starts",
+      "ends": "Ends",
+      "end": "End",
+      "endNow": "End now",
+      "ending": "Ending…",
+      "paidHint": "A paid subscription ends with its refund in the Paddle dashboard, not here. Opening this page is recorded in the audit log."
+    },
+    "payments": {
+      "title": "Payments",
+      "listCaption": "The latest payments reported by Paddle",
+      "none": "There is no payment yet.",
+      "email": "Account email",
+      "amount": "Amount",
+      "status": "Status",
+      "date": "Date",
+      "transaction": "Transaction",
+      "usd": "USD",
+      "refundHint": "Refunds are made in the Paddle dashboard. Opening this page is recorded in the audit log."
     }
   }
 }
