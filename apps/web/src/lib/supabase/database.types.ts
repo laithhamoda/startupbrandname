@@ -178,6 +178,57 @@ export type Database = {
         };
         Relationships: [];
       };
+      mentor_credits: {
+        Row: {
+          checkout_ref: string | null;
+          created_at: string;
+          id: string;
+          messages: number;
+          payment_id: string | null;
+          project_id: string;
+          revoked_at: string | null;
+          source: string;
+          user_id: string;
+        };
+        Insert: {
+          checkout_ref?: string | null;
+          created_at?: string;
+          id?: string;
+          messages: number;
+          payment_id?: string | null;
+          project_id: string;
+          revoked_at?: string | null;
+          source: string;
+          user_id: string;
+        };
+        Update: {
+          checkout_ref?: string | null;
+          created_at?: string;
+          id?: string;
+          messages?: number;
+          payment_id?: string | null;
+          project_id?: string;
+          revoked_at?: string | null;
+          source?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'mentor_credits_payment_id_fkey';
+            columns: ['payment_id'];
+            isOneToOne: true;
+            referencedRelation: 'payments';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'mentor_credits_project_id_fkey';
+            columns: ['project_id'];
+            isOneToOne: false;
+            referencedRelation: 'projects';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       payment_events: {
         Row: {
           event_id: string;

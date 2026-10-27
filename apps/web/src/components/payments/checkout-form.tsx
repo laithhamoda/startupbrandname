@@ -68,7 +68,12 @@ function openCheckout(
     items: [{ priceId: start.priceId, quantity: 1 }],
     ...(start.email ? { customer: { email: start.email } } : {}),
     customData: { checkout_ref: start.checkoutRef },
-    settings: { displayMode: 'overlay', locale, successUrl },
+    // `{ref}` in the return address becomes this checkout's reference (the mentor pack's page).
+    settings: {
+      displayMode: 'overlay',
+      locale,
+      successUrl: successUrl.replace('{ref}', start.checkoutRef),
+    },
   });
 }
 

@@ -147,7 +147,8 @@
     "rule": "One free project at a time, and any number of paid ones.",
     "package": "{plan} package",
     "buy": "Buy a package for this project",
-    "upgrade": "Move up to {plan}"
+    "upgrade": "Move up to {plan}",
+    "mentorPack": "Buy more mentor messages"
   },
   "diagnostic": {
     "pageTitle": "Diagnostic",
@@ -622,6 +623,18 @@
     "forProject": "For the project:",
     "choose": "Choose the project you are buying the package for. Each purchase is for one project.",
     "noProjects": "Create a project first, then buy the package for it.",
-    "newProject": "New project"
+    "newProject": "New project",
+    "pack": {
+      "title": "Mentor pack",
+      "messages": "{count} more AI mentor messages, on top of what the package includes",
+      "project": "For one project, free or paid; you can buy it again",
+      "credits": "Extra messages already bought for this project: <count></count>",
+      "choose": "Choose the project you are buying the messages for. Each purchase is for one project.",
+      "backToProject": "Back to the project",
+      "done": {
+        "title": "Your messages are added",
+        "active": "{count} AI mentor messages are added to this project. Thank you."
+      }
+    }
   }
 }

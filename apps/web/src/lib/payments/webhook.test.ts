@@ -10,6 +10,7 @@ const PRICES: readonly PriceRow[] = [
   { plan_id: 'commander', provider_price_id: 'pri_commander' },
   { plan_id: 'course', provider_price_id: 'pri_course' },
   { plan_id: 'retired_plan', provider_price_id: 'pri_retired' },
+  { plan_id: 'mentor_pack', provider_price_id: 'pri_pack' },
 ];
 
 function transactionBody(priceId: string, subscriptionId: string | null = null): string {
@@ -52,6 +53,14 @@ describe('priceResolver', () => {
   it('gives each one-time price the days of its package', () => {
     expect(resolve('pri_standard')).toEqual({ planId: 'strategist', oneTimeDays: 365 });
     expect(resolve('pri_commander')).toEqual({ planId: 'commander', oneTimeDays: 365 });
+  });
+
+  it('gives the mentor pack its messages instead of a period (D-322)', () => {
+    expect(resolve('pri_pack')).toEqual({
+      planId: 'mentor_pack',
+      oneTimeDays: null,
+      mentorMessages: 10,
+    });
   });
 
   it('knows no price for a voucher plan, a plan the table does not have, or an unknown price', () => {

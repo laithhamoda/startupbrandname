@@ -56,6 +56,28 @@ export interface Plan {
  */
 export const REPORT_VERSIONS = { max: 10, afterGo: 5 } as const;
 
+/**
+ * The mentor pack (D-322): more AI mentor messages for one project, bought once, on any project,
+ * free ones included. It is not a package: it opens no report and no questions.
+ */
+export const MENTOR_PACK = { id: 'mentor_pack', priceUsd: 7, messages: 10 } as const;
+
+/**
+ * The mentor messages one project may send: its package's, plus the credits of the mentor packs
+ * bought for it (D-322). Null when the package has no limit.
+ */
+export function mentorAllowance(entitlements: Entitlements, credits: number): number | null {
+  const quota = entitlements.mentorMessages;
+  switch (quota.kind) {
+    case 'none':
+      return credits;
+    case 'unlimited':
+      return null;
+    default:
+      return quota.value + credits;
+  }
+}
+
 /** A paid package keeps its projects open for edits for 12 months (D-313). */
 const PAID_DAYS = 365;
 const PAID_RETENTION: Retention = { kind: 'subscriptionPlusReadOnly', days: 90 };

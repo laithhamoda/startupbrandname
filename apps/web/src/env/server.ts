@@ -147,6 +147,15 @@ export function getPaddlePrices(env: EnvSource = process.env): OfferPrices | nul
   };
 }
 
+/**
+ * The provider's price of the mentor pack (D-322), or null while it is missing or malformed. The
+ * webhook resolves it whenever it is set, so a pack paid for is always credited.
+ */
+export function getMentorPackPrice(env: EnvSource = process.env): string | null {
+  const parsed = priceId.safeParse(env.PADDLE_PRICE_MENTOR_PACK);
+  return parsed.success ? parsed.data : null;
+}
+
 export interface CheckoutEnv {
   /** Paddle's client-side token: public by design, it only opens checkouts. */
   readonly clientToken: string;
@@ -156,6 +165,29 @@ export interface CheckoutEnv {
 }
 
 const clientTokenSchema = z.string().regex(/^(test|live)_[A-Za-z0-9]{1,100}$/);
+
+export interface MentorPackCheckout {
+  readonly clientToken: string;
+  readonly environment: 'sandbox' | 'production';
+  readonly priceId: string;
+}
+
+/**
+ * What the mentor pack's checkout needs, or null while it is not on sale: until the mentor ships
+ * (M6), only MENTOR_PACK_ENABLED=true puts it on sale (D-322), and the checkout and the pack's price
+ * must be set.
+ */
+export function getMentorPackCheckout(env: EnvSource = process.env): MentorPackCheckout | null {
+  if (env.MENTOR_PACK_ENABLED !== 'true') return null;
+  const checkout = getCheckoutEnv(env);
+  const priceIdOfPack = getMentorPackPrice(env);
+  if (checkout === null || priceIdOfPack === null) return null;
+  return {
+    clientToken: checkout.clientToken,
+    environment: checkout.environment,
+    priceId: priceIdOfPack,
+  };
+}
 
 /** What the checkout needs, or null while it is not configured: the buy buttons then say "soon". */
 export function getCheckoutEnv(env: EnvSource = process.env): CheckoutEnv | null {

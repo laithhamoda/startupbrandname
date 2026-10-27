@@ -3112,3 +3112,17 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
 - **Reason:** A live report from changed answers would make the limit meaningless, and the final
   version must be the report the founder chose, so the answers it was made from must be kept.
 - **Status:** Active
+
+### D-324 (2026-10-27): How a mentor pack is credited, refunded and put on sale
+
+- **Decision:** M7 step 6d, the lead's reading of D-322. A paid pack is a row of `mentor_credits`
+  (project, messages, the payment, the checkout reference), written by `apply_payment_event()` when
+  a completed one-time transaction sells the pack's price (`PADDLE_PRICE_MENTOR_PACK`). A full
+  refund or a chargeback marks the credit revoked; a partial refund does not; messages already
+  sent are not taken back. The mentor (M6) reads a project's allowance as its package's messages
+  plus the credits not revoked (`mentorAllowance`). The pack is on sale, with its page
+  (`/checkout/mentor`) and a link on the projects page, only while `MENTOR_PACK_ENABLED` is
+  `true`; the webhook credits a paid pack whenever its price is set, so no payment is lost.
+- **Reason:** Selling messages before the mentor exists would take money for nothing; a credit that
+  survives a refund would give the messages away.
+- **Status:** Active

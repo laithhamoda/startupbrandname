@@ -21,12 +21,13 @@ afterEach(() => {
 describe('the catalog', () => {
   it('sells the two packages and the upgrade at the difference (D-313)', () => {
     const cents = Object.fromEntries(OFFERS.map((offer) => [offer.offer, offer.amountCents]));
-    expect(cents).toEqual({ strategist: 1000, commander: 3000, upgrade: 2000 });
+    expect(cents).toEqual({ strategist: 1000, commander: 3000, upgrade: 2000, mentor_pack: 700 });
     expect(cents.upgrade).toBe(cents.commander - cents.strategist);
     expect(OFFERS.map((offer) => offer.env)).toEqual([
       'PADDLE_PRICE_STRATEGIST',
       'PADDLE_PRICE_COMMANDER',
       'PADDLE_PRICE_UPGRADE',
+      'PADDLE_PRICE_MENTOR_PACK',
     ]);
   });
 
@@ -137,11 +138,13 @@ describe('run', () => {
     expect(calls.map((call) => call.method)).toEqual(['GET']);
   });
 
-  it('creates three products and three prices, and prints the variables', async () => {
+  it('creates four products and four prices, and prints the variables', async () => {
     const calls = fakePaddle();
     const lines = [];
     const result = await run({ key: SANDBOX_KEY, dryRun: false, log: (line) => lines.push(line) });
     expect(calls.filter((call) => call.method === 'POST').map((call) => call.path)).toEqual([
+      '/products',
+      '/prices',
       '/products',
       '/prices',
       '/products',
@@ -155,6 +158,7 @@ describe('run', () => {
       'PADDLE_PRICE_STRATEGIST',
       'PADDLE_PRICE_COMMANDER',
       'PADDLE_PRICE_UPGRADE',
+      'PADDLE_PRICE_MENTOR_PACK',
     ]);
     expect(lines.join('\n')).not.toContain(SANDBOX_KEY);
     expect(lines.join('\n')).toContain('Preview');
@@ -182,6 +186,7 @@ describe('run', () => {
       PADDLE_PRICE_STRATEGIST: 'pri_0',
       PADDLE_PRICE_COMMANDER: 'pri_1',
       PADDLE_PRICE_UPGRADE: 'pri_2',
+      PADDLE_PRICE_MENTOR_PACK: 'pri_3',
     });
   });
 
