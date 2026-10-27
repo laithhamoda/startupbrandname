@@ -541,7 +541,24 @@
     "deleteConfirmTitle": "Delete your account for good?",
     "deleteConfirmBody": "Your account and all your data will be deleted at once and cannot be recovered.",
     "deleting": "Deleting…",
-    "deleteConfirm": "Yes, delete my account"
+    "deleteConfirm": "Yes, delete my account",
+    "voucher": {
+      "title": "I have a code",
+      "intro": "Enter the code you received, such as a course code. It opens its package on your account for the period it states.",
+      "label": "Your code",
+      "hint": "Capital letters or small, with or without spaces or dashes.",
+      "adult": "I confirm that I am 18 or older.",
+      "activate": "Activate the code",
+      "activating": "Activating…",
+      "activated": "The code is active. Your package now shows on your projects.",
+      "errors": {
+        "adult_required": "Codes are for people aged 18 or older. Tick the box to continue.",
+        "invalid": "This code cannot be used. Check it and try again.",
+        "locked": "Too many attempts. Try again in 15 minutes.",
+        "in_use": "Your account already has this package running. The code was not used.",
+        "error": "The code could not be checked. Try again in a moment."
+      }
+    }
   },
   "goodbye": {
     "title": "Your account has been deleted",

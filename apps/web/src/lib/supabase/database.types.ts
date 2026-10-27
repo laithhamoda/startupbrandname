@@ -680,11 +680,153 @@ export type Database = {
         };
         Relationships: [];
       };
+      voucher_attempts: {
+        Row: {
+          at: string;
+          id: number;
+          ip_hash: string;
+          ok: boolean;
+          user_id: string;
+        };
+        Insert: {
+          at?: string;
+          id?: number;
+          ip_hash: string;
+          ok: boolean;
+          user_id: string;
+        };
+        Update: {
+          at?: string;
+          id?: number;
+          ip_hash?: string;
+          ok?: boolean;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      voucher_batches: {
+        Row: {
+          affiliate_id: string | null;
+          created_at: string;
+          id: string;
+          note: string | null;
+          type: string;
+        };
+        Insert: {
+          affiliate_id?: string | null;
+          created_at?: string;
+          id?: string;
+          note?: string | null;
+          type: string;
+        };
+        Update: {
+          affiliate_id?: string | null;
+          created_at?: string;
+          id?: string;
+          note?: string | null;
+          type?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'voucher_batches_type_fkey';
+            columns: ['type'];
+            isOneToOne: false;
+            referencedRelation: 'voucher_types';
+            referencedColumns: ['type'];
+          },
+        ];
+      };
+      voucher_types: {
+        Row: {
+          access_interval: unknown;
+          plan_id: string;
+          type: string;
+          window_interval: unknown;
+        };
+        Insert: {
+          access_interval: unknown;
+          plan_id: string;
+          type: string;
+          window_interval: unknown;
+        };
+        Update: {
+          access_interval?: unknown;
+          plan_id?: string;
+          type?: string;
+          window_interval?: unknown;
+        };
+        Relationships: [];
+      };
+      vouchers: {
+        Row: {
+          activated_at: string | null;
+          activated_by: string | null;
+          adult_confirmed_at: string | null;
+          batch_id: string;
+          code: string;
+          expires_at: string;
+          issued_at: string;
+          status: string;
+          subscription_id: string | null;
+          type: string;
+        };
+        Insert: {
+          activated_at?: string | null;
+          activated_by?: string | null;
+          adult_confirmed_at?: string | null;
+          batch_id: string;
+          code: string;
+          expires_at: string;
+          issued_at?: string;
+          status?: string;
+          subscription_id?: string | null;
+          type: string;
+        };
+        Update: {
+          activated_at?: string | null;
+          activated_by?: string | null;
+          adult_confirmed_at?: string | null;
+          batch_id?: string;
+          code?: string;
+          expires_at?: string;
+          issued_at?: string;
+          status?: string;
+          subscription_id?: string | null;
+          type?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'vouchers_batch_id_fkey';
+            columns: ['batch_id'];
+            isOneToOne: false;
+            referencedRelation: 'voucher_batches';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'vouchers_subscription_id_fkey';
+            columns: ['subscription_id'];
+            isOneToOne: false;
+            referencedRelation: 'subscriptions';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'vouchers_type_fkey';
+            columns: ['type'];
+            isOneToOne: false;
+            referencedRelation: 'voucher_types';
+            referencedColumns: ['type'];
+          },
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
     };
     Functions: {
+      activate_voucher: {
+        Args: { p_adult_confirmed: boolean; p_code: string; p_ip_hash: string; p_user: string };
+        Returns: string;
+      };
       apply_payment_event: {
         Args: {
           p_change: Json;
@@ -716,6 +858,10 @@ export type Database = {
       };
       crossborder_consent_state: { Args: Record<PropertyKey, never>; Returns: string };
       delete_my_account: { Args: Record<PropertyKey, never>; Returns: undefined };
+      issue_voucher_batch: {
+        Args: { p_affiliate?: string; p_count: number; p_note?: string; p_type: string };
+        Returns: string[];
+      };
       record_ai_run: {
         Args: {
           p_cache_read_tokens: number;

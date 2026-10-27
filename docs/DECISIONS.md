@@ -3126,3 +3126,24 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
 - **Reason:** Selling messages before the mentor exists would take money for nothing; a credit that
   survives a refund would give the messages away.
 - **Status:** Active
+
+### D-325 (2026-10-27): How VIVA vouchers are issued, activated and locked
+
+- **Decision:** M7 step 6, the lead's reading of the plan and the owner's answers of 2026-10-27.
+  Voucher types live in `voucher_types` (plan, access length, activation window); only `course_12m`
+  exists: plan `course` («استراتيجي», D-319), 12 months from activation, activatable for 12 months
+  from issue (D-060). The weekly, monthly and annual voucher types are not created: those plans no
+  longer exist (D-313, D-318); a package voucher is one row once the owner decides it. Activation
+  (`activate_voucher()`, service role only) cleans the input, locks the account's row of attempts,
+  and answers `activated`, `invalid` (unknown, used, revoked, expired and malformed look the same),
+  `locked` or `in_use` (the plan already runs; the code is kept). Five failures within 15 minutes
+  lock an account, and separately a network, for the rest of the window (settings
+  `vouchers.max_failures`, `vouchers.lock_minutes`; resolves #11). The network is a keyed hash made
+  by the app from `x-real-ip`; the table holds no readable address. The buyer must tick the 18+ box
+  at activation and the voucher records when (resolves #80 for course codes). Codes are issued by
+  `issue_voucher_batch()` through `scripts/issue-vouchers.mjs`, which writes a CSV and prints no
+  code, until the admin area (step 8). The commission is not written yet; step 7 hooks into
+  `activate_voucher()`. Global monitoring of guessing across accounts (#14) stays with M9.
+- **Reason:** A 32-bit code with no meaning is only safe with a lock the visitor cannot choose the
+  inputs of, and one answer for every failure.
+- **Status:** Active
