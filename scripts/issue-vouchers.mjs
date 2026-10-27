@@ -3,17 +3,22 @@
 // and logs; the file is the only copy outside the database.
 //
 //   SUPABASE_URL=... SUPABASE_SECRET_KEY=... node scripts/issue-vouchers.mjs \
-//     course_12m 50 ./course-batch.csv "Course, October 2026"
+//     course_12m 50 ./course-batch.csv "Course, October 2026" [affiliate-id]
+//
+// The affiliate id comes from scripts/add-affiliate.mjs; every activated code then earns that
+// affiliate a commission (D-326).
 //
 // Run it against production only with the owner's go-ahead ("migrate production" covers the
 // schema, not the data).
 import { existsSync, writeFileSync } from 'node:fs';
 
-const [type, countText, file, note] = process.argv.slice(2);
+const [type, countText, file, note, affiliate] = process.argv.slice(2);
 const count = Number(countText);
 
 if (!type || !Number.isInteger(count) || count < 1 || count > 1000 || !file) {
-  console.error('usage: issue-vouchers.mjs <type> <count 1-1000> <output.csv> [note]');
+  console.error(
+    'usage: issue-vouchers.mjs <type> <count 1-1000> <output.csv> [note] [affiliate-id]',
+  );
   process.exit(2);
 }
 if (existsSync(file)) {
@@ -30,7 +35,12 @@ if (!url || !key) {
 const response = await fetch(`${url}/rest/v1/rpc/issue_voucher_batch`, {
   method: 'POST',
   headers: { apikey: key, authorization: `Bearer ${key}`, 'content-type': 'application/json' },
-  body: JSON.stringify({ p_type: type, p_count: count, p_note: note ?? null }),
+  body: JSON.stringify({
+    p_type: type,
+    p_count: count,
+    p_note: note ?? null,
+    p_affiliate: affiliate ?? null,
+  }),
 });
 if (!response.ok) {
   console.error(`The batch was not issued (HTTP ${response.status}).`);

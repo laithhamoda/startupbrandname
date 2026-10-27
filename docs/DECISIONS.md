@@ -3147,3 +3147,22 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
 - **Reason:** A 32-bit code with no meaning is only safe with a lock the visitor cannot choose the
   inputs of, and one answer for every failure.
 - **Status:** Active
+
+### D-326 (2026-10-27): Affiliates earn a fixed amount for each activated code
+
+- **Decision:** M7 step 7, the lead's recommendation accepted by the owner (resolves #13). An
+  affiliate (`affiliates`) owns voucher batches; its rule is exactly `fixed_per_activation` with
+  `amount_usd_cents` (1 to 999999), validated in the database. `activate_voucher()` records one row
+  of `commissions` in the activation's transaction when the batch has an active affiliate; issuing
+  records nothing; a code can have one commission (unique). The commission is a record: it is due
+  until it is paid outside the platform and marked paid by the admin (step 8); the platform pays no
+  one. A commission still due is voided when the code is revoked or the account is deleted; a paid
+  one stays paid. An affiliate with an account reads only their own row and commissions (RLS), never
+  a user or a project (rule 6). Affiliates are added and batches attached with
+  `scripts/add-affiliate.mjs` and `scripts/issue-vouchers.mjs` until step 8. The affiliate
+  dashboard page is not built: the first affiliate is the owner's own Viva Rise, and a page with no
+  reader adds nothing before launch; the tables and policies already serve it.
+- **Reason:** The course codes cost the user nothing, so a share of a sale has nothing to take a
+  share of; a fixed amount per activation is the simplest rule that matches "recorded on
+  activation".
+- **Status:** Active

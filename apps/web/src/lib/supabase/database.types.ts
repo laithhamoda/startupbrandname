@@ -6,6 +6,33 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 export type Database = {
   public: {
     Tables: {
+      affiliates: {
+        Row: {
+          active: boolean;
+          commission_rule: NonNullable<Json>;
+          created_at: string;
+          id: string;
+          name: string;
+          user_id: string | null;
+        };
+        Insert: {
+          active?: boolean;
+          commission_rule: NonNullable<Json>;
+          created_at?: string;
+          id?: string;
+          name: string;
+          user_id?: string | null;
+        };
+        Update: {
+          active?: boolean;
+          commission_rule?: NonNullable<Json>;
+          created_at?: string;
+          id?: string;
+          name?: string;
+          user_id?: string | null;
+        };
+        Relationships: [];
+      };
       answers: {
         Row: {
           confidence: string;
@@ -106,6 +133,54 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'projects';
             referencedColumns: ['id'];
+          },
+        ];
+      };
+      commissions: {
+        Row: {
+          activated_at: string;
+          affiliate_id: string;
+          amount_usd_cents: number;
+          id: string;
+          paid_at: string | null;
+          status: string;
+          voided_at: string | null;
+          voucher_code: string;
+        };
+        Insert: {
+          activated_at: string;
+          affiliate_id: string;
+          amount_usd_cents: number;
+          id?: string;
+          paid_at?: string | null;
+          status?: string;
+          voided_at?: string | null;
+          voucher_code: string;
+        };
+        Update: {
+          activated_at?: string;
+          affiliate_id?: string;
+          amount_usd_cents?: number;
+          id?: string;
+          paid_at?: string | null;
+          status?: string;
+          voided_at?: string | null;
+          voucher_code?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'commissions_affiliate_id_fkey';
+            columns: ['affiliate_id'];
+            isOneToOne: false;
+            referencedRelation: 'affiliates';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'commissions_voucher_code_fkey';
+            columns: ['voucher_code'];
+            isOneToOne: true;
+            referencedRelation: 'vouchers';
+            referencedColumns: ['code'];
           },
         ];
       };
@@ -728,6 +803,13 @@ export type Database = {
         };
         Relationships: [
           {
+            foreignKeyName: 'voucher_batches_affiliate_id_fkey';
+            columns: ['affiliate_id'];
+            isOneToOne: false;
+            referencedRelation: 'affiliates';
+            referencedColumns: ['id'];
+          },
+          {
             foreignKeyName: 'voucher_batches_type_fkey';
             columns: ['type'];
             isOneToOne: false;
@@ -850,6 +932,10 @@ export type Database = {
           p_locale: string;
           p_terms_version: string;
         };
+        Returns: string;
+      };
+      create_affiliate: {
+        Args: { p_amount_usd_cents: number; p_name: string; p_user?: string };
         Returns: string;
       };
       create_project: {
