@@ -50,6 +50,13 @@ alter table public.voucher_batches
   add constraint voucher_batches_affiliate_id_fkey
   foreign key (affiliate_id) references public.affiliates (id);
 
+-- Step 6 tied status 'activated' to having an activation time, which left no way to revoke a code
+-- that was already activated (the commission then has to be voided). An activated or revoked code
+-- may carry its activation; an issued one never does.
+alter table public.vouchers drop constraint vouchers_activation;
+alter table public.vouchers add constraint vouchers_activation
+  check ((status = 'issued') = (activated_at is null) or status = 'revoked');
+
 create table public.commissions (
   id uuid primary key default gen_random_uuid(),
   affiliate_id uuid not null references public.affiliates (id),
