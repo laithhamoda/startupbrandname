@@ -3206,3 +3206,14 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
 - **Reason:** The owner is the only admin and the log makes each action answerable; inventing an
   answer editor or a drift report without the thing behind it would add risk and no value.
 - **Status:** Active
+
+### D-329 (2026-10-27): The audit log lets a deleted account's actor be cleared
+
+- **Decision:** Found in the M7 step 9 security review. `audit_log.actor` is cleared when its
+  account is deleted (`on delete set null`), but the append-only trigger of D-327 refused that
+  update, so an admin with a row in the log could not delete their account. The trigger now allows
+  exactly that change (actor from an id to null, every other column equal); any other update,
+  every delete and truncate are still refused. Amends D-327.
+- **Reason:** A rule that blocks the deletion right (account deletion, rule 6) is a bug; the log
+  keeps its row and loses only the link to the person.
+- **Status:** Active
