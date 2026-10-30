@@ -72,7 +72,8 @@ function openCheckout(
     settings: {
       displayMode: 'overlay',
       locale,
-      successUrl: successUrl.replace('{ref}', start.checkoutRef),
+      successUrl: (successUrl.startsWith('/') ? window.location.origin + successUrl : successUrl)
+        .replace('{ref}', start.checkoutRef),
     },
   });
 }
@@ -112,7 +113,8 @@ export function CheckoutForm({
         setLoadFailed(false);
         openCheckout(paddle, state, locale, successUrl);
       })
-      .catch(() => {
+      .catch((error: unknown) => {
+        console.error('checkout could not open', error);
         setLoadFailed(true);
       });
   }, [state, locale, successUrl]);
