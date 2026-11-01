@@ -1,6 +1,28 @@
 // Temporary, on the throwaway staging-check branch only: says whether each Paddle variable is
 // present and well formed, and never returns a value.
+import { getPaddlePrices, getPaymentsEnv } from '@/env/server';
+import { createSupabaseAdminClient } from '@/lib/supabase/admin';
+
 export const dynamic = 'force-dynamic';
+
+/** The webhook's own steps, run once: the prices, the admin client, one harmless read. */
+async function pipeline() {
+  const prices = getPaddlePrices() !== null;
+  const env = getPaymentsEnv();
+  if (!env) return { prices, env: false };
+  try {
+    const db = createSupabaseAdminClient(env.supabaseSecretKey);
+    const { data, error } = await db.from('settings').select('key').limit(1);
+    return {
+      prices,
+      env: true,
+      rows: data?.length ?? null,
+      error: error ? { code: error.code, message: error.message.slice(0, 160) } : null,
+    };
+  } catch (thrown) {
+    return { prices, env: true, thrown: String(thrown).slice(0, 200) };
+  }
+}
 
 function check(name: string, pattern: RegExp) {
   const value = process.env[name];
@@ -41,9 +63,10 @@ function secretKeyShape() {
   return shape;
 }
 
-export function GET() {
+export async function GET() {
   const price = /^pri_[a-z0-9]{1,60}$/;
   return Response.json({
+    pipeline: await pipeline(),
     PADDLE_CLIENT_TOKEN: {
       ...check('PADDLE_CLIENT_TOKEN', /^(test|live)_[A-Za-z0-9]{1,100}$/),
       prefix: (process.env.PADDLE_CLIENT_TOKEN ?? '').slice(0, 5),
