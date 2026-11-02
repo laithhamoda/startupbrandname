@@ -4,7 +4,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(45);
+select plan(49);
 
 insert into auth.users (id, email, created_at) values
   ('a7000000-0000-4000-8000-000000000001', 'm7-buyer@example.test', now()),
@@ -302,6 +302,37 @@ select is(
   (select subscription_id from public.payments where provider_transaction_id = 'txn_early'),
   (select id from public.subscriptions where provider_ref = 'sub_late'),
   'the early payment is linked to the late subscription'
+);
+
+-- A refund the provider calls partial is full when it returns the whole payment (D-330): a smaller
+-- amount leaves the access, the whole 17.00 USD ends it.
+select public.apply_payment_event(
+  'paddle', 'evt_13', 'adjustment.updated', '2026-10-27 07:00+00',
+  '{"kind": "payment_status", "transaction_id": "txn_early", "status": "partially_refunded", "refunded_minor": 500}'
+);
+select is(
+  (select status from public.payments where provider_transaction_id = 'txn_early'),
+  'partially_refunded',
+  'a refund of part of the amount stays partial'
+);
+select is(
+  (select status from public.subscriptions where provider_ref = 'sub_late'),
+  'active',
+  'a partial refund leaves the access'
+);
+select public.apply_payment_event(
+  'paddle', 'evt_14', 'adjustment.updated', '2026-10-27 07:30+00',
+  '{"kind": "payment_status", "transaction_id": "txn_early", "status": "partially_refunded", "refunded_minor": 1700}'
+);
+select is(
+  (select status from public.payments where provider_transaction_id = 'txn_early'),
+  'refunded',
+  'a "partial" refund of the whole amount is a full refund'
+);
+select is(
+  (select status from public.subscriptions where provider_ref = 'sub_late'),
+  'ended',
+  'and it ends the access it paid for'
 );
 
 -- A refund ends the access that payment bought.

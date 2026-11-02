@@ -3217,3 +3217,18 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
 - **Reason:** A rule that blocks the deletion right (account deletion, rule 6) is a bug; the log
   keeps its row and loses only the link to the person.
 - **Status:** Active
+
+### D-330 (2026-11-02): A refund of the whole payment is a full refund, whatever type Paddle names
+
+- **Decision:** Found in the first sandbox refund (M7 step 10). Paddle sent an approved refund of the
+  full 10.00 USD as `type: "partial"` (it names the transaction's items), so the payment became
+  `partially_refunded` and the access stayed active. The webhook now passes the adjustment's total
+  as `refunded_minor`, and `apply_payment_event()` applies a `partially_refunded` change as
+  `refunded` when `refunded_minor` is at least the payment's `amount_minor`. A smaller amount stays
+  partial. Several partial refunds that add up to the whole payment are not summed; that stays a
+  partial refund until the owner asks for it.
+- **Also:** The checkout page passed Paddle a relative return address, which Paddle refused, and the
+  failure was swallowed. The address is now made absolute in the browser and the failure is logged.
+- **Reason:** The amount is the fact; the provider's label is not. Keeping paid access after a full
+  refund is the costly mistake, so the amount decides.
+- **Status:** Active
