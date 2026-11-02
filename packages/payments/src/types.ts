@@ -55,6 +55,11 @@ export type Change =
       readonly kind: 'payment_status';
       readonly transaction_id: string;
       readonly status: PaymentStatusChange;
+      /**
+       * US cents the adjustment returns. A "partial" refund that returns the whole payment is applied
+       * as a full one (D-330): the provider names the type by items, not by amount.
+       */
+      readonly refunded_minor?: number;
     };
 
 /** A verified provider event, ready for `apply_payment_event()`. */

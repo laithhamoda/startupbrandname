@@ -69,10 +69,14 @@ function openCheckout(
     ...(start.email ? { customer: { email: start.email } } : {}),
     customData: { checkout_ref: start.checkoutRef },
     // `{ref}` in the return address becomes this checkout's reference (the mentor pack's page).
+    // Paddle rejects a relative address, so a path is made absolute here.
     settings: {
       displayMode: 'overlay',
       locale,
-      successUrl: successUrl.replace('{ref}', start.checkoutRef),
+      successUrl: (successUrl.startsWith('/')
+        ? `${window.location.origin}${successUrl}`
+        : successUrl
+      ).replace('{ref}', start.checkoutRef),
     },
   });
 }
@@ -112,7 +116,10 @@ export function CheckoutForm({
         setLoadFailed(false);
         openCheckout(paddle, state, locale, successUrl);
       })
-      .catch(() => {
+      .catch((error: unknown) => {
+        // The browser console is the only place this failure can be seen (the server never knows).
+        // eslint-disable-next-line no-console
+        console.error('checkout could not open', error);
         setLoadFailed(true);
       });
   }, [state, locale, successUrl]);
