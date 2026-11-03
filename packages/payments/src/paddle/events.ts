@@ -60,6 +60,7 @@ const adjustmentData = z.object({
   transaction_id: id,
   status: z.string(),
   type: z.enum(['full', 'partial']).nullish(),
+  totals: z.object({ total: z.string().regex(/^\d{1,15}$/) }).nullish(),
 });
 
 const SUBSCRIPTION_EVENTS = new Set([
@@ -202,6 +203,7 @@ function adjustmentChange(data: unknown): Change {
       kind: 'payment_status',
       transaction_id: adj.transaction_id,
       status: adj.type === 'partial' ? 'partially_refunded' : 'refunded',
+      ...(adj.totals ? { refunded_minor: Number(adj.totals.total) } : {}),
     };
   }
   return { kind: 'ignore' };

@@ -347,6 +347,24 @@ describe('parsePaddleEvent: adjustments', () => {
     ).toMatchObject({ status: 'chargeback' });
   });
 
+  it('carries the refunded amount, so a "partial" refund of the whole payment can be told apart', () => {
+    // The shape Paddle sent for a full refund of a 10.00 USD payment: type "partial", total "1000".
+    const refund = adjustment({ type: 'partial', totals: { total: '1000', fee: '100' } });
+    expect(parsePaddleEvent(body('adjustment.updated', refund), resolvePrice).change).toEqual({
+      kind: 'payment_status',
+      transaction_id: 'txn_01',
+      status: 'partially_refunded',
+      refunded_minor: 1000,
+    });
+  });
+
+  it('rejects an adjustment whose total is not a whole number of cents', () => {
+    const data = adjustment({ totals: { total: '10.00' } });
+    expect(reason(() => parsePaddleEvent(body('adjustment.updated', data), resolvePrice))).toBe(
+      'payload',
+    );
+  });
+
   it('ignores a refund waiting for approval, a rejected one and other adjustments', () => {
     for (const overrides of [
       { status: 'pending_approval' },
