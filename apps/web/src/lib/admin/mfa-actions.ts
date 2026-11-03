@@ -31,6 +31,16 @@ export type VerifyState =
   { readonly status: 'idle' } | { readonly status: 'invalid' } | { readonly status: 'error' };
 
 /**
+ * The image address of the QR code. Supabase returns it as a data URI already; wrapping it again
+ * made the image fail to load, so only a bare SVG is wrapped.
+ */
+function qrAddress(qrCode: string): string {
+  return qrCode.startsWith('data:')
+    ? qrCode
+    : `data:image/svg+xml;utf-8,${encodeURIComponent(qrCode)}`;
+}
+
+/**
  * Creates the TOTP factor of an admin who has none. A session that has not passed the second step
  * must never add a factor next to an existing one: whoever held only the email code could then
  * choose their own authenticator and become an admin. Unverified leftovers of an abandoned setup
@@ -63,7 +73,7 @@ export async function startEnrollment(localeInput: string): Promise<EnrollState>
     return {
       status: 'ready',
       factorId: data.id,
-      qr: `data:image/svg+xml;utf-8,${encodeURIComponent(data.totp.qr_code)}`,
+      qr: qrAddress(data.totp.qr_code),
       secret: data.totp.secret,
     };
   } catch (error) {
