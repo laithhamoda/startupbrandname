@@ -88,6 +88,17 @@ describe('startEnrollment (D-327)', () => {
     expect(mfa.enroll).toHaveBeenCalledWith({ factorType: 'totp', friendlyName: 'authenticator' });
   });
 
+  it('keeps a QR code that Supabase already returns as a data URI', async () => {
+    // What the hosted service sends: wrapping it again made the image fail to load.
+    const uri = 'data:image/svg+xml;utf-8,<svg a="b"/>';
+    const { mfa } = account();
+    mfa.enroll.mockResolvedValueOnce({
+      data: { id: FACTOR, totp: { qr_code: uri, secret: 'SECRET' } },
+      error: null,
+    });
+    expect(await startEnrollment('en')).toMatchObject({ status: 'ready', qr: uri });
+  });
+
   it('removes the unverified leftovers of an abandoned setup first', async () => {
     const { mfa } = account({
       factors: { totp: [], all: [{ id: 'old', factor_type: 'totp' }] },
