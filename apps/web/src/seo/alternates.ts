@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { hasEnglishVersion } from '@/i18n/arabic-only';
 import { type Locale, routing } from '@/i18n/routing';
 
 /** A path after the language prefix: '' for the home page, otherwise '/privacy' and so on. */
@@ -10,7 +11,10 @@ export type LocalizedPath = '' | `/${string}`;
  */
 export function localizedAlternates(locale: Locale, path: LocalizedPath): Metadata['alternates'] {
   const languages: Record<string, string> = {};
-  for (const other of routing.locales) languages[other] = `/${other}${path}`;
+  for (const other of routing.locales) {
+    if (other === 'en' && !hasEnglishVersion(path)) continue;
+    languages[other] = `/${other}${path}`;
+  }
   languages['x-default'] = path === '' ? '/' : path;
   return { canonical: `/${locale}${path}`, languages };
 }

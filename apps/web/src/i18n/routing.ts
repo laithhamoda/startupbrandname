@@ -8,6 +8,8 @@ export const routing = defineRouting({
   locales: ['ar', 'en'],
   defaultLocale: 'ar',
   localePrefix: 'always',
+  // Arabic only (D-336): the browser language no longer picks English.
+  localeDetection: false,
 });
 
 export type Locale = (typeof routing.locales)[number];
