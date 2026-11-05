@@ -85,10 +85,16 @@ Moving a project from Strategist to Commander costs the difference ($20). The we
 
 ### Markets
 - **Global:** signup is open in every country (D-066). Verified country packs, tax rules and registration guides start with Jordan and Algeria; other countries get the full analysis with those sections marked as not yet verified (rule 9).
+- **Priority (D-335):** Jordan, the Gulf and Algeria. A country without verified data from the owner shows those sections as not yet verified; Gulf figures are never written from memory.
 - **Algeria:** opened by the owner on 2026-09-26 before the Law 18-07 legal opinion, accepting that risk (D-068). `MARKET_DZ_ENABLED` stays as a kill switch and is now `true`.
 
 ### Infrastructure
 - Supabase (Postgres, Auth, Storage, RLS) in **Frankfurt (EU)**. Vercel functions pinned to **fra1**. Database and functions must be co-located.
+
+### Public first visit (D-335)
+- A visitor answers the diagnostic without signing up, under an anonymous identity that becomes the account when the visitor signs in (same user, same project). No device fingerprint.
+- When the full report is written, a visitor reads 40% of its sections, counted from the first; the rest and the project result (the verdict) need a signed-in account. The server decides it (D-232).
+- The final verdict recommends following the owner's Instagram and LinkedIn accounts (links from the owner).
 
 ### Report verdict
 - Executive summary ends with a verdict: **امضِ / عدّل / توقّف**. "توقّف" is always phrased as "غير قابل للتنفيذ بصيغته الحالية" plus exactly 3 specific changes that would change the verdict.

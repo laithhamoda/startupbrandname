@@ -3325,3 +3325,36 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
 - **Counter:** It still shows the real number of spots left.
 - **Replaces:** The phone check as a condition in D-332; the rest of D-332 and D-333 stand.
 - **Status:** Active
+
+### D-335 (2026-11-05): A public first visit without signup, a 40% preview, and the Gulf as a priority market
+
+- **Decision:** The owner's answers to the Arabic-region brief. The brief is a list of ideas, not a
+  replacement of this file: what does not conflict is taken, and the locked decisions stand.
+- **Markets:** The priority is **Jordan, the Gulf and Algeria**. Verified packs, tax rules and
+  registration guides exist only where the owner supplies verified data with a source; a Gulf
+  country without it shows those sections as not yet verified, never a figure from memory
+  (rules 8 and 9). The country-level `hreflang` (`ar-JO`, `ar-SA`, `ar-AE`, `ar-DZ`) is an addition to
+  the two languages.
+- **The first visit:** A visitor answers the diagnostic **without signing up**. The answers live
+  under an anonymous Supabase identity, so row level security works as for any account; when the
+  visitor signs in, the email is added to the **same** identity and the project stays. No device
+  fingerprint: a human check, a limit per address and a clean-up of old anonymous identities
+  guard it, and the anonymous visitor gets a limited use of the language model.
+- **What a visitor sees:** When the full report is written, the visitor reads **40% of its
+  sections, counted from the first**, with the titles of the locked ones visible. The rest and
+  the **project result (the verdict)** need a signed-in account. The server decides this: a
+  locked section's values and the verdict never reach the browser (D-232). Progress is kept 30
+  days in the same browser.
+- **The final verdict recommends** following the owner's Instagram and LinkedIn accounts, which
+  help founders produce, adjust and develop ideas. The links come from the owner; none is guessed.
+  This replaces the 1:1 consultation and the course link of the brief, and D-037 (no link to
+  vivarise.net) stands.
+- **Changes in:** D-086 (signup: a visitor now answers before signing up; the questions of D-086
+  are asked when the visitor signs in) and D-287 (the verdict is no longer free to see: it needs an
+  account).
+- **Not taken from the brief:** The model scoring each criterion (rule 1: the model never produces
+  a number in a report); `GO / NO-GO / PIVOT` (the verdict stays امضِ / عدّل / توقّف); mada and CliQ
+  (Paddle is the merchant of record, D-309); a fingerprint of the device; Fikrova names.
+- **Open:** Legal review of the consent shown before a visitor types an idea. Verified Gulf data.
+  The owner's account links and a WhatsApp number.
+- **Status:** Active
