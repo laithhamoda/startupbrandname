@@ -2,26 +2,37 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { SupabaseServerClient } from '@/lib/supabase/server';
 import { accountAccess } from './account-access';
 
-vi.mock('@/lib/log', () => ({ log: { error: vi.fn(() => Promise.resolve()) } }));
+const logError = vi.hoisted(() => vi.fn(() => Promise.resolve()));
+vi.mock('@/lib/log', () => ({ log: { error: logError } }));
 
 const NOW = new Date('2026-10-26T12:00:00Z');
 const PROJECT = 'a0000000-0000-4000-8000-000000000001';
 const OTHER = 'b0000000-0000-4000-8000-000000000002';
 
-/** A client whose subscriptions read answers `rows`, or fails. */
-function client(rows: readonly object[] | 'error' = []): SupabaseServerClient {
+/** What `my_launch_spot()` answers: a spot, a failure, or something that is not a spot. */
+type SpotAnswer = 'none' | 'active' | 'kept' | 'error' | 'junk';
+
+/** A client whose subscriptions read answers `rows`, or fails, and whose launch spot is `spot`. */
+function client(
+  rows: readonly object[] | 'error' = [],
+  spot: SpotAnswer = 'none',
+): SupabaseServerClient {
   const result =
     rows === 'error' ? { data: null, error: { code: 'XX000' } } : { data: rows, error: null };
+  const spotResult =
+    spot === 'error' ? { data: null, error: { code: 'XX000' } } : { data: spot, error: null };
   return {
     from: () => ({ select: () => Promise.resolve(result) }),
+    rpc: () => Promise.resolve(spotResult),
   } as unknown as SupabaseServerClient;
 }
 
-const preview = async (email: string | null) =>
-  (await accountAccess(client(), email, PROJECT, NOW)).access.fullReportPreview;
+const preview = async (email: string | null, spot: SpotAnswer = 'none') =>
+  (await accountAccess(client([], spot), email, PROJECT, NOW)).access.fullReportPreview;
 
 afterEach(() => {
   vi.unstubAllEnvs();
+  logError.mockClear();
 });
 
 describe('accountAccess (D-245, D-290, D-313, D-320)', () => {
@@ -43,16 +54,34 @@ describe('accountAccess (D-245, D-290, D-313, D-320)', () => {
     expect(await preview('someone@example.test')).toBe(false);
   });
 
-  it('opens it to every account, and to one without an address, while early access is on', async () => {
+  it('opens it to an account with an active launch spot, with or without an address (D-332)', async () => {
     vi.stubEnv('EARLY_ACCESS_FULL_REPORT', 'true');
-    expect(await preview('someone@example.test')).toBe(true);
-    expect(await preview(null)).toBe(true);
+    expect(await preview('someone@example.test', 'active')).toBe(true);
+    expect(await preview(null, 'active')).toBe(true);
   });
 
-  it('reads early access as on only for exactly "true"', async () => {
+  it('opens it to nobody without an active spot, even while the launch switch is on', async () => {
+    vi.stubEnv('EARLY_ACCESS_FULL_REPORT', 'true');
+    for (const spot of ['none', 'kept', 'junk'] as const) {
+      expect(await preview('someone@example.test', spot), spot).toBe(false);
+    }
+  });
+
+  it('closes when the spot cannot be read, and says so', async () => {
+    vi.stubEnv('EARLY_ACCESS_FULL_REPORT', 'true');
+    expect(await preview('someone@example.test', 'error')).toBe(false);
+    expect(logError).toHaveBeenCalledWith('launch.spot_read_failed', { code: 'XX000' });
+  });
+
+  it('does not ask for the spot while the launch switch is off', async () => {
+    expect(await preview('someone@example.test', 'active')).toBe(false);
+    expect(logError).not.toHaveBeenCalled();
+  });
+
+  it('reads the launch switch as on only for exactly "true"', async () => {
     for (const raw of ['yes', 'TRUE', '1', 'false', '']) {
       vi.stubEnv('EARLY_ACCESS_FULL_REPORT', raw);
-      expect(await preview('someone@example.test'), raw).toBe(false);
+      expect(await preview('someone@example.test', 'active'), raw).toBe(false);
     }
   });
 
@@ -63,7 +92,9 @@ describe('accountAccess (D-245, D-290, D-313, D-320)', () => {
       access: { fullReportPreview: false },
     });
     vi.stubEnv('EARLY_ACCESS_FULL_REPORT', 'true');
-    expect(await accountAccess(client(), 'owner@example.test', PROJECT, NOW)).toMatchObject({
+    expect(
+      await accountAccess(client([], 'active'), 'owner@example.test', PROJECT, NOW),
+    ).toMatchObject({
       previewListValid: false,
       access: { fullReportPreview: true },
     });

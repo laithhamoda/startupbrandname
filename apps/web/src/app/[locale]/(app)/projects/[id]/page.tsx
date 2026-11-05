@@ -11,7 +11,9 @@ import {
 import type { Metadata } from 'next';
 import { getMessages, getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import { ClientMessages } from '@/components/client-messages';
 import { FindingList } from '@/components/diagnostic/finding-list';
+import { LaunchOffer } from '@/components/launch/launch-offer';
 import { ProjectSettings } from '@/components/diagnostic/project-settings';
 import { ProjectResult, type ProjectResultView } from '@/components/diagnostic/project-result';
 import { CompletenessPanel } from '@/components/diagnostic/progress';
@@ -121,6 +123,10 @@ export default async function ProjectPage({ params }: PageProps<'/[locale]/proje
             </ButtonLink>
           </div>
         </header>
+
+        <ClientMessages namespaces={['launch']}>
+          <LaunchOffer supabase={supabase} locale={locale} />
+        </ClientMessages>
 
         <ProjectResult
           view={resultView}

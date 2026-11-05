@@ -28,9 +28,16 @@ const OWNER = 'owner@example.test';
 const now = new Date('2026-10-12T10:00:00Z');
 const words = messagesFor('en');
 
-/** A supabase stand-in that answers the pack query with the given result. */
-function client(result: { data: unknown[]; error: unknown } = { data: [], error: null }) {
+/**
+ * A supabase stand-in that answers the pack query with the given result, and `my_launch_spot()`
+ * with `spot` (an account that holds an active spot unless a test says otherwise).
+ */
+function client(
+  result: { data: unknown[]; error: unknown } = { data: [], error: null },
+  spot: 'none' | 'active' | 'kept' = 'active',
+) {
   return {
+    rpc: () => Promise.resolve({ data: spot, error: null }),
     from: () => ({
       // Awaited as is, the read of the account's subscriptions (D-320): none, so the free package.
       select: () =>
@@ -182,11 +189,23 @@ describe('loadReportPage (D-273)', () => {
     expect(log.error).toHaveBeenCalledWith('report.model_failed', expect.anything());
   });
 
-  it('opens the full report to an account that is not on the list while early access is on (D-290)', async () => {
+  it('opens the full report to an account with an active launch spot while the launch is on (D-332)', async () => {
     vi.stubEnv('EARLY_ACCESS_FULL_REPORT', 'true');
     setup('jo-service-subscription', 'full');
     const page = await loadReportPage(client(), 'p', options('someone@example.test'));
     expect(page?.status === 'ready' && page.model.kind).toBe('full');
+  });
+
+  it('keeps the summary locked for an account without a launch spot, even while the launch is on', async () => {
+    vi.stubEnv('EARLY_ACCESS_FULL_REPORT', 'true');
+    setup('jo-service-subscription', 'full');
+    const page = await loadReportPage(
+      client(undefined, 'none'),
+      'p',
+      options('someone@example.test'),
+    );
+    expect(page?.status === 'ready' && page.model.kind).toBe('summary');
+    expect(page?.status === 'ready' && page.model.lockReason).toBe('plan');
   });
 
   it('keeps the summary locked by the plan when early access is off or mistyped', async () => {
