@@ -3257,11 +3257,11 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   is once the window ends (the table says 2 per project).
 - **Status:** Active
 
-### D-332 (2026-11-05): The free launch window is 500 account spots, claimed at registration
+### D-332 (2026-11-05): The free launch window is 500 account spots, claimed with a verified phone
 
 - **Decision:** The owner's choice. The window is counted in accounts, not in reports. The first
-  500 accounts that finish registration (the signup questions, D-086) each take one spot, and a
-  counter on the site shows the real number of spots left, falling with every registration. A spot
+  500 accounts that verify a phone number when they take their free project each take one
+  spot, and a counter on the site shows the real number of spots left, falling with every registration. A spot
   gives the account **one free project**: its full report is open (the 80% gate of D-290 stays),
   with unlimited edits and unlimited report versions while the window lasts. The 5 free mentor
   messages per account of D-331 stay.
@@ -3271,6 +3271,15 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   no deployment is needed. `EARLY_ACCESS_ENDS_AT` is required, and a missing or malformed value
   closes the window. The owner can still close it earlier by turning off
   `EARLY_ACCESS_FULL_REPORT`.
+- **Phone check:** One phone number is one spot, so one person cannot take several. The check
+  happens when the account takes its free project, not at signup, so the signup questions of
+  D-086 do not change. An account that has not verified a phone keeps the free package without
+  a spot. The number is used only for this check: it is never sent to the language model, it is
+  deleted with the account, and the privacy policy says so. Text messages are limited per
+  address and per number, and a human check guards the form, so nobody can run up the bill.
+  The provider is one that Supabase Auth supports; the owner opens the account and sets a
+  spending cap. A one-email-per-device rule was considered and dropped: a device cannot be
+  identified reliably without fingerprinting.
 - **Versions:** The limit of 10 report versions and the lock on core answers (D-321) do not apply to
   the free project while the window lasts. After it, the project is kept for 6 months and D-321
   applies again.
@@ -3278,6 +3287,6 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   accounts and the preview list do not take a spot. Accounts that exist when the counter starts do.
 - **Replaces:** In D-331, the count of 500 full reports: the 500 now counts accounts. The 90-day
   end date of D-331 stays.
-- **Open:** Signups by bots would take spots (the email code and one account per email limit this;
-  an admin tool to free a spot may be needed). Whether the project kept for 6 months is read-only.
+- **Open:** A virtual phone number can still be bought cheaply, so the check limits abuse and does
+  not end it; an admin tool to free a spot may be needed. The monthly budget for the messages. Whether the project kept for 6 months is read-only.
 - **Status:** Active
