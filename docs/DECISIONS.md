@@ -3358,3 +3358,22 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
 - **Open:** Legal review of the consent shown before a visitor types an idea. Verified Gulf data.
   The owner's account links and a WhatsApp number.
 - **Status:** Active
+
+### D-336 (2026-11-05): The site is Arabic only, with English kept for legal pages and llms.txt
+
+- **Decision:** The owner asked for the site in Arabic only. The interface, the diagnostic, the report
+  and the mentor are Arabic. The English toggle is removed and an old `/en/...` address redirects
+  (permanently) to the same `/ar/...` page.
+- **Kept in English, on the owner's go-ahead of my recommendation:** the privacy policy and terms
+  (the merchant of record and GDPR readers need them), and `llms.txt`. These stay reachable at
+  their English addresses and are the only English pages.
+- **Reversible:** the English message files, content and tests stay in the code, dormant. Turning
+  English back on is one switch, not a rewrite.
+- **Changes in:** D-066 and D-067 (the audience is still global, but the interface language is
+  Arabic only) and the English LTR acceptance tests, which cover only the legal pages while this holds.
+- **Risk:** A founder who reads no Arabic cannot use the product. Paddle may expect English terms
+  and refund text; the English legal pages answer that, but the owner should ask Paddle support
+  before the public launch.
+- **Plan:** small pull requests: the redirect and toggle, sitemap and hreflang, tests, then a scan for
+  English text left in the interface.
+- **Status:** Active
