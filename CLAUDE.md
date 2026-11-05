@@ -22,7 +22,7 @@ You write code a senior reviewer would approve without rework. You do not guess;
 
 **Product:** "Startup Brand Name" (startupbrandname.com) — the owner's own standalone platform. It is **not** part of, or technically connected to, vivarise.net. Its core is the "Business Model Studio" described in this file. (Updated 2026-09-25, D-037.)
 **Owner:** Laith, Amman, Jordan. Solo builder. Codes in Next.js, Node.js, pptxgenjs.
-**Audience:** global. Founders in any country, in Arabic or English (D-066, D-067).
+**Audience:** global. Founders in any country; the interface is Arabic only (D-336), English stays for the legal pages and llms.txt.
 **What it does:** Guides a founder through a structured diagnostic (64 questions, 8 axes), then produces a professional, numbers-backed business model analysis and proposal as an exportable Arabic report, with an AI mentor. It also helps founders find a business name, with every availability claim checked live (D-035).
 **Course trainees:** trainees of the owner's "AI in Entrepreneurship" course get the platform free for 12 months (the Course buyer tier), activated with Viva Rise marketing codes in the `VIVA` voucher format below (D-038).
 **Why users pay instead of using a free chatbot:** structured mandatory path, calculated (not written) numbers, dated and sourced country data, provenance tags on every fact, persistent projects, professional exportable deliverables.
@@ -71,7 +71,7 @@ Moving a project from Strategist to Commander costs the difference ($20). The we
 - **Never store card data.** Hosted checkout / provider tokens only.
 
 ### Language
-- All output (UI, report, mentor) in the user's chosen language: **Modern Standard Arabic** (default) or **English** (D-067).
+- All output (UI, report, mentor) in **Modern Standard Arabic only** (D-336, replaces the Arabic/English choice of D-067). English files stay dormant; the privacy policy, terms and llms.txt stay available in English.
 - In Arabic, a technical term gets English in parentheses on **first occurrence only**, e.g. نقطة التعادل (Break-even).
 - Input understanding: English, and any Arabic dialect including Algerian Darja mixed with French (code-switching). Store raw text + normalized value.
 - Single exception: interview script tool (T4) outputs in user-selected dialect (MSA / Jordanian / Algerian).
