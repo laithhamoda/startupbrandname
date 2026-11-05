@@ -3310,3 +3310,18 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
 - **Open:** Whether a kept project (after the end date) still opens its full report, or only the
   project itself. The pull request that wires the access decides it with the owner.
 - **Status:** Active
+
+### D-334 (2026-11-05): The launch spot is taken with a confirmed email; the phone check is a switch
+
+- **Decision:** The owner chose to launch without the phone step, which saves the text-message
+  provider and its cost. An account takes its launch spot with a **confirmed email** when it takes
+  its free project. The phone check of D-332 stays in the database behind the setting
+  `launch.require_phone` (false at launch; a missing value requires the phone, so a missing setting
+  never opens the door wider). The owner can turn it on without a deployment when abuse shows and a
+  provider is set up; the spots already taken stay.
+- **Abuse limits instead:** A limit on sign-ups from one address, a human check on the sign-up form,
+  a refusal of known throwaway email domains, and the admin tool that frees a spot (D-333). They
+  cost nothing and slow a script down; they do not stop it, and the owner accepted that.
+- **Counter:** It still shows the real number of spots left.
+- **Replaces:** The phone check as a condition in D-332; the rest of D-332 and D-333 stand.
+- **Status:** Active

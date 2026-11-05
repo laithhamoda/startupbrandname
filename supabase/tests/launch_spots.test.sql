@@ -3,20 +3,24 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(32);
+select plan(36);
 
-insert into auth.users (id, email, phone, phone_confirmed_at, created_at) values
-  ('a1000000-0000-4000-8000-000000000001', 'spots-one@example.test', '+962790000001', now(), now()),
-  ('a1000000-0000-4000-8000-000000000002', 'spots-two@example.test', '+962790000002', now(), now()),
-  ('a1000000-0000-4000-8000-000000000003', 'spots-three@example.test', '+962790000003', now(), now()),
-  ('a1000000-0000-4000-8000-000000000004', 'spots-four@example.test', null, null, now()),
-  ('a1000000-0000-4000-8000-000000000005', 'spots-five@example.test', '+962790000005', now(), now()),
-  ('a1000000-0000-4000-8000-000000000009', 'spots-admin@example.test', null, null, now());
+insert into auth.users (id, email, phone, phone_confirmed_at, email_confirmed_at, created_at) values
+  ('a1000000-0000-4000-8000-000000000001', 'spots-one@example.test', '+962790000001', now(), now(), now()),
+  ('a1000000-0000-4000-8000-000000000002', 'spots-two@example.test', '+962790000002', now(), now(), now()),
+  ('a1000000-0000-4000-8000-000000000003', 'spots-three@example.test', '+962790000003', now(), now(), now()),
+  ('a1000000-0000-4000-8000-000000000004', 'spots-four@example.test', null, null, null, now()),
+  ('a1000000-0000-4000-8000-000000000005', 'spots-five@example.test', '+962790000005', now(), now(), now()),
+  ('a1000000-0000-4000-8000-000000000006', 'spots-six@example.test', null, null, null, now()),
+  ('a1000000-0000-4000-8000-000000000007', 'spots-seven@example.test', null, null, now(), now()),
+  ('a1000000-0000-4000-8000-000000000009', 'spots-admin@example.test', null, null, null, now());
 
 insert into public.admins (user_id) values ('a1000000-0000-4000-8000-000000000009');
 
 -- Two spots, a month left: small enough to fill in the test.
 update public.settings set value = '2' where key = 'launch.spots_total';
+-- The phone path first; the email path is tested after it.
+update public.settings set value = 'true' where key = 'launch.require_phone';
 update public.settings
 set value = to_jsonb((now() + interval '30 days')::text)
 where key = 'launch.ends_at';
@@ -154,6 +158,33 @@ select is(
   (select source || ' ' || (phone_hash is null)::text from public.launch_spots
    where user_id = 'a1000000-0000-4000-8000-000000000005'),
   'admin true', 'a spot given by hand has no phone'
+);
+
+-- Without the phone step (D-334) -------------------------------------------------------------------
+
+update public.settings set value = 'false' where key = 'launch.require_phone';
+update public.settings set value = '5' where key = 'launch.spots_total';
+
+set local role authenticated;
+
+select pg_temp.act_as('a1000000-0000-4000-8000-000000000006');
+select is(
+  (select public.claim_launch_spot()), 'email_unverified',
+  'with the phone step off, an account with no confirmed email takes no spot'
+);
+
+select pg_temp.act_as('a1000000-0000-4000-8000-000000000007');
+select is(
+  (select public.claim_launch_spot()), 'granted',
+  'an account with a confirmed email takes a spot, with no phone'
+);
+select is((select public.claim_launch_spot()), 'already', 'and takes only one');
+reset role;
+
+select is(
+  (select source || ' ' || (phone_hash is null)::text from public.launch_spots
+   where user_id = 'a1000000-0000-4000-8000-000000000007'),
+  'email true', 'such a spot records its source and holds no phone'
 );
 
 -- The end date -------------------------------------------------------------------------------------
