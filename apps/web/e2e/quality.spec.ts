@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { delayFonts, expectNoLayoutShift } from './layout-shift';
 
-const SKIP_LINK = { ar: 'تخطَّ إلى المحتوى', en: 'Skip to content' } as const;
+const SKIP_LINK = { ar: 'تخطَّ إلى المحتوى' } as const;
 
 for (const [locale, name] of Object.entries(SKIP_LINK)) {
   test(`keyboard users can skip to the content with a visible focus ring (${locale})`, async ({
@@ -20,7 +20,7 @@ for (const [locale, name] of Object.entries(SKIP_LINK)) {
 
 // The fonts arrive after the first paint, as on a slow connection, so the swap is measured
 // (PERF-5). A diagnostic step is measured in e2e/auth/layout-shift.spec.ts.
-for (const locale of ['ar', 'en'] as const) {
+for (const locale of ['ar'] as const) {
   test(`fonts swap in without layout shift (${locale})`, async ({ page }) => {
     await delayFonts(page);
     await page.goto(`/${locale}`);
@@ -65,17 +65,28 @@ test('pages and files send the baseline browser security headers', async ({ page
   }
 });
 
-test('each language version links to the other with hreflang', async ({ page }) => {
-  await page.goto('/en');
+test('the Arabic home page has no English version to link to', async ({ page }) => {
+  await page.goto('/ar');
 
-  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /\/en$/);
-  await expect(page.locator('link[rel="alternate"][hreflang="ar"]')).toHaveAttribute(
-    'href',
-    /\/ar$/,
-  );
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /\/ar$/);
+  await expect(page.locator('link[rel="alternate"][hreflang="en"]')).toHaveCount(0);
   await expect(page.locator('link[rel="alternate"][hreflang="x-default"]')).toHaveAttribute(
     'href',
     /startupbrandname\.com\/?$/,
+  );
+});
+
+test('the privacy page links its Arabic and English versions with hreflang', async ({ page }) => {
+  await page.goto('/en/privacy');
+
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /\/en\/privacy$/);
+  await expect(page.locator('link[rel="alternate"][hreflang="ar"]')).toHaveAttribute(
+    'href',
+    /\/ar\/privacy$/,
+  );
+  await expect(page.locator('link[rel="alternate"][hreflang="en"]')).toHaveAttribute(
+    'href',
+    /\/en\/privacy$/,
   );
 });
 
