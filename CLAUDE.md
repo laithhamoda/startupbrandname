@@ -51,11 +51,12 @@ Moving a project from Strategist to Commander costs the difference ($20). The we
 | Report versions per project (D-321) | — | up to 10; under «امضِ» 5 edits, then one version is chosen as final | same | same |
 | Project retention | 30 days | 12 months + 90 days read-only | same | same |
 
-### Launch window (D-331; 2026-11-05 to 2027-02-03, or until 500 full reports are opened)
-- The full report is free for every account that reaches 80% of the answers (the gate of D-290).
+### Launch window (D-331, D-332)
+- The first 500 accounts that finish registration each take one spot; a counter shows the real number left. No end date: the window closes when the spots run out (or when the owner switches it off).
+- A spot gives one free project: its full report is open at the 80% gate, with unlimited edits and report versions while the window lasts.
 - The first 5 AI mentor messages are free, counted for the whole account. After them, the mentor pack ($7, 10 messages) applies.
-- A gold counter (days left, reports left) appears on the pricing page, the full-report gate, the mentor panel and the checkout.
-- An account that opened a full report in the window keeps that project for 6 months after the window ends.
+- A gold counter appears on the pricing page, the full-report gate, the mentor panel and the checkout.
+- A project that held a spot is kept for 6 months after the window closes.
 
 ### Vouchers
 - Format: `VIVA` + 8 uppercase hexadecimal chars. Example: `VIVAD908AEEB`.

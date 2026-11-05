@@ -3256,3 +3256,24 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   now). Whether the project kept for 6 months is read-only. What the free package's mentor allowance
   is once the window ends (the table says 2 per project).
 - **Status:** Active
+
+### D-332 (2026-11-05): The free launch window is 500 account spots, claimed at registration
+
+- **Decision:** The owner's choice. The window is counted in accounts, not in reports. The first
+  500 accounts that finish registration (the signup questions, D-086) each take one spot, and a
+  counter on the site shows the real number of spots left, falling with every registration. A spot
+  gives the account **one free project**: its full report is open (the 80% gate of D-290 stays),
+  with unlimited edits and unlimited report versions while the window lasts. The 5 free mentor
+  messages per account of D-331 stay.
+- **No end date:** The window closes when the 500 spots are taken. `EARLY_ACCESS_ENDS_AT` is
+  optional: unset means no date, and if it is set the window also ends then. The owner can close
+  the window at any time by turning off `EARLY_ACCESS_FULL_REPORT`.
+- **Versions:** The limit of 10 report versions and the lock on core answers (D-321) do not apply to
+  the free project while the window lasts. After it, the project is kept for 6 months and D-321
+  applies again.
+- **The counter is true:** It shows the real number of spots left and never a lower one. Admin
+  accounts and the preview list do not take a spot. Accounts that exist when the counter starts do.
+- **Replaces:** In D-331, the 90-day end date and the count of 500 full reports.
+- **Open:** Signups by bots would take spots (the email code and one account per email limit this;
+  an admin tool to free a spot may be needed). Whether the project kept for 6 months is read-only.
+- **Status:** Active
