@@ -3232,3 +3232,27 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
 - **Reason:** The amount is the fact; the provider's label is not. Keeping paid access after a full
   refund is the costly mistake, so the amount decides.
 - **Status:** Active
+
+### D-331 (2026-11-05): A 90-day free launch window with a countdown, and 5 free mentor messages
+
+- **Decision:** The owner's choice, after a cost and risk analysis. From 2026-11-05 until
+  2027-02-03 (90 days), or until 500 full reports have been opened, whichever comes first, the
+  full report is free for every account. The gate of D-290 does not change: an account opens the
+  full report once it has answered 80% of the questions, with the price, costs and sales among
+  them. A report counts when a project's full report is opened for the first time; the same
+  project is never counted twice.
+- **Mentor:** During the window the first 5 mentor messages are free, counted for the **whole
+  account**, not per project. After them the mentor pack of D-322 (10 messages, $7) is the way to
+  continue. The mentor itself ships with M6, so the free messages start when it does.
+- **Notice:** Wherever a feature tied to a package appears, a gold counter says that access is free
+  for a limited time and shows the days and the reports left. The places are the pricing page, the
+  full-report gate, the mentor panel at the fifth message and the checkout page. Gold marks the
+  counter and a thin line only, never a full coloured band (the design direction keeps gold rare).
+- **After the window:** An account that opened a full report during the window keeps that project
+  for 6 months after the window ends. New accounts then follow the plans table.
+- **Replaces:** The remark in D-290 that the early-access switch is removed with M7. The switch
+  stays; the end date and the report cap are added to it.
+- **Open:** Whether Strategist and Commander stay on sale during the window (the checkout is closed
+  now). Whether the project kept for 6 months is read-only. What the free package's mentor allowance
+  is once the window ends (the table says 2 per project).
+- **Status:** Active
