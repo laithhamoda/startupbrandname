@@ -3290,3 +3290,23 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
 - **Open:** A virtual phone number can still be bought cheaply, so the check limits abuse and does
   not end it; an admin tool to free a spot may be needed. The monthly budget for the messages. Whether the project kept for 6 months is read-only.
 - **Status:** Active
+
+### D-333 (2026-11-05): The launch window lives in the database, and a holder keeps it until the end date
+
+- **Decision:** The limits of the window are settings, not environment variables: `launch.spots_total`
+  (500), `launch.ends_at` (2027-02-03 at 23:59:59, Amman) and `launch.kept_months` (6). A missing end
+  date or spot count closes the window. This replaces the `EARLY_ACCESS_ENDS_AT` variable named in
+  D-332: the database is the one authority, the admin can change a limit without a deployment, and
+  the counter, the claim and the tests all read the same value. `launch_window()` is the only
+  function open to visitors; it returns counts and a date.
+- **Holders:** The 500 spots close the entry of new accounts, not the benefit of those who hold one.
+  A holder keeps the free full report until the end date even if the spots ran out earlier, and
+  the project for 6 months after it (`my_launch_spot()` answers active, kept or none).
+- **Phone:** One phone number backs one spot. Only the sha256 of the number is kept, and the row is
+  deleted with the account. An admin can give a spot by hand (no phone) or take one back; both are
+  in the audit log.
+- **Reason:** The owner asked for a window that ends by itself and cannot be gamed by several
+  accounts. A holder who signed up on day 20 would otherwise lose the benefit the counter promised.
+- **Open:** Whether a kept project (after the end date) still opens its full report, or only the
+  project itself. The pull request that wires the access decides it with the owner.
+- **Status:** Active

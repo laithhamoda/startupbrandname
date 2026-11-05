@@ -298,6 +298,27 @@ export type Database = {
         };
         Relationships: [];
       };
+      launch_spots: {
+        Row: {
+          claimed_at: string;
+          phone_hash: string | null;
+          source: string;
+          user_id: string;
+        };
+        Insert: {
+          claimed_at?: string;
+          phone_hash?: string | null;
+          source?: string;
+          user_id: string;
+        };
+        Update: {
+          claimed_at?: string;
+          phone_hash?: string | null;
+          source?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       mentor_credits: {
         Row: {
           checkout_ref: string | null;
@@ -973,6 +994,8 @@ export type Database = {
       };
       admin_end_subscription: { Args: { p_id: string }; Returns: undefined };
       admin_enter: { Args: Record<PropertyKey, never>; Returns: undefined };
+      admin_free_launch_spot: { Args: { p_email: string }; Returns: undefined };
+      admin_grant_launch_spot: { Args: { p_email: string }; Returns: undefined };
       admin_grant_subscription: {
         Args: { p_days: number; p_email: string; p_plan_id: string; p_project_id?: string };
         Returns: string;
@@ -1028,6 +1051,7 @@ export type Database = {
         Args: { p_number: number; p_project_id: string };
         Returns: undefined;
       };
+      claim_launch_spot: { Args: Record<PropertyKey, never>; Returns: string };
       complete_onboarding: {
         Args: {
           p_country_code: string;
@@ -1053,6 +1077,17 @@ export type Database = {
         Args: { p_affiliate?: string; p_count: number; p_note?: string; p_type: string };
         Returns: string[];
       };
+      launch_window: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          ends_at: string;
+          open: boolean;
+          spots_left: number;
+          spots_taken: number;
+          spots_total: number;
+        }[];
+      };
+      my_launch_spot: { Args: Record<PropertyKey, never>; Returns: string };
       record_ai_run: {
         Args: {
           p_cache_read_tokens: number;

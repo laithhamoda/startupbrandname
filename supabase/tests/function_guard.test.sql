@@ -39,6 +39,7 @@ select is_empty(
 );
 
 -- A function that must ever be open to visitors needs its own reviewed exception here.
+-- launch_window() (D-332) feeds the public counter and returns counts and a date, nothing else.
 select is_empty(
   $$
     select format('%I.%I(%s)', n.nspname, p.proname, pg_get_function_identity_arguments(p.oid))
@@ -46,6 +47,7 @@ select is_empty(
     join pg_namespace n on n.oid = p.pronamespace
     where n.nspname = 'public'
       and p.prosecdef
+      and p.proname <> 'launch_window'
       and not exists (
         select 1 from pg_depend d
         where d.classid = 'pg_proc'::regclass and d.objid = p.oid and d.deptype = 'e'
