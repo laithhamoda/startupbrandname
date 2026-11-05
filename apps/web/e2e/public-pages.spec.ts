@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { ogImageName, PUBLIC_PAGES } from '../src/config/public-pages';
 
-const LOCALES = ['ar', 'en'] as const;
+const LOCALES = ['ar'] as const;
 const ORIGIN = 'https://startupbrandname.com';
 
 /** Structured data types each page must publish, besides Organization and WebSite (M2b). */
@@ -25,7 +25,7 @@ for (const locale of LOCALES) {
       expect(response?.status()).toBe(200);
 
       await expect(page.locator('html')).toHaveAttribute('lang', locale);
-      await expect(page.locator('html')).toHaveAttribute('dir', locale === 'ar' ? 'rtl' : 'ltr');
+      await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
       await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
       await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /.{40,}/);
       await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
@@ -62,11 +62,11 @@ test('inner pages lead back home through breadcrumbs', async ({ page }) => {
 });
 
 test('every public page is reachable from the footer', async ({ page }) => {
-  await page.goto('/en');
-  const footer = page.getByRole('navigation', { name: 'Platform pages' });
+  await page.goto('/ar');
+  const footer = page.getByRole('navigation', { name: 'صفحات المنصة' });
 
   for (const { path } of PUBLIC_PAGES.filter((candidate) => candidate.path !== '')) {
-    await expect(footer.locator(`a[href="/en${path}"]`)).toHaveCount(1);
+    await expect(footer.locator(`a[href="/ar${path}"]`)).toHaveCount(1);
   }
 });
 
@@ -107,17 +107,14 @@ test.describe('on a phone', () => {
   });
 
   test('the pricing table becomes one package at a time', async ({ page }) => {
-    await page.goto('/en/pricing');
+    await page.goto('/ar/pricing');
 
-    await expect(page.getByRole('table', { name: 'Package comparison' })).toBeHidden();
-    const tabs = page.getByRole('tablist', { name: 'Choose a package to see its details' });
-    await expect(tabs.getByRole('tab', { name: 'Commander' })).toHaveAttribute(
-      'aria-selected',
-      'true',
-    );
+    await expect(page.getByRole('table', { name: 'مقارنة الباقات' })).toBeHidden();
+    const tabs = page.getByRole('tablist', { name: 'اختر باقة لعرض تفاصيلها' });
+    await expect(tabs.getByRole('tab', { name: 'قائد' })).toHaveAttribute('aria-selected', 'true');
 
-    await tabs.getByRole('tab', { name: 'Strategist' }).click();
-    await expect(page.getByRole('tabpanel').getByText('40 questions')).toBeVisible();
+    await tabs.getByRole('tab', { name: 'استراتيجي' }).click();
+    await expect(page.getByRole('tabpanel').getByText('40 سؤالًا')).toBeVisible();
   });
 
   test('pages never scroll sideways', async ({ page }) => {
@@ -131,7 +128,7 @@ test.describe('on a phone', () => {
   });
 });
 
-test('the sitemap lists every public page in both languages', async ({ request }) => {
+test('the sitemap lists every public page in Arabic only', async ({ request }) => {
   const sitemap = await (await request.get('/sitemap.xml')).text();
 
   for (const locale of LOCALES) {
@@ -139,6 +136,7 @@ test('the sitemap lists every public page in both languages', async ({ request }
       expect(sitemap).toContain(`<loc>${ORIGIN}/${locale}${path}</loc>`);
     }
   }
+  expect(sitemap).not.toContain(`<loc>${ORIGIN}/en`);
 });
 
 test('llms.txt summarises the platform for AI answer engines', async ({ request }) => {
@@ -150,7 +148,7 @@ test('llms.txt summarises the platform for AI answer engines', async ({ request 
 });
 
 test('the share image source page stays out of search results', async ({ page }) => {
-  await page.goto('/en/og-card/pricing');
+  await page.goto('/ar/og-card/pricing');
 
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
 });

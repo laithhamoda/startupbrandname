@@ -9,15 +9,6 @@ test('the Arabic home page is right-to-left', async ({ page }) => {
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
 });
 
-test('the English home page is left-to-right', async ({ page }) => {
-  await page.goto('/en');
-
-  const html = page.locator('html');
-  await expect(html).toHaveAttribute('lang', 'en');
-  await expect(html).toHaveAttribute('dir', 'ltr');
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText(/business model/i);
-});
-
 test.describe('the root redirects an Arabic browser', () => {
   test.use({ locale: 'ar-JO' });
 
@@ -27,12 +18,12 @@ test.describe('the root redirects an Arabic browser', () => {
   });
 });
 
-test.describe('the root redirects an English browser', () => {
+test.describe('the root redirects an English browser too (the site is Arabic only, D-336)', () => {
   test.use({ locale: 'en-US' });
 
-  test('to /en', async ({ page }) => {
+  test('to /ar', async ({ page }) => {
     await page.goto('/');
-    await expect(page).toHaveURL(/\/en$/);
+    await expect(page).toHaveURL(/\/ar$/);
   });
 });
 
@@ -41,22 +32,40 @@ test('paths without a language prefix keep working', async ({ page }) => {
   await expect(page).toHaveURL(/\/ar\/design$/);
 });
 
-test('the language switch opens the same page in the other language', async ({ page }) => {
+test('the language switch exists only on the pages that have an English version', async ({
+  page,
+}) => {
   await page.goto('/ar/design');
-  await page.getByRole('link', { name: 'English' }).click();
+  await expect(page.getByRole('link', { name: 'English' })).toHaveCount(0);
 
-  await expect(page).toHaveURL(/\/en\/design$/);
+  await page.goto('/ar/privacy');
+  await page.getByRole('link', { name: 'English' }).click();
+  await expect(page).toHaveURL(/\/en\/privacy$/);
   await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
 
   await page.getByRole('link', { name: 'العربية' }).click();
-  await expect(page).toHaveURL(/\/ar\/design$/);
+  await expect(page).toHaveURL(/\/ar\/privacy$/);
 });
 
-test('an unknown page answers 404 in its own language', async ({ page }) => {
-  const response = await page.goto('/en/no-such-page');
+test('an English address without an English version redirects (308) to its Arabic page', async ({
+  request,
+  page,
+}) => {
+  const response = await request.get('/en/pricing', { maxRedirects: 0 });
+  expect(response.status()).toBe(308);
+  expect(new URL(response.headers().location ?? '', 'http://site.test').pathname).toBe(
+    '/ar/pricing',
+  );
+
+  await page.goto('/en/privacy');
+  await expect(page).toHaveURL(/\/en\/privacy$/);
+});
+
+test('an unknown page answers 404 in Arabic', async ({ page }) => {
+  const response = await page.goto('/ar/no-such-page');
 
   expect(response?.status()).toBe(404);
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Page not found');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('الصفحة غير موجودة');
 });
 
 test('a missing file outside the language routes answers 404', async ({ request }) => {
@@ -67,7 +76,7 @@ test('a missing file outside the language routes answers 404', async ({ request 
 
 // The icons of the brand kit (D-289): each page names them, none is redirected by the language
 // routing, and each one is served.
-for (const locale of ['ar', 'en'] as const) {
+for (const locale of ['ar'] as const) {
   test(`the ${locale} home page declares its icons and the manifest, and all are served`, async ({
     page,
     request,

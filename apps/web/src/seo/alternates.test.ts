@@ -5,7 +5,7 @@ describe('localizedAlternates', () => {
   it('points the home page x-default at the language-detecting root', () => {
     expect(localizedAlternates('ar', '')).toEqual({
       canonical: '/ar',
-      languages: { ar: '/ar', en: '/en', 'x-default': '/' },
+      languages: { ar: '/ar', 'x-default': '/' },
     });
   });
 

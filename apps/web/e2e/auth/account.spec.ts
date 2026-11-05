@@ -42,7 +42,7 @@ test('signing out ends the session', async ({ page }) => {
   await expect(page).toHaveURL(/\/ar\/login$/);
 });
 
-test('a user withdraws consent, switches language and deletes the account', async ({ page }) => {
+test('a user withdraws consent and deletes the account', async ({ page }) => {
   const email = uniqueEmail('account');
   await signUpByEmail(page, email, true);
   await page.goto('/ar/account');
@@ -51,23 +51,18 @@ test('a user withdraws consent, switches language and deletes the account', asyn
   await page.getByRole('button', { name: 'اسحب الموافقة' }).click();
   await expect(page.getByText(/موافقتك غير مفعّلة/)).toBeVisible();
 
-  await page.getByLabel('اللغة').selectOption('en');
-  await page.getByRole('button', { name: 'احفظ' }).click();
-  await expect(page).toHaveURL(/\/en\/account$/);
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('My account');
+  await page.getByRole('button', { name: 'احذف حسابي' }).click();
+  await page.getByRole('button', { name: 'نعم، احذف حسابي' }).click();
+  await expect(page).toHaveURL(/\/ar\/goodbye$/);
 
-  await page.getByRole('button', { name: 'Delete my account' }).click();
-  await page.getByRole('button', { name: 'Yes, delete my account' }).click();
-  await expect(page).toHaveURL(/\/en\/goodbye$/);
-
-  await page.goto('/en/projects');
-  await expect(page).toHaveURL(/\/en\/login$/);
+  await page.goto('/ar/projects');
+  await expect(page).toHaveURL(/\/ar\/login$/);
 
   // The account is gone: asking for a code sends nothing, and the page does not say so.
   const before = await countEmails(page, email);
-  await page.getByLabel('Email').fill(email);
-  await page.getByRole('button', { name: 'Send the code' }).click();
-  await expect(page.getByText(/has an account with us/)).toBeVisible();
+  await page.getByLabel('البريد الإلكتروني').fill(email);
+  await page.getByRole('button', { name: 'أرسل الرمز' }).click();
+  await expect(page.getByText(/حساب لدينا/)).toBeVisible();
 
   // A barrier instead of a fixed wait (CICD-8): a code requested afterwards for a new address
   // goes through the same mail server, so once it arrives, a code sent for the deleted address

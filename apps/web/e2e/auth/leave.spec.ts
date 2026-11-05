@@ -45,16 +45,12 @@ test('leaving a question with an unsaved answer asks first', async ({ page }) =>
   await expect(income).toBeChecked();
   await expect(previous).toBeFocused();
 
-  // The language switch asks too; leaving anyway follows it as usual.
-  await page.getByRole('link', { name: 'English' }).click();
+  // Previous asks again; leaving anyway follows it to the answer saved before.
+  await previous.click();
   await expect(dialog).toBeVisible();
   await dialog.getByRole('button', { name: 'غادِر دون حفظ' }).click();
-  await expect(page).toHaveURL(/\/en\/projects\/[0-9a-f-]{36}\/q\/A8$/);
-
-  // Nothing typed: Previous goes straight back, to the answer saved before.
-  await page.getByRole('link', { name: 'Previous' }).click();
-  await expect(page).toHaveURL(/\/en\/projects\/[0-9a-f-]{36}\/q\/A1$/);
-  await expect(page.getByLabel('City')).toHaveValue('إربد');
+  await expect(page).toHaveURL(/\/ar\/projects\/[0-9a-f-]{36}\/q\/A1$/);
+  await expect(page.getByLabel('المدينة')).toHaveValue('إربد');
 });
 
 test('on a phone, staying returns focus to the answer, since the menu has closed', async ({

@@ -56,12 +56,6 @@ test('a new account reaches the report route and is told what is missing, with n
   // A missing question is a link to answer it.
   const missing = page.getByRole('region', { name: 'أهم الأسئلة الناقصة' }).getByRole('link');
   await expect(missing.first()).toHaveAttribute('href', new RegExp(`/ar/projects/${id}/q/`));
-
-  // The English page says the same in English.
-  await page.goto(`/en/projects/${id}/report`);
-  await expect(
-    page.getByRole('heading', { level: 1, name: 'Your answers are not enough for a report yet' }),
-  ).toBeVisible();
 });
 
 test('the page has no WCAG 2.2 AA violations, and an unknown project is not found', async ({
@@ -73,7 +67,7 @@ test('the page has no WCAG 2.2 AA violations, and an unknown project is not foun
 
   for (const scheme of ['light', 'dark'] as const) {
     await page.emulateMedia({ colorScheme: scheme });
-    for (const locale of ['ar', 'en'] as const) {
+    for (const locale of ['ar'] as const) {
       await page.goto(`/${locale}/projects/${id}/report`);
       await expect(page).toHaveTitle(/\S/);
       await page.evaluate(() => document.fonts.ready);

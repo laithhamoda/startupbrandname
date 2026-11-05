@@ -17,17 +17,17 @@ test('the Google button hands over to Supabase with PKCE and our callback', asyn
 test('a failed Google sign-in comes back to the sign-in page with an explanation', async ({
   page,
 }) => {
-  await page.goto('/auth/callback?next=/en/projects');
+  await page.goto('/auth/callback?next=/ar/projects');
 
-  await expect(page).toHaveURL(/\/en\/login\?error=google$/);
-  await expect(page.getByText(/Signing in with Google did not complete/)).toBeVisible();
+  await expect(page).toHaveURL(/\/ar\/login\?error=google$/);
+  await expect(page.getByText(/لم يكتمل الدخول عبر Google/)).toBeVisible();
 });
 
 test('a failed Google sign-in keeps the page that asked for sign-in', async ({ page }) => {
-  await page.goto('/auth/callback?next=/en/account');
+  await page.goto('/auth/callback?next=/ar/account');
 
-  await expect(page).toHaveURL(/\/en\/login\?error=google&next=%2Fen%2Faccount$/);
-  await expect(page.getByText(/Signing in with Google did not complete/)).toBeVisible();
+  await expect(page).toHaveURL(/\/ar\/login\?error=google&next=%2Far%2Faccount$/);
+  await expect(page.getByText(/لم يكتمل الدخول عبر Google/)).toBeVisible();
 });
 
 test('the callback never sends the user to another site', async ({ page }) => {

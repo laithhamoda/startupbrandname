@@ -110,9 +110,7 @@ test('a founder edits a chip of the canvas, comes back, and sees the chip and th
   await expect(page.getByRole('link', { name: 'العودة إلى اللوحتين' })).toBeVisible();
 });
 
-test('the canvas has no WCAG 2.2 AA violations in either language, tab or theme', async ({
-  page,
-}) => {
+test('the canvas has no WCAG 2.2 AA violations in either tab or theme', async ({ page }) => {
   test.setTimeout(120_000);
   await signUpByEmail(page, uniqueEmail('canvas-a11y'));
   const id = await createProject(page);
@@ -120,7 +118,7 @@ test('the canvas has no WCAG 2.2 AA violations in either language, tab or theme'
 
   for (const scheme of ['light', 'dark'] as const) {
     await page.emulateMedia({ colorScheme: scheme });
-    for (const locale of ['ar', 'en'] as const) {
+    for (const locale of ['ar'] as const) {
       await page.goto(`/${locale}/projects/${id}/canvas`);
       await expect(page).toHaveTitle(/\S/);
       await page.evaluate(() => document.fonts.ready);

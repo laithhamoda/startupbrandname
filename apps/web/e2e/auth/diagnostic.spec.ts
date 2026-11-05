@@ -367,9 +367,7 @@ test('a follow-up keeps its warning when the founder comes back to it (ARCH-6)',
   await expect(warning).toBeVisible();
 });
 
-test('all 64 questions render in Arabic and in English (M3 definition of done)', async ({
-  page,
-}) => {
+test('all 64 questions render in Arabic (M3 definition of done)', async ({ page }) => {
   test.setTimeout(240_000);
   await signUpByEmail(page, uniqueEmail('all-questions'));
   const id = await createProject(page, 'full');
@@ -378,10 +376,6 @@ test('all 64 questions render in Arabic and in English (M3 definition of done)',
     await page.goto(`/ar/projects/${id}/q/${question.id}`);
     await expect(page.getByRole('heading', { level: 1 }), question.id).toHaveText(
       question.label.ar,
-    );
-    await page.goto(`/en/projects/${id}/q/${question.id}`);
-    await expect(page.getByRole('heading', { level: 1 }), question.id).toHaveText(
-      question.label.en,
     );
   }
 });
@@ -529,12 +523,7 @@ test('the diagnostic pages have no WCAG 2.2 AA violations', async ({ page }) => 
     expect(results.violations.map((violation) => `${violation.id}: ${violation.help}`)).toEqual([]);
   };
 
-  for (const path of [
-    '/ar/projects',
-    '/ar/projects/new',
-    `/ar/projects/${id}`,
-    `/en/projects/${id}`,
-  ]) {
+  for (const path of ['/ar/projects', '/ar/projects/new', `/ar/projects/${id}`]) {
     await page.goto(path);
     await check();
   }
