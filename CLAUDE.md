@@ -52,7 +52,7 @@ Moving a project from Strategist to Commander costs the difference ($20). The we
 | Project retention | 30 days | 12 months + 90 days read-only | same | same |
 
 ### Launch window (D-331, D-332)
-- The first 500 accounts that finish registration each take one spot; a counter shows the real number left. No end date: the window closes when the spots run out (or when the owner switches it off).
+- The first 500 accounts that finish registration each take one spot; a counter shows the real number left. The window ends at the first of: 500 spots taken, or 2027-02-03 (90 days); then the paid packages apply again by themselves.
 - A spot gives one free project: its full report is open at the 80% gate, with unlimited edits and report versions while the window lasts.
 - The first 5 AI mentor messages are free, counted for the whole account. After them, the mentor pack ($7, 10 messages) applies.
 - A gold counter appears on the pricing page, the full-report gate, the mentor panel and the checkout.

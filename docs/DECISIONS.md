@@ -3265,15 +3265,19 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   gives the account **one free project**: its full report is open (the 80% gate of D-290 stays),
   with unlimited edits and unlimited report versions while the window lasts. The 5 free mentor
   messages per account of D-331 stay.
-- **No end date:** The window closes when the 500 spots are taken. `EARLY_ACCESS_ENDS_AT` is
-  optional: unset means no date, and if it is set the window also ends then. The owner can close
-  the window at any time by turning off `EARLY_ACCESS_FULL_REPORT`.
+- **The window ends at the first of two:** the 500 spots are taken, or 2027-02-03 (90 days from
+  2026-11-05, the end of that day in Amman). Then the site returns to the paid packages as
+  before, by itself: the code compares the date and the count on every request, so no action and
+  no deployment is needed. `EARLY_ACCESS_ENDS_AT` is required, and a missing or malformed value
+  closes the window. The owner can still close it earlier by turning off
+  `EARLY_ACCESS_FULL_REPORT`.
 - **Versions:** The limit of 10 report versions and the lock on core answers (D-321) do not apply to
   the free project while the window lasts. After it, the project is kept for 6 months and D-321
   applies again.
-- **The counter is true:** It shows the real number of spots left and never a lower one. Admin
+- **The counter is true:** It shows the real days and spots left and never a lower number. Admin
   accounts and the preview list do not take a spot. Accounts that exist when the counter starts do.
-- **Replaces:** In D-331, the 90-day end date and the count of 500 full reports.
+- **Replaces:** In D-331, the count of 500 full reports: the 500 now counts accounts. The 90-day
+  end date of D-331 stays.
 - **Open:** Signups by bots would take spots (the email code and one account per email limit this;
   an admin tool to free a spot may be needed). Whether the project kept for 6 months is read-only.
 - **Status:** Active
