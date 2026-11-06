@@ -531,6 +531,47 @@ export type Database = {
         };
         Relationships: [];
       };
+      report_ratings: {
+        Row: {
+          comment: string | null;
+          created_at: string;
+          id: string;
+          project_id: string;
+          stars: number;
+          updated_at: string;
+          user_id: string;
+          version: number;
+        };
+        Insert: {
+          comment?: string | null;
+          created_at?: string;
+          id?: string;
+          project_id: string;
+          stars: number;
+          updated_at?: string;
+          user_id: string;
+          version?: number;
+        };
+        Update: {
+          comment?: string | null;
+          created_at?: string;
+          id?: string;
+          project_id?: string;
+          stars?: number;
+          updated_at?: string;
+          user_id?: string;
+          version?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'report_ratings_project_id_fkey';
+            columns: ['project_id'];
+            isOneToOne: false;
+            referencedRelation: 'projects';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       report_versions: {
         Row: {
           answers: NonNullable<Json>;
@@ -628,39 +669,6 @@ export type Database = {
           key?: string;
           updated_at?: string;
           value?: NonNullable<Json>;
-        };
-        Relationships: [];
-      };
-      report_ratings: {
-        Row: {
-          comment: string | null;
-          created_at: string;
-          id: string;
-          project_id: string;
-          stars: number;
-          updated_at: string;
-          user_id: string;
-          version: number;
-        };
-        Insert: {
-          comment?: string | null;
-          created_at?: string;
-          id?: string;
-          project_id: string;
-          stars: number;
-          updated_at?: string;
-          user_id: string;
-          version?: number;
-        };
-        Update: {
-          comment?: string | null;
-          created_at?: string;
-          id?: string;
-          project_id?: string;
-          stars?: number;
-          updated_at?: string;
-          user_id?: string;
-          version?: number;
         };
         Relationships: [];
       };
@@ -1145,10 +1153,7 @@ export type Database = {
       };
       crossborder_consent_state: { Args: Record<PropertyKey, never>; Returns: string };
       delete_my_account: { Args: Record<PropertyKey, never>; Returns: undefined };
-      has_report_rating: {
-        Args: { p_project_id: string; p_version: number };
-        Returns: boolean;
-      };
+      has_report_rating: { Args: { p_project_id: string; p_version: number }; Returns: boolean };
       issue_voucher_batch: {
         Args: { p_affiliate?: string; p_count: number; p_note?: string; p_type: string };
         Returns: string[];
