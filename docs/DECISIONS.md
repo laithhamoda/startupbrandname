@@ -3546,3 +3546,25 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   not before typing (owner's choice). The text is drafted here and reviewed by the legal adviser later
   (open item of D-335).
 - **Status:** Active
+
+### D-345 (2026-11-06): A rating before the PDF
+
+- **Decision:** The owner wants the founder to rate the report before the PDF is handed over. On the
+  download form of the report page a version not rated yet shows five choices (1 poor to 5 excellent,
+  required) and an optional comment of up to 1000 characters; the same button then downloads. A version
+  already rated shows only the button.
+- **No skip:** the stars are required (the owner's wording: the rating comes before the download). A
+  "skip" link can be added if it costs too many downloads.
+- **Once for each version:** a rating belongs to one version of a report (0 for a report without
+  versions); a new version asks again. A rating given again for the same version replaces the first.
+- **The server decides:** the PDF route checks the rating (`passRatingGate`) before it renders. Without
+  a stored rating or stars on the form it refuses with `rating_required`; a rating that cannot be read or
+  written fails the file and never lets it through. A script cannot go around the form.
+- **Storage:** table `report_ratings`, written only by `rate_report()` (no insert grant), readable by its
+  owner, deleted with the account or the project. The comment is the founder's own words.
+- **The owner's view:** `/ar/admin/ratings` (admin with the second step): the count, the average and the
+  latest ratings with their comments, through `admin_ratings_summary()` and `admin_report_ratings()`; both
+  write an audit row and return no account identity.
+- **Privacy:** the comment is user content: the privacy policy should name it when the legal review
+  happens (open item).
+- **Status:** Active

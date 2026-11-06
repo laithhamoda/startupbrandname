@@ -13,10 +13,13 @@ export function PdfDownload({
   locale,
   labels,
   error,
+  rated,
 }: {
   projectId: string;
   locale: 'ar' | 'en';
   labels: ReportLabels;
+  /** Whether this version of the report was already rated (D-345): the form then asks nothing. */
+  rated: boolean;
   /** The code the route sent the founder back with, when it refused. */
   error: PdfErrorCode | null;
 }) {
@@ -33,6 +36,29 @@ export function PdfDownload({
       )}
       <form method="post" action={`/api/projects/${projectId}/report/pdf`} className="grid gap-2">
         <input type="hidden" name="locale" value={locale} />
+        {rated ? null : (
+          <fieldset className="grid gap-3 border-0 p-0">
+            <legend className="font-bold">{labels.pdf.rating.legend}</legend>
+            <p className="text-small text-muted">{labels.pdf.rating.scale}</p>
+            <div className="flex flex-wrap gap-x-5 gap-y-2">
+              {[1, 2, 3, 4, 5].map((stars) => (
+                <label key={stars} className="flex items-center gap-2">
+                  <input type="radio" name="stars" value={stars} required />
+                  <bdi className="num">{stars}</bdi>
+                </label>
+              ))}
+            </div>
+            <label className="grid gap-1 text-small">
+              <span>{labels.pdf.rating.comment}</span>
+              <textarea
+                name="comment"
+                rows={3}
+                maxLength={1000}
+                className="w-full rounded-control border border-hairline bg-transparent px-3 py-2"
+              />
+            </label>
+          </fieldset>
+        )}
         <div>
           <Button type="submit">{labels.pdf.button}</Button>
         </div>

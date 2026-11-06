@@ -7,7 +7,7 @@ import type { ReportPage } from './load';
 
 /** What the route answers with when it refuses. The words of a code live in the messages. */
 export type PdfErrorCode =
-  'limit' | 'not_allowed' | 'render_failed' | 'storage_failed' | 'not_found';
+  'limit' | 'not_allowed' | 'render_failed' | 'storage_failed' | 'not_found' | 'rating_required';
 
 export const PDF_ERROR_STATUS: Readonly<Record<PdfErrorCode, number>> = {
   limit: 429,
@@ -15,6 +15,7 @@ export const PDF_ERROR_STATUS: Readonly<Record<PdfErrorCode, number>> = {
   render_failed: 500,
   storage_failed: 502,
   not_found: 404,
+  rating_required: 400,
 };
 
 export const PDF_ERROR_CODES = Object.keys(PDF_ERROR_STATUS) as readonly PdfErrorCode[];

@@ -440,7 +440,13 @@
         "not_allowed": "This report cannot be downloaded right now. Sign in again and try once more.",
         "render_failed": "The PDF could not be made. Try again in a moment.",
         "storage_failed": "The file was made but could not be saved. Try again in a moment.",
-        "not_found": "We could not find this project."
+        "not_found": "We could not find this project.",
+        "rating_required": "Choose a rating from 1 to 5 before you download the report."
+      },
+      "rating": {
+        "legend": "Rate this report before you download it",
+        "scale": "From 1 (poor) to 5 (excellent). One click is enough.",
+        "comment": "Your comments (optional)"
       }
     },
     "marks": {
@@ -761,6 +767,16 @@
       "transaction": "Transaction",
       "usd": "USD",
       "refundHint": "Refunds are made in the Paddle dashboard. Opening this page is recorded in the audit log."
+    },
+    "ratings": {
+      "title": "Report ratings",
+      "none": "No ratings yet.",
+      "summary": "Ratings: <count></count> · Average: <average></average> of 5",
+      "listCaption": "The latest report ratings, without who gave them",
+      "date": "Date",
+      "stars": "Stars",
+      "version": "Version",
+      "comment": "Comment"
     }
   },
   "launch": {

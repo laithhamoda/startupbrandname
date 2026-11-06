@@ -9,7 +9,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t('title'), robots: { index: false, follow: false } };
 }
 
-const TOOLS = ['vouchers', 'affiliates', 'subscriptions', 'payments'] as const;
+const TOOLS = ['vouchers', 'affiliates', 'subscriptions', 'payments', 'ratings'] as const;
 
 /**
  * The admin area (M7 step 8, D-327, D-328). Only an admin whose session passed the TOTP step gets

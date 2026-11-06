@@ -13,6 +13,7 @@ import { requireAccount } from '@/lib/auth/session';
 import { projectPath, stepPath } from '@/lib/diagnostic/steps';
 import { loadReportPage } from '@/lib/report/load';
 import { isPdfErrorCode, pdfDownloadAvailable } from '@/lib/report/pdf-codes';
+import { hasReportRating } from '@/lib/report/rating';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('report');
@@ -93,6 +94,8 @@ export default async function ReportPage({
   }
 
   const notice = page.notice;
+  // The PDF form asks for a rating when this version has none (D-345). An unreadable answer asks again.
+  const rated = (await hasReportRating(supabase, id, page.version?.number ?? null)) ?? false;
   const reasons =
     notice?.kind === 'not_calculable'
       ? noticeReasonsOf(notice.reasons, id, locale, (code) => reasonText(`notice.reason.${code}`))
@@ -132,6 +135,7 @@ export default async function ReportPage({
               locale={locale}
               labels={labels}
               error={isPdfErrorCode(refused) ? refused : null}
+              rated={rated}
             />
           ) : null
         }
