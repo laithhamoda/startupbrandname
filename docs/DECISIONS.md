@@ -3492,3 +3492,17 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   Hide them too, or leave them as the factual statement for AI readers?
 - **Later:** the gold countdown (days and spots left) goes on the home page, replacing the plans section.
 - **Status:** Active
+
+### D-342 (2026-11-06): No prices in the other public texts while the pricing page is hidden
+
+- **Decision:** The owner answered the open question of D-341: the prices written outside the pricing
+  page are hidden too. While `PRICING_PUBLIC` is not `true`, `llms.txt` and the business model of
+  `/ai-context` name no price; they say that Explorer is free and that the paid packages, one-time and for
+  one project each, open with their prices when the free launch window ends.
+- **Same switch:** one flag opens the pricing page and puts the prices back in both texts. Nothing else
+  to change when the window ends.
+- **Left as it is:** the FAQ names no price (its payment answer says the paid packages are not open yet),
+  and the worked example of the idea guide (a shop selling at 50 US dollars) is an example, not our price.
+- **Tests:** both texts are tested with the flag off (no `$` figure) and on (the prices of the plan
+  table), and the flag is set inside the tests because CI builds with the pricing page public.
+- **Status:** Active

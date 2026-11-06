@@ -4,10 +4,11 @@ import { PLANS } from '@/config/plans';
 import {
   AI_CONTEXT_DESCRIPTION,
   AI_CONTEXT_LEAD,
-  AI_CONTEXT_SECTIONS,
+  aiContextSections,
   STATUS_LABEL,
 } from './ai-context';
 
+const AI_CONTEXT_SECTIONS = aiContextSections(true);
 const text = JSON.stringify([AI_CONTEXT_LEAD, AI_CONTEXT_DESCRIPTION, AI_CONTEXT_SECTIONS]);
 
 describe('the AI context page (D-337)', () => {
@@ -64,5 +65,15 @@ describe('the AI context page (D-337)', () => {
 
   it('does not mention the mentor, which is not published until it is complete (D-339)', () => {
     expect(text).not.toMatch(/mentor/i);
+  });
+
+  it('writes no price while the pricing page is hidden, and keeps the other sections (D-341, D-342)', () => {
+    const hidden = aiContextSections(false);
+    const hiddenText = JSON.stringify(hidden);
+    expect(hiddenText).not.toMatch(/\$\d/);
+    expect(hiddenText).not.toContain('dollars');
+    expect(hiddenText).toContain('Prices follow when the free launch window ends');
+    expect(hidden.map((section) => section.id)).toEqual(AI_CONTEXT_SECTIONS.map((s) => s.id));
+    expect(aiContextSections(true)).toBe(AI_CONTEXT_SECTIONS);
   });
 });

@@ -1,6 +1,7 @@
 import 'server-only';
 import { AXES, AXIS_NAMES } from '@sbn/question-bank';
 import { PLANS, REPORT_VERSIONS, upgradePrice } from '@/config/plans';
+import { pricingPublic } from '@/config/pricing-visibility';
 
 /**
  * /ai-context (D-337): one plain-English page written for AI assistants, reviewers and analysts.
@@ -46,7 +47,7 @@ export const AI_CONTEXT_LEAD =
 const price = (id: keyof typeof PLANS): string => `$${String(PLANS[id].priceUsd)}`;
 const axisNames = AXES.map((axis) => AXIS_NAMES[axis].en).join('; ');
 
-export const AI_CONTEXT_SECTIONS: readonly Section[] = [
+const ALL_SECTIONS: readonly Section[] = [
   {
     id: 'overview',
     title: '1. Platform overview',
@@ -241,3 +242,27 @@ export const AI_CONTEXT_SECTIONS: readonly Section[] = [
     ],
   },
 ];
+
+const HIDDEN_PRICES_PARAGRAPH =
+  'Paid packages are one-time, with no subscription, and each covers one project. Their names, contents and prices are published when the free launch window ends.';
+
+/**
+ * The sections as they are today. While the pricing page is hidden (D-341, D-342) the business model
+ * names no price: the paid packages are described and their prices are said to follow the launch.
+ */
+export function aiContextSections(open: boolean = pricingPublic()): readonly Section[] {
+  if (open) return ALL_SECTIONS;
+  return ALL_SECTIONS.map((section) => {
+    if (section.id !== 'business-model') return section;
+    const bullets = (section.bullets ?? []).filter(
+      (bullet) => !bullet.startsWith('Strategist:') && !bullet.startsWith('Commander:'),
+    );
+    const explorer = bullets.findIndex((bullet) => bullet.startsWith('Explorer:'));
+    bullets.splice(
+      explorer + 1,
+      0,
+      'Paid packages: one project each, with a standard or a full diagnostic and report, 12 months of editing plus 90 days read-only. Prices follow when the free launch window ends.',
+    );
+    return { ...section, paragraphs: [HIDDEN_PRICES_PARAGRAPH], bullets };
+  });
+}
