@@ -190,6 +190,7 @@ docs/DECISIONS.md          Log every decision you make that is not in this file 
 6. **No scope creep.** Do not add features outside the current milestone.
 7. **Small commits**, conventional messages (`feat:`, `fix:`, `test:`, `chore:`), each passing lint, typecheck and tests.
 8. **Never commit secrets.** Provide `.env.example` only.
+9. **Keep `/ai-context` true (D-337).** When a feature ships, changes or is dropped, update `apps/web/src/content/ai-context.ts` in the same PR and move its status label (implemented, partial, planned). Never describe a planned feature as available.
 
 ---
 

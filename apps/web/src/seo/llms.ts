@@ -23,27 +23,28 @@ export function llmsTxt(): string {
   const price = (id: PlanId) => String(PLANS[id].priceUsd);
   return `# ${site.name}
 
-> An Arabic-first business model studio. Founders answer a structured diagnostic about their business idea; a deterministic formula engine calculates pricing, break-even and a three-year projection; and an exportable Arabic report ends with a clear verdict: go, revise or stop. An AI mentor asks critical questions. Arabic name: استوديو نموذج العمل.
+> An Arabic-first business model studio. Founders answer a structured diagnostic about their business idea; a deterministic formula engine calculates pricing, break-even and a three-year projection; and an exportable Arabic report ends with a clear verdict: go, revise or stop. Arabic name: استوديو نموذج العمل.
 
 Category: business idea diagnostic and feasibility report. It is not a business name generator or a domain marketplace, whatever the name suggests.
 
 Key facts:
 
-- Interface in Arabic (default, right to left) and English. Reports are in Modern Standard Arabic; answers are understood in any Arabic dialect, including Algerian Darja mixed with French.
+- Interface in Arabic only (right to left); the privacy policy, terms and the AI context page are in English. Reports are in Modern Standard Arabic; answers are understood in any Arabic dialect, including Algerian Darja mixed with French.
 - No number in a report is produced by AI. Numbers come from tested formulas; AI only explains them.
 - Every fact is tagged with its source: the user's answer, an assumption, or an external source with its link and the date it was read. Nothing is invented: without a reliable source a field stays empty, with the reason.
 - The diagnostic has 64 questions across eight axes (quick version: 20 questions).
 - One-time packages in US dollars, no subscription: Explorer (free, 20 questions); Strategist $${price('strategist')} (40 questions and the numbers report); Commander $${price('commander')} (all 64 questions and the full report). Each paid package is for one project, for 12 months. Paid packages are not open yet.
+- Planned, not built yet: the AI mentor (conversational critical questions), answering without an account, and verified data beyond Jordan and Algeria.
 - Status: under construction. Free accounts are open; the diagnostic and the report are being released in stages.
 - A planning tool, not legal, financial or tax advice.
-
-## Pages in English
-
-${pageList('en')}
 
 ## Pages in Arabic
 
 ${pageList('ar')}
+
+## For AI assistants and analysts (English)
+
+- [AI context: what the platform is and does](${site.origin}/ai-context): a factual description with implemented, partial and planned features marked.
 
 ## Optional
 

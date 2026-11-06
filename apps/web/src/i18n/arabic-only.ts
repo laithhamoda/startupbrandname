@@ -16,3 +16,21 @@ export function arabicRedirect(pathname: string): string | null {
   const rest = pathname.slice('/en'.length);
   return hasEnglishVersion(rest) ? null : `/ar${rest}`;
 }
+
+/**
+ * /ai-context (D-337) is one English page for AI assistants, served at this prefix-free address.
+ * The proxy rewrites it to the English locale and sends its /ar and /en addresses here.
+ */
+export const AI_CONTEXT_PATH = '/ai-context';
+
+/** The internal address the proxy serves /ai-context from, else null. */
+export function aiContextRewrite(pathname: string): string | null {
+  return pathname === AI_CONTEXT_PATH ? `/en${AI_CONTEXT_PATH}` : null;
+}
+
+/** /ar/ai-context and /en/ai-context are the same page as /ai-context: one address (308). */
+export function aiContextRedirect(pathname: string): string | null {
+  return pathname === `/ar${AI_CONTEXT_PATH}` || pathname === `/en${AI_CONTEXT_PATH}`
+    ? AI_CONTEXT_PATH
+    : null;
+}

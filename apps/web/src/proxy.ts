@@ -1,6 +1,6 @@
 import createMiddleware from 'next-intl/middleware';
 import { NextResponse, type NextRequest } from 'next/server';
-import { arabicRedirect } from '@/i18n/arabic-only';
+import { aiContextRedirect, aiContextRewrite, arabicRedirect } from '@/i18n/arabic-only';
 import { routing } from '@/i18n/routing';
 import { PATH_HEADER } from '@/lib/auth/next-path';
 import { applyRefreshedSession, hasSessionCookie, refreshSession } from '@/lib/supabase/proxy';
@@ -16,6 +16,18 @@ const handleLanguageRouting = createMiddleware(routing);
  *    headers, so the page sees the refreshed session and the path.
  */
 export default async function proxy(request: NextRequest) {
+  const single = aiContextRedirect(request.nextUrl.pathname);
+  if (single) {
+    const target = request.nextUrl.clone();
+    target.pathname = single;
+    return NextResponse.redirect(target, 308);
+  }
+  const inside = aiContextRewrite(request.nextUrl.pathname);
+  if (inside) {
+    const target = request.nextUrl.clone();
+    target.pathname = inside;
+    return NextResponse.rewrite(target);
+  }
   const arabic = arabicRedirect(request.nextUrl.pathname);
   if (arabic) {
     const target = request.nextUrl.clone();

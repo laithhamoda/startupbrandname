@@ -14,11 +14,18 @@ describe('llms.txt', () => {
     expect(text).toContain('not a business name generator or a domain marketplace');
   });
 
-  it('links every public page in both languages', () => {
+  it('links every public page in Arabic and the English AI context page (D-336, D-337)', () => {
     for (const { path } of PUBLIC_PAGES) {
-      expect(text).toContain(`(https://startupbrandname.com/en${path})`);
       expect(text).toContain(`(https://startupbrandname.com/ar${path})`);
+      expect(text).not.toContain(`(https://startupbrandname.com/en${path})`);
     }
+    expect(text).toContain('(https://startupbrandname.com/ai-context)');
+  });
+
+  it('does not claim an English interface or a mentor that is not built', () => {
+    expect(text).toContain('Interface in Arabic only');
+    expect(text).not.toContain('AI mentor asks critical questions');
+    expect(text).toContain('Planned, not built yet: the AI mentor');
   });
 
   it('quotes the plan prices from the plan table', () => {
