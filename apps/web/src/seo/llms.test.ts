@@ -45,9 +45,27 @@ describe('llms.txt', () => {
     expect(text).not.toMatch(/mentor/i);
   });
 
-  it('quotes the plan prices from the plan table', () => {
-    expect(text).toContain('Strategist $10 (40 questions');
-    expect(text).toContain('Commander $30 (all 64 questions');
+  it('quotes the plan prices from the plan table once the pricing page is open', () => {
+    vi.stubEnv('PRICING_PUBLIC', 'true');
+    try {
+      const open = llmsTxt();
+      expect(open).toContain('Strategist $10 (40 questions');
+      expect(open).toContain('Commander $30 (all 64 questions');
+    } finally {
+      vi.unstubAllEnvs();
+    }
+  });
+
+  it('writes no price while the pricing page is hidden (D-341, D-342)', () => {
+    vi.stubEnv('PRICING_PUBLIC', 'false');
+    try {
+      const hidden = llmsTxt();
+      expect(hidden).not.toMatch(/\$\d/);
+      expect(hidden).toContain('Explorer is free');
+      expect(hidden).toContain('with their prices when the free launch window ends');
+    } finally {
+      vi.unstubAllEnvs();
+    }
   });
 
   it('never links a private page', () => {

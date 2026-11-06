@@ -1,6 +1,6 @@
 import 'server-only';
 import { type PlanId, PLANS } from '@/config/plans';
-import { visiblePublicPages } from '@/config/pricing-visibility';
+import { pricingPublic, visiblePublicPages } from '@/config/pricing-visibility';
 import { site } from '@/config/site';
 import { PAGE_META } from '@/content/pages';
 import type { Locale } from '@/i18n/routing';
@@ -23,6 +23,10 @@ function pageList(locale: Locale): string {
  */
 export function llmsTxt(): string {
   const price = (id: PlanId) => String(PLANS[id].priceUsd);
+  // While the pricing page is hidden (D-341, D-342) no price is written here either.
+  const packages = pricingPublic()
+    ? `- One-time packages in US dollars, no subscription: Explorer (free, 20 questions); Strategist $${price('strategist')} (40 questions and the numbers report); Commander $${price('commander')} (all 64 questions and the full report). Each paid package is for one project, for 12 months. Paid packages are not open yet.`
+    : '- Explorer is free (20 questions and a one-page summary). Paid packages, one-time and for one project each, open with their prices when the free launch window ends.';
   return `# ${site.name}
 
 > An Arabic-first business model studio. Founders answer a structured diagnostic about their business idea; a deterministic formula engine calculates pricing, break-even and a three-year projection; and an exportable Arabic report ends with a clear verdict: go, revise or stop. Arabic name: استوديو نموذج العمل.
@@ -35,7 +39,7 @@ Key facts:
 - No number in a report is produced by AI. Numbers come from tested formulas; AI only explains them.
 - Every fact is tagged with its source: the user's answer, an assumption, or an external source with its link and the date it was read. Nothing is invented: without a reliable source a field stays empty, with the reason.
 - The diagnostic has 64 questions across eight axes (quick version: 20 questions).
-- One-time packages in US dollars, no subscription: Explorer (free, 20 questions); Strategist $${price('strategist')} (40 questions and the numbers report); Commander $${price('commander')} (all 64 questions and the full report). Each paid package is for one project, for 12 months. Paid packages are not open yet.
+${packages}
 - Planned, not built yet: answering without an account, and verified data beyond Jordan and Algeria.
 - Status: under construction. Free accounts are open; the diagnostic and the report are being released in stages.
 - A planning tool, not legal, financial or tax advice.

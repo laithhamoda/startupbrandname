@@ -4,7 +4,7 @@ import { PageBody, PageIntro, PageSection } from '@/components/marketing/page-in
 import {
   AI_CONTEXT_DESCRIPTION,
   AI_CONTEXT_LEAD,
-  AI_CONTEXT_SECTIONS,
+  aiContextSections,
   AI_CONTEXT_TITLE,
   STATUS_LABEL,
 } from '@/content/ai-context';
@@ -38,7 +38,7 @@ export default async function AiContextPage() {
     <PageBody>
       <PageIntro title={AI_CONTEXT_TITLE} lead={AI_CONTEXT_LEAD} />
 
-      {AI_CONTEXT_SECTIONS.map((section) => (
+      {aiContextSections().map((section) => (
         <PageSection key={section.id} id={section.id} title={section.title}>
           {section.paragraphs?.map((text) => (
             <p key={text} className="reading text-ink-2">
