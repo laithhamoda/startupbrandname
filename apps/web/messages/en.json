@@ -768,7 +768,7 @@
     "lead": "During the launch window, every account that takes a spot opens the full report of its project for free, and edits it and builds reports without a limit, once its answers reach 80%.",
     "left": "{count} of {total} spots left",
     "take": "Take my free spot",
-    "counterSpots": "Free spots left: <left></left> of <total></total>",
+    "counterSpots": "Free spots left: <spots></spots> of <total></total>",
     "counterDays": "Days left in the window: <days></days>",
     "taking": "Taking your spot…",
     "granted": "The spot is yours. The full report of your project is open.",

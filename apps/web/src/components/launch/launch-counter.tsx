@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
-import { type CounterData, counterSchema, daysLeft } from '@/lib/launch/counter';
+import { type CounterData, daysLeft, parseCounter } from '@/lib/launch/counter';
 
 type State =
   | { readonly status: 'loading' }
@@ -30,12 +30,12 @@ export function LaunchCounter() {
     fetch('/api/launch/window', { signal: controller.signal })
       .then((response) => (response.ok ? response.json() : Promise.reject(new Error('status'))))
       .then((body: unknown) => {
-        const parsed = counterSchema.safeParse(body);
+        const data = parseCounter(body);
         // The days are counted here, when the answer arrives: a render must not read the clock.
         setState(
-          parsed.success
-            ? { status: 'ready', data: parsed.data, days: daysLeft(parsed.data.endsAt, Date.now()) }
-            : { status: 'unavailable' },
+          data === null
+            ? { status: 'unavailable' }
+            : { status: 'ready', data, days: daysLeft(data.endsAt, Date.now()) },
         );
       })
       .catch(() => {
@@ -55,7 +55,7 @@ export function LaunchCounter() {
         <div className="grid gap-1">
           <p className="font-display text-h3 font-extrabold">
             {t.rich('counterSpots', {
-              left: () => <Num value={data.spotsLeft} />,
+              spots: () => <Num value={data.spotsLeft} />,
               total: () => <Num value={data.spotsTotal} />,
             })}
           </p>

@@ -1,18 +1,30 @@
-import { z } from 'zod';
-
 /**
  * What the public counter reads from /api/launch/window (D-331): real numbers only, from the
  * database. The client never shows a number it did not receive.
  */
-export const counterSchema = z.object({
-  open: z.boolean(),
-  spotsLeft: z.number().int().nonnegative(),
-  spotsTotal: z.number().int().nonnegative(),
+export interface CounterData {
+  readonly open: boolean;
+  readonly spotsLeft: number;
+  readonly spotsTotal: number;
   /** ISO time, or null while the end date is missing (the window is closed then). */
-  endsAt: z.string().nullable(),
-});
+  readonly endsAt: string | null;
+}
 
-export type CounterData = z.infer<typeof counterSchema>;
+function isCount(value: unknown): value is number {
+  return typeof value === 'number' && Number.isInteger(value) && value >= 0;
+}
+
+/**
+ * The counter data in an answer, or null when it is not the answer of the route. Written by hand,
+ * not with zod: this runs in the browser, and the library's weight would reach every page.
+ */
+export function parseCounter(body: unknown): CounterData | null {
+  if (typeof body !== 'object' || body === null) return null;
+  const { open, spotsLeft, spotsTotal, endsAt } = body as Record<string, unknown>;
+  if (typeof open !== 'boolean' || !isCount(spotsLeft) || !isCount(spotsTotal)) return null;
+  if (endsAt !== null && typeof endsAt !== 'string') return null;
+  return { open, spotsLeft, spotsTotal, endsAt };
+}
 
 const DAY_MS = 86_400_000;
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { counterSchema, daysLeft } from './counter';
+import { daysLeft, parseCounter } from './counter';
 
 const NOW = Date.parse('2026-11-06T12:00:00Z');
 
@@ -17,12 +17,17 @@ describe('daysLeft', () => {
   });
 });
 
-describe('counterSchema', () => {
+describe('parseCounter', () => {
   it('accepts the answer of the route and nothing looser', () => {
     const ok = { open: true, spotsLeft: 460, spotsTotal: 500, endsAt: '2027-02-03T20:59:59Z' };
-    expect(counterSchema.parse(ok)).toEqual(ok);
-    expect(counterSchema.safeParse({ ...ok, spotsLeft: -1 }).success).toBe(false);
-    expect(counterSchema.safeParse({ ...ok, open: 'yes' }).success).toBe(false);
-    expect(counterSchema.safeParse({ open: true }).success).toBe(false);
+    expect(parseCounter(ok)).toEqual(ok);
+    expect(parseCounter({ ...ok, endsAt: null })).toEqual({ ...ok, endsAt: null });
+    expect(parseCounter({ ...ok, spotsLeft: -1 })).toBeNull();
+    expect(parseCounter({ ...ok, spotsLeft: 1.5 })).toBeNull();
+    expect(parseCounter({ ...ok, open: 'yes' })).toBeNull();
+    expect(parseCounter({ ...ok, endsAt: 5 })).toBeNull();
+    expect(parseCounter({ open: true })).toBeNull();
+    expect(parseCounter(null)).toBeNull();
+    expect(parseCounter('text')).toBeNull();
   });
 });
