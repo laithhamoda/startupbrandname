@@ -60,7 +60,7 @@ export default async function AiContextPage() {
                   <dd className="grid gap-1 text-ink-2">
                     {/* The status is written out, never shown by colour alone. */}
                     <span className="text-small font-bold text-ink">
-                      Status: {STATUS_LABEL[feature.status]}
+                      {`Status: ${STATUS_LABEL[feature.status]}`}
                     </span>
                     <span>{feature.body}</span>
                   </dd>
