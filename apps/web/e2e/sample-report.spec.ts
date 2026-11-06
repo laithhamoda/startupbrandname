@@ -8,14 +8,9 @@ const WORDS = {
     notice: 'عيّنة توضيحية لمشروع افتراضي',
     start: 'ابدأ تشخيص مشروعك مجانًا',
   },
-  en: {
-    heading: 'Sample report',
-    notice: 'An illustrative sample for a fictional project',
-    start: 'Start your diagnostic for free',
-  },
 } as const;
 
-for (const locale of ['ar', 'en'] as const) {
+for (const locale of ['ar'] as const) {
   test.describe(`the ${locale} sample report`, () => {
     test('says what it is before it shows anything, and has one h1', async ({ page }) => {
       await page.goto(`/${locale}/sample-report`);

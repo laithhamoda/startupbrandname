@@ -1,6 +1,7 @@
 'use client';
 
 import { useLocale, useTranslations } from 'next-intl';
+import { hasEnglishVersion } from '@/i18n/arabic-only';
 import { LinkPending } from '@/components/ui/link-pending';
 import { Link, usePathname } from '@/i18n/navigation';
 
@@ -13,6 +14,8 @@ export function LanguageSwitch() {
   const pathname = usePathname();
   const t = useTranslations('language');
   const target = locale === 'ar' ? 'en' : 'ar';
+  // Arabic only (D-336): the switch shows only where an English version exists.
+  if (!hasEnglishVersion(pathname)) return null;
 
   return (
     <Link

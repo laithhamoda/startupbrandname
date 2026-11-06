@@ -4,24 +4,19 @@ import { PUBLIC_PAGES } from '../src/config/public-pages';
 
 // Signed-in pages are checked in e2e/auth/a11y.spec.ts, which needs the local database.
 const PAGES = [
-  ...PUBLIC_PAGES.flatMap(({ path }) => [`/ar${path}`, `/en${path}`]),
+  ...PUBLIC_PAGES.flatMap(({ path }) => [`/ar${path}`]),
   '/ar/design',
-  '/en/design',
   '/ar/design/diagnostic',
-  '/en/design/diagnostic',
   '/ar/design/canvas',
-  '/en/design/canvas',
   '/ar/design/report',
-  '/en/design/report',
   '/ar/design/report?project=jo-home-ecommerce&view=plan',
-  '/en/design/report?project=dz-auto-entrepreneur',
+  '/ar/design/report?project=dz-auto-entrepreneur',
   '/ar/design/report?project=jo-home-ecommerce&view=result',
-  '/en/design/report?project=jo-service-subscription&view=result',
+  '/ar/design/report?project=jo-service-subscription&view=result',
   '/ar/signup',
-  '/en/signup',
   '/ar/login',
-  '/en/login',
   '/ar/privacy',
+  '/en/privacy',
   '/en/terms',
 ] as const;
 const SCHEMES = ['light', 'dark'] as const;
@@ -47,11 +42,11 @@ for (const path of PAGES) {
 test.describe('on a phone', () => {
   test.use({ viewport: { width: 360, height: 800 } });
 
-  for (const path of ['/ar', '/en/pricing']) {
+  for (const path of ['/ar', '/ar/pricing']) {
     test(`${path} with the menu open has no WCAG 2.2 AA violations`, async ({ page }) => {
       await page.goto(path);
       await page.evaluate(() => document.fonts.ready);
-      await page.getByRole('button', { name: /القائمة|Menu/ }).click();
+      await page.getByRole('button', { name: /القائمة/ }).click();
 
       const results = await new AxeBuilder({ page }).withTags(WCAG_TAGS).analyze();
 

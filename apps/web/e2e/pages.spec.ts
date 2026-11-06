@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { PUBLIC_PAGES } from '../src/config/public-pages';
 
-const LOCALES = ['ar', 'en'] as const;
+const LOCALES = ['ar'] as const;
 const SCHEMES = ['light', 'dark'] as const;
 const VIEWPORTS = {
   phone: { width: 360, height: 800 },

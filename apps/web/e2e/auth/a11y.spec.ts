@@ -12,13 +12,13 @@ async function expectNoViolations(page: Page) {
   expect(results.violations.map((violation) => `${violation.id}: ${violation.help}`)).toEqual([]);
 }
 
-// Signed-in pages, in both languages and both themes (CLAUDE.md §4 rule 11).
+// Signed-in pages, in both themes (CLAUDE.md §4 rule 11).
 for (const scheme of ['light', 'dark'] as const) {
   test(`signed-in pages have no WCAG 2.2 AA violations in ${scheme} theme`, async ({ page }) => {
     await page.emulateMedia({ colorScheme: scheme });
     await signUpByEmail(page, uniqueEmail(`a11y-${scheme}`));
 
-    for (const path of ['/ar/projects', '/ar/account', '/en/projects', '/en/account']) {
+    for (const path of ['/ar/projects', '/ar/account']) {
       await page.goto(path);
       await expectNoViolations(page);
     }

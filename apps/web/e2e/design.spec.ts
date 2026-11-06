@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-const LOCALES = ['ar', 'en'] as const;
+const LOCALES = ['ar'] as const;
 const VIEWPORTS = [
   { name: 'phone', width: 360, height: 800 },
   { name: 'desktop', width: 1280, height: 900 },
