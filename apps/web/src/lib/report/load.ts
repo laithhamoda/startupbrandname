@@ -32,7 +32,7 @@ export type ReportPage =
   | {
       readonly status: 'version_needed';
       readonly next: number;
-      readonly remaining: number;
+      readonly remaining: number | null;
       readonly versions: readonly VersionSummary[];
     }
   /** The model could not be built at all (logged). */
@@ -40,7 +40,7 @@ export type ReportPage =
 
 export interface ReportVersion {
   readonly number: number;
-  readonly remaining: number;
+  readonly remaining: number | null;
   readonly final: boolean;
   readonly versions: readonly VersionSummary[];
 }

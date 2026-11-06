@@ -51,10 +51,14 @@ export interface Plan {
 }
 
 /**
- * Report versions of a paid project (D-321): at most `max`, and at most `afterGo` after the first
- * «امضِ». The database reads the same numbers from versions.max and versions.after_go.
+ * Report versions of a paid project (D-321, D-343): at most `max`, and at most `afterGo` after the first
+ * «امضِ»; null is no limit, which is the setting today. The database reads the same numbers from
+ * versions.max and versions.after_go.
  */
-export const REPORT_VERSIONS = { max: 10, afterGo: 5 } as const;
+export const REPORT_VERSIONS: {
+  readonly max: number | null;
+  readonly afterGo: number | null;
+} = { max: null, afterGo: null };
 
 /**
  * The mentor pack (D-322): more AI mentor messages for one project, bought once, on any project,

@@ -47,7 +47,7 @@ export async function VersionBar({
   error,
 }: Props & {
   number: number;
-  remaining: number;
+  remaining: number | null;
   final: boolean;
   versions: readonly VersionSummary[];
   error: VersionErrorCode | null;
@@ -61,10 +61,12 @@ export async function VersionBar({
       <h2 id="versions-bar" className="text-small font-bold text-ink">
         {final
           ? t.rich('final', { number: () => <Num value={number} /> })
-          : t.rich('current', {
-              number: () => <Num value={number} />,
-              remaining: () => <Num value={remaining} />,
-            })}
+          : remaining === null
+            ? t.rich('currentUnlimited', { number: () => <Num value={number} /> })
+            : t.rich('current', {
+                number: () => <Num value={number} />,
+                remaining: () => <Num value={remaining} />,
+              })}
       </h2>
       <VersionError code={error} />
       {final ? (
@@ -94,7 +96,7 @@ export async function VersionNeeded({
   error,
 }: Props & {
   next: number;
-  remaining: number;
+  remaining: number | null;
   versions: readonly VersionSummary[];
   error: VersionErrorCode | null;
 }) {
@@ -105,13 +107,15 @@ export async function VersionNeeded({
         {versions.length === 0 ? t('firstTitle') : t('changedTitle')}
       </h1>
       <VersionError code={error} />
-      {remaining > 0 ? (
+      {remaining === null || remaining > 0 ? (
         <form action={makeReportVersion.bind(null, locale, projectId)} className="grid gap-4">
           <p className="reading">
-            {t.rich('makeLead', {
-              number: () => <Num value={next} />,
-              remaining: () => <Num value={remaining} />,
-            })}
+            {remaining === null
+              ? t.rich('makeLeadUnlimited', { number: () => <Num value={next} /> })
+              : t.rich('makeLead', {
+                  number: () => <Num value={next} />,
+                  remaining: () => <Num value={remaining} />,
+                })}
           </p>
           <Button type="submit" variant="primary" className="justify-self-start">
             {t.rich('make', { number: () => <Num value={next} /> })}

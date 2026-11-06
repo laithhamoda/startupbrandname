@@ -39,17 +39,24 @@ export function summariesOf(rows: readonly VersionRow[]): VersionSummary[] {
 
 /**
  * How many more versions the project may record: at most `max` in all, and at most `afterGo` after
- * the first version that says «امضِ».
+ * the first version that says «امضِ». Null when there is no limit (D-343).
  */
 export function versionsLeft(
   rows: readonly VersionRow[],
-  limits: { readonly max: number; readonly afterGo: number } = REPORT_VERSIONS,
-): number {
+  limits: {
+    readonly max: number | null;
+    readonly afterGo: number | null;
+  } = REPORT_VERSIONS,
+): number | null {
   const last = rows.reduce((top, row) => Math.max(top, row.number), 0);
   const goes = rows.filter((row) => row.verdict === 'go').map((row) => row.number);
-  const byMax = limits.max - last;
-  const byGo = goes.length === 0 ? byMax : limits.afterGo - (last - Math.min(...goes));
-  return Math.max(0, Math.min(byMax, byGo));
+  const byMax = limits.max === null ? null : limits.max - last;
+  const byGo =
+    goes.length === 0 || limits.afterGo === null
+      ? null
+      : limits.afterGo - (last - Math.min(...goes));
+  if (byMax === null && byGo === null) return null;
+  return Math.max(0, Math.min(byMax ?? Infinity, byGo ?? Infinity));
 }
 
 /** The next version's number. */

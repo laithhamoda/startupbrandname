@@ -119,20 +119,20 @@ describe('hasFairUse', () => {
 });
 
 describe('REPORT_VERSIONS', () => {
-  it('matches the limits the database seeds (D-321)', () => {
+  it('matches the limits the database holds: both lifted by the migration (D-343)', () => {
     const sql = readFileSync(
       fileURLToPath(
         new URL(
-          '../../../../supabase/migrations/20261026203000_report_versions.sql',
+          '../../../../supabase/migrations/20261106140000_unlimited_report_versions.sql',
           import.meta.url,
         ),
       ),
       'utf8',
     );
-    expect(/\('versions\.max', '(\d+)'\)/.exec(sql)?.[1]).toBe(String(REPORT_VERSIONS.max));
-    expect(/\('versions\.after_go', '(\d+)'\)/.exec(sql)?.[1]).toBe(
-      String(REPORT_VERSIONS.afterGo),
+    expect(sql).toContain(
+      "update public.settings set value = 'null'::jsonb where key in ('versions.max', 'versions.after_go');",
     );
+    expect(REPORT_VERSIONS).toEqual({ max: null, afterGo: null });
   });
 });
 
