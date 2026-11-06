@@ -760,5 +760,17 @@
       "usd": "USD",
       "refundHint": "Refunds are made in the Paddle dashboard. Opening this page is recorded in the audit log."
     }
+  },
+  "launch": {
+    "title": "Take your free launch spot",
+    "lead": "During the launch window, every account that takes a spot opens the full report of its project for free, and edits it and builds reports without a limit, once its answers reach 80%.",
+    "left": "{count} of {total} spots left",
+    "take": "Take my free spot",
+    "taking": "Taking your spot…",
+    "granted": "The spot is yours. The full report of your project is open.",
+    "closed": "The free launch window has ended. The packages apply.",
+    "unverified": "Confirm your email first, then try again.",
+    "used": "This phone number already holds a spot.",
+    "error": "We could not take your spot. Try again in a moment."
   }
 }

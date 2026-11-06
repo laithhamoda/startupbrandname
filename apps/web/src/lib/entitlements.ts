@@ -18,8 +18,9 @@ export interface AccessOptions {
   /** `FULL_REPORT_PREVIEW_EMAILS` (D-245): the addresses that see the full report before M7. */
   readonly previewEmails: readonly string[];
   /**
-   * `EARLY_ACCESS_FULL_REPORT` (D-290): while it is on, every account opens the full report without
-   * the plan, as an address on the preview list does. Off when missing.
+   * True for an account that holds an active launch spot while `EARLY_ACCESS_FULL_REPORT` is on
+   * (D-290, D-332): it opens the full report without the plan, as an address on the preview list
+   * does. Off when missing.
    */
   readonly earlyAccess?: boolean;
 }
@@ -28,8 +29,8 @@ export interface Access {
   readonly planId: PlanId;
   readonly entitlements: Entitlements;
   /**
-   * True for an address on the preview allow-list, and for every account during early access: the
-   * full report opens without the plan.
+   * True for an address on the preview allow-list, and for an account that holds an active launch
+   * spot: the full report opens without the plan.
    */
   readonly fullReportPreview: boolean;
 }
