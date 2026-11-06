@@ -39,6 +39,8 @@ describe('claimLaunchSpot (D-332, D-334)', () => {
     ['admin', 'granted'],
     ['closed', 'closed'],
     ['phone_used', 'used'],
+    ['email_used', 'email_used'],
+    ['email_blocked', 'email_blocked'],
     ['email_unverified', 'unverified'],
     ['phone_unverified', 'unverified'],
   ] as const)('shows the database answer %s as %s', async (answer, status) => {

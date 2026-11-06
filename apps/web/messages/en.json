@@ -771,6 +771,8 @@
     "closed": "The free launch window has ended. The packages apply.",
     "unverified": "Confirm your email first, then try again.",
     "used": "This phone number already holds a spot.",
+    "emailUsed": "Your mailbox already holds a spot. Alias addresses, such as name+1@ or dots in Gmail, count as one mailbox.",
+    "emailBlocked": "A throwaway email cannot take a spot. Use your real email.",
     "error": "We could not take your spot. Try again in a moment."
   }
 }
