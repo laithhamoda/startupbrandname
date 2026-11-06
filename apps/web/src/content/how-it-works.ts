@@ -16,7 +16,7 @@ export interface HowItWorksContent {
 export const HOW_IT_WORKS: Localized<HowItWorksContent> = {
   ar: {
     heading: 'كيف تعمل المنصة',
-    lead: 'من إنشاء الحساب إلى التقرير والحكم، تمرّ فكرتك بسبع خطوات. تصف هذه الصفحة المنصة كما نبنيها الآن، ونطلق أجزاءها تباعًا.',
+    lead: 'من إنشاء الحساب إلى التقرير والحكم، تمرّ فكرتك بست خطوات. تصف هذه الصفحة المنصة كما نبنيها الآن، ونطلق أجزاءها تباعًا.',
     stepsHeading: 'الخطوات',
     steps: [
       {
@@ -61,14 +61,6 @@ export const HOW_IT_WORKS: Localized<HowItWorksContent> = {
         ],
       },
       {
-        id: 'mentor',
-        title: 'ناقش المرشد الذكي (قريبًا)',
-        body: [
-          'مرشد يسأل أكثر مما يجيب، ويشير إلى أضعف نقطة في نموذجك دون مجاملة، ويستند إلى إجاباتك بأرقامها.',
-          'لا يخترع المرشد أرقامًا، ولا يقدّم استشارة قانونية أو ضريبية ملزمة. ويعمل فقط بموافقتك على معالجة محتوى مشروعك، دون اسمك أو بريدك، خارج بلدك.',
-        ],
-      },
-      {
         id: 'validate',
         title: 'اختبر قبل أن تبني',
         body: [
@@ -97,7 +89,7 @@ export const HOW_IT_WORKS: Localized<HowItWorksContent> = {
   },
   en: {
     heading: 'How it works',
-    lead: 'From creating an account to the report and its verdict, your idea goes through seven steps. This page describes the platform as we are building it; its parts are released in turn.',
+    lead: 'From creating an account to the report and its verdict, your idea goes through six steps. This page describes the platform as we are building it; its parts are released in turn.',
     stepsHeading: 'The steps',
     steps: [
       {
@@ -139,14 +131,6 @@ export const HOW_IT_WORKS: Localized<HowItWorksContent> = {
           'The report opens with an executive summary that ends in a verdict: go, revise or stop. A “stop” always reads “not viable in its current form” and comes with three specific changes that would turn it.',
           'After the summary come the business model, pricing, the financial projection, the scenarios, and the legal path and financing. A pivotal number with low confidence carries a warning: “This number is an assumption. Test it before you base a decision on it.”',
           'The report is exported as an Arabic PDF.',
-        ],
-      },
-      {
-        id: 'mentor',
-        title: 'Talk it through with the AI mentor (coming soon)',
-        body: [
-          'A mentor that asks more than it answers, points to the weakest part of your model without flattery, and works from your own answers and numbers.',
-          'The mentor never invents numbers and gives no binding legal or tax advice. It only runs with your consent to process your project content, without your name or email, outside your country.',
         ],
       },
       {
