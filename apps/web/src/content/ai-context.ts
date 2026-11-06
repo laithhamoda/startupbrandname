@@ -1,6 +1,6 @@
 import 'server-only';
 import { AXES, AXIS_NAMES } from '@sbn/question-bank';
-import { MENTOR_PACK, PLANS, REPORT_VERSIONS, upgradePrice } from '@/config/plans';
+import { PLANS, REPORT_VERSIONS, upgradePrice } from '@/config/plans';
 
 /**
  * /ai-context (D-337): one plain-English page written for AI assistants, reviewers and analysts.
@@ -133,11 +133,6 @@ export const AI_CONTEXT_SECTIONS: readonly Section[] = [
         body: 'A limited free window gives the first accounts that claim a launch spot (up to 500, until 3 February 2027 at the latest, with a confirmed email) access to the full report at 80% completeness. The database and the claim button exist; the public countdown does not yet.',
       },
       {
-        name: 'AI mentor',
-        status: 'planned',
-        body: 'A conversational mentor that asks critical questions and explains the computed numbers without inventing any. Allowances are already defined per package, but there is no chat feature yet.',
-      },
-      {
         name: 'Answering without an account',
         status: 'planned',
         body: 'Letting a visitor answer the diagnostic before signing up, and read part of the finished report, with the verdict behind sign-in. Designed, not built.',
@@ -184,10 +179,9 @@ export const AI_CONTEXT_SECTIONS: readonly Section[] = [
       `Explorer: free. Quick diagnostic (20 questions), one-page summary, one project, 30-day retention.`,
       `Strategist: ${price('strategist')}. Standard diagnostic (40 questions) and the numbers report, for one project, 12 months of editing plus 90 days read-only.`,
       `Commander: ${price('commander')}. All 64 questions and the full report, for one project, same duration. Upgrading from Strategist costs the difference, ${String(upgradePrice('strategist', 'commander'))} dollars.`,
-      `Mentor pack: $${String(MENTOR_PACK.priceUsd)} for ${String(MENTOR_PACK.messages)} extra mentor messages on any project (offered when the mentor ships).`,
       'Course voucher: the standard package on every project for 12 months from activation, at no charge. Voucher codes look like VIVA followed by eight hexadecimal characters and carry no meaning in themselves.',
       'Payments: card or PayPal through Paddle, the merchant of record. The platform never stores card data. The age check (18 or older) happens at payment.',
-      'Revenue model: one-time package sales, mentor packs, and voucher-based distribution with affiliate credit on activation. The affiliate amount is not published.',
+      'Revenue model: one-time package sales and voucher-based distribution with affiliate credit on activation. The affiliate amount is not published.',
       'Launch period: during the free launch window the full report is open to accounts holding a launch spot, as described above. Paid packages open when the window ends.',
     ],
   },
@@ -213,7 +207,7 @@ export const AI_CONTEXT_SECTIONS: readonly Section[] = [
       'Today AI does one job: reviewing free-text answers. It detects the language, rewrites dialect or mixed wording into Modern Standard Arabic for the founder to confirm, and flags a few possible contradictions for the fixed rules to handle. It uses a small, fast Claude model.',
       'Inputs and privacy: only the project’s own content is sent. Name, email and phone are removed and the user id is replaced by a random token for each request, in one module that is tested. Unchanged inputs are not sent again; each call is logged with its cost, and daily limits apply per user and overall.',
       'What AI never does: it never produces a number that appears in a report, and it does not decide the verdict. Numbers come from the formula engine; the verdict comes from fixed rules over those numbers.',
-      'Limitations and dependencies: AI suggestions can be wrong, which is why the founder confirms each rewrite. The feature depends on the Anthropic API being available. The planned mentor will explain computed numbers and ask critical questions; it is not built yet.',
+      'Limitations and dependencies: AI suggestions can be wrong, which is why the founder confirms each rewrite. The feature depends on the Anthropic API being available.',
     ],
   },
   {
@@ -233,7 +227,7 @@ export const AI_CONTEXT_SECTIONS: readonly Section[] = [
     bullets: [
       'Completed: the diagnostic, answer review, calculation engine, project result, summary, numbers and full reports, Arabic PDF, canvas, report versions, sample report, accounts, packages with Paddle checkout, vouchers, affiliates, admin area, Arabic-only interface.',
       'Under development: the free launch window’s public countdown and abuse limits, and the answer-without-an-account flow.',
-      'Planned: the AI mentor, verified Gulf data, verified tax-rule data, automated country-data review, competitor research and pitch-deck export.',
+      'Planned: verified Gulf data, verified tax-rule data, automated country-data review, competitor research and pitch-deck export.',
       'Known limitations: the interface is Arabic only (the privacy policy, terms and this page are in English); verified country data covers Jordan and Algeria only; the product is in an early public stage and the free launch window is limited in time and places.',
       'Dependencies: Supabase (database and sign-in), Vercel (hosting), Anthropic (text review), Paddle (payments).',
     ],
