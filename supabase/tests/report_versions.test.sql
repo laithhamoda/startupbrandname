@@ -5,6 +5,10 @@ create extension if not exists pgtap with schema extensions;
 
 select plan(27);
 
+-- The limits are lifted in production (D-343); this file tests them, so it sets them.
+update public.settings set value = '10' where key = 'versions.max';
+update public.settings set value = '5' where key = 'versions.after_go';
+
 insert into auth.users (id, email, created_at) values
   ('ab000000-0000-4000-8000-000000000001', 'versions-paid@example.test', now()),
   ('ab000000-0000-4000-8000-000000000002', 'versions-free@example.test', now()),

@@ -3506,3 +3506,20 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
 - **Tests:** both texts are tested with the flag off (no `$` figure) and on (the prices of the plan
   table), and the flag is set inside the tests because CI builds with the pricing page public.
 - **Status:** Active
+
+### D-343 (2026-11-06): Report versions without a limit
+
+- **Decision:** The owner wants a founder to edit and make new report versions without a limit, and
+  answered the question of D-321: lift the cap, keep the lock on the core answers of a paid project. So
+  the 10-version cap and the 5 versions after the first "go" are gone.
+- **How:** the cap lived in two settings, `versions.max` and `versions.after_go`. A setting that is JSON
+  null (or missing) now means no limit, and the migration sets both to null. To bring the cap back, set
+  them to numbers again: no release needed. `record_report_version()` is replaced for this; the app reads
+  the same rule (`REPORT_VERSIONS`, `versionsLeft()` returns null for no limit).
+- **Unchanged:** the lock on the core answers (B1, C1, D2) once a package is bought, so a package stays tied
+  to its idea; the optional choice of a final version, which closes the project; the one version per set
+  of answers (the same answers give the same version).
+- **In the interface:** no "remaining" count while there is no limit; the first-version and next-version
+  texts say the founder can edit and make new versions without a limit.
+- **Replaces:** the limits of D-321. The rest of D-321 and D-323 stands.
+- **Status:** Active

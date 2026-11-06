@@ -494,11 +494,13 @@
     },
     "versions": {
       "current": "Version <number></number> of your report · <remaining></remaining> left",
+      "currentUnlimited": "Version <number></number> of your report",
       "final": "Final version of your report: <number></number>",
       "closedNote": "This project’s answers are closed on this version. The AI mentor is still open for your project.",
       "firstTitle": "Make the first version of your report",
       "changedTitle": "Your answers changed since the last version",
       "makeLead": "The report keeps a copy of your current answers. This will be version <number></number>, one of the <remaining></remaining> you have left.",
+      "makeLeadUnlimited": "The report saves a copy of your current answers. This will be version <number></number>, and you can edit your answers and make new versions without a limit.",
       "make": "Make version <number></number>",
       "noneLeft": "You have used every version this project has. Choose your final version: your answers go back to it and the project closes to edits, with the mentor still open.",
       "chooseOpen": "Choose the final version",

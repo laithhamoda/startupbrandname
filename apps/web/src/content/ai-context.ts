@@ -1,6 +1,6 @@
 import 'server-only';
 import { AXES, AXIS_NAMES } from '@sbn/question-bank';
-import { PLANS, REPORT_VERSIONS, upgradePrice } from '@/config/plans';
+import { PLANS, upgradePrice } from '@/config/plans';
 import { pricingPublic } from '@/config/pricing-visibility';
 
 /**
@@ -106,7 +106,7 @@ const ALL_SECTIONS: readonly Section[] = [
       {
         name: 'Report versions',
         status: 'implemented',
-        body: `Each paid project keeps up to ${String(REPORT_VERSIONS.max)} report versions, and after the first go verdict at most ${String(REPORT_VERSIONS.afterGo)} more edits before a final version is chosen. This limit is a current setting and may change.`,
+        body: 'Each paid project keeps every report version. The founder can edit answers and make a new version without a limit; the core answers lock once a package is bought, so a package stays tied to its idea. Choosing a final version is optional.',
       },
       {
         name: 'Sample report',
