@@ -143,6 +143,21 @@ export type Database = {
         };
         Relationships: [];
       };
+      blocked_email_domains: {
+        Row: {
+          added_at: string;
+          domain: string;
+        };
+        Insert: {
+          added_at?: string;
+          domain: string;
+        };
+        Update: {
+          added_at?: string;
+          domain?: string;
+        };
+        Relationships: [];
+      };
       checkout_refs: {
         Row: {
           adult_confirmed_at: string;
@@ -301,18 +316,21 @@ export type Database = {
       launch_spots: {
         Row: {
           claimed_at: string;
+          email_canonical: string | null;
           phone_hash: string | null;
           source: string;
           user_id: string;
         };
         Insert: {
           claimed_at?: string;
+          email_canonical?: string | null;
           phone_hash?: string | null;
           source?: string;
           user_id: string;
         };
         Update: {
           claimed_at?: string;
+          email_canonical?: string | null;
           phone_hash?: string | null;
           source?: string;
           user_id?: string;

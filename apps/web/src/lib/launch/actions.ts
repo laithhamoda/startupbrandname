@@ -18,6 +18,10 @@ export type ClaimResult =
   | { readonly status: 'unverified' }
   /** Another account holds a spot with this phone number. */
   | { readonly status: 'used' }
+  /** The same mailbox (a +tag or Gmail-dots address of it) already holds a spot (D-338). */
+  | { readonly status: 'email_used' }
+  /** The email is from a throwaway-mail domain (D-338). */
+  | { readonly status: 'email_blocked' }
   | { readonly status: 'error' };
 
 const localeSchema = z.enum(routing.locales);
@@ -30,6 +34,8 @@ const answerSchema = z.enum([
   'email_unverified',
   'phone_unverified',
   'phone_used',
+  'email_used',
+  'email_blocked',
 ]);
 
 /**
@@ -60,6 +66,10 @@ export async function claimLaunchSpot(localeInput: string): Promise<ClaimResult>
         return { status: 'closed' };
       case 'phone_used':
         return { status: 'used' };
+      case 'email_used':
+        return { status: 'email_used' };
+      case 'email_blocked':
+        return { status: 'email_blocked' };
       case 'email_unverified':
       case 'phone_unverified':
         return { status: 'unverified' };

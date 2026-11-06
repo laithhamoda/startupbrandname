@@ -52,9 +52,13 @@ export function LaunchSpotCard({
       ? t('unverified')
       : state.status === 'used'
         ? t('used')
-        : state.status === 'error'
-          ? t('error')
-          : null;
+        : state.status === 'email_used'
+          ? t('emailUsed')
+          : state.status === 'email_blocked'
+            ? t('emailBlocked')
+            : state.status === 'error'
+              ? t('error')
+              : null;
 
   return (
     <section

@@ -3401,3 +3401,22 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
 - **Not verified:** the model names in production settings, the live Paddle state and the production
   crawler variables; the page says nothing about them beyond what the code shows.
 - **Status:** Active
+
+### D-338 (2026-11-06): One mailbox, one launch spot; no spot for a throwaway email
+
+- **Decision:** The registration audit found that, with the phone check off (D-334), one person could
+  take many launch spots with aliases of one mailbox (`a.b@gmail.com`, `ab+1@gmail.com`,
+  `ab@googlemail.com`) or with throwaway mail. A spot is now also keyed by the canonical address, and a
+  throwaway-mail domain cannot take one.
+- **Canonical address:** lower case; `+tag` dropped for every domain; for Gmail also dots dropped and
+  googlemail.com read as gmail.com. Dots are kept elsewhere, where they can matter.
+- **Blocked domains:** table `blocked_email_domains`, seeded with eight well-known throwaway services
+  and extended by the admin. It is a small list on purpose: it stops the lazy case, not a determined one
+  (that is for the CAPTCHA and the rate limit, the next fixes).
+- **Existing spots:** the earliest spot of a mailbox keeps the key; a later duplicate keeps its spot and
+  has no key, for an admin to look at. Nothing is revoked automatically.
+- **Answers:** `claim_launch_spot()` adds `email_used` and `email_blocked`; the card says so in
+  Arabic and English.
+- **Not covered:** a determined person with many real mailboxes. The phone check (a switch, D-334) stays
+  the answer if that appears.
+- **Status:** Active
