@@ -38,6 +38,9 @@ export const serverEnvSchema = z.object({
   // Shows "Continue with Google" when the environment's Supabase project also has Google enabled
   // (checked at runtime, D-089), so a mismatch never leads to Supabase's raw error page.
   AUTH_GOOGLE_ENABLED: booleanFlag.default(false),
+  // The pricing page is hidden while the free launch window runs (D-341). Read by
+  // config/pricing-visibility.ts straight from the environment, so the proxy and the pages agree.
+  PRICING_PUBLIC: booleanFlag.default(false),
   // Tests only: "false" skips asking Supabase whether Google is enabled, so the end-to-end tests can
   // press the button against a local stack that has no Google credentials.
   AUTH_GOOGLE_VERIFY_PROVIDER: booleanFlag.default(true),

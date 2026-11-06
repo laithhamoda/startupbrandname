@@ -1,17 +1,19 @@
 import 'server-only';
 import { type PlanId, PLANS } from '@/config/plans';
-import { PUBLIC_PAGES } from '@/config/public-pages';
+import { visiblePublicPages } from '@/config/pricing-visibility';
 import { site } from '@/config/site';
 import { PAGE_META } from '@/content/pages';
 import type { Locale } from '@/i18n/routing';
 import { pageUrl } from './json-ld';
 
 function pageList(locale: Locale): string {
-  return PUBLIC_PAGES.map(({ id, path }) => {
-    const meta = PAGE_META[locale][id];
-    const name = id === 'home' ? site.name : meta.title;
-    return `- [${name}](${pageUrl(locale, path)}): ${meta.description}`;
-  }).join('\n');
+  return visiblePublicPages()
+    .map(({ id, path }) => {
+      const meta = PAGE_META[locale][id];
+      const name = id === 'home' ? site.name : meta.title;
+      return `- [${name}](${pageUrl(locale, path)}): ${meta.description}`;
+    })
+    .join('\n');
 }
 
 /**

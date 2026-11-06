@@ -1,3 +1,4 @@
+import { pricingPublic } from '@/config/pricing-visibility';
 import { useTranslations } from 'next-intl';
 import { site } from '@/config/site';
 import { Link } from '@/i18n/navigation';
@@ -18,7 +19,7 @@ export function SiteHeader({ area }: { area: 'public' | 'app' }) {
       ? [
           { href: '/how-it-works', label: nav('howItWorks') },
           { href: '/methodology', label: nav('methodology') },
-          { href: '/pricing', label: nav('pricing') },
+          ...(pricingPublic() ? [{ href: '/pricing', label: nav('pricing') }] : []),
           { href: '/faq', label: nav('faq') },
           { href: '/login', label: nav('login') },
           { href: '/signup', label: nav('signup'), emphasis: true },

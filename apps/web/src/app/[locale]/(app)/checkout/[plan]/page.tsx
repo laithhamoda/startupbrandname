@@ -9,6 +9,7 @@ import { ButtonLink } from '@/components/ui/button';
 import { Money } from '@/components/ui/money';
 import { TextLink } from '@/components/ui/text-link';
 import { PLANS } from '@/config/plans';
+import { pricingPublic } from '@/config/pricing-visibility';
 import { PRICING } from '@/content/pricing';
 import { getCheckoutEnv } from '@/env/server';
 import { Link } from '@/i18n/navigation';
@@ -110,9 +111,11 @@ export default async function CheckoutPage({
         </nav>
       )}
 
-      <p className="text-small">
-        <TextLink href="/pricing">{t('backToPricing')}</TextLink>
-      </p>
+      {pricingPublic() ? (
+        <p className="text-small">
+          <TextLink href="/pricing">{t('backToPricing')}</TextLink>
+        </p>
+      ) : null}
     </div>
   );
 }

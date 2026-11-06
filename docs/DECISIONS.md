@@ -3445,3 +3445,25 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
 - **Not covered:** a script that rotates networks and mailboxes. That is for the CAPTCHA (next fix) and the
   phone check (D-334, a switch).
 - **Status:** Active
+
+### D-341 (2026-11-06): The pricing page is hidden while the free launch window runs
+
+- **Decision:** The owner asked to hide the pricing from the site until the trial period ends. While
+  `PRICING_PUBLIC` is not `true`: `/ar/pricing` and `/en/pricing` redirect (307, temporary) to the home
+  page; the header, the footer, the related-page lists, the sitemap and `llms.txt` do not list it; the
+  home page does not show its plans section; the sample report and the report lock name no link to it;
+  the structured data of the home page carries no offers.
+- **The switch:** one variable, read at build time (the static pages) and at run time (the proxy). Unset
+  means hidden, so production is hidden as soon as this ships. The owner sets `PRICING_PUBLIC=true` in
+  Vercel (Production) and redeploys without the build cache when the window ends.
+- **Not changed:** checkout (`/checkout/...`) stays reachable by its address for a signed-in account with
+  a project, so the real-payment test (D-309) can run; the in-app plan offers on the projects page; the
+  privacy policy and terms.
+- **CI:** the workflows set `PRICING_PUBLIC=true`, so the existing tests and snapshots still cover the
+  page. The hidden state is covered by unit tests of `config/pricing-visibility.ts` and checked by hand
+  on production after deploy.
+- **Open for the owner:** prices are still written in a few other public places that were not part of
+  "the pricing page": the FAQ answers, the `llms.txt` key facts and the `/ai-context` business model.
+  Hide them too, or leave them as the factual statement for AI readers?
+- **Later:** the gold countdown (days and spots left) goes on the home page, replacing the plans section.
+- **Status:** Active

@@ -1,5 +1,6 @@
 import createMiddleware from 'next-intl/middleware';
 import { NextResponse, type NextRequest } from 'next/server';
+import { hiddenPricingRedirect, pricingPublic } from '@/config/pricing-visibility';
 import { aiContextRedirect, aiContextRewrite, arabicRedirect } from '@/i18n/arabic-only';
 import { routing } from '@/i18n/routing';
 import { PATH_HEADER } from '@/lib/auth/next-path';
@@ -16,6 +17,13 @@ const handleLanguageRouting = createMiddleware(routing);
  *    headers, so the page sees the refreshed session and the path.
  */
 export default async function proxy(request: NextRequest) {
+  // The pricing page is hidden while the launch window runs (D-341); temporary, it opens later.
+  const hidden = hiddenPricingRedirect(request.nextUrl.pathname, pricingPublic());
+  if (hidden) {
+    const target = request.nextUrl.clone();
+    target.pathname = hidden;
+    return NextResponse.redirect(target, 307);
+  }
   const single = aiContextRedirect(request.nextUrl.pathname);
   if (single) {
     const target = request.nextUrl.clone();

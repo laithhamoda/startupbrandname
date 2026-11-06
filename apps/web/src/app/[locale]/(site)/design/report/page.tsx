@@ -3,6 +3,7 @@ import { drop, goldenReportInput } from '@sbn/report/testing/inputs';
 import type { Metadata } from 'next';
 import { getMessages, getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import { pricingPublic } from '@/config/pricing-visibility';
 import { ProjectResult, type ProjectResultView } from '@/components/diagnostic/project-result';
 import { noticeReasonsOf } from '@/components/report/notice';
 import { ReportView } from '@/components/report/report-view';
@@ -174,7 +175,7 @@ export default async function ReportGalleryPage({
         <ReportView
           model={model}
           labels={labels}
-          hrefs={{ project: '/design', pricing: '/pricing' }}
+          hrefs={{ project: '/design', pricing: pricingPublic() ? '/pricing' : null }}
         />
       )}
     </>

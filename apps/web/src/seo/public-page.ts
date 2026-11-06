@@ -3,6 +3,7 @@ import { getTranslations } from 'next-intl/server';
 import { PLANS, type PlanId } from '@/config/plans';
 import { publicPage, type PublicPageId } from '@/config/public-pages';
 import { PAGE_META } from '@/content/pages';
+import { pricingPublic } from '@/config/pricing-visibility';
 import { PRICING } from '@/content/pricing';
 import type { Locale } from '@/i18n/routing';
 import { breadcrumbJsonLd, type PageInfo, webApplicationJsonLd } from './json-ld';
@@ -34,7 +35,7 @@ export function applicationJsonLd(locale: Locale, id: PublicPageId) {
   const planIds = Object.keys(PLANS) as PlanId[];
   return webApplicationJsonLd(
     pageInfo(locale, id),
-    planIds.map((planId) => ({
+    (pricingPublic() ? planIds : []).map((planId) => ({
       name: text.planNames[planId],
       description: text.billing[planId],
       priceUsd: PLANS[planId].priceUsd,
