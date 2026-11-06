@@ -46,7 +46,7 @@ export const FAQ: Localized<FaqContent> = {
         id: 'free',
         question: 'ماذا أحصل عليه مجانًا؟',
         answer:
-          'باقة «مستكشف»: مشروع واحد بـ20 سؤالًا، وملخّص في صفحة واحدة حين تبلغ إجاباتك 40% من الاكتمال، ورسالتان مع المرشد الذكي عند إطلاقه قريبًا. ويُحفظ المشروع المجاني 30 يومًا.',
+          'باقة «مستكشف»: مشروع واحد بـ20 سؤالًا، وملخّص في صفحة واحدة حين تبلغ إجاباتك 40% من الاكتمال. ويُحفظ المشروع المجاني 30 يومًا.',
       },
       {
         id: 'verdict',
@@ -70,7 +70,7 @@ export const FAQ: Localized<FaqContent> = {
         id: 'data',
         question: 'أين تُحفظ بياناتي، ومن يراها؟',
         answer:
-          'تُحفظ في قاعدة بيانات في فرانكفورت بألمانيا، ولا يستطيع أي مستخدم آخر الوصول إلى مشاريعك. ومراجعة إجاباتك المكتوبة بالذكاء الاصطناعي، والمرشد الذكي لاحقًا، تعملان فقط بموافقتك، لأن معالجتهما تتم لدى Anthropic في الولايات المتحدة. ونحذف قبل أي طلب اسمك وعناوين البريد الإلكتروني وما نتعرّف عليه من بيانات التواصل. التفاصيل في سياسة الخصوصية.',
+          'تُحفظ في قاعدة بيانات في فرانكفورت بألمانيا، ولا يستطيع أي مستخدم آخر الوصول إلى مشاريعك. ومراجعة إجاباتك المكتوبة بالذكاء الاصطناعي تعمل فقط بموافقتك، لأن معالجتها تتم لدى Anthropic في الولايات المتحدة. ونحذف قبل أي طلب اسمك وعناوين البريد الإلكتروني وما نتعرّف عليه من بيانات التواصل. التفاصيل في سياسة الخصوصية.',
       },
       {
         id: 'payment',
@@ -129,7 +129,7 @@ export const FAQ: Localized<FaqContent> = {
         id: 'free',
         question: 'What do I get for free?',
         answer:
-          'The Explorer package: one project with 20 questions, a one-page summary once your answers reach 40% completeness, and 2 messages with the AI mentor once it opens, soon. A free project is kept for 30 days.',
+          'The Explorer package: one project with 20 questions and a one-page summary once your answers reach 40% completeness. A free project is kept for 30 days.',
       },
       {
         id: 'verdict',
@@ -153,7 +153,7 @@ export const FAQ: Localized<FaqContent> = {
         id: 'data',
         question: 'Where is my data kept, and who can see it?',
         answer:
-          'In a database in Frankfurt, Germany, and no other user can reach your projects. The AI review of the answers you type, and later the AI mentor, run only with your consent, because they are processed by Anthropic in the United States. Before any request we remove your name, email addresses and the contact details we recognise. Details are in the privacy policy.',
+          'In a database in Frankfurt, Germany, and no other user can reach your projects. The AI review of the answers you type runs only with your consent, because it is processed by Anthropic in the United States. Before any request we remove your name, email addresses and the contact details we recognise. Details are in the privacy policy.',
       },
       {
         id: 'payment',

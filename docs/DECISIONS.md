@@ -3421,6 +3421,31 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   the answer if that appears.
 - **Status:** Active
 
+### D-339 (2026-11-06): The AI mentor stays unpublished; 20 accounts of the last 50 test it
+
+- **Decision:** The owner's rule. The AI mentor is not shown or announced on the site until it is
+  complete. While it is built, only 20 accounts test it, chosen at random among the last 50 launch spots,
+  so that nobody can open two accounts to use it.
+- **Who:** spots 451 to 500 of the launch window (D-331, D-332). 20 of those 50 positions are drawn at
+  random. The draw is made once, in advance, and kept in a private table nobody can read, so a claimant
+  cannot tell whether the next spot carries the mentor. Each chosen account sees a message right after
+  it takes its spot: the account was chosen to try the mentor, with 5 messages.
+- **If the window does not fill:** the mentor phase starts at spot 451 or on 2027-01-20, whichever comes
+  first (two weeks before the window ends on 2027-02-03). From the date on, each new spot holder is
+  chosen with a probability of the spots left over the number expected until the end, from the daily
+  rate of the earlier claims; never more than 20 in all. This is my reading of the owner's rule (the
+  mentor starts two weeks before the end when fewer than 400 had joined a week earlier, spread by the
+  earlier daily rate); the owner confirms it.
+- **Replaces:** the 5 free mentor messages for every account (D-331), and the 2 messages of the
+  Explorer package in the public texts.
+- **Not built yet:** the draw and the message come with the mentor itself (M6). Nothing about them
+  ships before the mentor does.
+- **Public texts changed now:** the home description, how it works (the mentor step; six steps now),
+  methodology, about, FAQ, `llms.txt` and `/ai-context` no longer mention the mentor.
+- **Kept for now:** the privacy policy and terms (legal text, the mentor is covered for later), the
+  pricing table (the page is being hidden), and a few in-app messages that show only for paid projects.
+  They go or stay with the pricing decision and the legal review.
+
 ### D-340 (2026-11-06): The app counts sign-in attempts itself
 
 - **Decision:** The registration audit found that Supabase Auth counts requests per network address, and

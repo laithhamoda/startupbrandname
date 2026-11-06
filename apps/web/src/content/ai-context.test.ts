@@ -38,7 +38,7 @@ describe('the AI context page (D-337)', () => {
     expect(features.length).toBeGreaterThan(10);
     for (const feature of features) expect(STATUS_LABEL[feature.status]).toBeTruthy();
     const planned = features.filter((feature) => feature.status === 'planned').map((f) => f.name);
-    expect(planned).toContain('AI mentor');
+    expect(planned).toContain('Answering without an account');
   });
 
   it('quotes the package prices and the axis names from the product tables', () => {
@@ -62,7 +62,7 @@ describe('the AI context page (D-337)', () => {
     }
   });
 
-  it('does not describe the planned mentor as available', () => {
-    expect(text).toContain('there is no chat feature yet');
+  it('does not mention the mentor, which is not published until it is complete (D-339)', () => {
+    expect(text).not.toMatch(/mentor/i);
   });
 });

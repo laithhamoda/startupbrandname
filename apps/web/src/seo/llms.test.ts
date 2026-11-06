@@ -22,10 +22,9 @@ describe('llms.txt', () => {
     expect(text).toContain('(https://startupbrandname.com/ai-context)');
   });
 
-  it('does not claim an English interface or a mentor that is not built', () => {
+  it('does not claim an English interface or mention the unpublished mentor (D-339)', () => {
     expect(text).toContain('Interface in Arabic only');
-    expect(text).not.toContain('AI mentor asks critical questions');
-    expect(text).toContain('Planned, not built yet: the AI mentor');
+    expect(text).not.toMatch(/mentor/i);
   });
 
   it('quotes the plan prices from the plan table', () => {
