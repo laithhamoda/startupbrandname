@@ -25,7 +25,7 @@ export const ABOUT: Localized<AboutContent> = {
     heading: 'عن المنصة',
     lead: 'منصة عربية مستقلة تساعد المؤسسين على تحويل الفكرة إلى نموذج عمل مدروس، بأرقام محسوبة ومصادر مؤرّخة وحكم واضح.',
     whatHeading: 'ما هي',
-    what: 'استوديو لنموذج العمل: تشخيص منظّم لفكرة مشروعك، ومحرّك يحسب الأرقام، وتقرير عربي بحكم واضح، ومرشد ذكي ينتقد ولا يجامل (قريبًا).',
+    what: 'استوديو لنموذج العمل: تشخيص منظّم لفكرة مشروعك، ومحرّك يحسب الأرقام، وتقرير عربي بحكم واضح.',
     principlesHeading: 'مبادئنا',
     principles: [
       {
@@ -67,7 +67,7 @@ export const ABOUT: Localized<AboutContent> = {
     heading: 'About',
     lead: 'An independent Arabic platform that helps founders turn an idea into a well-examined business model, with calculated numbers, dated sources and a clear verdict.',
     whatHeading: 'What it is',
-    what: 'A business model studio: a structured diagnostic of your idea, an engine that calculates the numbers, an Arabic report with a clear verdict, and an AI mentor that challenges rather than flatters (coming soon).',
+    what: 'A business model studio: a structured diagnostic of your idea, an engine that calculates the numbers, and an Arabic report with a clear verdict.',
     principlesHeading: 'Our principles',
     principles: [
       {

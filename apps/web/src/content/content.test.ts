@@ -93,7 +93,8 @@ describe('pricing text', () => {
     const free = PLANS.free.entitlements;
     const answer = FAQ.en.items.find((item) => item.id === 'free')?.answer ?? '';
     expect(free.mentorMessages).toEqual({ kind: 'count', value: 2 });
-    expect(answer).toContain('2 messages');
+    // The mentor is not mentioned in public texts until it is complete (D-339).
+    expect(answer).not.toMatch(/mentor/i);
     expect(answer).toContain('20 questions');
     expect(answer).toContain('30 days');
   });
