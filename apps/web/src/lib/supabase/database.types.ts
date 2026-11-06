@@ -1065,6 +1065,10 @@ export type Database = {
         };
         Returns: string;
       };
+      check_auth_attempt: {
+        Args: { p_ip_hash: string; p_kind: string; p_subject_hash: string };
+        Returns: boolean;
+      };
       choose_final_version: {
         Args: { p_number: number; p_project_id: string };
         Returns: undefined;

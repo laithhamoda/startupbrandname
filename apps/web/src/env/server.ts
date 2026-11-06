@@ -116,6 +116,19 @@ export function getPaymentsEnv(env: NodeJS.ProcessEnv = process.env): PaymentsEn
   };
 }
 
+export interface RateLimitEnv {
+  readonly supabaseSecretKey: string;
+}
+
+/**
+ * What the auth limit needs (D-340): only the secret key. Null where it is not set (a developer
+ * machine, the end-to-end run); the limit is then off and sign-in is left to Supabase's own limits.
+ */
+export function getRateLimitEnv(env: NodeJS.ProcessEnv = process.env): RateLimitEnv | null {
+  const parsed = z.string().trim().min(1).safeParse(env.SUPABASE_SECRET_KEY);
+  return parsed.success ? { supabaseSecretKey: parsed.data } : null;
+}
+
 /** The variables a reader takes: process.env, or a plain object in tests. */
 type EnvSource = Readonly<Record<string, string | undefined>>;
 

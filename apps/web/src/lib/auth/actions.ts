@@ -16,6 +16,7 @@ import { type AuthErrorCode, errorCodeOf } from './errors';
 import { googleSignInAvailable } from './google';
 import { projectsPath, safeNextPath } from './next-path';
 import { type OnboardingField, parseOnboarding } from './onboarding';
+import { allowAuthAttempt } from './rate-limit';
 import {
   completeOnboarding,
   deleteSignedInAccount,
@@ -117,6 +118,9 @@ export async function requestSignupCode(
   const locale = parseLocale(localeInput);
   const email = emailSchema.safeParse(formData.get('email'));
   if (!email.success) return { status: 'error', error: 'invalidEmail' };
+  if (!(await allowAuthAttempt('code', email.data))) {
+    return { status: 'error', error: 'rateLimited' };
+  }
 
   const rejected = await acceptSignupAnswers(locale, formData);
   if (rejected) return rejected;
@@ -144,6 +148,10 @@ export async function requestLoginCode(
   parseLocale(localeInput);
   const email = emailSchema.safeParse(formData.get('email'));
   if (!email.success) return { status: 'error', error: 'invalidEmail' };
+  // The limit answers the same for every address, so it tells nothing about who has an account.
+  if (!(await allowAuthAttempt('code', email.data))) {
+    return { status: 'error', error: 'rateLimited' };
+  }
 
   await forgetSignupAnswers();
   const supabase = await createSupabaseServerClient();
@@ -175,6 +183,9 @@ export async function verifyEmailCode(
   if (!email.success) return { status: 'error', error: 'invalidEmail' };
   const code = codeSchema.safeParse(formData.get('code'));
   if (!code.success) return { status: 'error', error: 'invalidCode' };
+  if (!(await allowAuthAttempt('verify', email.data))) {
+    return { status: 'error', error: 'rateLimited' };
+  }
 
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.auth.verifyOtp({

@@ -3445,4 +3445,25 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
 - **Kept for now:** the privacy policy and terms (legal text, the mentor is covered for later), the
   pricing table (the page is being hidden), and a few in-app messages that show only for paid projects.
   They go or stay with the pricing decision and the legal review.
+
+### D-340 (2026-11-06): The app counts sign-in attempts itself
+
+- **Decision:** The registration audit found that Supabase Auth counts requests per network address, and
+  every call from the app leaves from Vercel, so its limits are shared by all visitors: one abuser can
+  use them up for everyone, and a script can fill one mailbox with codes. The app now asks the database
+  first (`check_auth_attempt`) and stops a request over the limit before Supabase sees it.
+- **What is counted:** sign-in code requests (signup and login), code checks, and launch spot claims.
+  Limits live in `settings` (`auth.limit.*`), so they change without a release: codes 5 per mailbox
+  and 30 per network in an hour; checks 10 per mailbox and 100 per network in ten minutes; claims 10 per
+  account in ten minutes. The network limit is wide on purpose: schools, offices and mobile carriers put
+  many people behind one address.
+- **Privacy:** only keyed hashes (HMAC with the secret key) of the network address and of the mailbox or
+  account are stored, in a private table, and purged after a day. Refused requests are not recorded.
+- **No new enumeration:** the limit answers the same for every address, so it tells nothing about who has
+  an account. The visitor sees the existing "try again later" message.
+- **Fails open, on purpose:** without the secret key (a developer machine, the end-to-end run) or when the
+  database does not answer, the attempt goes on and the failure is logged (`auth.limit_check_failed`);
+  Supabase's own limits still apply behind it. Sign-in availability comes first.
+- **Not covered:** a script that rotates networks and mailboxes. That is for the CAPTCHA (next fix) and the
+  phone check (D-334, a switch).
 - **Status:** Active
