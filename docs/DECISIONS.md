@@ -3439,6 +3439,9 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
 - **Fails open, on purpose:** without the secret key (a developer machine, the end-to-end run) or when the
   database does not answer, the attempt goes on and the failure is logged (`auth.limit_check_failed`);
   Supabase's own limits still apply behind it. Sign-in availability comes first.
+- **Also (F5):** in production the address Google returns to is the site's own, never read from the
+  request headers, so a forged Host cannot choose where a signed-in visitor lands. Preview and development
+  still read the request.
 - **Not covered:** a script that rotates networks and mailboxes. That is for the CAPTCHA (next fix) and the
   phone check (D-334, a switch).
 - **Status:** Active

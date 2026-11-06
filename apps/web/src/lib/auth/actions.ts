@@ -17,6 +17,7 @@ import { googleSignInAvailable } from './google';
 import { projectsPath, safeNextPath } from './next-path';
 import { type OnboardingField, parseOnboarding } from './onboarding';
 import { allowAuthAttempt } from './rate-limit';
+import { siteOriginFor } from './site-origin';
 import {
   completeOnboarding,
   deleteSignedInAccount,
@@ -61,10 +62,13 @@ function nextPathOf(locale: Locale, value: unknown): string {
 async function siteOrigin(): Promise<string> {
   const requestHeaders = await headers();
   const host = requestHeaders.get('x-forwarded-host') ?? requestHeaders.get('host');
-  const protocol = requestHeaders.get('x-forwarded-proto') ?? 'http';
-  if (!host) throw new Error('Cannot build the sign-in callback URL without a Host header.');
-  // Supabase only redirects to URLs on its allow list, so a forged Host cannot hijack the flow.
-  return `${protocol}://${host}`;
+  // In production this is the site's own address, whatever the headers say (D-340); Supabase's
+  // allow list is a second line, not the only one.
+  return siteOriginFor({
+    production: getServerEnv().VERCEL_ENV === 'production',
+    host,
+    protocol: requestHeaders.get('x-forwarded-proto'),
+  });
 }
 
 /**
