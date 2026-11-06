@@ -631,6 +631,39 @@ export type Database = {
         };
         Relationships: [];
       };
+      report_ratings: {
+        Row: {
+          comment: string | null;
+          created_at: string;
+          id: string;
+          project_id: string;
+          stars: number;
+          updated_at: string;
+          user_id: string;
+          version: number;
+        };
+        Insert: {
+          comment?: string | null;
+          created_at?: string;
+          id?: string;
+          project_id: string;
+          stars: number;
+          updated_at?: string;
+          user_id: string;
+          version?: number;
+        };
+        Update: {
+          comment?: string | null;
+          created_at?: string;
+          id?: string;
+          project_id?: string;
+          stars?: number;
+          updated_at?: string;
+          user_id?: string;
+          version?: number;
+        };
+        Relationships: [];
+      };
       subscriptions: {
         Row: {
           created_at: string;
@@ -1034,6 +1067,23 @@ export type Database = {
           status: string;
         }[];
       };
+      admin_ratings_summary: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          average: number;
+          ratings: number;
+        }[];
+      };
+      admin_report_ratings: {
+        Args: { p_limit?: number };
+        Returns: {
+          comment: string;
+          created_at: string;
+          id: string;
+          stars: number;
+          version: number;
+        }[];
+      };
       admin_status: { Args: Record<PropertyKey, never>; Returns: string };
       admin_subscriptions: {
         Args: { p_limit?: number };
@@ -1095,6 +1145,10 @@ export type Database = {
       };
       crossborder_consent_state: { Args: Record<PropertyKey, never>; Returns: string };
       delete_my_account: { Args: Record<PropertyKey, never>; Returns: undefined };
+      has_report_rating: {
+        Args: { p_project_id: string; p_version: number };
+        Returns: boolean;
+      };
       issue_voucher_batch: {
         Args: { p_affiliate?: string; p_count: number; p_note?: string; p_type: string };
         Returns: string[];
@@ -1110,6 +1164,10 @@ export type Database = {
         }[];
       };
       my_launch_spot: { Args: Record<PropertyKey, never>; Returns: string };
+      rate_report: {
+        Args: { p_comment: string; p_project_id: string; p_stars: number; p_version: number };
+        Returns: undefined;
+      };
       record_ai_run: {
         Args: {
           p_cache_read_tokens: number;

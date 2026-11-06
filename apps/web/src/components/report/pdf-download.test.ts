@@ -20,13 +20,18 @@ vi.mock('@/components/ui/link-pending', () => ({ LinkPending: () => null }));
 
 const ID = '22222222-2222-4222-8222-222222222222';
 
-function html(locale: 'ar' | 'en', error: (typeof PDF_ERROR_CODES)[number] | null = null): string {
+function html(
+  locale: 'ar' | 'en',
+  error: (typeof PDF_ERROR_CODES)[number] | null = null,
+  rated = true,
+): string {
   return renderToStaticMarkup(
     createElement(PdfDownload, {
       projectId: ID,
       locale,
       labels: catalogues[locale].report,
       error,
+      rated,
     }),
   );
 }
@@ -82,4 +87,27 @@ describe('the PDF download', () => {
     expect(withButton.indexOf('data-actions')).toBeGreaterThan(withButton.indexOf('<h1'));
     expect(without).not.toContain('data-actions');
   }, 30_000);
+
+  for (const locale of ['ar', 'en'] as const) {
+    it(`asks for the rating on a version not rated yet, in the same plain form (${locale}, D-345)`, () => {
+      const markup = html(locale, null, false);
+      const radios = markup.match(/<input[^>]*name="stars"[^>]*>/g) ?? [];
+      expect(radios).toHaveLength(5);
+      for (const radio of radios) {
+        expect(radio).toContain('type="radio"');
+        expect(radio).toContain('required');
+      }
+      expect(markup).toContain('<fieldset');
+      expect(markup).toContain('<textarea name="comment"');
+      expect(markup).toContain('maxLength="1000"');
+      expect(markup).toContain(catalogues[locale].report.pdf.rating.legend);
+      expect(markup).not.toContain('<script');
+    });
+
+    it(`asks nothing on a version already rated (${locale})`, () => {
+      const markup = html(locale, null, true);
+      expect(markup).not.toContain('name="stars"');
+      expect(markup).not.toContain('<textarea');
+    });
+  }
 });

@@ -14,6 +14,7 @@ import {
   type PdfResult,
 } from '@/lib/report/pdf';
 import { createPdfStore } from '@/lib/report/pdf-store';
+import { passRatingGate } from '@/lib/report/rating';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 // The report as a PDF (M5 step 6, D-280, D-281). Headless Chromium runs inside the function: Node
@@ -73,9 +74,8 @@ export async function POST(
   const id = idSchema.safeParse((await context.params).id);
   if (!id.success) return json('not_found');
 
-  const form = formSchema.safeParse({
-    locale: (await request.formData().catch(() => new FormData())).get('locale'),
-  });
+  const body = await request.formData().catch(() => new FormData());
+  const form = formSchema.safeParse({ locale: body.get('locale') });
   const locale = form.success ? form.data.locale : 'ar';
   const back = { id: id.data, locale } as const;
 
@@ -90,6 +90,18 @@ export async function POST(
       locale,
       currencyLabel: (code) => symbols[code] ?? code,
     });
+
+    // The rating comes before the file (D-345): a version not yet rated needs the stars on this form.
+    if (page?.status === 'ready') {
+      const gate = await passRatingGate(supabase, id.data, page.version?.number ?? null, body);
+      if (gate !== 'ok') {
+        return refusal(
+          request,
+          gate === 'rating_required' ? 'rating_required' : 'render_failed',
+          back,
+        );
+      }
+    }
 
     const result = await producePdf(
       {

@@ -16,6 +16,7 @@ const mocks = vi.hoisted(() => ({
   getSessionUser: vi.fn(),
   loadReportPage: vi.fn(),
   createPdfStore: vi.fn(),
+  passRatingGate: vi.fn(),
   log: { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() },
 }));
 
@@ -30,6 +31,7 @@ vi.mock('@/lib/supabase/server', () => ({
 vi.mock('@/lib/auth/session', () => ({ getSessionUser: mocks.getSessionUser }));
 vi.mock('@/lib/report/load', () => ({ loadReportPage: mocks.loadReportPage }));
 vi.mock('@/lib/report/pdf-store', () => ({ createPdfStore: mocks.createPdfStore }));
+vi.mock('@/lib/report/rating', () => ({ passRatingGate: mocks.passRatingGate }));
 vi.mock('@/lib/log', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/lib/log')>()),
   log: mocks.log,
@@ -79,6 +81,7 @@ beforeEach(() => {
   mocks.getSessionUser.mockResolvedValue({ id: USER, email: 'founder@example.test', names: [] });
   mocks.loadReportPage.mockResolvedValue(ready);
   mocks.createPdfStore.mockReturnValue(store());
+  mocks.passRatingGate.mockResolvedValue('ok');
   mocks.getSharedBrowser.mockResolvedValue({ browser: { id: 'browser' }, launched: false });
   mocks.renderReportPdf.mockResolvedValue({
     pdf: new Uint8Array([37, 80, 68, 70]),
@@ -245,5 +248,62 @@ describe('the report PDF route', () => {
     expect(response.headers.get('location')).toBe(SIGNED);
     expect(mocks.renderReportPdf).not.toHaveBeenCalled();
     expect(record).not.toHaveBeenCalled();
+  });
+
+  describe('the rating before the file (D-345)', () => {
+    it('hands the form and the version of the page to the gate', async () => {
+      mocks.loadReportPage.mockResolvedValue({ ...ready, version: { number: 4 } });
+
+      await post({ body: { locale: 'ar', stars: '5', comment: 'good' } });
+
+      expect(mocks.passRatingGate).toHaveBeenCalledTimes(1);
+      const [, projectId, version, form] = mocks.passRatingGate.mock.calls[0] as [
+        unknown,
+        string,
+        number | null,
+        FormData,
+      ];
+      expect(projectId).toBe(ID);
+      expect(version).toBe(4);
+      expect(form.get('stars')).toBe('5');
+    });
+
+    it('sends a browser back to the report with rating_required, and makes no file', async () => {
+      mocks.passRatingGate.mockResolvedValue('rating_required');
+
+      const response = await post({ accept: 'text/html' });
+
+      expect(response.status).toBe(303);
+      expect(response.headers.get('location')).toBe(
+        `/ar/projects/${ID}/report?pdf=rating_required`,
+      );
+      expect(mocks.renderReportPdf).not.toHaveBeenCalled();
+    });
+
+    it('answers a script 400 with the code', async () => {
+      mocks.passRatingGate.mockResolvedValue('rating_required');
+
+      const response = await post({ accept: 'application/json' });
+
+      expect(response.status).toBe(400);
+      expect(await response.json()).toEqual({ error: 'rating_required' });
+    });
+
+    it('fails the file, never lets it through, when the rating cannot be kept', async () => {
+      mocks.passRatingGate.mockResolvedValue('failed');
+
+      const response = await post({ accept: 'application/json' });
+
+      expect(response.status).toBe(500);
+      expect(mocks.renderReportPdf).not.toHaveBeenCalled();
+    });
+
+    it('does not ask for a rating for a report that is not drawn', async () => {
+      mocks.loadReportPage.mockResolvedValue({ status: 'none', percent: 10, missing: [] });
+
+      await post({ accept: 'application/json' });
+
+      expect(mocks.passRatingGate).not.toHaveBeenCalled();
+    });
   });
 });

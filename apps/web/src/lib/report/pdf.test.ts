@@ -338,9 +338,17 @@ describe('isSameOrigin', () => {
 describe('the codes', () => {
   it('give each refusal a status the button can show, and know their own names', () => {
     expect(PDF_ERROR_CODES.slice().sort()).toEqual(
-      ['limit', 'not_allowed', 'not_found', 'render_failed', 'storage_failed'].sort(),
+      [
+        'limit',
+        'not_allowed',
+        'not_found',
+        'rating_required',
+        'render_failed',
+        'storage_failed',
+      ].sort(),
     );
     expect(PDF_ERROR_STATUS.limit).toBe(429);
+    expect(PDF_ERROR_STATUS.rating_required).toBe(400);
     expect(PDF_ERROR_STATUS.not_found).toBe(404);
     expect(isPdfErrorCode('limit')).toBe(true);
     expect(isPdfErrorCode('other')).toBe(false);
