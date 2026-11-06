@@ -15,13 +15,20 @@ describe('llms.txt', () => {
   });
 
   it('links every public page in Arabic, except pricing while it is hidden, and the AI context page (D-336, D-337, D-341)', () => {
-    for (const { id, path } of PUBLIC_PAGES) {
-      const arabic = `(https://startupbrandname.com/ar${path})`;
-      if (id === 'pricing') expect(text).not.toContain(arabic);
-      else expect(text).toContain(arabic);
-      expect(text).not.toContain(`(https://startupbrandname.com/en${path})`);
+    // Stated here, because CI builds with the pricing page public (D-341).
+    vi.stubEnv('PRICING_PUBLIC', 'false');
+    try {
+      const hidden = llmsTxt();
+      for (const { id, path } of PUBLIC_PAGES) {
+        const arabic = `(https://startupbrandname.com/ar${path})`;
+        if (id === 'pricing') expect(hidden).not.toContain(arabic);
+        else expect(hidden).toContain(arabic);
+        expect(hidden).not.toContain(`(https://startupbrandname.com/en${path})`);
+      }
+      expect(hidden).toContain('(https://startupbrandname.com/ai-context)');
+    } finally {
+      vi.unstubAllEnvs();
     }
-    expect(text).toContain('(https://startupbrandname.com/ai-context)');
   });
 
   it('lists the pricing page once it is open', () => {
