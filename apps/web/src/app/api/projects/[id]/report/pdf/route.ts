@@ -15,7 +15,7 @@ import {
 } from '@/lib/report/pdf';
 import { createPdfStore } from '@/lib/report/pdf-store';
 import { passRatingGate } from '@/lib/report/rating';
-import { parseContact, withContact } from '@/lib/report/contact';
+import { missingRequired, parseContact, withContact } from '@/lib/report/contact';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 // The report as a PDF (M5 step 6, D-280, D-281). Headless Chromium runs inside the function: Node
@@ -107,6 +107,10 @@ export async function POST(
     // The contact the founder wants on the cover (D-346): checked, put on this report only, not kept.
     const contact = parseContact(body);
     if (contact === null) return refusal(request, 'contact_invalid', back);
+    // The full report needs the name and the phone; the summary does not (D-348).
+    if (page?.status === 'ready' && page.model.kind !== 'summary' && missingRequired(contact)) {
+      return refusal(request, 'contact_required', back);
+    }
 
     const result = await producePdf(
       {

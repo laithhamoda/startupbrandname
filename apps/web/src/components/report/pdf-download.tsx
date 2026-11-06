@@ -17,6 +17,7 @@ export function PdfDownload({
   error,
   rated,
   defaultEmail,
+  full,
 }: {
   projectId: string;
   locale: 'ar' | 'en';
@@ -25,6 +26,8 @@ export function PdfDownload({
   rated: boolean;
   /** The account's email, offered in the contact field; the founder may change or clear it. */
   defaultEmail: string | null;
+  /** The full report: the name and the phone are then required (D-348). */
+  full: boolean;
   /** The code the route sent the founder back with, when it refused. */
   error: PdfErrorCode | null;
 }) {
@@ -43,12 +46,15 @@ export function PdfDownload({
         <input type="hidden" name="locale" value={locale} />
         <fieldset className="grid gap-3 border-0 p-0">
           <legend className="font-bold">{labels.pdf.contact.legend}</legend>
-          <p className="text-small text-muted">{labels.pdf.contact.hint}</p>
+          <p className="text-small text-muted">
+            {full ? labels.pdf.contact.hintRequired : labels.pdf.contact.hint}
+          </p>
           <label className="grid gap-1 text-small">
             <span>{labels.pdf.contact.name}</span>
             <input
               type="text"
               name="contact_name"
+              required={full}
               autoComplete="name"
               maxLength={120}
               className={FIELD}
@@ -71,6 +77,7 @@ export function PdfDownload({
             <input
               type="tel"
               name="contact_phone"
+              required={full}
               autoComplete="tel"
               maxLength={26}
               dir="ltr"

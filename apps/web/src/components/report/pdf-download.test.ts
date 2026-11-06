@@ -25,6 +25,7 @@ function html(
   error: (typeof PDF_ERROR_CODES)[number] | null = null,
   rated = true,
   defaultEmail: string | null = null,
+  full = false,
 ): string {
   return renderToStaticMarkup(
     createElement(PdfDownload, {
@@ -34,6 +35,7 @@ function html(
       error,
       rated,
       defaultEmail,
+      full,
     }),
   );
 }
@@ -114,6 +116,19 @@ describe('the PDF download', () => {
   }
 
   for (const locale of ['ar', 'en'] as const) {
+    it(`asks for the name and the phone on the full report only (${locale}, D-348)`, () => {
+      const full = html(locale, null, true, null, true);
+      const tag = (markup: string, name: string) =>
+        new RegExp(`<input[^>]*name="${name}"[^>]*>`).exec(markup)?.[0] ?? '';
+      expect(tag(full, 'contact_name')).toContain('required');
+      expect(tag(full, 'contact_phone')).toContain('required');
+      expect(tag(full, 'contact_email')).not.toContain('required');
+      expect(full).toContain(catalogues[locale].report.pdf.contact.hintRequired);
+      const summary = html(locale);
+      expect(tag(summary, 'contact_name')).not.toContain('required');
+      expect(tag(summary, 'contact_phone')).not.toContain('required');
+    });
+
     it(`offers the contact fields on every form, the email filled in from the account (${locale}, D-346)`, () => {
       for (const rated of [true, false]) {
         const markup = html(locale, null, rated, 'founder@example.test');

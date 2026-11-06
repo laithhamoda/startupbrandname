@@ -3602,3 +3602,13 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   pages still work for a direct address (the owner's payment test). Setting `PRICING_PUBLIC=true` brings the
   old wording back.
 - **Status:** Active
+
+### D-348 (2026-11-06): The full report PDF needs the name and the phone
+
+- **Decision:** The owner asked that whoever takes the full report as a PDF is asked for a name and a phone
+  number. On a full (or standard) report the name and the phone of the download form (D-346) are required;
+  the email stays optional. The summary PDF keeps all three optional. Without them the route answers
+  `contact_required` (400) and no file is made; the form marks the two fields `required` and says so.
+- **Unchanged:** nothing is kept in the account or the database (D-346); the values go on the cover of that
+  one file. The privacy policy must name this at the legal review (open item of D-346).
+- **Status:** Active
