@@ -3590,3 +3590,15 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
 - **Privacy:** a founder's contact on a file that is then shared is a processing the privacy policy should
   name when the legal review happens (open item, with the comment of D-345).
 - **Status:** Active
+
+### D-347 (2026-11-06): No payment wording on the projects page while the free window runs
+
+- **Decision:** The owner asked to hide everything about payment while the pricing page is hidden (D-341).
+  On "My projects", while `PRICING_PUBLIC` is not `true`, the package name, the buy and upgrade links, the
+  mentor-pack link and the sentence "any number of paid projects" are not shown. The rule line reads "One
+  project at a time during the free trial", and a founder at the limit is told to delete the project to
+  start another, without a purchase offer.
+- **Unchanged:** the limit of one project without a package is still enforced by the database; the checkout
+  pages still work for a direct address (the owner's payment test). Setting `PRICING_PUBLIC=true` brings the
+  old wording back.
+- **Status:** Active

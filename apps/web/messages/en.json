@@ -145,6 +145,8 @@
     "failed": "The project could not be created. Please try again.",
     "create": "Create the project and start",
     "rule": "One free project at a time, and any number of paid ones.",
+    "ruleFree": "One project at a time during the free trial.",
+    "limitFree": "You have a project. To start another, delete it from its page.",
     "package": "{plan} package",
     "buy": "Buy a package for this project",
     "upgrade": "Move up to {plan}",
