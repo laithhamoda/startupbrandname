@@ -339,6 +339,7 @@ describe('the codes', () => {
   it('give each refusal a status the button can show, and know their own names', () => {
     expect(PDF_ERROR_CODES.slice().sort()).toEqual(
       [
+        'contact_invalid',
         'limit',
         'not_allowed',
         'not_found',

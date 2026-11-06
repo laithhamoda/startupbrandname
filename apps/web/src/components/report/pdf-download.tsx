@@ -2,6 +2,8 @@ import { Button } from '@/components/ui/button';
 import type { PdfErrorCode } from '@/lib/report/pdf-codes';
 import type { ReportLabels } from './inline';
 
+const FIELD = 'w-full rounded-control border border-hairline bg-transparent px-3 py-2';
+
 /**
  * The PDF of the report, as a plain form (M5 step 6, D-280): a POST to the route, with the page's
  * language and no client JavaScript. The browser follows the route's answer, a redirect to the
@@ -14,12 +16,15 @@ export function PdfDownload({
   labels,
   error,
   rated,
+  defaultEmail,
 }: {
   projectId: string;
   locale: 'ar' | 'en';
   labels: ReportLabels;
   /** Whether this version of the report was already rated (D-345): the form then asks nothing. */
   rated: boolean;
+  /** The account's email, offered in the contact field; the founder may change or clear it. */
+  defaultEmail: string | null;
   /** The code the route sent the founder back with, when it refused. */
   error: PdfErrorCode | null;
 }) {
@@ -36,6 +41,43 @@ export function PdfDownload({
       )}
       <form method="post" action={`/api/projects/${projectId}/report/pdf`} className="grid gap-2">
         <input type="hidden" name="locale" value={locale} />
+        <fieldset className="grid gap-3 border-0 p-0">
+          <legend className="font-bold">{labels.pdf.contact.legend}</legend>
+          <p className="text-small text-muted">{labels.pdf.contact.hint}</p>
+          <label className="grid gap-1 text-small">
+            <span>{labels.pdf.contact.name}</span>
+            <input
+              type="text"
+              name="contact_name"
+              autoComplete="name"
+              maxLength={120}
+              className={FIELD}
+            />
+          </label>
+          <label className="grid gap-1 text-small">
+            <span>{labels.pdf.contact.email}</span>
+            <input
+              type="email"
+              name="contact_email"
+              autoComplete="email"
+              maxLength={254}
+              dir="ltr"
+              defaultValue={defaultEmail ?? ''}
+              className={FIELD}
+            />
+          </label>
+          <label className="grid gap-1 text-small">
+            <span>{labels.pdf.contact.phone}</span>
+            <input
+              type="tel"
+              name="contact_phone"
+              autoComplete="tel"
+              maxLength={26}
+              dir="ltr"
+              className={FIELD}
+            />
+          </label>
+        </fieldset>
         {rated ? null : (
           <fieldset className="grid gap-3 border-0 p-0">
             <legend className="font-bold">{labels.pdf.rating.legend}</legend>
@@ -50,12 +92,7 @@ export function PdfDownload({
             </div>
             <label className="grid gap-1 text-small">
               <span>{labels.pdf.rating.comment}</span>
-              <textarea
-                name="comment"
-                rows={3}
-                maxLength={1000}
-                className="w-full rounded-control border border-hairline bg-transparent px-3 py-2"
-              />
+              <textarea name="comment" rows={3} maxLength={1000} className={FIELD} />
             </label>
           </fieldset>
         )}
