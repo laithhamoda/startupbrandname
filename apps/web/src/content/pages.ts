@@ -7,14 +7,14 @@ export const PAGE_META: Localized<Record<PublicPageId, PageMeta>> = {
     home: {
       title: 'استوديو نموذج العمل',
       description:
-        'تشخيص جدوى فكرة مشروعك بالأرقام: أسئلة منظّمة، وتقرير عربي بحكم واضح (امضِ أو عدّل أو توقّف)، ومرشد ذكي قريبًا.',
+        'تشخيص جدوى فكرة مشروعك بالأرقام: أسئلة منظّمة، وتقرير عربي بحكم واضح (امضِ أو عدّل أو توقّف).',
       card: 'حوّل فكرتك إلى نموذج عمل بأرقام محسوبة، لا مكتوبة',
     },
     howItWorks: {
       title: 'كيف تعمل المنصة',
       description:
         'من إنشاء الحساب إلى التقرير والحكم: الخطوات التي تمرّ بها فكرتك، وما تحصل عليه في كل خطوة.',
-      card: 'من الفكرة إلى الحكم في سبع خطوات',
+      card: 'من الفكرة إلى الحكم في ست خطوات',
     },
     methodology: {
       title: 'المنهجية',
@@ -69,14 +69,14 @@ export const PAGE_META: Localized<Record<PublicPageId, PageMeta>> = {
     home: {
       title: 'Business Model Studio',
       description:
-        'A business idea diagnostic with calculated numbers: structured questions, an Arabic report with a clear verdict (go, revise or stop), and an AI mentor soon.',
+        'A business idea diagnostic with calculated numbers: structured questions, an Arabic report with a clear verdict (go, revise or stop).',
       card: 'Turn your idea into a business model with numbers that are calculated, not written',
     },
     howItWorks: {
       title: 'How it works',
       description:
         'From creating an account to the report and its verdict: the steps your idea goes through, and what you get at each one.',
-      card: 'From idea to verdict in seven steps',
+      card: 'From idea to verdict in six steps',
     },
     methodology: {
       title: 'Methodology',
