@@ -3523,3 +3523,26 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   texts say the founder can edit and make new versions without a limit.
 - **Replaces:** the limits of D-321. The rest of D-321 and D-323 stands.
 - **Status:** Active
+
+### D-344 (2026-11-06): The home page speaks to investors; the visitor answers all 64 questions without an account
+
+- **Headline (owner's words):** «تمكين الأفكار بلغة الاستثمار», and under it «حوّل فكرتك إلى عرض استثماري
+  مقنع». One button, «ابدأ الآن» (the only gold on the page), and a link to the sample report. The line
+  of the old hero and its stage note are gone: the counter replaces the note.
+- **The counter:** the free launch window shown as two plain, heavy lines under a thin gold rule: the
+  spots left of the total, and the days left. Numbers come from the database through
+  `/api/launch/window` (public, cached for a minute); nothing is shown that was not received, and the box
+  keeps its height so the page does not shift. The numbers are not gold: gold belongs to the button
+  (design plan, owner's choice of the UI recommendation).
+- **Without an account:** the visitor answers **all 64 questions** (owner's decision), under an anonymous
+  identity that becomes the account when the visitor signs in (D-335). The button leads to sign-up until
+  that flow exists; it is built in small steps: CAPTCHA and limits first, then the anonymous identity,
+  then the 40% preview, then the identity upgrade.
+- **Risk the owner accepted:** the 64 questions become readable by anyone who walks through them. The
+  private question bank (D-303, D-304) was protected by never reaching a browser before sign-in; what
+  remains is the CAPTCHA, the request limits (D-340) and the session lock. The 20 quick questions were
+  already public.
+- **The consent:** shown after the visitor has written the idea and before it is sent to the AI review,
+  not before typing (owner's choice). The text is drafted here and reviewed by the legal adviser later
+  (open item of D-335).
+- **Status:** Active

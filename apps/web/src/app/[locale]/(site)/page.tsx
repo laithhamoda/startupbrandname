@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { BidiText } from '@/components/marketing/bidi-text';
+import { ClientMessages } from '@/components/client-messages';
+import { LaunchCounter } from '@/components/launch/launch-counter';
 import { PageSection } from '@/components/marketing/page-intro';
 import { VerdictList } from '@/components/marketing/verdict-list';
 import { ButtonLink } from '@/components/ui/button';
@@ -35,17 +37,17 @@ export default async function HomePage() {
       <div className="mx-auto grid max-w-[75rem] gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-start lg:gap-16 lg:py-24">
         <div className="grid content-start gap-6">
           <h1 className="text-display font-extrabold">{c.heading}</h1>
+          <p className="font-display text-h2 font-bold">{c.subheading}</p>
           <p className="reading text-body-lg text-ink-2">{c.lead}</p>
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
             <ButtonLink href="/signup" variant="primary">
               {c.start}
             </ButtonLink>
-            <TextLink href="/how-it-works">{c.secondary}</TextLink>
             <TextLink href="/sample-report">{c.sample}</TextLink>
           </div>
-          <p className="reading border-s-2 border-hairline ps-3 text-small text-muted">
-            {c.status}
-          </p>
+          <ClientMessages namespaces={['launch']}>
+            <LaunchCounter />
+          </ClientMessages>
         </div>
         <VerdictList label={c.verdictLabel} items={c.verdict} />
       </div>
