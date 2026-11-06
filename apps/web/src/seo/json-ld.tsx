@@ -33,8 +33,8 @@ export function JsonLd({ data }: { data: WithContext<Thing> }) {
 }
 
 export const LOGO_URL = `${site.origin}/brand/logo-512.png`;
-const ORGANIZATION_ID = `${site.origin}/#organization`;
-const WEBSITE_ID = `${site.origin}/#website`;
+export const ORGANIZATION_ID = `${site.origin}/#organization`;
+export const WEBSITE_ID = `${site.origin}/#website`;
 export const FOUNDER_ID = `${site.origin}/#founder`;
 
 /** Absolute URL of a page in a language: '' is the home page. */
@@ -264,5 +264,21 @@ export function webApplicationJsonLd(
       priceCurrency: 'USD',
       url: pageUrl(page.locale, page.path),
     })),
+  };
+}
+
+/** /ai-context (D-337): one English page at a prefix-free address, so its URL is built here. */
+export function aiContextJsonLd(name: string, description: string): WithContext<WebPage> {
+  const url = `${site.origin}/ai-context`;
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': `${url}#webpage`,
+    url,
+    name,
+    description,
+    inLanguage: 'en',
+    isPartOf: { '@id': WEBSITE_ID },
+    about: { '@id': ORGANIZATION_ID },
   };
 }

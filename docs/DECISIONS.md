@@ -3377,3 +3377,27 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
 - **Plan:** small pull requests: the redirect and toggle, sitemap and hreflang, tests, then a scan for
   English text left in the interface.
 - **Status:** Active
+
+### D-337 (2026-11-06): A public English page for AI assistants at /ai-context
+
+- **Decision:** The owner asked for one public, text-only page that explains the platform to AI
+  assistants, reviewers and analysts. It lives at `https://startupbrandname.com/ai-context`, with no
+  language prefix, and needs no sign-in.
+- **Language:** English, a third exception to the Arabic-only site (D-336), next to the privacy policy,
+  terms and `llms.txt`: the readers are external assistants, and the owner wrote the request in English.
+  The proxy serves `/ai-context` from the English locale; `/ar/ai-context` and `/en/ai-context` redirect
+  (308) to it. The language switch is hidden there.
+- **Content rule:** every statement is checked against the code; each feature is labelled implemented,
+  partly implemented or planned. Prices and axis names are read from the product tables, so they
+  cannot drift. Not published: the wording of the question bank beyond the public quick questions,
+  scoring weights and thresholds, prompts, formulas, credentials and configuration names (D-303, D-304).
+  A unit test and an e2e test check this.
+- **Indexing:** the page follows the site's crawler policy (closed, ai-only, open). It is in the sitemap
+  and in `llms.txt`. In `ai-only` the allowed AI crawlers may read it; search engines stay out until launch.
+- **Maintenance:** `apps/web/src/content/ai-context.ts` is updated whenever a feature ships or changes
+  (rule added to CLAUDE.md); `AI_CONTEXT_REVIEWED` carries the date.
+- **Also fixed:** `llms.txt` said the interface was Arabic and English and that the AI mentor asks
+  critical questions; it now says Arabic only and lists the mentor as planned.
+- **Not verified:** the model names in production settings, the live Paddle state and the production
+  crawler variables; the page says nothing about them beyond what the code shows.
+- **Status:** Active

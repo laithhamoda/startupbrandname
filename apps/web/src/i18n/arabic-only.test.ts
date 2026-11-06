@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { arabicRedirect, hasEnglishVersion } from './arabic-only';
+import {
+  aiContextRedirect,
+  aiContextRewrite,
+  arabicRedirect,
+  hasEnglishVersion,
+} from './arabic-only';
 
 describe('arabicRedirect', () => {
   it('sends an English page to its Arabic page', () => {
@@ -26,5 +31,20 @@ describe('hasEnglishVersion', () => {
     expect(hasEnglishVersion('/terms')).toBe(true);
     expect(hasEnglishVersion('/pricing')).toBe(false);
     expect(hasEnglishVersion('/privacy-tips')).toBe(false);
+  });
+});
+
+describe('the AI context page (D-337)', () => {
+  it('is served at /ai-context from the English locale', () => {
+    expect(aiContextRewrite('/ai-context')).toBe('/en/ai-context');
+    expect(aiContextRewrite('/ai-context/x')).toBeNull();
+    expect(aiContextRewrite('/ar/ai-context')).toBeNull();
+  });
+
+  it('sends its /ar and /en addresses to the one address', () => {
+    expect(aiContextRedirect('/ar/ai-context')).toBe('/ai-context');
+    expect(aiContextRedirect('/en/ai-context')).toBe('/ai-context');
+    expect(aiContextRedirect('/ai-context')).toBeNull();
+    expect(aiContextRedirect('/ar/pricing')).toBeNull();
   });
 });
