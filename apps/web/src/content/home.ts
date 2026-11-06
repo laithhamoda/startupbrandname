@@ -3,10 +3,10 @@ import type { Localized, TitledText } from './types';
 
 export interface HomeContent {
   heading: string;
+  /** The line under the heading: what the visitor gets. */
+  subheading: string;
   lead: string;
-  status: string;
   start: string;
-  secondary: string;
   /** The link from the hero to the sample report. */
   sample: string;
   verdictLabel: string;
@@ -29,12 +29,10 @@ export interface HomeContent {
 
 export const HOME: Localized<HomeContent> = {
   ar: {
-    heading: 'حوّل فكرتك إلى نموذج عمل بأرقام محسوبة، لا مكتوبة',
-    lead: 'تشخيص منظّم لفكرة مشروعك، وأرقام يحسبها محرّك معادلات لا نموذج لغوي، وتقرير عربي ينتهي بحكم واضح: امضِ، أو عدّل، أو توقّف.',
-    status:
-      'نبني المنصة على مراحل: إنشاء الحساب متاح الآن مجانًا، ويُطلق التشخيص ثم التقرير تباعًا.',
-    start: 'ابدأ مجانًا',
-    secondary: 'كيف تعمل المنصة',
+    heading: 'تمكين الأفكار بلغة الاستثمار',
+    subheading: 'حوّل فكرتك إلى عرض استثماري مقنع',
+    lead: 'أجب عن أسئلة منظّمة، وتحصل على تقرير بأرقام يحسبها المحرّك لا نموذج لغوي، وحكم واضح: امضِ أو عدّل أو توقّف.',
+    start: 'ابدأ الآن',
     sample: 'شاهد تقريرًا نموذجيًا',
     verdictLabel: 'الحكم في كل تقرير',
     verdict: [
@@ -91,12 +89,10 @@ export const HOME: Localized<HomeContent> = {
     closingAction: 'أنشئ حسابك',
   },
   en: {
-    heading: 'Turn your idea into a business model with numbers that are calculated, not written',
-    lead: 'A structured diagnostic of your business idea, numbers computed by a formula engine rather than a language model, and an Arabic report that ends with a clear verdict: go, revise or stop.',
-    status:
-      'We are building the platform in stages: you can create a free account now, and the diagnostic and then the report follow.',
-    start: 'Start for free',
-    secondary: 'How it works',
+    heading: 'Empowering ideas in the language of investment',
+    subheading: 'Turn your idea into a convincing investment pitch',
+    lead: 'Answer structured questions and get a report with numbers a formula engine calculates, not a language model, and a clear verdict: go, revise or stop.',
+    start: 'Start now',
     sample: 'See a sample report',
     verdictLabel: 'The verdict in every report',
     verdict: [

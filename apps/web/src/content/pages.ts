@@ -8,7 +8,7 @@ export const PAGE_META: Localized<Record<PublicPageId, PageMeta>> = {
       title: 'استوديو نموذج العمل',
       description:
         'تشخيص جدوى فكرة مشروعك بالأرقام: أسئلة منظّمة، وتقرير عربي بحكم واضح (امضِ أو عدّل أو توقّف).',
-      card: 'حوّل فكرتك إلى نموذج عمل بأرقام محسوبة، لا مكتوبة',
+      card: 'حوّل فكرتك إلى عرض استثماري مقنع',
     },
     howItWorks: {
       title: 'كيف تعمل المنصة',
@@ -70,7 +70,7 @@ export const PAGE_META: Localized<Record<PublicPageId, PageMeta>> = {
       title: 'Business Model Studio',
       description:
         'A business idea diagnostic with calculated numbers: structured questions, an Arabic report with a clear verdict (go, revise or stop).',
-      card: 'Turn your idea into a business model with numbers that are calculated, not written',
+      card: 'Turn your idea into a convincing investment pitch',
     },
     howItWorks: {
       title: 'How it works',
