@@ -1,5 +1,6 @@
 import { revalidatePath } from 'next/cache';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { allowAuthAttempt } from '@/lib/auth/rate-limit';
 import { requireAccount } from '@/lib/auth/session';
 import { log } from '@/lib/log';
 import { claimLaunchSpot } from './actions';
@@ -14,6 +15,7 @@ vi.mock('next/navigation', () => ({
   },
 }));
 vi.mock('@/lib/auth/session', () => ({ requireAccount: vi.fn() }));
+vi.mock('@/lib/auth/rate-limit', () => ({ allowAuthAttempt: vi.fn(() => Promise.resolve(true)) }));
 vi.mock('@/lib/log', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/lib/log')>()),
   log: { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() },
@@ -24,6 +26,7 @@ function account(data: unknown, error: { code: string } | null = null) {
   const rpc = vi.fn(() => Promise.resolve({ data, error }));
   vi.mocked(requireAccount).mockResolvedValue({
     supabase: { rpc },
+    user: { id: 'user-1' },
   } as unknown as Awaited<ReturnType<typeof requireAccount>>);
   return rpc;
 }
@@ -78,5 +81,16 @@ describe('claimLaunchSpot (D-332, D-334)', () => {
   it('refuses a language the site does not have', async () => {
     await expect(claimLaunchSpot('xx')).rejects.toThrow();
     expect(requireAccount).not.toHaveBeenCalled();
+  });
+});
+
+describe('claimLaunchSpot limit (D-340)', () => {
+  it('answers with the ordinary error, and asks the database nothing, when the account claims too fast', async () => {
+    const rpc = account('granted');
+    vi.mocked(allowAuthAttempt).mockResolvedValueOnce(false);
+
+    expect(await claimLaunchSpot('ar')).toEqual({ status: 'error' });
+    expect(allowAuthAttempt).toHaveBeenCalledWith('claim', 'user-1');
+    expect(rpc).not.toHaveBeenCalled();
   });
 });

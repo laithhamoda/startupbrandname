@@ -1,6 +1,7 @@
 import { revalidatePath } from 'next/cache';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { log } from '@/lib/log';
+import { allowAuthAttempt } from './rate-limit';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import {
   deleteAccount,
@@ -28,6 +29,8 @@ vi.mock('next/headers', () => ({
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }));
 vi.mock('@/lib/supabase/server', () => ({ createSupabaseServerClient: vi.fn() }));
 vi.mock('./google', () => ({ googleSignInAvailable: () => Promise.resolve(true) }));
+// The limit has its own test (rate-limit.test.ts); here it lets everything through unless a test refuses.
+vi.mock('./rate-limit', () => ({ allowAuthAttempt: vi.fn(() => Promise.resolve(true)) }));
 // The files of the stored reports go before the account does (D-283); their own test is in
 // lib/report/delete-files.test.ts, and the order is checked in session.test.ts.
 vi.mock('@/lib/report/delete-files', () => ({
@@ -372,6 +375,7 @@ function codeClient(error: unknown) {
   vi.mocked(createSupabaseServerClient).mockResolvedValue({
     auth: { signInWithOtp, verifyOtp },
   } as unknown as Awaited<ReturnType<typeof createSupabaseServerClient>>);
+  return { signInWithOtp, verifyOtp };
 }
 
 function emailForm(): FormData {
@@ -428,5 +432,27 @@ describe('rate limited code requests', () => {
       error: 'invalidCode',
     });
     expect(log.warn).not.toHaveBeenCalledWith('auth.rate_limited', expect.anything());
+  });
+});
+
+describe('the app limit (D-340)', () => {
+  it('stops a code request, a signup and a code check before Supabase is called', async () => {
+    const client = codeClient({ status: 200, code: 'ok' });
+    vi.mocked(allowAuthAttempt).mockResolvedValue(false);
+    const signup = emailForm();
+    for (const [name, value] of gateForm('JO')) signup.set(name, value);
+
+    for (const result of [
+      await requestLoginCode('ar', { status: 'idle' }, emailForm()),
+      await requestSignupCode('ar', { status: 'idle' }, signup),
+      await verifyEmailCode('ar', { status: 'idle' }, codeForm('12345678')),
+    ]) {
+      expect(result).toEqual({ status: 'error', error: 'rateLimited' });
+    }
+    expect(allowAuthAttempt).toHaveBeenCalledWith('code', 'founder@example.test');
+    expect(allowAuthAttempt).toHaveBeenCalledWith('verify', 'founder@example.test');
+    expect(client.signInWithOtp).not.toHaveBeenCalled();
+    expect(client.verifyOtp).not.toHaveBeenCalled();
+    vi.mocked(allowAuthAttempt).mockResolvedValue(true);
   });
 });

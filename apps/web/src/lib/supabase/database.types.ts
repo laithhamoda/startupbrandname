@@ -1069,6 +1069,10 @@ export type Database = {
         Args: { p_number: number; p_project_id: string };
         Returns: undefined;
       };
+      check_auth_attempt: {
+        Args: { p_ip_hash: string; p_kind: string; p_subject_hash: string };
+        Returns: boolean;
+      };
       claim_launch_spot: { Args: Record<PropertyKey, never>; Returns: string };
       complete_onboarding: {
         Args: {

@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { unstable_rethrow } from 'next/navigation';
 import { z } from 'zod';
 import { routing } from '@/i18n/routing';
+import { allowAuthAttempt } from '@/lib/auth/rate-limit';
 import { requireAccount } from '@/lib/auth/session';
 import { errorFields, log } from '@/lib/log';
 
@@ -45,7 +46,9 @@ const answerSchema = z.enum([
 export async function claimLaunchSpot(localeInput: string): Promise<ClaimResult> {
   const locale = localeSchema.parse(localeInput);
   try {
-    const { supabase } = await requireAccount(locale);
+    const { supabase, user } = await requireAccount(locale);
+    // One account cannot hammer the claim (D-340); the answer is the ordinary one.
+    if (!(await allowAuthAttempt('claim', user.id))) return { status: 'error' };
     const { data, error } = await supabase.rpc('claim_launch_spot');
     if (error) {
       await log.error('launch.claim_failed', { code: error.code });
