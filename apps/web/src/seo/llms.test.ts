@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { PUBLIC_PAGES } from '@/config/public-pages';
 import { llmsTxt } from './llms';
 
@@ -14,12 +14,30 @@ describe('llms.txt', () => {
     expect(text).toContain('not a business name generator or a domain marketplace');
   });
 
-  it('links every public page in Arabic and the English AI context page (D-336, D-337)', () => {
-    for (const { path } of PUBLIC_PAGES) {
-      expect(text).toContain(`(https://startupbrandname.com/ar${path})`);
-      expect(text).not.toContain(`(https://startupbrandname.com/en${path})`);
+  it('links every public page in Arabic, except pricing while it is hidden, and the AI context page (D-336, D-337, D-341)', () => {
+    // Stated here, because CI builds with the pricing page public (D-341).
+    vi.stubEnv('PRICING_PUBLIC', 'false');
+    try {
+      const hidden = llmsTxt();
+      for (const { id, path } of PUBLIC_PAGES) {
+        const arabic = `(https://startupbrandname.com/ar${path})`;
+        if (id === 'pricing') expect(hidden).not.toContain(arabic);
+        else expect(hidden).toContain(arabic);
+        expect(hidden).not.toContain(`(https://startupbrandname.com/en${path})`);
+      }
+      expect(hidden).toContain('(https://startupbrandname.com/ai-context)');
+    } finally {
+      vi.unstubAllEnvs();
     }
-    expect(text).toContain('(https://startupbrandname.com/ai-context)');
+  });
+
+  it('lists the pricing page once it is open', () => {
+    vi.stubEnv('PRICING_PUBLIC', 'true');
+    try {
+      expect(llmsTxt()).toContain('(https://startupbrandname.com/ar/pricing)');
+    } finally {
+      vi.unstubAllEnvs();
+    }
   });
 
   it('does not claim an English interface or mention the unpublished mentor (D-339)', () => {

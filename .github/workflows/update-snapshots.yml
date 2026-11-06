@@ -10,6 +10,8 @@ permissions:
   contents: read
 
 env:
+  # Same as ci.yml: the baselines are taken with the pricing page public (D-341).
+  PRICING_PUBLIC: 'true'
   NEXT_TELEMETRY_DISABLED: '1'
   NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci_placeholder

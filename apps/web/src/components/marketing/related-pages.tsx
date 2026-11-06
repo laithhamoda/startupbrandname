@@ -1,4 +1,5 @@
 import { getTranslations } from 'next-intl/server';
+import { pricingPublic } from '@/config/pricing-visibility';
 import { publicPage, type PublicPageId } from '@/config/public-pages';
 import { PAGE_META } from '@/content/pages';
 import { Link } from '@/i18n/navigation';
@@ -16,17 +17,19 @@ export async function RelatedPages({ ids }: { ids: readonly PublicPageId[] }) {
         {t('heading')}
       </h2>
       <ul className="grid gap-x-10 gap-y-6 md:grid-cols-3">
-        {ids.map((id) => (
-          <li key={id} className="grid content-start gap-1">
-            <Link
-              href={publicPage(id).path || '/'}
-              className="font-display font-bold text-teal-ink underline underline-offset-4 hover:no-underline"
-            >
-              {meta[id].title}
-            </Link>
-            <p className="text-small text-muted">{meta[id].description}</p>
-          </li>
-        ))}
+        {ids
+          .filter((id) => id !== 'pricing' || pricingPublic())
+          .map((id) => (
+            <li key={id} className="grid content-start gap-1">
+              <Link
+                href={publicPage(id).path || '/'}
+                className="font-display font-bold text-teal-ink underline underline-offset-4 hover:no-underline"
+              >
+                {meta[id].title}
+              </Link>
+              <p className="text-small text-muted">{meta[id].description}</p>
+            </li>
+          ))}
       </ul>
     </nav>
   );

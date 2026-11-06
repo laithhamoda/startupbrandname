@@ -16,6 +16,9 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
+  # The pricing page is hidden in production while the launch window runs (D-341); the tests and
+  # snapshots keep covering it.
+  PRICING_PUBLIC: 'true'
   NEXT_TELEMETRY_DISABLED: '1'
   # Placeholders that satisfy the env schema at build time. CI never talks to a hosted Supabase.
   NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321

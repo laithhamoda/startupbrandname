@@ -8,8 +8,8 @@ import type { ReportLabels } from './inline';
 export interface ReportHrefs {
   /** The project page, where the founder goes back to and continues the diagnostic from. */
   readonly project: string;
-  /** The pricing page: paid plans open later, and there is no purchase flow before M7. */
-  readonly pricing: string;
+  /** The pricing page, or null while it is hidden (D-341): the lock then names no link. */
+  readonly pricing: string | null;
 }
 
 const sectionAnchor = (section: Section) => `section-${section.id}`;
@@ -54,13 +54,15 @@ function LockedSection({
           {byPlan ? labels.lock.plan : labels.lock.completeness}
         </span>
       </p>
-      <p>
-        {byPlan ? (
-          <TextLink href={hrefs.pricing}>{labels.lock.pricing}</TextLink>
-        ) : (
-          <TextLink href={hrefs.project}>{labels.lock.continue}</TextLink>
-        )}
-      </p>
+      {byPlan && hrefs.pricing === null ? null : (
+        <p>
+          {byPlan && hrefs.pricing !== null ? (
+            <TextLink href={hrefs.pricing}>{labels.lock.pricing}</TextLink>
+          ) : (
+            <TextLink href={hrefs.project}>{labels.lock.continue}</TextLink>
+          )}
+        </p>
+      )}
     </div>
   );
 }

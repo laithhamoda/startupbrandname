@@ -1,6 +1,7 @@
 import type { ReportModel } from '@sbn/report/model';
 import type { Metadata } from 'next';
 import { getMessages } from 'next-intl/server';
+import { pricingPublic } from '@/config/pricing-visibility';
 import { PageBody, PageIntro } from '@/components/marketing/page-intro';
 import { RelatedPages } from '@/components/marketing/related-pages';
 import { ReportView } from '@/components/report/report-view';
@@ -44,7 +45,7 @@ export default async function SampleReportPage() {
             <ButtonLink href="/signup" variant="primary">
               {text.start}
             </ButtonLink>
-            <TextLink href="/pricing">{text.plans}</TextLink>
+            {pricingPublic() ? <TextLink href="/pricing">{text.plans}</TextLink> : null}
           </div>
         </PageIntro>
       </PageBody>
@@ -52,7 +53,7 @@ export default async function SampleReportPage() {
       <ReportView
         model={SAMPLES[locale]}
         labels={labels}
-        hrefs={{ project: '/signup', pricing: '/pricing' }}
+        hrefs={{ project: '/signup', pricing: pricingPublic() ? '/pricing' : null }}
         embedded
       />
 

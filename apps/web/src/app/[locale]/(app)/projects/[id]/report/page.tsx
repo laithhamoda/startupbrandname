@@ -2,6 +2,7 @@ import { stepLabel } from '@sbn/question-bank';
 import type { Metadata } from 'next';
 import { getMessages, getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import { pricingPublic } from '@/config/pricing-visibility';
 import { NotEnoughAnswers } from '@/components/report/not-enough';
 import { PdfDownload } from '@/components/report/pdf-download';
 import { noticeReasonsOf, ReportNotice } from '@/components/report/notice';
@@ -123,7 +124,7 @@ export default async function ReportPage({
       <ReportView
         model={page.model}
         labels={labels}
-        hrefs={{ project: backHref, pricing: '/pricing' }}
+        hrefs={{ project: backHref, pricing: pricingPublic() ? '/pricing' : null }}
         actions={
           pdfDownloadAvailable(page) ? (
             <PdfDownload

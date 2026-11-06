@@ -7,6 +7,7 @@ import { ButtonLink } from '@/components/ui/button';
 import { Money } from '@/components/ui/money';
 import { TextLink } from '@/components/ui/text-link';
 import { lowestPaidPrice } from '@/config/plans';
+import { pricingPublic } from '@/config/pricing-visibility';
 import { HOME } from '@/content/home';
 import { PAGE_META } from '@/content/pages';
 import { currentLocale } from '@/i18n/locale';
@@ -78,18 +79,20 @@ export default async function HomePage() {
           </ul>
         </PageSection>
 
-        <PageSection id="plans" title={nav('pricing')}>
-          <div className="grid gap-3">
-            <p className="text-body-lg">
-              {c.priceBefore} <Money value={String(lowestPaidPrice())} currency="USD" />{' '}
-              {c.priceAfter} <TextLink href="/pricing">{c.comparePlans}</TextLink>
-            </p>
-            <p className="text-ink-2">
-              <BidiText text={c.course} />{' '}
-              <TextLink href={{ pathname: '/pricing', hash: 'course' }}>{c.courseLink}</TextLink>
-            </p>
-          </div>
-        </PageSection>
+        {pricingPublic() ? (
+          <PageSection id="plans" title={nav('pricing')}>
+            <div className="grid gap-3">
+              <p className="text-body-lg">
+                {c.priceBefore} <Money value={String(lowestPaidPrice())} currency="USD" />{' '}
+                {c.priceAfter} <TextLink href="/pricing">{c.comparePlans}</TextLink>
+              </p>
+              <p className="text-ink-2">
+                <BidiText text={c.course} />{' '}
+                <TextLink href={{ pathname: '/pricing', hash: 'course' }}>{c.courseLink}</TextLink>
+              </p>
+            </div>
+          </PageSection>
+        ) : null}
 
         <section
           aria-labelledby="closing-heading"

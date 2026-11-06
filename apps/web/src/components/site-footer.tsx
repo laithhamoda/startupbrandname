@@ -1,4 +1,5 @@
 import { useTranslations } from 'next-intl';
+import { pricingPublic } from '@/config/pricing-visibility';
 import { site } from '@/config/site';
 import { Link } from '@/i18n/navigation';
 
@@ -12,7 +13,7 @@ export function SiteFooter() {
   const pages = [
     { href: '/how-it-works', label: nav('howItWorks') },
     { href: '/methodology', label: nav('methodology') },
-    { href: '/pricing', label: nav('pricing') },
+    ...(pricingPublic() ? [{ href: '/pricing', label: nav('pricing') }] : []),
     { href: '/sample-report', label: nav('sampleReport') },
     { href: '/questions', label: nav('questions') },
     { href: '/guides/validate-business-idea', label: nav('ideaGuide') },
