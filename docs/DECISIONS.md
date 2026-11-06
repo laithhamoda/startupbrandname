@@ -3568,3 +3568,25 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
 - **Privacy:** the comment is user content: the privacy policy should name it when the legal review
   happens (open item).
 - **Status:** Active
+
+### D-346 (2026-11-06): The founder's name, email and phone on the cover of the PDF
+
+- **Decision:** The owner wants the name, the email and the phone number of the founder printed on the PDF
+  with the report, and the rating and the comments (D-345) not printed. The download form now carries three
+  fields; what is typed goes on the cover as more rows of its facts ("Project owner", "Email", "Phone").
+  The rating and the comment stay with the platform and are never part of the file.
+- **Optional:** all three are optional (an investor can then reach the founder, and a founder who does not
+  want a phone on the file leaves it out). A value that is typed and is not valid stops the download with
+  `contact_invalid` (name up to 120 characters without control characters, an email, a phone of 7 to 26
+  characters; Arabic-Indic digits are read as Western). The email field is filled from the account and may be
+  changed or cleared.
+- **Not kept in the account:** the values travel with the download request, are put on the metadata of that
+  one report (`meta.contact`, never on the page and never in a section), and are not written to the database.
+  The PDF file itself is stored, as every PDF is (D-244), in the founder's private folder and is deleted with
+  the project or the account. The cache key of the file includes the contact (a different contact is another
+  file); a report without a contact keeps its key.
+- **Safe printing:** every value goes through the escaping of the print template (D-235); the name takes the
+  direction of its own script, the email and the phone are always left to right.
+- **Privacy:** a founder's contact on a file that is then shared is a processing the privacy policy should
+  name when the legal review happens (open item, with the comment of D-345).
+- **Status:** Active

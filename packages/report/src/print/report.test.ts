@@ -582,3 +582,51 @@ describe('the dense projection table', () => {
     expect(html).not.toContain('(د.أ)');
   });
 });
+
+describe('the contact on the cover (D-346)', () => {
+  const contact = {
+    name: 'ليث <b>حمودة</b>',
+    email: 'founder@example.test',
+    phone: '+962 79 000 0000',
+  };
+
+  for (const locale of LOCALES) {
+    it(`prints the name, the email and the phone as rows of the facts, escaped (${locale})`, () => {
+      const base = modelOf('jo-service-subscription', locale);
+      const model: ReportModel = { ...base, meta: { ...base.meta, contact } };
+      const html = reportBodyHtml(model);
+      const cover = html.slice(0, html.indexOf('</section>'));
+      const labels = messagesFor(locale).cover.facts;
+
+      expect(cover).toContain(`<dt>${labels.preparedBy}</dt><dd><bdi dir="auto">`);
+      expect(cover).toContain('ليث &lt;b&gt;حمودة&lt;/b&gt;');
+      expect(cover).not.toContain('<b>حمودة</b>');
+      expect(cover).toContain(
+        `<dt>${labels.email}</dt><dd><bdi dir="ltr">founder@example.test</bdi>`,
+      );
+      expect(cover).toContain(`<dt>${labels.phone}</dt><dd><bdi dir="ltr">+962 79 000 0000</bdi>`);
+    });
+  }
+
+  it('leaves out a row whose value was not given, and prints nothing without a contact', () => {
+    const base = modelOf('jo-service-subscription', 'en');
+    const only: ReportModel = {
+      ...base,
+      meta: { ...base.meta, contact: { name: '', email: 'a@example.test', phone: '  ' } },
+    };
+    const cover = reportBodyHtml(only).slice(0, reportBodyHtml(only).indexOf('</section>'));
+    expect(cover).toContain('a@example.test');
+    expect(cover).not.toContain(messagesFor('en').cover.facts.preparedBy);
+    expect(cover).not.toContain(messagesFor('en').cover.facts.phone);
+
+    const none = reportBodyHtml(base).slice(0, reportBodyHtml(base).indexOf('</section>'));
+    expect(none).not.toContain(messagesFor('en').cover.facts.email);
+  });
+
+  it('prints it on a summary too, whose cover stays locked', () => {
+    const base = modelOf('jo-service-subscription', 'ar', { kind: 'summary', lockReason: 'plan' });
+    const model: ReportModel = { ...base, meta: { ...base.meta, contact } };
+    const html = reportBodyHtml(model);
+    expect(html.slice(0, html.indexOf('</section>'))).toContain('founder@example.test');
+  });
+});

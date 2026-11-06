@@ -235,6 +235,18 @@ export interface ConfidenceMeta {
   }[];
 }
 
+/**
+ * Who the founder wants named on the cover of the PDF (D-346): typed on the download form, never
+ * stored with the account, and an empty string for what was left out. It lives in the metadata and
+ * not in a section, so the page never shows it; it is part of the model, so a different contact
+ * gives a different cache key.
+ */
+export interface ReportContact {
+  readonly name: string;
+  readonly email: string;
+  readonly phone: string;
+}
+
 export interface ReportMeta {
   readonly title: string;
   readonly countryCode: string;
@@ -246,6 +258,8 @@ export interface ReportMeta {
   readonly completeness: { readonly percent: number; readonly gate: Gate };
   /** Null without a calculable run. */
   readonly confidence: ConfidenceMeta | null;
+  /** Added by the PDF route when the founder gave a contact (D-346); never by the builder. */
+  readonly contact?: ReportContact;
 }
 
 export interface ReportModel {

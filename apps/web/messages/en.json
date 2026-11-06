@@ -441,12 +441,20 @@
         "render_failed": "The PDF could not be made. Try again in a moment.",
         "storage_failed": "The file was made but could not be saved. Try again in a moment.",
         "not_found": "We could not find this project.",
-        "rating_required": "Choose a rating from 1 to 5 before you download the report."
+        "rating_required": "Choose a rating from 1 to 5 before you download the report.",
+        "contact_invalid": "Check the name, the email and the phone number, then try again."
       },
       "rating": {
         "legend": "Rate this report before you download it",
         "scale": "From 1 (poor) to 5 (excellent). One click is enough.",
         "comment": "Your comments (optional)"
+      },
+      "contact": {
+        "legend": "Your details on the cover of the report",
+        "hint": "Optional. They are printed on the cover of the file so that whoever reads the report can reach you, and we do not keep them in your profile. The rating and the comments are not printed.",
+        "name": "Name",
+        "email": "Email",
+        "phone": "Phone number"
       }
     },
     "marks": {

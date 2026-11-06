@@ -75,10 +75,33 @@ function coverHtml(model: ReportModel, ctx: PrintContext): string {
     '<div class="brand"><bdi dir="ltr">Startup Brand Name</bdi></div>' +
     `<div><p class="kind">${escapeHtml(ctx.m.reportKind)}</p>` +
     `<h1 dir="auto">${escapeHtml(reportTitle(model))}</h1></div>` +
-    `<div class="bottom"><dl class="facts">${facts}</dl>` +
+    `<div class="bottom"><dl class="facts">${facts}${contactHtml(model, ctx)}</dl>` +
     (promise?.type === 'paragraph' ? `<p class="promise">${inlineHtml(promise.text)}</p>` : '') +
     '</div></div></section>'
   );
+}
+
+/**
+ * The contact the founder asked to print (D-346), as more rows of the cover's facts: the name takes
+ * the direction of its own script, the email and the phone are always left to right. Every value is
+ * escaped; a value left out is no row.
+ */
+function contactHtml(model: ReportModel, ctx: PrintContext): string {
+  const contact = model.meta.contact;
+  if (contact === undefined) return '';
+  const facts = ctx.m.cover.facts;
+  const rows: readonly (readonly [string, string, 'auto' | 'ltr'])[] = [
+    [facts.preparedBy, contact.name, 'auto'],
+    [facts.email, contact.email, 'ltr'],
+    [facts.phone, contact.phone, 'ltr'],
+  ];
+  return rows
+    .filter(([, value]) => value.trim() !== '')
+    .map(
+      ([term, value, dir]) =>
+        `<div><dt>${escapeHtml(term)}</dt><dd><bdi dir="${dir}">${escapeHtml(value)}</bdi></dd></div>`,
+    )
+    .join('');
 }
 
 function sectionHtml(section: Section, ctx: PrintContext): string {

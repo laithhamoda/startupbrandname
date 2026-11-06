@@ -306,4 +306,55 @@ describe('the report PDF route', () => {
       expect(mocks.passRatingGate).not.toHaveBeenCalled();
     });
   });
+
+  describe('the contact on the cover (D-346)', () => {
+    it('puts a valid contact on the report that is rendered, and on no other', async () => {
+      await post({
+        body: {
+          locale: 'ar',
+          contact_name: 'ليث',
+          contact_email: 'founder@example.test',
+          contact_phone: '+962790000000',
+        },
+      });
+
+      const rendered = mocks.renderReportPdf.mock.calls[0]?.[0] as { model: ReportModel };
+      expect(rendered.model.meta.contact).toEqual({
+        name: 'ليث',
+        email: 'founder@example.test',
+        phone: '+962790000000',
+      });
+      expect(model.meta.contact).toBeUndefined();
+    });
+
+    it('renders the report as it is when no contact is given', async () => {
+      await post();
+
+      const rendered = mocks.renderReportPdf.mock.calls[0]?.[0] as { model: ReportModel };
+      expect(rendered.model.meta.contact).toBeUndefined();
+    });
+
+    it('refuses a contact that is typed and not valid, and makes no file', async () => {
+      const response = await post({
+        accept: 'application/json',
+        body: { locale: 'ar', contact_email: 'not an email' },
+      });
+
+      expect(response.status).toBe(400);
+      expect(await response.json()).toEqual({ error: 'contact_invalid' });
+      expect(mocks.renderReportPdf).not.toHaveBeenCalled();
+    });
+
+    it('sends a browser back to the report with contact_invalid', async () => {
+      const response = await post({
+        accept: 'text/html',
+        body: { locale: 'ar', contact_phone: 'call me' },
+      });
+
+      expect(response.status).toBe(303);
+      expect(response.headers.get('location')).toBe(
+        `/ar/projects/${ID}/report?pdf=contact_invalid`,
+      );
+    });
+  });
 });

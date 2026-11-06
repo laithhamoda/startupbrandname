@@ -15,6 +15,7 @@ import {
 } from '@/lib/report/pdf';
 import { createPdfStore } from '@/lib/report/pdf-store';
 import { passRatingGate } from '@/lib/report/rating';
+import { parseContact, withContact } from '@/lib/report/contact';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 // The report as a PDF (M5 step 6, D-280, D-281). Headless Chromium runs inside the function: Node
@@ -103,6 +104,10 @@ export async function POST(
       }
     }
 
+    // The contact the founder wants on the cover (D-346): checked, put on this report only, not kept.
+    const contact = parseContact(body);
+    if (contact === null) return refusal(request, 'contact_invalid', back);
+
     const result = await producePdf(
       {
         store: createPdfStore(supabase),
@@ -112,7 +117,7 @@ export async function POST(
         },
         newId: randomUUID,
       },
-      { userId: user.id, projectId: id.data, page },
+      { userId: user.id, projectId: id.data, page: withContact(page, contact) },
     );
     return answer(request, result, back);
   } catch (error) {

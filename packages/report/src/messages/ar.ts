@@ -94,6 +94,9 @@ export const ar: ReportMessages = {
       engineVersion: 'نسخة المحرك',
       completeness: 'اكتمال الإجابات',
       confidence: 'الثقة الإجمالية',
+      preparedBy: 'مقدّم المشروع',
+      email: 'البريد الإلكتروني',
+      phone: 'الهاتف',
     },
     currencyValue: ({ name, code }) => inl`${name} (${code})`,
     confidenceValue: ({ level, sound, total }) =>

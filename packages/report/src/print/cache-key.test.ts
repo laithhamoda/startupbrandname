@@ -61,4 +61,20 @@ describe('reportCacheKey', () => {
     expect(reportCacheKey(model, PRINT_TEMPLATE_VERSION)).toBe(reportCacheKey(model));
     expect(reportCacheKey(model, PRINT_TEMPLATE_VERSION + 1)).not.toBe(reportCacheKey(model));
   });
+
+  it('changes with the contact on the cover, and stays as it was without one (D-346)', () => {
+    const withContact: ReportModel = {
+      ...model,
+      meta: { ...model.meta, contact: { name: 'A', email: '', phone: '' } },
+    };
+    const other: ReportModel = {
+      ...model,
+      meta: { ...model.meta, contact: { name: 'B', email: '', phone: '' } },
+    };
+    expect(reportCacheKey(withContact)).not.toBe(reportCacheKey(model));
+    expect(reportCacheKey(withContact)).not.toBe(reportCacheKey(other));
+    expect(reportCacheKey({ ...model, meta: { ...model.meta, contact: undefined } })).toBe(
+      reportCacheKey(model),
+    );
+  });
 });

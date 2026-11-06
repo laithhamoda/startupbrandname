@@ -31,6 +31,7 @@ export {
   type Provenance,
   type ReportInput,
   type ReportKind,
+  type ReportContact,
   type ReportMeta,
   type ReportModel,
   type ReportModelErrorCode,

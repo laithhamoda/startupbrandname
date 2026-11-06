@@ -93,6 +93,9 @@ export const en: ReportMessages = {
       engineVersion: 'Engine version',
       completeness: 'Answers completed',
       confidence: 'Overall confidence',
+      preparedBy: 'Project owner',
+      email: 'Email',
+      phone: 'Phone',
     },
     currencyValue: ({ name, code }) => inl`${name} (${code})`,
     confidenceValue: ({ level, sound, total }) =>

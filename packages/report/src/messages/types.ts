@@ -170,7 +170,10 @@ export interface ReportMessages {
         | 'issuedOn'
         | 'engineVersion'
         | 'completeness'
-        | 'confidence',
+        | 'confidence'
+        | 'preparedBy'
+        | 'email'
+        | 'phone',
         string
       >
     >;

@@ -136,6 +136,7 @@ export default async function ReportPage({
               labels={labels}
               error={isPdfErrorCode(refused) ? refused : null}
               rated={rated}
+              defaultEmail={user.email}
             />
           ) : null
         }

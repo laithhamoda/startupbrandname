@@ -24,6 +24,7 @@ function html(
   locale: 'ar' | 'en',
   error: (typeof PDF_ERROR_CODES)[number] | null = null,
   rated = true,
+  defaultEmail: string | null = null,
 ): string {
   return renderToStaticMarkup(
     createElement(PdfDownload, {
@@ -32,6 +33,7 @@ function html(
       labels: catalogues[locale].report,
       error,
       rated,
+      defaultEmail,
     }),
   );
 }
@@ -108,6 +110,27 @@ describe('the PDF download', () => {
       const markup = html(locale, null, true);
       expect(markup).not.toContain('name="stars"');
       expect(markup).not.toContain('<textarea');
+    });
+  }
+
+  for (const locale of ['ar', 'en'] as const) {
+    it(`offers the contact fields on every form, the email filled in from the account (${locale}, D-346)`, () => {
+      for (const rated of [true, false]) {
+        const markup = html(locale, null, rated, 'founder@example.test');
+        expect(markup).toContain('name="contact_name"');
+        expect(markup).toContain('autoComplete="name"');
+        expect(markup).toMatch(/<input[^>]*name="contact_email"[^>]*value="founder@example.test"/);
+        expect(markup).toContain('name="contact_phone"');
+        expect(markup).toContain(catalogues[locale].report.pdf.contact.legend);
+        // None of them is required: the cover prints what is given.
+        expect(markup.match(/<input[^>]*name="contact_[a-z]+"[^>]*>/g)?.join('')).not.toContain(
+          'required',
+        );
+      }
+    });
+
+    it(`has no email value without an account email (${locale})`, () => {
+      expect(html(locale, null, true, null)).not.toContain('value="founder');
     });
   }
 });
