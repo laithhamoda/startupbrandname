@@ -5,6 +5,7 @@ import { ButtonLink } from '@/components/ui/button';
 import { LinkPending } from '@/components/ui/link-pending';
 import { TextLink } from '@/components/ui/text-link';
 import { PLANS } from '@/config/plans';
+import { pricingPublic } from '@/config/pricing-visibility';
 import { PRICING } from '@/content/pricing';
 import { getMentorPackCheckout } from '@/env/server';
 import { subscriptionsOf } from '@/lib/payments/account-plan';
@@ -38,9 +39,11 @@ export default async function ProjectsPage() {
   const freeLimit = freeQuota.kind === 'count' ? freeQuota.value : 1;
   const unpaid = projects.filter(({ project }) => planOf(project.id) === 'free').length;
   const canCreate = unlimited || unpaid < freeLimit;
+  // While the free window runs nothing about payment shows (D-341, D-347).
+  const showPayment = pricingPublic();
   const names = PRICING[locale].planNames;
   // More mentor messages for any project, once the pack is on sale (D-322).
-  const packOnSale = getMentorPackCheckout() !== null;
+  const packOnSale = showPayment && getMentorPackCheckout() !== null;
   const countries = countryOptions(locale);
   // Western digits in both languages (CLAUDE.md §6).
   const date = new Intl.DateTimeFormat(locale === 'ar' ? 'ar-u-nu-latn' : 'en', {
@@ -52,7 +55,7 @@ export default async function ProjectsPage() {
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div className="grid gap-2">
           <h1 className="text-h1 font-extrabold">{t('title')}</h1>
-          <p className="text-small text-muted">{t('rule')}</p>
+          <p className="text-small text-muted">{t(showPayment ? 'rule' : 'ruleFree')}</p>
         </div>
         {canCreate ? (
           <ButtonLink href="/projects/new" variant="primary">
@@ -93,8 +96,10 @@ export default async function ProjectsPage() {
                   {t('updated')} {date.format(new Date(project.updatedAt))}
                 </span>
                 <span className="text-small">
-                  <span className="text-ink-2">{t('package', { plan: names[planId] })}</span>
-                  {next ? (
+                  {showPayment ? (
+                    <span className="text-ink-2">{t('package', { plan: names[planId] })}</span>
+                  ) : null}
+                  {showPayment && next ? (
                     <>
                       {' · '}
                       <TextLink href={`/checkout/${next}?project=${project.id}`}>
@@ -117,7 +122,9 @@ export default async function ProjectsPage() {
         </ul>
       )}
 
-      {canCreate ? null : <p className="reading text-small text-muted">{t('limit')}</p>}
+      {canCreate ? null : (
+        <p className="reading text-small text-muted">{t(showPayment ? 'limit' : 'limitFree')}</p>
+      )}
     </div>
   );
 }
