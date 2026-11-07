@@ -37,7 +37,9 @@ test('a visitor reaches the report route and is told what is missing, with no ve
 
 test('a visitor is refused the file of the report', async ({ page }) => {
   const id = await startVisit(page);
+  const origin = new URL(page.url()).origin;
   const response = await page.request.post(`/api/projects/${id}/report/pdf`, {
+    headers: { origin, accept: 'application/json' },
     form: { locale: 'ar' },
     maxRedirects: 0,
   });
