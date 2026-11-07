@@ -7,8 +7,11 @@ import { errorFields, log } from '@/lib/log';
 import { clientAddress } from '@/lib/payments/voucher';
 import { createSupabaseAdminClient } from '@/lib/supabase/admin';
 
-/** What is being limited: sign-in code requests, code checks, launch spot claims (D-340). */
-export type AuthAttemptKind = 'code' | 'verify' | 'claim';
+/**
+ * What is being limited: sign-in code requests, code checks, launch spot claims (D-340), and first
+ * visits without signup (D-350).
+ */
+export type AuthAttemptKind = 'code' | 'verify' | 'claim' | 'start';
 
 /**
  * A keyed hash of the mailbox or the account. The database keeps only this, and the key (the

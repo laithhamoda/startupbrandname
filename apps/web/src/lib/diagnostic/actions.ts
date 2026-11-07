@@ -34,7 +34,7 @@ import type { Json } from '@/lib/supabase/database.types';
 import type { SupabaseServerClient } from '@/lib/supabase/server';
 import { aiFindings } from '@/lib/ai/findings';
 import { reviewWithAi } from '@/lib/ai/service';
-import { requireAccount } from '@/lib/auth/session';
+import { requireAccount, requireVisitor } from '@/lib/auth/session';
 import { isCountryCode } from '@/lib/countries';
 import { errorFields, log } from '@/lib/log';
 import { removeReportFiles } from '@/lib/report/delete-files';
@@ -309,7 +309,7 @@ async function save(
   }: Omit<z.output<typeof saveSchema>, 'step'> & { step: StepId },
   trace: SaveTrace,
 ): Promise<SaveResult> {
-  const { supabase, user } = await requireAccount(locale);
+  const { supabase, user } = await requireVisitor(locale);
   trace.stage = 'load';
   const loaded = await loadProject(supabase, projectId);
   // Deleted, perhaps in another tab.

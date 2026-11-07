@@ -3,11 +3,15 @@ import { ClientMessages } from '@/components/client-messages';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteHeader } from '@/components/site-header';
 import { currentLocale } from '@/i18n/locale';
-import { requireAccount } from '@/lib/auth/session';
+import { requireVisitor } from '@/lib/auth/session';
 
-/** Signed-in area. Only completed accounts get in; the others go to sign-in or the gate. */
+/**
+ * Signed-in area. Only completed accounts and visitors who began without signup get in; the others go
+ * to sign-in or the gate.
+ */
 export default async function AppLayout({ children }: Readonly<{ children: ReactNode }>) {
-  await requireAccount(await currentLocale());
+  // A visitor without an account passes here (D-350); every page that is not theirs asks again.
+  await requireVisitor(await currentLocale());
 
   return (
     <>

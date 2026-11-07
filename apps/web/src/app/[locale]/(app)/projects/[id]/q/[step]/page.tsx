@@ -21,7 +21,7 @@ import { currentLocale } from '@/i18n/locale';
 import type { Locale } from '@/i18n/routing';
 import { consentStateOrNull } from '@/lib/ai/consent';
 import { activeProvider } from '@/lib/ai/provider';
-import { requireAccount } from '@/lib/auth/session';
+import { requireVisitor } from '@/lib/auth/session';
 import { toDraft } from '@/lib/diagnostic/draft';
 import { editorLists } from '@/lib/diagnostic/editor-lists';
 import { viewFinding } from '@/lib/diagnostic/findings';
@@ -37,7 +37,7 @@ import {
 
 /** The project and its answers, read once per request for the page and its title. */
 const loadStep = cache(async (locale: Locale, id: string) => {
-  const { supabase } = await requireAccount(locale);
+  const { supabase } = await requireVisitor(locale);
   return loadProject(supabase, id);
 });
 
@@ -83,7 +83,7 @@ export default async function StepPage({
   const { id, step: slug } = await params;
   // A chip of the canvas leads here and wants the founder back there after saving (D-249).
   const fromCanvas = (await searchParams).from === CANVAS_ORIGIN;
-  const { supabase } = await requireAccount(locale);
+  const { supabase } = await requireVisitor(locale);
   const loaded = await loadStep(locale, id);
   const step = stepFromSlug(slug);
   if (!loaded || !step) notFound();

@@ -120,6 +120,21 @@
     "submit": "Complete my account",
     "signOut": "Sign out without completing"
   },
+  "start": {
+    "title": "Start the diagnostic of your idea",
+    "lead": "Write your idea, choose the country and the currency, then answer the questions. No account needed now.",
+    "idea": "Your idea or project name",
+    "ideaHint": "Example: servicing restaurant air conditioners.",
+    "consentTitle": "Before we start",
+    "consentIntro": "Now that you have written your idea: we review your answers with the help of AI, after removing the name, the email and the contact details the platform recognises. Read the two statements below, then start.",
+    "submit": "Start now",
+    "errors": {
+      "closed": "The platform is not available in your country yet.",
+      "limited": "Too many attempts from this connection. Try again shortly.",
+      "unavailable": "Starting without an account is not available right now. Create an account to continue.",
+      "failed": "Could not start. Try again."
+    }
+  },
   "projects": {
     "title": "My projects",
     "new": "New project",
