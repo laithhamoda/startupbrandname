@@ -3733,3 +3733,20 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   on the live site. Step 5 (the cleanup of old visits is done in D-352; the home buttons in D-353) is therefore
   finished by this step.
 - **Status:** Active
+
+### D-355 (2026-11-07): Payment, rating and report records refuse an anonymous visitor (audit SEC-05, first part)
+
+- **Decision:** An anonymous visitor (D-350) holds the role `authenticated`, so every function granted to it was
+  open to them; only `claim_launch_spot()` had a guard. Six functions now refuse a visitor with error 42501
+  (`has_report_rating` answers false): `start_checkout`, `rate_report`, `has_report_rating`, `record_report`,
+  `record_report_version`, `choose_final_version`.
+- **How:** each original body moved unchanged to the `private` schema as `<name>_impl` (no access for
+  `authenticated` or `anon`), and the public name is a thin wrapper with the same signature that checks
+  `private.is_anonymous()` first. The app and `database.types.ts` do not change, and the bodies are not copied.
+- **Left alone on purpose:** `set_crossborder_consent` (a visitor may consent before using the AI), the AI
+  ledger functions (`reserve_ai_run`, `record_ai_run`) and `record_engine_run`: they already check project
+  ownership, bound sizes and take the cost from the settings table.
+- **Open (second part):** `record_engine_run` stores any JSON for the user's own project, so a technical user can
+  write numbers into their own report. The cure is to record engine runs on the server with the service role.
+  It touches the engine and report paths, so it is a separate change; the harm stays with the project owner.
+- **Status:** Active
