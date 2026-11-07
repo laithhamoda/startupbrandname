@@ -13,6 +13,8 @@ export type ProjectResultState =
   | { readonly status: 'none' }
   /** The verdict section of the one-page summary: the word, and for a stop its three changes. */
   | { readonly status: 'verdict'; readonly section: Section }
+  /** A visitor without an account: the verdict is ready but is shown only after the visit is saved (D-356). */
+  | { readonly status: 'hidden' }
   /** The answers are enough but the numbers cannot be calculated: what to answer or correct. */
   | { readonly status: 'needs_answers'; readonly reasons: readonly NotCalculableReason[] }
   /** Nothing could be built (logged). The rest of the project page stands. */
@@ -48,6 +50,8 @@ export async function loadProjectResult(
     if (page.status === 'none') return { status: 'none' };
     // The summary alone never waits for a report version (D-321).
     if (page.status === 'version_needed') return { status: 'failed' };
+    // The preview is built without the verdict: only its existence is said (D-356).
+    if (page.model.kind === 'preview') return { status: 'hidden' };
     const verdict = page.model.sections.find((section) => section.id === 'verdict');
     if (verdict !== undefined && !verdict.locked) return { status: 'verdict', section: verdict };
     if (page.notice?.kind === 'not_calculable') {

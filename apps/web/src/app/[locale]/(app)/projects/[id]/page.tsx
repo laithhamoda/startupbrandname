@@ -73,6 +73,7 @@ export default async function ProjectPage({ params }: PageProps<'/[locale]/proje
     email: user.email,
     locale,
     gate: score.gate,
+    visitor: user.isAnonymous,
     currencyLabel: (code) => symbols[code] ?? code,
   });
   const resultView: ProjectResultView =

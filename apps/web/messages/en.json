@@ -439,7 +439,8 @@
     "kind": {
       "full": "Full report",
       "standard": "Numbers report",
-      "summary": "One-page summary"
+      "summary": "One-page summary",
+      "preview": "Report preview"
     },
     "summaryLead": "This is the one-page summary. The other sections of the report show their titles only until they open.",
     "standardLead": "This is the numbers report of the Strategist package: pricing, break-even, projection, cash and the legal path. The canvases, scenarios and validation plan are in the Commander package.",
@@ -452,7 +453,9 @@
       "completeness": "This section opens once your core answers are complete: the price, the costs, the expected sales and the capital.",
       "plan": "This section opens with a paid package. Paid packages open soon.",
       "continue": "Keep answering the questions",
-      "pricing": "See packages and prices"
+      "pricing": "See packages and prices",
+      "account": "This section, and the final verdict, open after you save your project with an account.",
+      "save": "Save your project with an account"
     },
     "verdict": {
       "label": "Verdict"
@@ -557,6 +560,12 @@
         "confirm": "Choose a version, and confirm that you understand the choice is final.",
         "failed": "That did not work just now. Try again in a moment."
       }
+    },
+    "previewLead": "This is a preview of the first sections of your report. The final verdict and the other sections open after you save your project with an account.",
+    "verdictHidden": {
+      "title": "The verdict on your project is ready",
+      "body": "Save your project with an account to learn the verdict: go, adjust or stop. You can read the report preview now.",
+      "action": "Save your project to learn the verdict"
     }
   },
   "account": {

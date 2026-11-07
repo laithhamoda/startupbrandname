@@ -39,5 +39,5 @@ export function isPdfErrorCode(value: unknown): value is PdfErrorCode {
  * none that it cannot draw: below the summary gate, or when the model could not be built.
  */
 export function pdfDownloadAvailable(page: ReportPage): boolean {
-  return page.status === 'ready';
+  return page.status === 'ready' && page.model.kind !== 'preview';
 }

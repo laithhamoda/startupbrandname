@@ -175,7 +175,11 @@ export default async function ReportGalleryPage({
         <ReportView
           model={model}
           labels={labels}
-          hrefs={{ project: '/design', pricing: pricingPublic() ? '/pricing' : null }}
+          hrefs={{
+            project: '/design',
+            pricing: pricingPublic() ? '/pricing' : null,
+            save: '/save',
+          }}
         />
       )}
     </>

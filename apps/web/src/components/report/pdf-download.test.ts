@@ -80,7 +80,7 @@ describe('the PDF download', () => {
   it('is drawn under the title of the report, when the page gives it', () => {
     const model = buildReportModel(goldenReportInput('jo-service-subscription', { locale: 'en' }));
     const labels = catalogues.en.report;
-    const hrefs = { project: '/projects/p1', pricing: '/pricing' };
+    const hrefs = { project: '/projects/p1', pricing: '/pricing', save: '/save' };
     const withButton = renderToStaticMarkup(
       createElement(ReportView, {
         model,

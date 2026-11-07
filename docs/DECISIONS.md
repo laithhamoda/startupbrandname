@@ -3733,3 +3733,25 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   on the live site. Step 5 (the cleanup of old visits is done in D-352; the home buttons in D-353) is therefore
   finished by this step.
 - **Status:** Active
+
+### D-356 (2026-11-07): The first visit without signup, step 3 of 5: the 40% preview and the hidden verdict
+
+- **Decision:** A visitor without an account reads a **preview** of the report (D-335): the first four of the
+  twelve sections (the cover, the executive summary, the project card, the canvases), and the other eight as
+  locked titles. The final verdict needs an account.
+- **How:** a new report kind `preview` and lock reason `account`. The model builds the four open sections and
+  never runs the builders of the eight locked ones (D-232). In the executive summary the preview keeps the
+  opening, the three key numbers, the risks and the notes, and leaves out everything that gives the verdict
+  away: the verdict slab (with its meter), the table of what blocks Go and the suggested changes. The model
+  holds no verdict, so none reaches the browser. The numbers of the project card and the canvases are shown
+  (a visitor sees that the analysis is calculated from their own answers); this is the owner's to change.
+- **Where:** `loadReportPage` takes `visitor` and returns the preview (or, when the numbers cannot be
+  calculated, the summary, which has no verdict without a run). The report page uses `requireVisitor`. The
+  project page shows «the verdict is ready» with a link to `/save` in place of the slab. A locked section of the
+  preview says why and links to `/save`.
+- **Refused to a visitor:** the file of the report (the PDF route answers 401 for an anonymous session), the
+  rating, the versions and any payment (D-355).
+- **Before this step** a visitor's project page showed the free summary's verdict; this closes that.
+- **Open:** the thirty-day keeping of a visit is the purge job (D-352). The owner's Instagram and LinkedIn
+  links in the final verdict (D-335) wait for the owner's data.
+- **Status:** Active
