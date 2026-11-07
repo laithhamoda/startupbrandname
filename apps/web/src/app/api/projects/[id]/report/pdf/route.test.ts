@@ -59,6 +59,8 @@ function store(over: Partial<PdfStore> = {}): PdfStore {
 // A full report asks for the name and the phone (D-348): every post carries them unless it says otherwise.
 const CONTACT = { contact_name: 'ليث', contact_phone: '+962790000000' };
 
+vi.mock('@/lib/report/contact-memory', () => ({ saveContact: vi.fn() }));
+
 function post(
   options: {
     origin?: string | null;
