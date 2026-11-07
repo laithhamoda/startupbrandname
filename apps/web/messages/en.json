@@ -19,6 +19,7 @@
     "label": "Theme: {current}. Switch to: {next}"
   },
   "nav": {
+    "save": "Save your progress",
     "label": "Main navigation",
     "login": "Sign in",
     "signup": "Create account",
@@ -82,6 +83,9 @@
     "home": "Back to the home page"
   },
   "auth": {
+    "saveTitle": "Save your project with an account",
+    "saveLead": "Add your email to your project to see it from any device and read your report. Your answers stay as they are.",
+    "codeSentSave": "If <email>{address}</email> is right, an 8-digit code will reach it within a minute. The code is valid for 10 minutes.",
     "signupTitle": "Create an account",
     "signupLead": "Three short steps: two questions about you, your email, then the code we send you. No passwords.",
     "loginTitle": "Sign in",
@@ -121,6 +125,9 @@
     "signOut": "Sign out without completing"
   },
   "start": {
+    "saveCardTitle": "Save your project",
+    "saveCardBody": "You have no account yet, so your project stays on this device for 30 days. Add your email to keep it and see it from any device.",
+    "saveCardAction": "Save with an account",
     "title": "Start the diagnostic of your idea",
     "lead": "Write your idea, choose the country and the currency, then answer the questions. No account needed now.",
     "time": "There are 64 questions and they take 60 to 90 minutes. Your progress is saved automatically and you can continue at any time within 30 days from the same device.",

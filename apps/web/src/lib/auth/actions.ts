@@ -259,6 +259,126 @@ export async function startGoogleLogin(
 }
 
 // -----------------------------------------------------------------------------------------------
+// Saving a visit begun without an account (D-354)
+// -----------------------------------------------------------------------------------------------
+
+/**
+ * A visitor gives an email: it is added to the identity they already have (Supabase `email_change`), so
+ * their answers and project stay, and a code is sent to confirm it. An address that already has an account
+ * gets a sign-in code instead, and the answer is the same, so nobody learns which addresses have one.
+ */
+export async function requestSaveCode(
+  localeInput: Locale,
+  _previous: AuthFormState,
+  formData: FormData,
+): Promise<AuthFormState> {
+  const locale = parseLocale(localeInput);
+  const email = emailSchema.safeParse(formData.get('email'));
+  if (!email.success) return { status: 'error', error: 'invalidEmail' };
+  if (!(await allowAuthAttempt('code', email.data))) {
+    return { status: 'error', error: 'rateLimited' };
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const user = await getSessionUser(supabase);
+  if (!user) redirect(`/${locale}/start`);
+  if (!user.isAnonymous) redirect(projectsPath(locale));
+
+  const { data, error } = await supabase.auth.updateUser({ email: email.data });
+  if (error) {
+    if (error.code === 'email_exists') {
+      const login = await supabase.auth.signInWithOtp({
+        email: email.data,
+        options: { shouldCreateUser: false },
+      });
+      if (login.error) {
+        await log.info('auth.code_request_failed', { ...errorFields(login.error), stage: 'save' });
+        await logRateLimited('login', login.error);
+        if (errorCodeOf(login.error) === 'rateLimited') {
+          return { status: 'error', error: 'rateLimited' };
+        }
+      }
+      return { status: 'sent', email: email.data };
+    }
+    await log.warn('auth.code_request_failed', { ...errorFields(error), stage: 'save' });
+    await logRateLimited('signup', error);
+    return { status: 'error', error: errorCodeOf(error) };
+  }
+  // With "Confirm email" off at Supabase the address is taken at once, without a code: nothing proves the
+  // visitor owns it. Loud on purpose, since the launch spot goes to a confirmed address (D-338).
+  if (!data.user.new_email) {
+    await log.error('auth.save_without_confirmation', { stage: 'save' });
+  }
+  return { status: 'sent', email: email.data };
+}
+
+/**
+ * Checks the code of `requestSaveCode`: the confirmation of the added email, or, for an address that
+ * already had an account, its sign-in code. Then on to `next` or the projects.
+ */
+export async function verifySaveCode(
+  localeInput: Locale,
+  _previous: AuthFormState,
+  formData: FormData,
+): Promise<AuthFormState> {
+  const locale = parseLocale(localeInput);
+  const email = emailSchema.safeParse(formData.get('email'));
+  if (!email.success) return { status: 'error', error: 'invalidEmail' };
+  const code = codeSchema.safeParse(formData.get('code'));
+  if (!code.success) return { status: 'error', error: 'invalidCode' };
+  if (!(await allowAuthAttempt('verify', email.data))) {
+    return { status: 'error', error: 'rateLimited' };
+  }
+
+  const supabase = await createSupabaseServerClient();
+  let { error } = await supabase.auth.verifyOtp({
+    email: email.data,
+    token: code.data,
+    type: 'email_change',
+  });
+  if (error) {
+    const login = await supabase.auth.verifyOtp({
+      email: email.data,
+      token: code.data,
+      type: 'email',
+    });
+    error = login.error;
+  }
+  if (error) {
+    await log.info('auth.code_rejected', errorFields(error));
+    await logRateLimited('verify', error);
+    const reason = errorCodeOf(error);
+    return { status: 'error', error: reason === 'failed' ? 'invalidCode' : reason };
+  }
+  redirect(await finishSignIn(supabase, locale, nextPathOf(locale, formData.get('next'))));
+}
+
+/**
+ * Saves the visit with Google: the Google identity is linked to the visitor's own identity, so the
+ * answers stay. Needs "manual linking" at Supabase.
+ */
+export async function startGoogleSave(localeInput: Locale): Promise<AuthFormState> {
+  const locale = parseLocale(localeInput);
+  if (!(await googleSignInAvailable())) return { status: 'error', error: 'failed' };
+  const supabase = await createSupabaseServerClient();
+  const user = await getSessionUser(supabase);
+  if (!user) redirect(`/${locale}/start`);
+  if (!user.isAnonymous) redirect(projectsPath(locale));
+  const { data, error } = await supabase.auth.linkIdentity({
+    provider: 'google',
+    options: {
+      redirectTo: `${await siteOrigin()}/auth/callback?next=${encodeURIComponent(projectsPath(locale))}`,
+      queryParams: { prompt: 'select_account' },
+    },
+  });
+  if (error) {
+    await log.warn('auth.google_link_failed', errorFields(error));
+    return { status: 'error', error: 'failed' };
+  }
+  redirect(data.url);
+}
+
+// -----------------------------------------------------------------------------------------------
 // Onboarding gate
 // -----------------------------------------------------------------------------------------------
 
