@@ -5,6 +5,9 @@
 -- Each function is moved, unchanged, to the private schema and the public name becomes a thin wrapper with the
 -- same signature that refuses a visitor first. The app and its types see no difference, and the original bodies
 -- are not copied, so they cannot drift.
+--
+-- contract: the public names keep working through the whole migration (it runs in one transaction and creates
+-- the wrappers before it ends), so no deployed app sees a missing function.
 
 alter function public.start_checkout(text, uuid, boolean) set schema private;
 alter function private.start_checkout(text, uuid, boolean) rename to start_checkout_impl;
