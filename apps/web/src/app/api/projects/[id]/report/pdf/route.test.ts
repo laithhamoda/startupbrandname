@@ -56,6 +56,9 @@ function store(over: Partial<PdfStore> = {}): PdfStore {
   };
 }
 
+// A full report asks for the name and the phone (D-348): every post carries them unless it says otherwise.
+const CONTACT = { contact_name: 'ليث', contact_phone: '+962790000000' };
+
 function post(
   options: {
     origin?: string | null;
@@ -70,7 +73,7 @@ function post(
   const request = new Request(`https://site.example/api/projects/${options.id ?? ID}/report/pdf`, {
     method: 'POST',
     headers,
-    body: new URLSearchParams(options.body ?? { locale: 'ar' }),
+    body: new URLSearchParams({ locale: 'ar', ...CONTACT, ...options.body }),
   });
   return route.POST(request, { params: Promise.resolve({ id: options.id ?? ID }) });
 }
@@ -134,9 +137,15 @@ describe('the report PDF route', () => {
   it('renders with the shared browser', async () => {
     await post();
     expect(mocks.getSharedBrowser).toHaveBeenCalledTimes(1);
-    expect(mocks.renderReportPdf).toHaveBeenCalledWith({
-      model,
-      browser: { id: 'browser' },
+    const call = mocks.renderReportPdf.mock.calls[0]?.[0] as {
+      model: ReportModel;
+      browser: unknown;
+    };
+    expect(call.browser).toEqual({ id: 'browser' });
+    // The report as the page built it, plus the contact of the form (D-346).
+    expect(call.model).toEqual({
+      ...model,
+      meta: { ...model.meta, contact: { name: 'ليث', email: '', phone: '+962790000000' } },
     });
   });
 
@@ -327,11 +336,18 @@ describe('the report PDF route', () => {
       expect(model.meta.contact).toBeUndefined();
     });
 
-    it('renders the report as it is when no contact is given', async () => {
-      await post();
-
-      const rendered = mocks.renderReportPdf.mock.calls[0]?.[0] as { model: ReportModel };
-      expect(rendered.model.meta.contact).toBeUndefined();
+    it('refuses the full report without the name or the phone, and makes no file (D-348)', async () => {
+      const bodies: Record<string, string>[] = [
+        { contact_name: '', contact_phone: '' },
+        { contact_phone: '' },
+        { contact_name: '' },
+      ];
+      for (const body of bodies) {
+        const response = await post({ accept: 'application/json', body });
+        expect(response.status).toBe(400);
+        expect(await response.json()).toEqual({ error: 'contact_required' });
+      }
+      expect(mocks.renderReportPdf).not.toHaveBeenCalled();
     });
 
     it('refuses a contact that is typed and not valid, and makes no file', async () => {

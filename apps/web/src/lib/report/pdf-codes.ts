@@ -13,7 +13,8 @@ export type PdfErrorCode =
   | 'storage_failed'
   | 'not_found'
   | 'rating_required'
-  | 'contact_invalid';
+  | 'contact_invalid'
+  | 'contact_required';
 
 export const PDF_ERROR_STATUS: Readonly<Record<PdfErrorCode, number>> = {
   limit: 429,
@@ -23,6 +24,7 @@ export const PDF_ERROR_STATUS: Readonly<Record<PdfErrorCode, number>> = {
   not_found: 404,
   rating_required: 400,
   contact_invalid: 400,
+  contact_required: 400,
 };
 
 export const PDF_ERROR_CODES = Object.keys(PDF_ERROR_STATUS) as readonly PdfErrorCode[];

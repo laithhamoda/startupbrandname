@@ -41,6 +41,11 @@ export function parseContact(form: FormData): ReportContact | null {
   return { name, email, phone };
 }
 
+/** Whether the name or the phone is missing: the full report asks for both (D-348). */
+export function missingRequired(contact: ReportContact): boolean {
+  return contact.name === '' || contact.phone === '';
+}
+
 export function hasContact(contact: ReportContact): boolean {
   return contact.name !== '' || contact.email !== '' || contact.phone !== '';
 }

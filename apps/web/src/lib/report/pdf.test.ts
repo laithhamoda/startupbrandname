@@ -340,6 +340,7 @@ describe('the codes', () => {
     expect(PDF_ERROR_CODES.slice().sort()).toEqual(
       [
         'contact_invalid',
+        'contact_required',
         'limit',
         'not_allowed',
         'not_found',
