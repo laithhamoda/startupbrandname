@@ -44,7 +44,7 @@ export default async function QuestionsPage() {
         </p>
         <p className="reading text-small text-muted">{text.how}</p>
         <div className="flex flex-wrap items-center gap-x-5 gap-y-3 pt-2">
-          <ButtonLink href="/signup" variant="primary">
+          <ButtonLink href="/start" variant="primary">
             {text.start}
           </ButtonLink>
           <TextLink href="/methodology">{text.method}</TextLink>

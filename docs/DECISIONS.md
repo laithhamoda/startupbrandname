@@ -3691,3 +3691,19 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   `/start`; the end-to-end test of `/start`; then moving the server-only database functions (AI run records,
   engine runs) to the server's secret key (SEC-05).
 - **Status:** Active
+
+### D-353 (2026-11-07): The start buttons lead to `/start`, a visitor header, and the time and save promise
+
+- **Decision:** Audit findings UX-01, UX-02, UX-03 and UX-05 (`docs/AUDIT-2026-11-07.md`). Every "start" button
+  that led to `/signup` now leads to `/start`: the home page (hero and closing), the guide, the twenty
+  questions and the sample report (and the link of its report view). The closing line of the home page no longer
+  talks of creating an account: "Start now without an account or a payment card. You create your account later,
+  when you want to keep your report." The header's own "Create account" stays for someone who wants one.
+- **Visitor header:** a visitor who began without an account sees How it works, Methodology, FAQ and Sign in; no
+  link to Projects or Account, which would send them to sign in. The signed-in header is unchanged. A link to
+  create an account is not added yet: until step 4 of D-350 (turning the visit into an account) exists, going
+  through sign-up would start a new account and leave the visitor's answers behind.
+- **`/start`:** a note says the questions are 64, take 60 to 90 minutes, and that progress is saved and can be
+  continued within 30 days from the same device. "From the same device" is true until step 4.
+- **Not done here:** the density of the consent text (UX-04), which waits for the legal review.
+- **Status:** Active

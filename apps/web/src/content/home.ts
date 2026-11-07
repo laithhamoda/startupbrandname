@@ -85,8 +85,8 @@ export const HOME: Localized<HomeContent> = {
     course: 'متدرّب في دورة «الذكاء الاصطناعي في ريادة الأعمال»؟ لك 12 شهرًا مجانًا بكود VIVA.',
     courseLink: 'تفاصيل كود الدورة',
     closingHeading: 'اختبر فكرتك قبل أن يختبرها السوق',
-    closingBody: 'إنشاء الحساب مجاني، ولا يحتاج إلى بطاقة دفع.',
-    closingAction: 'أنشئ حسابك',
+    closingBody: 'ابدأ الآن دون حساب ودون بطاقة دفع. تنشئ حسابك لاحقًا حين تريد حفظ تقريرك.',
+    closingAction: 'ابدأ الآن',
   },
   en: {
     heading: 'Empowering ideas in the language of investment',
@@ -146,7 +146,8 @@ export const HOME: Localized<HomeContent> = {
       'A trainee on the “AI in Entrepreneurship” course? You get 12 months free with a VIVA code.',
     courseLink: 'About course codes',
     closingHeading: 'Test your idea before the market does',
-    closingBody: 'Creating an account is free and needs no payment card.',
-    closingAction: 'Create your account',
+    closingBody:
+      'Start now without an account or a payment card. You create your account later, when you want to keep your report.',
+    closingAction: 'Start now',
   },
 };

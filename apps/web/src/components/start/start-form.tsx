@@ -39,6 +39,9 @@ export function StartForm({
 
   return (
     <form ref={form} noValidate onSubmit={submitTo(dispatch)} className="grid gap-6">
+      <p role="note" className="reading border-s-[3px] border-ink bg-sunken px-4 py-3 text-small">
+        {t('time')}
+      </p>
       <Field id="start-title" label={t('idea')} hint={t('ideaHint')} error={invalid('title')}>
         {({ id, describedBy, invalid: isInvalid }) => (
           <TextInput

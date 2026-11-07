@@ -14,6 +14,7 @@ const PAGES = [
   '/ar/design/report?project=jo-home-ecommerce&view=result',
   '/ar/design/report?project=jo-service-subscription&view=result',
   '/ar/signup',
+  '/ar/start',
   '/ar/login',
   '/ar/privacy',
   '/en/privacy',

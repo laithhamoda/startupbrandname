@@ -30,7 +30,7 @@ export default async function IdeaGuidePage() {
           {c.updatedLabel}: <time dateTime={IDEA_GUIDE_UPDATED}>{IDEA_GUIDE_UPDATED}</time>
         </p>
         <div className="flex flex-wrap items-center gap-x-5 gap-y-3 pt-2">
-          <ButtonLink href="/signup" variant="primary">
+          <ButtonLink href="/start" variant="primary">
             {c.start}
           </ButtonLink>
           <TextLink href="/sample-report">{c.sample}</TextLink>
