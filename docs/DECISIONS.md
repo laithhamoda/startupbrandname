@@ -3707,3 +3707,29 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
   continued within 30 days from the same device. "From the same device" is true until step 4.
 - **Not done here:** the density of the consent text (UX-04), which waits for the legal review.
 - **Status:** Active
+
+### D-354 (2026-11-07): The first visit without signup, step 4 of 5: saving the visit with an account
+
+- **Decision:** A visitor who began without an account (D-350, D-351) can turn the visit into an account
+  without losing the answers. `/save` takes an email, sends an 8-digit code, and adds that email to the
+  visitor's own identity (Supabase `updateUser({ email })`, confirmed with `verifyOtp` of type `email_change`):
+  the user id does not change, so the project, the answers and the consents stay. Or Google: `linkIdentity`
+  links the Google identity to the same user.
+- **No enumeration:** the answer to an address is the same whether it has an account or not (as the sign-in
+  page does). An address that already has an account is sent a normal sign-in code instead, and the second
+  `verifyOtp` (type `email`) signs the visitor in to that account; the visit left behind is deleted after 30
+  days (D-352). The same limits as the sign-in codes apply (`code` and `verify`, D-340).
+- **The launch spot:** it is claimed only after the email is confirmed (D-338, D-350), so it comes after the
+  upgrade, on the projects page, as for any account.
+- **Where it shows:** the visitor header has "Save your progress" (D-353); the project overview shows a card for
+  a visitor, and no longer links back to Projects, which a visitor cannot open; `/signup` sends a visitor to
+  `/save`, since a new account there would leave the visit behind; `/save` sends nobody signed in to `/start`
+  and an account to its projects.
+- **Supabase settings (owner):** "Confirm email" must be **on**: with it off Supabase takes the address without a
+  code, and nothing proves the visitor owns it (the app logs `auth.save_without_confirmation` if it ever
+  happens). The "Change Email Address" template must show the code (`supabase/templates/change-email.html`).
+  "Enable manual linking" must be on for the Google button. Locally the config turns the three on.
+- **Open:** the Google button cannot be tested automatically (it passes through Google); the owner and I try it
+  on the live site. Step 5 (the cleanup of old visits is done in D-352; the home buttons in D-353) is therefore
+  finished by this step.
+- **Status:** Active

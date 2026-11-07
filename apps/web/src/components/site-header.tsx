@@ -27,11 +27,13 @@ export function SiteHeader({ area }: { area: 'public' | 'app' | 'visitor' }) {
         ]
       : area === 'visitor'
         ? [
-            // No account links: a visitor has no account yet (D-350). Signing in is for someone who has one.
+            // No account pages: a visitor has no account yet (D-350). Signing in is for someone who has one;
+            // saving the visit turns it into an account (D-354).
             { href: '/how-it-works', label: nav('howItWorks') },
             { href: '/methodology', label: nav('methodology') },
             { href: '/faq', label: nav('faq') },
             { href: '/login', label: nav('login') },
+            { href: '/save', label: nav('save'), emphasis: true },
           ]
         : [
             { href: '/projects', label: nav('projects') },

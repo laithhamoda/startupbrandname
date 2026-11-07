@@ -182,7 +182,8 @@ enable_signup = true
 # Local only: the end-to-end tests start as a visitor without an account (D-350). Production has its own switch.
 enable_anonymous_sign_ins = true
 # Allow/disallow testing manual linking of accounts
-enable_manual_linking = false
+# On for saving a visit with Google (D-354); the end-to-end tests do not use it.
+enable_manual_linking = true
 # Passwords shorter than this value will be rejected as weak. Minimum 6, recommended 8 or more.
 minimum_password_length = 6
 # Passwords that do not meet the following requirements will be rejected as weak. Supported values
@@ -231,7 +232,9 @@ enable_signup = true
 # addresses. If disabled, only the new email is required to confirm.
 double_confirm_changes = true
 # If enabled, users need to confirm their email address before signing in.
-enable_confirmations = false
+# On, so that adding an email to a visit begun without an account sends a code to confirm it (D-354);
+# with it off Supabase would take the address without proof. Sign-in by code is unaffected.
+enable_confirmations = true
 # If enabled, users will need to reauthenticate or have logged in recently to change their password.
 secure_password_change = false
 # Controls the minimum amount of time that must pass before sending another signup confirmation or password reset email.
@@ -255,6 +258,10 @@ otp_expiry = 600
 [auth.email.template.confirmation]
 subject = "رمز الدخول · Your sign-in code"
 content_path = "./supabase/templates/code.html"
+
+[auth.email.template.email_change]
+subject = "رمز حفظ مشروعك · Your code to save your project"
+content_path = "./supabase/templates/change-email.html"
 
 [auth.email.template.magic_link]
 subject = "رمز الدخول · Your sign-in code"

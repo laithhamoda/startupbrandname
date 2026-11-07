@@ -5,7 +5,7 @@ import { useActionState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Field } from '@/components/ui/field';
 import { TextInput } from '@/components/ui/text-input';
-import { type AuthFormState, verifyEmailCode } from '@/lib/auth/actions';
+import { type AuthFormState, verifyEmailCode, verifySaveCode } from '@/lib/auth/actions';
 import { FormError, submitTo, useFocusFirstInvalid } from './form-helpers';
 
 const IDLE: AuthFormState = { status: 'idle' };
@@ -21,23 +21,29 @@ export function CodeStep({
   onChangeEmail,
 }: {
   email: string;
-  mode: 'signup' | 'login';
+  mode: 'signup' | 'login' | 'save';
   next?: string;
   onChangeEmail: () => void;
 }) {
   const locale = useLocale();
   const t = useTranslations('auth');
-  const [state, dispatch, pending] = useActionState(verifyEmailCode.bind(null, locale), IDLE);
+  const [state, dispatch, pending] = useActionState(
+    (mode === 'save' ? verifySaveCode : verifyEmailCode).bind(null, locale),
+    IDLE,
+  );
   const error = state.status === 'error' ? state.error : null;
   const form = useFocusFirstInvalid(state);
 
   return (
     <form ref={form} noValidate onSubmit={submitTo(dispatch)} className="grid gap-5">
       <p>
-        {t.rich(mode === 'signup' ? 'codeSent' : 'codeSentLogin', {
-          address: email,
-          email: (chunks) => <bdi dir="ltr">{chunks}</bdi>,
-        })}
+        {t.rich(
+          mode === 'signup' ? 'codeSent' : mode === 'save' ? 'codeSentSave' : 'codeSentLogin',
+          {
+            address: email,
+            email: (chunks) => <bdi dir="ltr">{chunks}</bdi>,
+          },
+        )}
       </p>
       <input type="hidden" name="email" value={email} />
       {next ? <input type="hidden" name="next" value={next} /> : null}

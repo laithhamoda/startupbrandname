@@ -52,6 +52,7 @@ export default async function ProjectPage({ params }: PageProps<'/[locale]/proje
   if (!loaded) notFound();
   const { project, answers } = loaded;
   const t = await getTranslations('diagnostic.overview');
+  const start = await getTranslations('start');
 
   const score = completeness(answers);
   // What the report page will show this account: the entry names it (D-277). The page decides again.
@@ -94,10 +95,26 @@ export default async function ProjectPage({ params }: PageProps<'/[locale]/proje
   return (
     <div className="mx-auto grid max-w-[75rem] gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(0,1fr)_18rem] lg:gap-16">
       <div className="grid content-start gap-10">
+        {user.isAnonymous ? (
+          <aside
+            aria-labelledby="save-card-title"
+            className="grid gap-2 border-s-[3px] border-ink bg-sunken px-4 py-3"
+          >
+            <h2 id="save-card-title" className="font-bold">
+              {start('saveCardTitle')}
+            </h2>
+            <p className="reading text-small text-ink-2">{start('saveCardBody')}</p>
+            <p>
+              <TextLink href="/save">{start('saveCardAction')}</TextLink>
+            </p>
+          </aside>
+        ) : null}
         <header className="grid gap-3">
-          <p className="text-small text-muted">
-            <TextLink href="/projects">{t('back')}</TextLink>
-          </p>
+          {user.isAnonymous ? null : (
+            <p className="text-small text-muted">
+              <TextLink href="/projects">{t('back')}</TextLink>
+            </p>
+          )}
           <h1 className="text-h1 font-extrabold">
             {/* Typed by the founder, in any script: its own direction (UX-12). */}
             <span dir="auto">{project.title}</span>
