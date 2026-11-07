@@ -3612,3 +3612,22 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
 - **Unchanged:** nothing is kept in the account or the database (D-346); the values go on the cover of that
   one file. The privacy policy must name this at the legal review (open item of D-346).
 - **Status:** Active
+
+### D-350 (2026-11-07): The first visit without signup, step 1 of 5: the foundation
+
+- **Decision:** The owner approved the plan for the first visit without signup (D-335, D-344) in five small
+  pull requests: (1) the foundation, (2) `/start` with the consent and the diagnostic, (3) the 40% preview
+  and the hidden verdict, (4) turning the visit into an account with the email or Google, (5) clean-up of
+  old anonymous identities and the home button. Step 1 changes nothing a visitor can see.
+- **The database:** `private.is_anonymous()` reads the `is_anonymous` claim of the token. An anonymous
+  visitor is the role `authenticated` to Supabase, so row level security gives them their own rows like any
+  account; `claim_launch_spot` gives them no spot (`email_unverified`) because a spot goes to a confirmed
+  mailbox only. A visitor's project limit is the free one (one project), already enforced by
+  `create_project`.
+- **The app:** `SessionUser.isAnonymous`; `requireAccount` sends an anonymous visitor to sign in (every
+  account page stays closed to them); the new `requireVisitor` is for the few pages they may use (step 2);
+  the sign-in and sign-up pages no longer bounce an anonymous visitor away, since they turn the visit into
+  an account (step 4).
+- **Not yet on:** Supabase "Allow anonymous sign-ins" stays off until step 2 is merged; nobody can be
+  anonymous before that.
+- **Status:** Active

@@ -200,6 +200,7 @@ describe('getSessionUser', () => {
     expect(user).toEqual({
       id: 'a0000000-0000-4000-8000-000000000001',
       email: 'laith@example.com',
+      isAnonymous: false,
       names: ['Laith Ahmad', 'Laith', 'Ahmad'],
     });
   });
@@ -209,7 +210,10 @@ describe('getSessionUser', () => {
       withClaims({ sub: 'b', user_metadata: { email_verified: true, name: 42, full_name: ' ' } }),
     );
 
-    expect(user).toEqual({ id: 'b', email: null, names: [] });
+    expect(user).toEqual({ id: 'b', email: null, isAnonymous: false, names: [] });
+    expect(await getSessionUser(withClaims({ sub: 'd', is_anonymous: true }))).toMatchObject({
+      isAnonymous: true,
+    });
     expect(await getSessionUser(withClaims({ sub: 'c' }))).toMatchObject({ names: [] });
     expect(await getSessionUser(withClaims(null))).toBeNull();
   });

@@ -24,6 +24,8 @@ import {
 export interface SessionUser {
   id: string;
   email: string | null;
+  /** A visitor without an account yet (D-350): signed in anonymously, no email, no spot. */
+  isAnonymous: boolean;
   /** Names from the sign-in profile, removed from every text sent to a model (rule 5, D-148). */
   names: string[];
 }
@@ -55,6 +57,7 @@ export async function getSessionUser(supabase: SupabaseServerClient): Promise<Se
   return {
     id: claims.sub,
     email: typeof claims.email === 'string' ? claims.email : null,
+    isAnonymous: claims.is_anonymous === true,
     names: profileNames(claims.user_metadata),
   };
 }
@@ -78,6 +81,21 @@ export async function getProfile(supabase: SupabaseServerClient): Promise<Profil
 export const requireAccount = cache(async (locale: Locale) => {
   const supabase = await createSupabaseServerClient();
   const user = await getSessionUser(supabase);
+  // A visitor without an account has no way into the account pages: they sign in first (D-350).
+  if (!user || user.isAnonymous) redirect(loginPath(locale, (await headers()).get(PATH_HEADER)));
+  const profile = await getProfile(supabase);
+  if (!profile) redirect(`/${locale}/onboarding`);
+  return { supabase, user, profile };
+});
+
+/**
+ * Like `requireAccount`, for the few pages a visitor without an account may use (D-350): the first
+ * visit and its diagnostic. A visitor signed in anonymously passes; a visitor not signed in at all
+ * does not.
+ */
+export const requireVisitor = cache(async (locale: Locale) => {
+  const supabase = await createSupabaseServerClient();
+  const user = await getSessionUser(supabase);
   if (!user) redirect(loginPath(locale, (await headers()).get(PATH_HEADER)));
   const profile = await getProfile(supabase);
   if (!profile) redirect(`/${locale}/onboarding`);
@@ -85,7 +103,7 @@ export const requireAccount = cache(async (locale: Locale) => {
 });
 
 /**
- * For the sign-in and sign-up pages: a signed-in visitor goes to `next` (already checked by
+ * For the sign-in and sign-up pages: a signed-in account goes to `next` (already checked by
  * safeNextPath), by default their projects, instead.
  */
 export async function redirectIfSignedIn(
@@ -93,7 +111,9 @@ export async function redirectIfSignedIn(
   next: string = projectsPath(locale),
 ): Promise<void> {
   const supabase = await createSupabaseServerClient();
-  if (await getSessionUser(supabase)) redirect(next);
+  // A visitor signed in anonymously still needs these pages: they turn that visit into an account.
+  const user = await getSessionUser(supabase);
+  if (user && !user.isAnonymous) redirect(next);
 }
 
 // -----------------------------------------------------------------------------------------------
