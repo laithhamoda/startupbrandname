@@ -3612,3 +3612,20 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
 - **Unchanged:** nothing is kept in the account or the database (D-346); the values go on the cover of that
   one file. The privacy policy must name this at the legal review (open item of D-346).
 - **Status:** Active
+
+### D-349 (2026-11-07): The name and the phone are kept in the account for the next download
+
+- **Decision:** The owner wants a founder who has entered a name and a phone number to come back to the
+  project at any time. The project is already saved in the database under the account; a founder returns
+  with the email and the sign-in code (the owner's choice over a text message or a bare phone number). The
+  name and the phone of a download that gave both are now kept in the account's own user data
+  (`user_metadata`, keys `report_contact_name` and `report_contact_phone`) and fill the form next time.
+  The email is the account's.
+- **Changes D-346:** the contact is no longer only on the file: it is also kept in the account. No table,
+  no migration. Only the signed-in user can read or write it; a kept value that no longer passes the
+  checks of the form is ignored; a failed save is logged and never stops the download.
+- **Not a login:** a phone number identifies no one here; whoever knows it cannot open the project. A phone
+  sign-in by text message would need a message provider and costs per message (not chosen).
+- **Privacy:** the privacy policy names the name and the phone kept in the account at the legal review
+  (open item of D-346).
+- **Status:** Active

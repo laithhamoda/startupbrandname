@@ -26,6 +26,7 @@ function html(
   rated = true,
   defaultEmail: string | null = null,
   full = false,
+  saved = { name: '', phone: '' },
 ): string {
   return renderToStaticMarkup(
     createElement(PdfDownload, {
@@ -35,6 +36,8 @@ function html(
       error,
       rated,
       defaultEmail,
+      defaultName: saved.name,
+      defaultPhone: saved.phone,
       full,
     }),
   );
@@ -127,6 +130,12 @@ describe('the PDF download', () => {
       const summary = html(locale);
       expect(tag(summary, 'contact_name')).not.toContain('required');
       expect(tag(summary, 'contact_phone')).not.toContain('required');
+    });
+
+    it(`fills the name and the phone saved from the last download (${locale}, D-349)`, () => {
+      const markup = html(locale, null, true, null, true, { name: 'ليث', phone: '+962790000000' });
+      expect(markup).toMatch(/<input[^>]*name="contact_name"[^>]*value="ليث"/);
+      expect(markup).toMatch(/<input[^>]*name="contact_phone"[^>]*value="\+962790000000"/);
     });
 
     it(`offers the contact fields on every form, the email filled in from the account (${locale}, D-346)`, () => {
