@@ -21,7 +21,7 @@ for (const locale of ['ar'] as const) {
       await expect(page.getByRole('note').first()).toContainText(words.notice);
       await expect(page.getByRole('link', { name: words.start }).first()).toHaveAttribute(
         'href',
-        `/${locale}/signup`,
+        `/${locale}/start`,
       );
     });
 

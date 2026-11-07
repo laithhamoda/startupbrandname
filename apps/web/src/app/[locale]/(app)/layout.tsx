@@ -11,11 +11,11 @@ import { requireVisitor } from '@/lib/auth/session';
  */
 export default async function AppLayout({ children }: Readonly<{ children: ReactNode }>) {
   // A visitor without an account passes here (D-350); every page that is not theirs asks again.
-  await requireVisitor(await currentLocale());
+  const { user } = await requireVisitor(await currentLocale());
 
   return (
     <>
-      <SiteHeader area="app" />
+      <SiteHeader area={user.isAnonymous ? 'visitor' : 'app'} />
       <main id="main" tabIndex={-1} className="flex-1 focus:outline-none">
         {/* What the forms of the signed-in pages read: the account settings, a new project, its
             settings and the diagnostic editor. */}

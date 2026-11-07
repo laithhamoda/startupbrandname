@@ -8,9 +8,10 @@ import { ThemeToggle } from './theme-toggle';
 
 /**
  * `public` pages are static, so they do not know whether the visitor is signed in; the signed-in
- * `app` area shows its own links.
+ * `app` area shows its own links, and a visitor who began without an account (`visitor`) shows none that
+ * need one.
  */
-export function SiteHeader({ area }: { area: 'public' | 'app' }) {
+export function SiteHeader({ area }: { area: 'public' | 'app' | 'visitor' }) {
   const t = useTranslations('meta');
   const nav = useTranslations('nav');
 
@@ -24,10 +25,18 @@ export function SiteHeader({ area }: { area: 'public' | 'app' }) {
           { href: '/login', label: nav('login') },
           { href: '/signup', label: nav('signup'), emphasis: true },
         ]
-      : [
-          { href: '/projects', label: nav('projects') },
-          { href: '/account', label: nav('account') },
-        ];
+      : area === 'visitor'
+        ? [
+            // No account links: a visitor has no account yet (D-350). Signing in is for someone who has one.
+            { href: '/how-it-works', label: nav('howItWorks') },
+            { href: '/methodology', label: nav('methodology') },
+            { href: '/faq', label: nav('faq') },
+            { href: '/login', label: nav('login') },
+          ]
+        : [
+            { href: '/projects', label: nav('projects') },
+            { href: '/account', label: nav('account') },
+          ];
 
   return (
     <header className="relative border-b border-hairline">

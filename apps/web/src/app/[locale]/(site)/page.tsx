@@ -40,7 +40,7 @@ export default async function HomePage() {
           <p className="font-display text-h2 font-bold">{c.subheading}</p>
           <p className="reading text-body-lg text-ink-2">{c.lead}</p>
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-            <ButtonLink href="/signup" variant="primary">
+            <ButtonLink href="/start" variant="primary">
               {c.start}
             </ButtonLink>
             <TextLink href="/sample-report">{c.sample}</TextLink>
@@ -104,7 +104,7 @@ export default async function HomePage() {
             {c.closingHeading}
           </h2>
           <p className="reading text-ink-2">{c.closingBody}</p>
-          <ButtonLink href="/signup">{c.closingAction}</ButtonLink>
+          <ButtonLink href="/start">{c.closingAction}</ButtonLink>
         </section>
       </div>
 

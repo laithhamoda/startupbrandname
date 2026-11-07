@@ -42,7 +42,7 @@ export default async function SampleReportPage() {
           </p>
           <p className="reading text-small text-muted">{text.omitted}</p>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-3 pt-2">
-            <ButtonLink href="/signup" variant="primary">
+            <ButtonLink href="/start" variant="primary">
               {text.start}
             </ButtonLink>
             {pricingPublic() ? <TextLink href="/pricing">{text.plans}</TextLink> : null}
@@ -53,7 +53,7 @@ export default async function SampleReportPage() {
       <ReportView
         model={SAMPLES[locale]}
         labels={labels}
-        hrefs={{ project: '/signup', pricing: pricingPublic() ? '/pricing' : null }}
+        hrefs={{ project: '/start', pricing: pricingPublic() ? '/pricing' : null }}
         embedded
       />
 

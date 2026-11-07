@@ -123,6 +123,7 @@
   "start": {
     "title": "Start the diagnostic of your idea",
     "lead": "Write your idea, choose the country and the currency, then answer the questions. No account needed now.",
+    "time": "There are 64 questions and they take 60 to 90 minutes. Your progress is saved automatically and you can continue at any time within 30 days from the same device.",
     "idea": "Your idea or project name",
     "ideaHint": "Example: servicing restaurant air conditioners.",
     "consentTitle": "Before we start",
