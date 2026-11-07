@@ -1,3 +1,4 @@
+import { savedContact } from '@/lib/report/contact-memory';
 import { stepLabel } from '@sbn/question-bank';
 import type { Metadata } from 'next';
 import { getMessages, getTranslations } from 'next-intl/server';
@@ -39,6 +40,7 @@ export default async function ReportPage({
   const money = await getTranslations('money');
   const reasonText = await getTranslations('canvas');
   const { id } = await params;
+  const saved = await savedContact(supabase);
   const query = await searchParams;
   const refused = query.pdf;
   const versionError = isVersionErrorCode(query.version) ? query.version : null;
@@ -137,6 +139,8 @@ export default async function ReportPage({
               error={isPdfErrorCode(refused) ? refused : null}
               rated={rated}
               defaultEmail={user.email}
+              defaultName={saved.name}
+              defaultPhone={saved.phone}
               full={page.model.kind !== 'summary'}
             />
           ) : null

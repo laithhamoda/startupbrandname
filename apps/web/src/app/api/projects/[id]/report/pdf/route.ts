@@ -15,6 +15,7 @@ import {
 } from '@/lib/report/pdf';
 import { createPdfStore } from '@/lib/report/pdf-store';
 import { passRatingGate } from '@/lib/report/rating';
+import { saveContact } from '@/lib/report/contact-memory';
 import { missingRequired, parseContact, withContact } from '@/lib/report/contact';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
@@ -111,6 +112,8 @@ export async function POST(
     if (page?.status === 'ready' && page.model.kind !== 'summary' && missingRequired(contact)) {
       return refusal(request, 'contact_required', back);
     }
+    // Remembered for the next download (D-349); never stops this one.
+    await saveContact(supabase, contact);
 
     const result = await producePdf(
       {

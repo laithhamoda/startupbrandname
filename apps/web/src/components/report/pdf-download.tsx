@@ -17,6 +17,8 @@ export function PdfDownload({
   error,
   rated,
   defaultEmail,
+  defaultName,
+  defaultPhone,
   full,
 }: {
   projectId: string;
@@ -26,6 +28,9 @@ export function PdfDownload({
   rated: boolean;
   /** The account's email, offered in the contact field; the founder may change or clear it. */
   defaultEmail: string | null;
+  /** The name and the phone of the last download, kept in the account (D-349). */
+  defaultName: string;
+  defaultPhone: string;
   /** The full report: the name and the phone are then required (D-348). */
   full: boolean;
   /** The code the route sent the founder back with, when it refused. */
@@ -54,6 +59,7 @@ export function PdfDownload({
             <input
               type="text"
               name="contact_name"
+              defaultValue={defaultName}
               required={full}
               autoComplete="name"
               maxLength={120}
@@ -77,6 +83,7 @@ export function PdfDownload({
             <input
               type="tel"
               name="contact_phone"
+              defaultValue={defaultPhone}
               required={full}
               autoComplete="tel"
               maxLength={26}
