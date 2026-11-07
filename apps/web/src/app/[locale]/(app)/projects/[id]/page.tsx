@@ -22,7 +22,7 @@ import { ButtonLink } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { TextLink } from '@/components/ui/text-link';
 import { currentLocale } from '@/i18n/locale';
-import { requireAccount } from '@/lib/auth/session';
+import { requireVisitor } from '@/lib/auth/session';
 import { countryOptions } from '@/lib/countries';
 import { deleteProject, switchMode } from '@/lib/diagnostic/actions';
 import { viewFinding } from '@/lib/diagnostic/findings';
@@ -36,7 +36,7 @@ export async function generateMetadata({
   params,
 }: PageProps<'/[locale]/projects/[id]'>): Promise<Metadata> {
   const locale = await currentLocale();
-  const { supabase } = await requireAccount(locale);
+  const { supabase } = await requireVisitor(locale);
   const loaded = await loadProject(supabase, (await params).id);
   return { title: loaded?.project.title ?? '', robots: { index: false, follow: false } };
 }
@@ -47,7 +47,7 @@ export async function generateMetadata({
  */
 export default async function ProjectPage({ params }: PageProps<'/[locale]/projects/[id]'>) {
   const locale = await currentLocale();
-  const { supabase, user } = await requireAccount(locale);
+  const { supabase, user } = await requireVisitor(locale);
   const loaded = await loadProject(supabase, (await params).id);
   if (!loaded) notFound();
   const { project, answers } = loaded;

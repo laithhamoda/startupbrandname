@@ -5,13 +5,13 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { reviewWithAi } from '@/lib/ai/service';
-import { requireAccount } from '@/lib/auth/session';
+import { requireAccount, requireVisitor } from '@/lib/auth/session';
 import { log } from '@/lib/log';
 import { removeReportFiles } from '@/lib/report/delete-files';
 import { createProject, deleteProject, saveAnswer, type SaveInput, switchMode } from './actions';
 import { loadProject } from './project';
 
-vi.mock('@/lib/auth/session', () => ({ requireAccount: vi.fn() }));
+vi.mock('@/lib/auth/session', () => ({ requireAccount: vi.fn(), requireVisitor: vi.fn() }));
 vi.mock('@/lib/report/delete-files', () => ({ removeReportFiles: vi.fn() }));
 vi.mock('@/lib/ai/service', () => ({ reviewWithAi: vi.fn() }));
 vi.mock('./project', async (importOriginal) => ({
@@ -64,11 +64,19 @@ function fakeClient(results: { upsert?: unknown; delete?: unknown } = {}) {
 }
 
 function signedIn(client: unknown, answers: Answers = {}) {
-  vi.mocked(requireAccount).mockResolvedValue({
+  const session = {
     supabase: client,
-    user: { id: 'user-1', email: 'founder@example.com', names: ['Laith Ahmad', 'Laith'] },
+    user: {
+      id: 'user-1',
+      email: 'founder@example.com',
+      isAnonymous: false,
+      names: ['Laith Ahmad', 'Laith'],
+    },
     profile: { country_code: 'JO', locale: 'ar' },
-  } as unknown as Awaited<ReturnType<typeof requireAccount>>);
+  } as unknown as Awaited<ReturnType<typeof requireAccount>>;
+  // Saving an answer is open to a visitor without an account (D-350); the rest asks for an account.
+  vi.mocked(requireAccount).mockResolvedValue(session);
+  vi.mocked(requireVisitor).mockResolvedValue(session);
   vi.mocked(loadProject).mockResolvedValue({ project, answers });
 }
 
@@ -474,7 +482,7 @@ describe('saveAnswer', () => {
     } catch (error) {
       signInRedirect = error;
     }
-    vi.mocked(requireAccount).mockRejectedValue(signInRedirect);
+    vi.mocked(requireVisitor).mockRejectedValue(signInRedirect);
 
     await expect(saveAnswer(numberOfPartners(3))).rejects.toBe(signInRedirect);
     expect(log.error).not.toHaveBeenCalled();

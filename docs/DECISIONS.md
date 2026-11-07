@@ -3647,3 +3647,25 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
 - **Privacy:** the privacy policy names the name and the phone kept in the account at the legal review
   (open item of D-346).
 - **Status:** Active
+
+### D-351 (2026-11-07): The first visit without signup, step 2 of 5: `/start` and the diagnostic
+
+- **Decision:** `/start` is the way in for a visitor without an account (D-350). One form: the idea (the
+  project's name, up to 120 characters), the country, the currency, then the consent that comes after the
+  idea is written and before anything reaches the model: the terms and the optional cross-border consent,
+  with the texts of the sign-up gate. On submit the server signs the visitor in anonymously, records the
+  answers and consents (`complete_onboarding`, with "has a project" yes), creates the one project in the
+  **full** mode (64 questions, owner's decision D-344) and opens the first question.
+- **Limits:** a new limit kind `start` (`auth.limit.start_ip`, 60 an hour per network, wide on purpose for
+  schools and mobile carriers), asked before Supabase is called; a fresh subject each time, so only the
+  network counts. Supabase's own anonymous limit stays behind it. No CAPTCHA, as the owner decided.
+- **What a visitor can open:** the project overview, the question pages and the saving of an answer
+  (`requireVisitor`). Everything else (the projects list, a new project, the canvas, the report, the account,
+  payment) still asks for an account. A visitor who comes back to `/start` goes to their project; an account
+  goes to `/projects`.
+- **Off until switched on:** while Supabase "Allow anonymous sign-ins" is off, the form answers that starting
+  without an account is not available and nothing is created. The owner switches it on after this step is
+  merged and tried.
+- **Open:** the consent text is the existing placeholder awaiting the legal review (D-335). The home button
+  still leads to sign-up until step 5.
+- **Status:** Active
