@@ -10,7 +10,7 @@ import { noticeReasonsOf, ReportNotice } from '@/components/report/notice';
 import { ReportView } from '@/components/report/report-view';
 import { isVersionErrorCode, VersionBar, VersionNeeded } from '@/components/report/versions';
 import { currentLocale } from '@/i18n/locale';
-import { requireAccount } from '@/lib/auth/session';
+import { requireVisitor } from '@/lib/auth/session';
 import { projectPath, stepPath } from '@/lib/diagnostic/steps';
 import { loadReportPage } from '@/lib/report/load';
 import { isPdfErrorCode, pdfDownloadAvailable } from '@/lib/report/pdf-codes';
@@ -36,11 +36,12 @@ export default async function ReportPage({
   searchParams,
 }: PageProps<'/[locale]/projects/[id]/report'>) {
   const locale = await currentLocale();
-  const { supabase, user } = await requireAccount(locale);
+  const { supabase, user } = await requireVisitor(locale);
+  const visitor = user.isAnonymous;
   const money = await getTranslations('money');
   const reasonText = await getTranslations('canvas');
   const { id } = await params;
-  const saved = await savedContact(supabase);
+  const saved = visitor ? { name: '', phone: '' } : await savedContact(supabase);
   const query = await searchParams;
   const refused = query.pdf;
   const versionError = isVersionErrorCode(query.version) ? query.version : null;
@@ -53,6 +54,7 @@ export default async function ReportPage({
   const page = await loadReportPage(supabase, id, {
     email: user.email,
     locale,
+    visitor,
     currencyLabel: (code) => symbols[code] ?? code,
   });
   if (!page) notFound();
@@ -97,7 +99,9 @@ export default async function ReportPage({
 
   const notice = page.notice;
   // The PDF form asks for a rating when this version has none (D-345). An unreadable answer asks again.
-  const rated = (await hasReportRating(supabase, id, page.version?.number ?? null)) ?? false;
+  const rated = visitor
+    ? false
+    : ((await hasReportRating(supabase, id, page.version?.number ?? null)) ?? false);
   const reasons =
     notice?.kind === 'not_calculable'
       ? noticeReasonsOf(notice.reasons, id, locale, (code) => reasonText(`notice.reason.${code}`))
@@ -129,7 +133,7 @@ export default async function ReportPage({
       <ReportView
         model={page.model}
         labels={labels}
-        hrefs={{ project: backHref, pricing: pricingPublic() ? '/pricing' : null }}
+        hrefs={{ project: backHref, pricing: pricingPublic() ? '/pricing' : null, save: '/save' }}
         actions={
           pdfDownloadAvailable(page) ? (
             <PdfDownload

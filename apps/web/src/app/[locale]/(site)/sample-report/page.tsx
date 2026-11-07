@@ -53,7 +53,7 @@ export default async function SampleReportPage() {
       <ReportView
         model={SAMPLES[locale]}
         labels={labels}
-        hrefs={{ project: '/start', pricing: pricingPublic() ? '/pricing' : null }}
+        hrefs={{ project: '/start', pricing: pricingPublic() ? '/pricing' : null, save: '/save' }}
         embedded
       />
 

@@ -116,6 +116,13 @@ describe('ProjectResult (D-286)', () => {
     expect(html).toContain(escapeHtml(catalogues.en.report.notice.failed));
   });
 
+  it('tells a visitor without an account the verdict is ready, without saying it (D-356)', () => {
+    const html = htmlOf({ status: 'hidden' }, 'ar');
+    expect(html).toContain(catalogues.ar.report.verdictHidden.title);
+    expect(html).toContain('href="/save"');
+    expect(html).not.toContain('data-verdict');
+  });
+
   it('tells a founder below the summary gate that the result needs more answers', () => {
     const labels = catalogues.en.report;
     const html = htmlOf({ status: 'none' });

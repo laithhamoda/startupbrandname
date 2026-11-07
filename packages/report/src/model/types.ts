@@ -185,6 +185,18 @@ export const STANDARD_LOCKED_SECTION_IDS = [
   'validation_plan',
 ] as const;
 
+/**
+ * The sections a visitor without an account reads (D-335, D-356): the first 40% of the twelve, counted from the
+ * first. The others stay locked titles, and the verdict, which the executive summary would end with, is left out
+ * of the one that is open.
+ */
+export const PREVIEW_OPEN_SECTION_IDS = [
+  'cover',
+  'executive_summary',
+  'project_card',
+  'canvases',
+] as const;
+
 /** The sections of the full report, in order (SPEC section 6, the MVP subset, D-236). */
 export const FULL_SECTION_IDS = [
   'cover',
@@ -216,11 +228,17 @@ export interface Section {
   readonly blocks: readonly Block[];
 }
 
-/** The one-page summary, the «استراتيجي» numbers report (D-314, D-316), or the full report. */
-export type ReportKind = 'summary' | 'standard' | 'full';
+/**
+ * The one-page summary, the «استراتيجي» numbers report (D-314, D-316), the full report, or the preview a visitor
+ * without an account reads (D-356).
+ */
+export type ReportKind = 'summary' | 'standard' | 'full' | 'preview';
 
-/** Why a summary has locked sections: the answers are not complete enough, or there is no plan. */
-export type LockReason = 'completeness' | 'plan';
+/**
+ * Why a report has locked sections: the answers are not complete enough, there is no plan, or the reader has no
+ * account yet (the preview).
+ */
+export type LockReason = 'completeness' | 'plan' | 'account';
 
 /** Who the report is shown to (H8). `self` when unanswered (D-236). */
 export type Audience = 'investor' | 'bank' | 'grant' | 'course' | 'self';

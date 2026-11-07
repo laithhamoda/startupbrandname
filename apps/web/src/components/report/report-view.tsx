@@ -10,6 +10,8 @@ export interface ReportHrefs {
   readonly project: string;
   /** The pricing page, or null while it is hidden (D-341): the lock then names no link. */
   readonly pricing: string | null;
+  /** Where a visitor without an account saves the visit, to read the rest (D-356). */
+  readonly save: string;
 }
 
 const sectionAnchor = (section: Section) => `section-${section.id}`;
@@ -45,18 +47,21 @@ function LockedSection({
   hrefs: ReportHrefs;
 }) {
   const byPlan = model.lockReason === 'plan';
+  const byAccount = model.lockReason === 'account';
   return (
     <div className="reading grid gap-2 border-s-[3px] border-hairline bg-sunken px-4 py-3 text-small">
       <p className="flex items-start gap-2">
         <Lock aria-hidden className="mt-1.5 size-4 shrink-0 text-ink-2" />
         <span>
           <span className="sr-only">{labels.lock.label}. </span>
-          {byPlan ? labels.lock.plan : labels.lock.completeness}
+          {byAccount ? labels.lock.account : byPlan ? labels.lock.plan : labels.lock.completeness}
         </span>
       </p>
       {byPlan && hrefs.pricing === null ? null : (
         <p>
-          {byPlan && hrefs.pricing !== null ? (
+          {byAccount ? (
+            <TextLink href={hrefs.save}>{labels.lock.save}</TextLink>
+          ) : byPlan && hrefs.pricing !== null ? (
             <TextLink href={hrefs.pricing}>{labels.lock.pricing}</TextLink>
           ) : (
             <TextLink href={hrefs.project}>{labels.lock.continue}</TextLink>
@@ -122,6 +127,8 @@ export function ReportView({
             <p className="reading text-muted">{labels.summaryLead}</p>
           ) : model.kind === 'standard' ? (
             <p className="reading text-muted">{labels.standardLead}</p>
+          ) : model.kind === 'preview' ? (
+            <p className="reading text-muted">{labels.previewLead}</p>
           ) : null}
           {actions}
         </header>

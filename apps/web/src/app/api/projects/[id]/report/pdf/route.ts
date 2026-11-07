@@ -84,7 +84,8 @@ export async function POST(
   try {
     const supabase = await createSupabaseServerClient();
     const user = await getSessionUser(supabase);
-    if (!user) return json('not_allowed', 401);
+    // A visitor without an account has only the preview, and a file is for an account (D-356).
+    if (!user || user.isAnonymous) return json('not_allowed', 401);
 
     const symbols: Record<string, string> = catalogues[locale].money.symbol;
     const page = await loadReportPage(supabase, id.data, {

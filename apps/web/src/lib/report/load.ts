@@ -7,6 +7,7 @@ import { errorFields, log } from '@/lib/log';
 import type { SupabaseServerClient } from '@/lib/supabase/server';
 import { degradeWithoutRun, reportModeOf } from './access';
 import { accountAccess } from './account-access';
+import type { Access } from '@/lib/entitlements';
 import { loadPackItems } from './pack';
 import { nextVersion, summariesOf, versionsLeft, type VersionSummary } from './versions';
 
@@ -60,6 +61,11 @@ export interface ReportPageOptions {
    * from it and must not pay for a full report and a read of the pack (D-287).
    */
   readonly summaryOnly?: boolean;
+  /**
+   * The reader is a visitor without an account (D-356): the model is the preview, which holds neither the
+   * verdict nor the locked sections, and no version is read or recorded.
+   */
+  readonly visitor?: boolean;
   readonly now?: Date;
 }
 
@@ -80,11 +86,25 @@ export async function loadReportPage(
   const { source, outcome } = analysis;
   const score = completeness(source.answers);
 
-  const { access, previewListValid } = await accountAccess(supabase, options.email, projectId, now);
-  if (!previewListValid) await log.warn('report.preview_list_invalid', { projectId });
-  const mode = reportModeOf(score.gate, access);
   const run = outcome.status === 'ok' ? outcome.run : null;
-  const decided = degradeWithoutRun(mode, run !== null);
+  const visitor = options.visitor === true;
+  // A visitor has no plan and no entitlement to read: below the summary gate there is nothing, then the
+  // preview, or, when the numbers cannot be calculated, the summary without a verdict (D-356).
+  let access: Access | null = null;
+  let decided: ReturnType<typeof degradeWithoutRun>;
+  if (visitor) {
+    decided =
+      score.gate === 'none'
+        ? null
+        : run !== null
+          ? { kind: 'preview', lockReason: 'account' }
+          : { kind: 'summary', lockReason: 'completeness' };
+  } else {
+    const account = await accountAccess(supabase, options.email, projectId, now);
+    if (!account.previewListValid) await log.warn('report.preview_list_invalid', { projectId });
+    access = account.access;
+    decided = degradeWithoutRun(reportModeOf(score.gate, account.access), run !== null);
+  }
   if (decided === null) {
     return {
       status: 'none',
@@ -96,7 +116,7 @@ export async function loadReportPage(
   // The project page asks for the summary alone: an account that may open the full report gets the
   // summary there, and the verdict is the same word in both kinds (D-287).
   const shown: typeof decided =
-    options.summaryOnly === true && decided.kind !== 'summary'
+    options.summaryOnly === true && decided.kind !== 'summary' && decided.kind !== 'preview'
       ? { kind: 'summary', lockReason: 'completeness' }
       : decided;
 
@@ -104,7 +124,7 @@ export async function loadReportPage(
   // version limit means something (D-321, D-323). The preview list and early access stand in for a
   // package without one, and the project page asks for the summary alone.
   let version: ReportVersion | null = null;
-  if (shown.kind !== 'summary' && access.planId !== 'free') {
+  if (access !== null && shown.kind !== 'summary' && access.planId !== 'free') {
     const [rows, project] = await Promise.all([
       supabase
         .from('report_versions')
@@ -147,7 +167,11 @@ export async function loadReportPage(
   // always comes with its three changes (D-273, D-278).
   let changes: SuggestedChanges | null = null;
   const verdict = run?.verdict.verdict.value ?? 'go';
-  if (run !== null && (shown.kind !== 'summary' ? verdict !== 'go' : verdict === 'stop')) {
+  if (
+    run !== null &&
+    shown.kind !== 'preview' &&
+    (shown.kind !== 'summary' ? verdict !== 'go' : verdict === 'stop')
+  ) {
     try {
       changes = suggestChanges(run, { rules: source.taxRules }, {}, pricingOptionsOf(source));
     } catch (error) {
@@ -155,7 +179,7 @@ export async function loadReportPage(
     }
   }
   const packItems =
-    shown.kind !== 'summary'
+    shown.kind !== 'summary' && shown.kind !== 'preview'
       ? await loadPackItems(supabase, source.project.countryCode, projectId)
       : [];
 

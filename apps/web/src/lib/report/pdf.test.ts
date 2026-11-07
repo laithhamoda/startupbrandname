@@ -360,6 +360,15 @@ describe('the codes', () => {
   it('offer the download for every report the page draws and for no other', () => {
     expect(pdfDownloadAvailable(ready(modelOf()))).toBe(true);
     expect(pdfDownloadAvailable(ready(modelOf('ar', 'summary')))).toBe(true);
+    // The preview a visitor without an account reads has no file (D-356).
+    const preview = buildReportModel(
+      goldenReportInput('jo-service-subscription', {
+        locale: 'ar',
+        kind: 'preview',
+        lockReason: 'account',
+      }),
+    );
+    expect(pdfDownloadAvailable(ready(preview))).toBe(false);
     expect(pdfDownloadAvailable({ status: 'none', percent: 0, missing: [] })).toBe(false);
     expect(pdfDownloadAvailable({ status: 'failed' })).toBe(false);
   });

@@ -17,7 +17,7 @@ vi.mock('@/i18n/navigation', async () => {
 });
 vi.mock('@/components/ui/link-pending', () => ({ LinkPending: () => null }));
 
-const HREFS = { project: '/projects/p1', pricing: '/pricing' } as const;
+const HREFS = { project: '/projects/p1', pricing: '/pricing', save: '/save' } as const;
 
 function modelOf(options: Parameters<typeof goldenReportInput>[1], over?: { title?: string }) {
   const input = goldenReportInput('jo-service-subscription', options);
@@ -306,5 +306,27 @@ describe('httpsUrl', () => {
     expect(httpsUrl('javascript:alert(1)')).toBeNull();
     expect(httpsUrl('//example.invalid')).toBeNull();
     expect(httpsUrl('not a url')).toBeNull();
+  });
+});
+
+describe('the preview a visitor without an account reads (D-356)', () => {
+  const model = modelOf({ locale: 'ar', kind: 'preview', lockReason: 'account' });
+  const html = htmlOf(model);
+
+  it('says it is a preview, and every locked section points to saving the visit', () => {
+    expect(html).toContain(catalogues.ar.report.kind.preview);
+    expect(html).toContain(catalogues.ar.report.previewLead);
+    const locked = model.sections.filter((section) => section.locked);
+    expect(locked).toHaveLength(8);
+    expect(html.split(catalogues.ar.report.lock.account).length - 1).toBe(8);
+    expect(html).toContain('href="/save"');
+    // Not the pricing link of a plan lock, and not the questions link of a completeness lock.
+    expect(html).not.toContain(catalogues.ar.report.lock.pricing);
+    expect(html).not.toContain(catalogues.ar.report.lock.continue);
+  });
+
+  it('draws no verdict slab and none of its words', () => {
+    expect(html).not.toContain('data-verdict');
+    expect(html).not.toMatch(/امضِ|عدّل|توقّف/);
   });
 });

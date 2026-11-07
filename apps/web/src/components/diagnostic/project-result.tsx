@@ -3,10 +3,12 @@ import { useId } from 'react';
 import { ReportBlock } from '@/components/report/blocks';
 import type { ReportLabels } from '@/components/report/inline';
 import { type NoticeReason, ReportNotice } from '@/components/report/notice';
+import { TextLink } from '@/components/ui/text-link';
 
 export type ProjectResultView =
   | { readonly status: 'none' }
   | { readonly status: 'verdict'; readonly section: Section }
+  | { readonly status: 'hidden' }
   | { readonly status: 'needs_answers'; readonly reasons: readonly NoticeReason[] }
   | { readonly status: 'failed' };
 
@@ -46,6 +48,14 @@ export function ProjectResult({
               still
             />
           ))}
+        </div>
+      ) : view.status === 'hidden' ? (
+        <div className="reading grid gap-1 border-s-[3px] border-ink bg-sunken px-4 py-3 text-small">
+          <p className="font-bold">{labels.verdictHidden.title}</p>
+          <p>{labels.verdictHidden.body}</p>
+          <p>
+            <TextLink href="/save">{labels.verdictHidden.action}</TextLink>
+          </p>
         </div>
       ) : view.status === 'needs_answers' && view.reasons.length > 0 ? (
         <ReportNotice failed={false} reasons={view.reasons} labels={labels} />

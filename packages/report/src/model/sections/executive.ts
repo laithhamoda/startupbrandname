@@ -346,7 +346,11 @@ export function changeBlocks(ctx: Ctx, run: EngineRun, changes: SuggestedChanges
   return blocks;
 }
 
-/** The executive summary: the verdict, three numbers, three risks, what blocks Go and what to change. */
+/**
+ * The executive summary: the verdict, three numbers, three risks, what blocks Go and what to change. In the
+ * preview a visitor reads (D-356) it keeps the opening, the three numbers, the risks and the notes, and leaves
+ * out everything that gives the verdict away: the verdict itself, the table of what blocks Go, and the changes.
+ */
 export function buildExecutiveSummary(
   ctx: Ctx,
   run: EngineRun,
@@ -354,16 +358,21 @@ export function buildExecutiveSummary(
 ): Block[] {
   const { m } = ctx;
   const code = run.verdict.verdict.value;
+  const showVerdict = ctx.input.kind !== 'preview';
   const blocks: Block[] = [
     paragraph(plain(m.executive.opening[ctx.input.audience])),
-    {
-      type: 'verdict',
-      code,
-      word: m.verdictWords[code],
-      reason: verdictReason(ctx, run, changes),
-      stopSentence: code === 'stop' ? m.stopSentence : null,
-      meter: meterOf(ctx, run),
-    },
+    ...(showVerdict
+      ? [
+          {
+            type: 'verdict' as const,
+            code,
+            word: m.verdictWords[code],
+            reason: verdictReason(ctx, run, changes),
+            stopSentence: code === 'stop' ? m.stopSentence : null,
+            meter: meterOf(ctx, run),
+          },
+        ]
+      : []),
     {
       type: 'keyNumbers',
       items: KEY_NUMBER_ORDER[ctx.input.audience].map((id) => keyNumber(ctx, run, id)),
@@ -375,8 +384,10 @@ export function buildExecutiveSummary(
       ? paragraph(plain(m.risks.none))
       : bulletList(plain(m.executive.risksTitle), risks),
   );
-  if (code !== 'go') blocks.push(...blocksTable(ctx, run));
-  blocks.push(...changeBlocks(ctx, run, changes));
+  if (showVerdict) {
+    if (code !== 'go') blocks.push(...blocksTable(ctx, run));
+    blocks.push(...changeBlocks(ctx, run, changes));
+  }
   if (run.cash.tax.status === 'not_calculated') blocks.push(note(plain(m.executive.beforeTax)));
   blocks.push(
     note(

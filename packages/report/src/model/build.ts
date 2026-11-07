@@ -18,6 +18,7 @@ import { plain } from './inline';
 import {
   FULL_SECTION_IDS,
   ReportModelError,
+  PREVIEW_OPEN_SECTION_IDS,
   STANDARD_LOCKED_SECTION_IDS,
   type Audience,
   type Block,
@@ -27,6 +28,7 @@ import {
   type ReportMeta,
   type ReportModel,
   type Section,
+  type ReportKind,
   type SectionId,
 } from './types';
 
@@ -71,6 +73,16 @@ function validate(input: ReportInput): void {
       throw new ReportModelError(
         'lock_reason_required',
         'The numbers report locks its other sections by the plan.',
+      );
+    }
+  } else if (input.kind === 'preview') {
+    if (input.run === null) {
+      throw new ReportModelError('run_required', 'The preview needs a calculable run.');
+    }
+    if (input.lockReason !== 'account') {
+      throw new ReportModelError(
+        'lock_reason_required',
+        'The preview locks its other sections until the reader has an account.',
       );
     }
   } else if (input.lockReason === null) {
@@ -128,6 +140,16 @@ function locked(ctx: Ctx, id: SectionId): Section {
   return { id, title: ctx.m.sections[id], locked: true, blocks: [] };
 }
 
+/** The sections a kind of report keeps locked (the full report keeps none). */
+function lockedIdsOf(kind: ReportKind): readonly SectionId[] {
+  if (kind === 'standard') return STANDARD_LOCKED_SECTION_IDS;
+  if (kind === 'preview') {
+    const open: readonly string[] = PREVIEW_OPEN_SECTION_IDS;
+    return FULL_SECTION_IDS.filter((id) => !open.includes(id));
+  }
+  return [];
+}
+
 /**
  * Builds each section in reading order, so the term tracker sees the report as a reader does. The
  * sections in `lockedIds` are locked titles whose builders never run (D-232).
@@ -183,7 +205,7 @@ export function buildReportModel(input: ReportInput): ReportModel {
   const sections =
     run === null || input.kind === 'summary'
       ? summarySections(ctx)
-      : fullSections(ctx, run, input.kind === 'standard' ? STANDARD_LOCKED_SECTION_IDS : []);
+      : fullSections(ctx, run, lockedIdsOf(input.kind));
   return {
     version: 1,
     locale: input.locale,
