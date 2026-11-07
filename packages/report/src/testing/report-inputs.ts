@@ -175,7 +175,7 @@ export function testPackItems(): readonly PackItem[] {
 export interface GoldenReportOptions {
   readonly locale: 'ar' | 'en';
   readonly kind?: ReportKind;
-  readonly lockReason?: 'completeness' | 'plan' | null;
+  readonly lockReason?: 'completeness' | 'plan' | 'account' | null;
   readonly today?: string;
   /** Changes the answers (and their provenance) before the engine runs again. */
   readonly change?: (answers: MutableAnswers, provenance: MutableProvenance) => void;
