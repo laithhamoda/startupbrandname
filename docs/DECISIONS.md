@@ -3669,3 +3669,23 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
 - **Open:** the consent text is the existing placeholder awaiting the legal review (D-335). The home button
   still leads to sign-up until step 5.
 - **Status:** Active
+
+### D-352 (2026-11-07): Least-privilege settings and the clean-up of old anonymous visitors
+
+- **Decision:** The owner asked to fix the audit findings by priority (`docs/AUDIT-2026-11-07.md`) and
+  confirmed that anonymous sign-ins are on. This is the first change.
+- **Settings (SEC-04):** the policy "signed-in users read" let every signed-in user, and now every visitor,
+  read every setting, among them the spend caps and the request limits. It now allows three keys, the only ones
+  the app reads through a user's own session: `ai.model.fast`, `ai.prices` and `report.pdf_per_day`. Everything
+  else is read by security definer functions or the server's secret key. **Correction of the audit:** the
+  audit rated the exposure of `tax_rules` and `country_pack_items` to visitors as a risk; it is not new, since
+  sign-up is open and any free account could already read them, so they stay readable and the finding is
+  downgraded to low. The setting values were the real exposure.
+- **Clean-up (PRV-01):** `private.purge_anonymous_visitors()` runs daily (03:41 UTC) and deletes an anonymous
+  visitor older than `anonymous.keep_days` (30, D-335), with everything under them by cascade. A visitor who
+  signed in with an email is no longer anonymous and is never touched; one that holds a payment or a
+  subscription is kept for the records. The existing purge of accounts without a profile (D-065) is unchanged.
+- **Next:** home page buttons and copy to `/start`, a visitor header and the time and save promise on
+  `/start`; the end-to-end test of `/start`; then moving the server-only database functions (AI run records,
+  engine runs) to the server's secret key (SEC-05).
+- **Status:** Active
