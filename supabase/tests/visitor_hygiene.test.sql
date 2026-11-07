@@ -3,7 +3,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(9);
+select plan(10);
 
 insert into auth.users (id, email, email_confirmed_at, is_anonymous, created_at) values
   ('d1000000-0000-4000-8000-000000000001', null, null, true, now() - interval '31 days'),
@@ -38,6 +38,10 @@ set local role authenticated;
 select is(
   (select count(*)::integer from public.settings where key in ('ai.model.fast', 'report.pdf_per_day')),
   2, 'a signed-in user reads the settings the app reads for them'
+);
+select is(
+  (select count(*)::integer from public.settings where key = 'consent.crossborder.accepted_versions'),
+  1, 'and the accepted consent versions, which the consent check reads with the caller''s rights'
 );
 select is(
   (select count(*)::integer from public.settings where key like 'auth.limit.%' or key like 'ai.limit.%'),

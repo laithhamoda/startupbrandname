@@ -3675,8 +3675,10 @@ audience, input_hash, engine_version, pdf_path, pdf_bytes)` is security definer 
 - **Decision:** The owner asked to fix the audit findings by priority (`docs/AUDIT-2026-11-07.md`) and
   confirmed that anonymous sign-ins are on. This is the first change.
 - **Settings (SEC-04):** the policy "signed-in users read" let every signed-in user, and now every visitor,
-  read every setting, among them the spend caps and the request limits. It now allows three keys, the only ones
-  the app reads through a user's own session: `ai.model.fast`, `ai.prices` and `report.pdf_per_day`. Everything
+  read every setting, among them the spend caps and the request limits. It now allows four keys, the only ones
+  read with a user's own rights: `ai.model.fast`, `ai.prices`, `report.pdf_per_day` and
+  `consent.crossborder.accepted_versions` (read by `crossborder_consent_state()`, a security invoker function;
+  the first version of this change forgot it and CI caught it). Everything
   else is read by security definer functions or the server's secret key. **Correction of the audit:** the
   audit rated the exposure of `tax_rules` and `country_pack_items` to visitors as a risk; it is not new, since
   sign-up is open and any free account could already read them, so they stay readable and the finding is
